@@ -7,8 +7,8 @@
 Any System supporting a web browser (Chrome, firefox, Safari or IE) built with <a href="http://en.wikipedia.org/wiki/WebRTC">WebRTC</a> features.
 We highly recommend using <a href="https://tools.google.com/dlpage/chromesxs">Google Chrome</a>
 
-==Is it possible to call any SIP client==
-Yes... but the client must support all standards defined by the <a href="http://tools.ietf.org/wg/rtcweb/">RTCWeb</a> working group. We recommend these clients: <br />
+==Is it possible to call any SIP client?==
+Yes... but the client must support all standards defined by the <a href="http://tools.ietf.org/wg/rtcweb/">RTCWeb</a> working group. We recommend these clients:
  * <a href="http://code.google.com/p/boghe/">Boghe</a>: Windows XP, Vista and 7
  * <a href="http://code.google.com/p/imsdroid/">IMSDroid</a>: Android
  * <a href="http://code.google.com/p/idoubs/">iDoubs</a>: iOS (iPad, iPhone, iPod Touch) and MAC OSX
