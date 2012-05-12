@@ -13,3 +13,4 @@ Yes... but the client must support all standards defined by the <a href="http://
  * <a href="http://code.google.com/p/imsdroid/">IMSDroid</a>: Android
  * <a href="http://code.google.com/p/idoubs/">iDoubs</a>: iOS (iPad, iPhone, iPod Touch) and MAC OSX
 ...off course you don't need to install these applications if you are calling another HTML5 SIP client.
+We recommend checking the non-exhaustive list of [Public_SIP_Servers Public SIP Servers] known to work with sipML5.
