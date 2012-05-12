@@ -2,6 +2,6 @@
 #labels Featured,Phase-Support
 
 || *SIP server* || *Public Identity* || *Private identity* || *Realm* ||
-|| *sip2sip.info* || bob || sip:bob@sip2sip.info || sip2sip.info||
+|| *sip2sip.info,,+,,* || bob || sip:bob@sip2sip.info || sip2sip.info||
 
-<sub>*<sub>: Recommended
+,,+,,: Recommended
