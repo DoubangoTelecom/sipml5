@@ -8,4 +8,4 @@
 || pbxes.org || bob || sip:bob@pbxes.org || pbxes.org ||
 || [https://www.linphone.org/eng/linphone/register-a-linphone-account.html sip.linphone.org] || bob || sip:bob@sip.linphone.org || sip.linphone.org ||
 
-^*^: Recommended
+^*^: Highly recommended
