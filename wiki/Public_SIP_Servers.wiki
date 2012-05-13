@@ -1,8 +1,11 @@
 #summary Public SIP server
 #labels Featured,Phase-Support
 
-|| *SIP server* || *Public Identity* || *Private identity* || *Realm* ||
+|| *SIP server* || *Private Identity* || *Public identity* || *Realm* ||
 || *[https://mdns.sipthor.net/register_sip_account.phtml sip2sip.info]^*^* || bob || sip:bob@sip2sip.info || sip2sip.info||
+|| freephonie.net || bob || sip:bob@freephonie.net || freephonie.net ||
+|| [http://www.iptel.org/ iptel.org] || bob || sip:bob@iptel.org || iptel.org ||
+|| pbxes.org || bob || sip:bob@pbxes.org || pbxes.org ||
 || [https://www.linphone.org/eng/linphone/register-a-linphone-account.html sip.linphone.org] || bob || sip:bob@sip.linphone.org || sip.linphone.org ||
 
 ^*^: Recommended
