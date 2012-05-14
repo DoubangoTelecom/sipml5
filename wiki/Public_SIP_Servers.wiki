@@ -4,7 +4,7 @@
 || *SIP server* || *Private Identity* || *Public identity* || *Realm* ||
 || *[https://mdns.sipthor.net/register_sip_account.phtml sip2sip.info]^t^* || bob || sip:bob@sip2sip.info || sip2sip.info||
 || freephonie.net^n^ || bob || sip:bob@freephonie.net || freephonie.net ||
-|| [http://www.iptel.org/ iptel.org]^-^ || bob || sip:bob@iptel.org || iptel.org ||
+|| [http://www.iptel.org/ iptel.org]^n^ || bob || sip:bob@iptel.org || iptel.org ||
 || pbxes.org^n^ || bob || sip:bob@pbxes.org || pbxes.org ||
 || [https://www.linphone.org/eng/linphone/register-a-linphone-account.html sip.linphone.org]^n^ || bob || sip:bob@sip.linphone.org || sip.linphone.org ||
 
