@@ -1,0 +1,82 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_header_Event;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+
+	action parse_package{
+		hdr_event.s_package= tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_param{
+	    tsk_ragel_add_param(s_str, p, i_tag_start, hdr_event.ao_params);
+	}
+
+	action eob{
+	}
+	
+	event_param = generic_param>tag %parse_param;
+	event_package = token_nodot;
+	event_template = token_nodot;
+	event_type = (event_package ( "." event_template )*)>tag %parse_package;
+
+	Event = ( "Event"i | "o"i ) HCOLON event_type ( SEMI event_param )*;
+	
+	# Entry point
+	main := Event :>CRLF @eob;
+
+}%%
+
+%%write data;
+
+function tsip_header_Event(s_package){
+    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Event);
+    this.s_package = s_package;
+    this.toString = function(){
+        return this.s_package;
+    };
+}
+
+tsip_header_Event.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var hdr_event = new tsip_header_Event(null);
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'Event' header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_event;
+}

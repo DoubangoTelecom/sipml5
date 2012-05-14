@@ -1,0 +1,117 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_header_P_Charging_Function_Addresses;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action create_p_charging_function_addresses{
+		if(!curr_p_charging_function_addresses){
+			curr_p_charging_function_addresses = new tsip_header_P_Charging_Function_Addresses(null, null);
+		}
+	}
+
+	action parse_ccf{
+		if(!curr_p_charging_function_addresses.s_ccf){
+		    curr_p_charging_function_addresses.s_ccf = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+		}
+	}
+
+	action parse_ecf{
+		if(!curr_p_charging_function_addresses.s_ecf){
+		    curr_p_charging_function_addresses.s_ecf = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+		}
+	}
+
+	action parse_param{
+		if(curr_p_charging_function_addresses){
+			tsk_ragel_add_param(s_str, p, i_tag_start, curr_p_charging_function_addresses.ao_params);
+		}
+	}
+
+	action add_p_charging_function_addresses{
+		if(curr_p_charging_function_addresses){
+	        hdr_p_charging_function_addressess.push(curr_p_charging_function_addresses);
+	        curr_p_charging_function_addresses = null;
+	    }
+	}
+
+	action eob{
+	}
+	
+	ccf = "ccf"i EQUAL gen_value;
+	ecf = "ecf"i EQUAL gen_value;
+	charge_addr_params = (ccf>tag %parse_ccf | ecf>tag %parse_ecf | generic_param>tag %parse_param) >create_p_charging_function_addresses %add_p_charging_function_addresses;
+	P_Charging_Addr = "P-Charging-Function-Addresses"i HCOLON charge_addr_params ( SEMI charge_addr_params )*;
+	P_Charging_Function_Addresses = P_Charging_Addr;
+
+	# Entry point
+	main := P_Charging_Function_Addresses :>CRLF @eob;
+
+}%%
+
+%%write data;
+
+function tsip_header_P_Charging_Function_Addresses(s_ccf, s_ecf){
+    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.P_Charging_Function_Addresses);
+    this.s_ccf = s_ccf;
+    this.s_ecf = s_ecf;
+    this.toString = function(){
+        return tsk_string_format("{0}{1}{2}{3}{4}", 
+			this.s_ecf ? "ecf=" : "",
+			this.s_ecf ? this.s_ecf : "",
+
+			(this.s_ecf && this.s_ccf) ? ";" : "",
+
+			this.s_ccf ? "ccf=" : "",
+			this.s_ccf ? this.s_ccf : ""
+			);
+    }
+       
+    return hdr_pcfa;
+}
+
+// returns an array of 'P-Charging-Function-Addresses' headers
+tsip_header_P_Charging_Function_Addresses.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;
+	var hdr_p_charging_function_addressess = new Array();
+	var curr_p_charging_function_addresses = null;
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'P-Charging-Function-Addresses' header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_p_charging_function_addressess;
+}

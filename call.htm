@@ -1,0 +1,854 @@
+﻿<!-- head -->
+<html>
+<!-- head -->
+<head>
+    <meta charset="utf-8">
+    <title>sipML5 live demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Keywords" content="doubango, sipML5, VoIP, HTML5, WebRTC, RTCWeb, SIP, IMS, Video chat, VP8, live demo " />
+    <meta name="Description" content="HTML5 SIP client using WebRTC framework" />
+    <meta name="author" content="Doubango Telecom">
+
+    <!-- SIP API and utility functions -->
+    <script src="src/tinySIP/src/tsip_api.js" type="text/javascript"> </script>
+    <!-- Styles -->
+    <link href="./assets/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+        body{
+            padding-top: 80px;
+            padding-bottom: 40px;
+        }
+        .full-screen{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .normal-screen{
+            position: relative;
+        }
+        .call-options {
+          padding: 5px;
+          background-color: #f0f0f0;
+          border: 1px solid #eee;
+          border: 1px solid rgba(0, 0, 0, 0.08);
+          -webkit-border-radius: 4px;
+          -moz-border-radius: 4px;
+          border-radius: 4px;
+          -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+          -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+          -webkit-transition-property: opacity;
+          -moz-transition-property: opacity; 
+          -o-transition-property: opacity; 
+          -webkit-transition-duration: 2s;
+          -moz-transition-duration: 2s;
+          -o-transition-duration: 2s;
+        }
+        .div-video{
+            width: 100%; 
+            height: 0px; 
+            -webkit-transition-property: height;
+            -moz-transition-property: height;
+            -o-transition-property: height;
+            -webkit-transition-duration: 2s;
+            -moz-transition-duration: 2s;
+            -o-transition-duration: 2s;
+        }
+        .label-align {
+            display: block;
+            padding-left: 15px;
+            text-indent: -15px;
+        }
+        .input-align {
+            width: 13px;
+            height: 13px;
+            padding: 0;
+            margin:0;
+            vertical-align: bottom;
+            position: relative;
+            top: -1px;
+            *overflow: hidden;
+        }
+
+        
+    </style>
+    <link href="./assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="./assets/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="./assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="./assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="./assets/ico/apple-touch-icon-57-precomposed.png">
+</head>
+<!-- Javascript code -->
+<script type="text/javascript">
+
+    var sTransferNumber;
+    var oRingTone, oRingbackTone;
+    var oSipStack, oSipSessionRegister, oSipSessionCall, oSipSessionTransferCall;
+    var txtDisplayName, txtPrivateIdentity, txtPublicIdentity, txtPassword, txtRealm;
+    var txtPhoneNumber;
+    var btnCall, btnHangUp;
+    var txtRegStatus, txtCallStatus;
+    var btnRegister, btnUnRegister;
+    var btnFullScreen, btnHoldResume, btnTransfer, btnKeyPad;
+    var videoRemote, videoLocal;
+    var divVideo, divCallOptions;
+    var bFullScreen = false;
+
+    window.onload = function () {
+        if (!haveWebSocket()) {
+            alert('Your browser don\'t support WebSockets.');
+            // window.location = "error.htm?msg=NoWebSocket";
+            window.location = "index.htm";
+            return;
+        }
+
+        txtDisplayName = document.getElementById("txtDisplayName");
+        txtPrivateIdentity = document.getElementById("txtPrivateIdentity");
+        txtPublicIdentity = document.getElementById("txtPublicIdentity");
+        txtPassword = document.getElementById("txtPassword");
+        txtRealm = document.getElementById("txtRealm");
+
+        txtPhoneNumber = document.getElementById("txtPhoneNumber");
+
+        btnCall = document.getElementById("btnCall");
+        btnHangUp = document.getElementById("btnHangUp");
+
+        txtRegStatus = document.getElementById("txtRegStatus");
+        txtCallStatus = document.getElementById("txtCallStatus");
+
+        btnRegister = document.getElementById("btnRegister");
+        btnUnRegister = document.getElementById("btnUnRegister");
+
+        btnFullScreen = document.getElementById("btnFullScreen");
+        btnHoldResume = document.getElementById("btnHoldResume");
+        btnTransfer = document.getElementById("btnTransfer");
+        btnKeyPad = document.getElementById("btnKeyPad");
+
+        videoLocal = document.getElementById("video_local"); ;
+        videoRemote = document.getElementById("video_remote");
+
+        divVideo = document.getElementById("divVideo");
+        divCallOptions = document.getElementById("divCallOptions");
+        //divVideo.style.height = '0px';
+
+        loadCredentials();
+        loadCallOptions();
+
+        if (!haveWebRTC()) {
+            alert('Your browser don\'t support WebRTC. audio/video calls will be disabled.');
+        }
+
+        document.onkeyup = onKeyUp;
+        document.body.onkeyup = onKeyUp;
+        document.getElementById("divCallCtrl").onmousemove = onDivCallCtrlMouseMove;
+
+        btnRegister.disabled = false;
+        document.body.style.cursor = 'default';
+    };
+
+    function haveWebRTC() {
+        // 'webkitDeprecatedPeerConnection' is not used 
+        return (navigator.webkitGetUserMedia && (webkitPeerConnection00));
+    }
+
+    function haveWebSocket() {
+        return (WebSocket != null);
+    }
+
+    function gotMediaStream() {
+        return (__o_stream != null);
+    }
+
+    function loadCallOptions() {
+        if (localStorage) {
+            txtPhoneNumber.value = localStorage.getItem('org.doubango.identity.phone_number');
+        }
+    }
+
+    function saveCallOptions() {
+        if (localStorage) {
+            localStorage.setItem('org.doubango.identity.phone_number', txtPhoneNumber.value);
+        }
+    }
+
+    function loadCredentials() {
+        if (localStorage) {
+            txtDisplayName.value = localStorage.getItem('org.doubango.identity.display_name');
+            txtPrivateIdentity.value = localStorage.getItem('org.doubango.identity.impi');
+            txtPublicIdentity.value = localStorage.getItem('org.doubango.identity.impu');
+            txtPassword.value = localStorage.getItem('org.doubango.identity.password');
+            txtRealm.value = localStorage.getItem('org.doubango.identity.realm');
+        }
+    };
+
+    function saveCredentials() {
+        if (localStorage) {
+            localStorage.setItem('org.doubango.identity.display_name', txtDisplayName.value);
+            localStorage.setItem('org.doubango.identity.impi', txtPrivateIdentity.value);
+            localStorage.setItem('org.doubango.identity.impu', txtPublicIdentity.value);
+            localStorage.setItem('org.doubango.identity.password', txtPassword.value);
+            localStorage.setItem('org.doubango.identity.realm', txtRealm.value);
+        }
+    };
+
+    function sipRegister() {
+        btnRegister.disabled = true;
+        if (!txtRealm.value || !txtPrivateIdentity.value || !txtPublicIdentity.value) {
+            txtRegStatus.innerHTML = '<b>Please fill madatory fields (*)</b>';
+            btnRegister.disabled = false;
+            return;
+        }
+        var o_impu = tsip_uri.prototype.Parse(txtPublicIdentity.value);
+        if (!o_impu || !o_impu.s_user_name || !o_impu.s_host) {
+            txtRegStatus.innerHTML = "<b>[" + txtPublicIdentity.value + "] is not a valid Public identity</b>";
+            btnRegister.disabled = false;
+            return;
+        }
+        
+        saveCredentials();
+
+        oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, "sipml5.org", 4062,
+                            tsip_stack.prototype.SetPassword(txtPassword.value),
+                            tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
+                            // tsip_stack.prototype.SetProxyOutBound('xxxx.org', 5060, tsip_transport_type_e.UDP),
+                            tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5/v0.0.0000.0'),
+                            tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
+        if (oSipStack) {
+            oSipStack.on_event_stack = onSipEventStack;
+            oSipStack.on_event_dialog = onSipEventDialog;
+            oSipStack.on_event_invite = onSipEventInvite;
+
+            if (oSipStack.start() != 0) {
+                txtRegStatus.innerHTML = '<b>Failed to start the SIP stack</b>';
+            }
+            else return;
+        }
+        btnRegister.disabled = false;
+    }
+
+    function sipUnRegister() {
+        if (oSipStack) {
+            oSipStack.stop(); // shutdown all sessions
+        }
+    }
+
+    function sipCall() {
+        if (oSipStack && !oSipSessionCall && !tsk_string_is_null_or_empty(txtPhoneNumber.value)) {
+            btnCall.disabled = true;
+            btnHangUp.disabled = false;
+            oSipSessionCall = new tsip_session_invite(oSipStack,
+                                tsip_session.prototype.SetToStr(txtPhoneNumber.value),
+                                tsip_session.prototype.SetCaps("+sip.ice")
+                            );
+
+            if (oSipSessionCall.call(tmedia_type_e.AUDIO_VIDEO) != 0) {
+                oSipSessionCall = null;
+                txtCallStatus.value = 'Failed to make call';
+                btnCall.disabled = false;
+                btnHangUp.disabled = true;
+                return;
+            }
+        }
+        else if (oSipSessionCall) {
+            txtCallStatus.innerHTML = '<i>Connecting...</i>';
+            oSipSessionCall.accept();
+        }
+    }
+
+    function sipTransfer() {
+        if (oSipSessionCall) {
+            var s_destination = prompt('Enter destination number', '');
+            if (!tsk_string_is_null_or_empty(s_destination)) {
+                btnTransfer.disabled = true;
+                if (oSipSessionCall.transfer(s_destination) != 0) {
+                    txtCallStatus.innerHTML = '<i>Call transfer failed</i>';
+                    btnTransfer.disabled = false;
+                    return;
+                }
+                txtCallStatus.innerHTML = '<i>Transfering the call...</i>';
+            }
+        }
+    }
+
+    function sipToggleHoldResume() {
+        if (oSipSessionCall) {
+            var i_ret;
+            btnHoldResume.disabled = true;
+            txtCallStatus.innerHTML = oSipSessionCall.bHeld ? '<i>Resuming the call...</i>' : '<i>Holding the call...</i>';
+            i_ret = oSipSessionCall.bHeld ? oSipSessionCall.resume() : oSipSessionCall.hold();
+            if (i_ret != 0) {
+                txtCallStatus.innerHTML = '<i>Hold / Resume failed</i>';
+                btnHoldResume.disabled = false;
+                return;
+            }
+        }
+    }
+
+    function sipHangUp() {
+        if (oSipSessionCall) {
+            txtCallStatus.innerHTML = '<i>Terminating the call...</i>';
+            oSipSessionCall.hangup();
+        }
+    }
+
+    function startRingTone() {
+        if (Audio) {
+            if (!oRingTone && (oRingTone = new Audio("sounds/ringtone.wav"))) {
+                oRingTone.loop = true;
+            }
+            if (oRingTone) {
+                oRingTone.play();
+            }
+        }
+    }
+
+    function stopRingTone() {
+        if (oRingTone) {
+            oRingTone.pause();
+        }
+    }
+
+    function startRingbackTone() {
+        if (Audio) {
+            if (!oRingbackTone && (oRingbackTone = new Audio("sounds/ringbacktone.wav"))) {
+                oRingbackTone.loop = true;
+            }
+            if (oRingbackTone) {
+                oRingbackTone.play();
+            }
+        }
+    }
+
+    function stopRingbackTone() {
+        if (oRingbackTone) {
+            oRingbackTone.pause();
+        }
+    }
+
+    function toggleFullScreen() {
+        if (videoRemote.webkitSupportsFullscreen) {
+            fullScreen(!videoRemote.webkitDisplayingFullscreen);
+        }
+        else {
+            fullScreen(!bFullScreen);
+        }
+    }
+
+    function fullScreen(b_fs) {
+        bFullScreen = b_fs;
+        if (bFullScreen && videoRemote.webkitSupportsFullscreen) {
+            if (bFullScreen) {
+                videoRemote.webkitEnterFullScreen();
+            }
+            else {
+                videoRemote.webkitExitFullscreen();
+            }
+        }
+        else {
+            document.getElementById("divVideo").setAttribute("class", b_fs ? "div-video full-screen" : "div-video normal-screen");
+        }
+    }
+
+    function onKeyUp(evt) {
+        evt = evt || window.event;
+        if (evt.keyCode == 27) {
+            fullScreen(false);
+        }
+    }
+
+    function onDivCallCtrlMouseMove(evt) {
+        if (gotMediaStream()) {
+            btnCall.disabled = (!gotMediaStream() || !oSipSessionRegister || !oSipSessionRegister.is_connected());
+            document.getElementById("divCallCtrl").onmousemove = null; // unsubscribe
+        }
+    }
+
+    function uiOnConnectionEvent(b_connected, b_connecting) { // should be enum: connecting, connected, terminating, terminated
+        btnRegister.disabled = b_connected || b_connecting;
+        btnUnRegister.disabled = !b_connected && !b_connecting;
+        btnCall.disabled = !(b_connected && haveWebRTC() && gotMediaStream());
+        btnHangUp.disabled = !oSipSessionCall;
+    }
+
+    function onSipEventStack(evt) {
+        // this is a special event shared by all sessions and there is no "e_stack_type"
+        // check the 'sip/stack' code
+        console.debug(evt.s_phrase);
+        switch (evt.i_code) {
+            case tsip_event_code_e.STACK_STARTED:
+                {
+                    oSipSessionRegister = new tsip_session_register(oSipStack,
+                                            tsip_session.prototype.SetExpires(300),
+                                            tsip_session.prototype.SetCaps("+g.oma.sip-im"),
+                                            tsip_session.prototype.SetCaps("+audio"),
+                                            tsip_session.prototype.SetCaps("language", "\"en,fr\""));
+                    oSipSessionRegister.register();
+                    break;
+                }
+            case tsip_event_code_e.STACK_STOPPING:
+            case tsip_event_code_e.STACK_STOPPED:
+                {
+                    oSipStack = null;
+                    oSipSessionRegister = null;
+                    oSipSessionCall = null;
+
+                    uiOnConnectionEvent(false, false);
+
+                    stopRingbackTone();
+                    stopRingTone();
+
+                    divVideo.style.height = '0px';
+                    divCallOptions.style.opacity = 0;
+
+                    txtCallStatus.innerHTML = null;
+                    txtRegStatus.innerHTML = '<i>Disconnected</i>';
+                    break;
+                }
+
+            case tsip_event_code_e.STACK_STARTING:
+            case tsip_event_code_e.STACK_FAILED_TO_START:
+            case tsip_event_code_e.STACK_FAILED_TO_STOP:
+            default:
+                {
+                    break;
+                }
+        }
+    };
+
+    function onSipEventDialog(evt) {
+        // this is special event shared by all sessions and there is no "e_dialog_type"
+        // check the 'sip/dialog' code
+        console.debug(evt.s_phrase);
+        switch (evt.i_code) {
+            case tsip_event_code_e.DIALOG_TRANSPORT_ERROR:
+            case tsip_event_code_e.DIALOG_GLOBAL_ERROR:
+            case tsip_event_code_e.DIALOG_MESSAGE_ERROR:
+            case tsip_event_code_e.DIALOG_WEBRTC_ERROR:
+
+            case tsip_event_code_e.DIALOG_REQUEST_INCOMING:
+            case tsip_event_code_e.DIALOG_REQUEST_OUTGOING:
+            case tsip_event_code_e.DIALOG_REQUEST_CANCELLED:
+            case tsip_event_code_e.DIALOG_REQUEST_SENT:
+            case tsip_event_code_e.DIALOG_MEDIA_ADDED:
+            case tsip_event_code_e.DIALOG_MEDIA_REMOVED:
+
+            default: break;
+
+
+            case tsip_event_code_e.DIALOG_CONNECTING:
+            case tsip_event_code_e.DIALOG_CONNECTED:
+                {
+                    var b_connected = (evt.i_code == tsip_event_code_e.DIALOG_CONNECTED);
+
+                    if (oSipSessionRegister && evt.get_session().get_id() == oSipSessionRegister.get_id()) {
+                        uiOnConnectionEvent(b_connected, !b_connected);
+                        txtRegStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
+                    }
+                    else if (oSipSessionCall && evt.get_session().get_id() == oSipSessionCall.get_id()) {
+                        btnHangUp.value = 'HangUp';
+                        btnCall.disabled = true;
+                        btnHangUp.disabled = false;
+                        btnTransfer.disabled = false;
+
+                        if (b_connected) {
+                            stopRingbackTone();
+                            stopRingTone();
+                        }
+
+                        txtCallStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
+                        divCallOptions.style.opacity = b_connected ? 1 : 0;
+                    }
+                    break;
+                }
+            case tsip_event_code_e.DIALOG_TERMINATING:
+            case tsip_event_code_e.DIALOG_TERMINATED:
+                {
+                    if (oSipSessionRegister && evt.get_session().get_id() == oSipSessionRegister.get_id()) {
+                        uiOnConnectionEvent(false, false);
+
+                        oSipSessionCall = null;
+                        oSipSessionRegister = null;
+
+                        txtRegStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
+                    }
+                    else if (oSipSessionCall && evt.get_session().get_id() == oSipSessionCall.get_id()) {
+                        btnCall.value = 'Call';
+                        btnHangUp.value = 'HangUp';
+                        btnHoldResume.value = 'hold';
+                        btnCall.disabled = false;
+                        btnHangUp.disabled = true;
+
+                        oSipSessionCall = null;
+
+                        stopRingbackTone();
+                        stopRingTone();
+
+                        txtCallStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
+                        divVideo.style.height = '0px';
+                        divCallOptions.style.opacity = 0;
+
+                        setTimeout(function () { if (!oSipSessionCall) txtCallStatus.innerHTML = ''; }, 2500);
+                    }
+                    break;
+                }
+        }
+    };
+
+    function onSipEventInvite(evt) {
+        console.debug(evt.s_phrase);
+        
+        switch (evt.e_invite_type) {
+            case tsip_event_invite_type_e.I_NEW_CALL:
+                {
+                    if (oSipSessionCall) {
+                        // do not accept the incoming call if we're already 'in call'
+                        evt.get_session().hangup(); // comment this line for multi-line support
+                    }
+                    else {
+                        oSipSessionCall = evt.get_session();
+
+                        btnCall.value = 'Answer';
+                        btnHangUp.value = 'Reject';
+                        btnCall.disabled = false;
+                        btnHangUp.disabled = false;
+
+                        startRingTone();
+
+                        txtCallStatus.innerHTML = "<i>Incoming call from [<b>" + (oSipSessionCall.o_uri_from.s_display_name ? oSipSessionCall.o_uri_from.s_display_name : oSipSessionCall.o_uri_from.s_user_name) + "</b>]</i>";
+                    }
+                    break;
+                }
+
+            case tsip_event_invite_type_e.I_ECT_NEW_CALL:
+                {
+                    oSipSessionTransferCall = evt.get_session();
+                    break;
+                }
+
+            case tsip_event_invite_type_e.I_AO_REQUEST:
+                {
+                    if (evt.i_code == 180 || evt.i_code == 183 && evt.get_message().is_response_to_invite()) {
+                        startRingbackTone();
+                        txtCallStatus.innerHTML = '<i>Remote ringing...</i>';
+                    }
+                    break;
+                }
+
+            case tsip_event_invite_type_e.M_EARLY_MEDIA:
+                {
+                    stopRingbackTone();
+                    stopRingTone();
+                    txtCallStatus.innerHTML = '<i>Early media started</i>';
+                    break;
+                }
+
+            case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
+                {
+                    videoLocal.src = evt.get_session().get_url_video_local();
+                    divVideo.style.height = '340px';
+                    videoLocal.style.opacity = 1;
+                    break;
+                }
+            case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED:
+                {
+                    if (videoLocal.src) videoLocal.src = undefined; // already revoked
+                    videoLocal.style.opacity = 0;
+                    fullScreen(false);
+                    break;
+                }
+            case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
+                {
+                    videoRemote.src = evt.get_session().get_url_video_remote();
+                    divVideo.style.height = '340px';
+                    videoRemote.style.opacity = 1;
+                    break;
+                }
+            case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED:
+                {
+                    // if (videoRemote.src) videoRemote.src = undefined;  // already revoked: must not uncomment (lock when remote cancel)
+                    videoRemote.style.opacity = 0;
+                    fullScreen(false);
+                    break;
+                }
+
+            case tsip_event_invite_type_e.M_LOCAL_HOLD_OK:
+                {
+                    if (oSipSessionCall.bTransfering) {
+                        oSipSessionCall.bTransfering = false;
+                        // this.AVSession.TransferCall(this.transferUri);
+                    }
+                    btnHoldResume.value = 'Resume';
+                    btnHoldResume.disabled = false;
+                    txtCallStatus.innerHTML = '<i>Call placed on hold</i>';
+                    oSipSessionCall.bHeld = true;
+                    break;
+                }
+            case tsip_event_invite_type_e.M_LOCAL_HOLD_NOK:
+                {
+                    oSipSessionCall.bTransfering = false;
+                    btnHoldResume.value = 'Hold';
+                    btnHoldResume.disabled = false;
+                    txtCallStatus.innerHTML = '<i>Failed to place remote party on hold</i>';
+                    break;
+                }
+            case tsip_event_invite_type_e.M_LOCAL_RESUME_OK:
+                {
+                    oSipSessionCall.bTransfering = false;
+                    btnHoldResume.value = 'Hold';
+                    btnHoldResume.disabled = false;
+                    txtCallStatus.innerHTML = '<i>Call taken off hold</i>';
+                    oSipSessionCall.bHeld = false;
+                    break;
+                }
+            case tsip_event_invite_type_e.M_LOCAL_RESUME_NOK:
+                {
+                    oSipSessionCall.bTransfering = false;
+                    btnHoldResume.disabled = false;
+                    txtCallStatus.innerHTML = '<i>Failed to unhold call</i>';
+                    break;
+                }
+            case tsip_event_invite_type_e.M_REMOTE_HOLD:
+                {
+                    txtCallStatus.innerHTML = '<i>Placed on hold by remote party</i>';
+                    break;
+                }
+            case tsip_event_invite_type_e.M_REMOTE_RESUME:
+                {
+                    txtCallStatus.innerHTML = '<i>Taken off hold by remote party</i>';
+                    break;
+                }
+
+
+            case tsip_event_invite_type_e.O_ECT_TRYING:
+                {
+                    txtCallStatus.innerHTML = '<i>Call transfer in progress...</i>';
+                    break;
+                }
+            case tsip_event_invite_type_e.O_ECT_ACCEPTED:
+                {
+                    txtCallStatus.innerHTML = '<i>Call transfer accepted</i>';
+                    break;
+                }
+            case tsip_event_invite_type_e.O_ECT_COMPLETED:
+            case tsip_event_invite_type_e.I_ECT_COMPLETED:
+                {
+                    txtCallStatus.innerHTML = '<i>Call transfer completed</i>';
+                    btnTransfer.disabled = false;
+                    if (oSipSessionTransferCall) {
+                        oSipSessionCall = oSipSessionTransferCall;
+                    }
+                    oSipSessionTransferCall = null;
+                    break;
+                }
+	        case tsip_event_invite_type_e.O_ECT_FAILED:
+	        case tsip_event_invite_type_e.I_ECT_FAILED:
+	            {
+	                txtCallStatus.innerHTML = '<i>Call transfer failed</i>';
+	                btnTransfer.disabled = false;
+	                break;
+	            }
+	        case tsip_event_invite_type_e.O_ECT_NOTIFY:
+	        case tsip_event_invite_type_e.I_ECT_NOTIFY:
+	            {
+	                txtCallStatus.innerHTML = "<i>Call Transfer: <b>" + evt.i_code + " " + evt.s_phrase + "</b></i>";
+	                if (evt.i_code >= 300) {
+	                    if (oSipSessionCall.bHeld) {
+	                        oSipSessionCall.resume();
+	                    }
+	                    btnTransfer.disabled = false;
+	                }
+	                break;
+	            }
+	        case tsip_event_invite_type_e.I_ECT_REQUESTED:
+	            {
+	                var o_hdr_Refer_To = evt.get_message().get_header(tsip_header_type_e.Refer_To); // header exist: already checked
+	                if (o_hdr_Refer_To.o_uri) {
+                        var s_message = "Do you accept call transfer to ["+ (o_hdr_Refer_To.s_display_name ? o_hdr_Refer_To.s_display_name : o_hdr_Refer_To.o_uri.s_user_name) + "]?";
+                        if (confirm(s_message)) {
+                            txtCallStatus.innerHTML = "<i>Call transfer in progress...</i>";
+                            oSipSessionCall.transfer_accept();
+                            break;
+                        }
+	                }
+	                oSipSessionCall.transfer_reject();
+	                break;
+	            }
+	        case tsip_event_invite_type_e.I_ECT_NEW_CALL:
+	            {
+	                break;
+	            }
+
+            default: break;
+        }
+    }
+
+</script>
+<body style="cursor:wait">
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span
+                    class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+                </a>
+                <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
+                <div class="nav-collapse">
+                    <ul class="nav">
+                        <li class="active"><a href="#">Home</a></li>
+                    </ul>
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row-fluid">
+            <div class="span4 well">
+                <label style="width: 100%;" align="center" id="txtRegStatus">
+                </label>
+                <h2>
+                    Registration</h2>
+                <br />
+                <table style='width: 100%'>
+                    <tr>
+                        <td>
+                            <label style="height: 100%">
+                                Display Name:</label>
+                        </td>
+                        <td>
+                            <input type="text" style="width: 100%; height: 100%" id="txtDisplayName" value=""
+                                placeholder="e.g. John Doe" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label style="height: 100%">
+                                Private Identity<sup>*</sup>:</label>
+                        </td>
+                        <td>
+                            <input type="text" style="width: 100%; height: 100%" id="txtPrivateIdentity" value=""
+                                placeholder="e.g. +33600000000" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label style="height: 100%">
+                                Public Identity<sup>*</sup>:</label>
+                        </td>
+                        <td>
+                            <input type="text" style="width: 100%; height: 100%" id="txtPublicIdentity" value=""
+                                placeholder="e.g. sip:+33600000000@doubango.org" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label style="height: 100%">Password:</label>
+                        </td>
+                        <td>
+                            <input type="password" style="width: 100%; height: 100%" id="txtPassword" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label style="height: 100%">Realm<sup>*</sup>:</label>
+                        </td>
+                        <td>
+                            <input type="text" style="width: 100%; height: 100%" id="txtRealm" value="" placeholder="e.g. doubango.org" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="right">
+                            <input type="button" class="btn-success" id="btnRegister" value="LogIn" disabled onclick='sipRegister();' />
+                            &nbsp;
+                            <input type="button" class="btn-danger" id="btnUnRegister" value="LogOut" disabled onclick='sipUnRegister();' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p class="small"><sup>*</sup> <i>Mandatory Field</i></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <a class="btn" href="http://code.google.com/p/sipml5/wiki/Public_SIP_Servers" target="_blank">Need SIP account?</a></p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="divCallCtrl" class="span7 well" style='display:table-cell; vertical-align:middle'>
+                <label style="width: 100%;" align="center" id="txtCallStatus">
+                </label>
+                <h2>
+                    Call control
+                </h2>
+                <br />
+                <table style='width: 100%;'>
+                    <tr>
+                        <td style="white-space:nowrap;">
+                            <input type="text" style="width: 100%; height:30px" id="txtPhoneNumber" value="" placeholder="Enter phone number to call" />                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="1" align="right">
+                            <input type="button" class="btn-primary" style="" id="btnCall" value="Call" onclick='sipCall();' disabled /> &nbsp;
+                            <input type="button" class="btn-primary" style="" id="btnHangUp" value="HangUp" onclick='sipHangUp();' disabled />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100%; padding-top: 5px;">
+                            <div id="divVideo" class='div-video'>
+                                <div id="divVideoRemote" style='border:1px solid #000'>
+                                    <video class="video" width="100%" height="100%" id="video_remote" autoplay="autoplay" style="opacity: 0;
+                                        background-color: #000000; -webkit-transition-property: opacity; -webkit-transition-duration: 2s;">
+                                    </video>
+                                </div>
+                                <div id="divVideoLocal" style='border:1px solid #000'>
+                                    <video class="video" width="88px" height="72px" id="video_local" autoplay="autoplay" style="opacity: 0;
+                                        margin-top: -80px; margin-left: 5px; background-color: #000000; -webkit-transition-property: opacity;
+                                        -webkit-transition-duration: 2s;">
+                                    </video>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                       <td align='center'>
+                            <div id='divCallOptions' class='call-options' style='opacity: 0; margin-top: 3px'>
+                                <input type="button" class="btn" style="" id="btnFullScreen" value="FullScreen" onclick='toggleFullScreen();' /> &nbsp;
+                                <input type="button" class="btn" style="" id="btnHoldResume" value="Hold" onclick='sipToggleHoldResume();' /> &nbsp;
+                                <input type="button" class="btn" style="" id="btnTransfer" value="Transfer" onclick='sipTransfer();' /> &nbsp;
+                                <!--input type="button" class="btn" style="" id="btnKeyPad" value="KeyPad" onclick='toto();' /-->
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <footer>
+            <p>
+                &copy; Doubango Telecom 2012</p>
+            <i>Inspiring the future</i>
+        </footer>
+    </div>
+    <!-- /container -->
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="./assets/js/jquery.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-transition.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-alert.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-dropdown.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-scrollspy.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-tab.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-tooltip.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-popover.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-button.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-collapse.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-carousel.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-typeahead.js"></script>
+</body>
+</html>

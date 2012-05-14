@@ -1,0 +1,100 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_header_Refer_To;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action parse_uri{	
+		if(r_to && !r_to.o_uri) /* Only one URI */{
+			var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+			if((r_to.o_uri = tsip_uri.prototype.Parse(s_uri)) && r_to.s_display_name){
+				r_to.o_uri.s_display_name = tsk_strdup(r_to.s_display_name);
+			}
+		}
+	}
+
+	action parse_display_name{
+		if(!r_to.s_display_name){
+			r_to.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+            r_to.s_display_name = tsk_string_unquote_2(r_to.s_display_name);
+		}
+	}
+
+	action parse_param{
+		tsk_ragel_add_param(s_str, p, i_tag_start, r_to.ao_params);
+	}
+
+	action eob{
+	}
+		
+	URI = (scheme HCOLON js_any+)>tag %parse_uri;
+	display_name = (( token LWS )+ | quoted_string)>tag %parse_display_name;
+	my_name_addr = display_name? :>LAQUOT<: URI :>RAQUOT;
+	
+	feature_param = generic_param; # HACK
+	refer_param = generic_param>tag %parse_param | feature_param>tag %parse_param;	
+	Refer_To = ( "Refer-To"i | "r"i ) HCOLON ( my_name_addr>0 | URI>1 ) ( SEMI refer_param )*;
+
+	# Entry point
+	main := Refer_To :>CRLF @eob;
+
+}%%
+
+
+%%write data;
+
+function tsip_header_Refer_To(o_uri){
+    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Refer_To);
+    this.o_uri = o_uri;
+    this.s_display_name = null;
+    this.toString = function(){
+        if(this.o_uri){
+            return tsip_uri_tostring(this.o_uri, true, true);
+        }
+        return null;
+    }
+}
+
+tsip_header_Refer_To.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var r_to = new tsip_header_Refer_To(null);
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'Refer-To' header: %s", s_str);
+		return null;
+	}
+	
+	return r_to;
+}
