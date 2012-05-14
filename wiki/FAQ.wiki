@@ -13,7 +13,7 @@ Yes
 ==Is it possible to call any SIP client?==
 Yes... but the client must support all standards defined by the <a href="http://tools.ietf.org/wg/rtcweb/">RTCWeb</a> working group. We recommend these clients:
  * <a href="http://code.google.com/p/boghe/">Boghe</a>: Windows XP, Vista and 7
- * <a href="http://code.google.com/p/imsdroid/">IMSDroid</a> imsdroid-2.0.491+: Android
+ * <a href="http://code.google.com/p/imsdroid/">IMSDroid</a> 2.0.491 or later: Android
  * <a href="http://code.google.com/p/idoubs/">iDoubs</a>: iOS (iPad, iPhone, iPod Touch) and MAC OSX
 ...off course you don't need to install these applications if you are calling another HTML5 SIP client. <br />
 For more information on how to configure these clients, please [Calling_SIP_clients click here]. <br />
