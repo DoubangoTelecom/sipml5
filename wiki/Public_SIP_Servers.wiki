@@ -8,5 +8,5 @@
 || pbxes.org^n^ || bob || sip:bob@pbxes.org || pbxes.org ||
 || [https://www.linphone.org/eng/linphone/register-a-linphone-account.html sip.linphone.org]^n^ || bob || sip:bob@sip.linphone.org || sip.linphone.org ||
 
-^+^: Recommended
-^-^: Not fully tested yet
+^t^: Fully Tested. Recommended <br/>
+^n^: Not fully tested yet. Not recommended
