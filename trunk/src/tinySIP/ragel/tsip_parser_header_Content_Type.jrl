@@ -1,0 +1,91 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_header_Content_Type;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+
+	action parse_content_type{
+	    hdr_ctype.s_type = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_param{
+	    tsk_ragel_add_param(s_str, p, i_tag_start, hdr_ctype.ao_params);
+	}
+
+	action eob{
+	}
+
+	extension_token = ietf_token | x_token;
+
+	m_attribute = token;
+	m_value = token | quoted_string;
+	m_parameter = (m_attribute EQUAL m_value)>tag %parse_param;
+
+	discrete_type = "text"i | "image"i | "audio"i | "video"i | "application"i | extension_token;
+	composite_type = "message"i | "multipart"i | extension_token;
+	m_type = discrete_type | composite_type;
+	m_subtype = extension_token | iana_token;
+
+	media_type = (m_type SLASH m_subtype)@1 >tag %parse_content_type ((SEMI m_parameter)*)@0;
+
+	Content_Type = ( "Content-Type"i | "c"i ) HCOLON media_type;
+	
+	# Entry point
+	main := Content_Type :>CRLF @eob;
+
+}%%
+
+
+%%write data;
+
+function tsip_header_Content_Type(s_type){
+    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Content_Type);
+    this.s_type = s_type;
+    this.toString = function(){
+        return this.s_type;
+    }
+}
+
+tsip_header_Content_Type.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_i_tag_start;	
+	var hdr_ctype = new tsip_header_Content_Type(null);
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'Content-Type' header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_ctype;
+}

@@ -1,0 +1,204 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_header_Authorization;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action is_digest{
+		hdr_Authorization.s_scheme = "Digest";
+	}
+
+	action is_basic{
+		hdr_Authorization.s_scheme = "Basic";
+	}
+
+	action is_auth{
+		hdr_Authorization.__proto__.e_type = tsip_header_type_e.Authorization;
+	}
+
+	action is_proxy{
+		hdr_Authorization.__proto__.e_type = tsip_header_type_e.Proxy_Authorization;
+	}
+
+	action parse_username{
+		hdr_Authorization.s_username = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
+	}
+
+	action parse_realm{
+		hdr_Authorization.s_realm = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
+	}
+
+	action parse_nonce{
+		hdr_Authorization.s_nonce = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
+	}
+
+	action parse_uri{
+		hdr_Authorization.s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_response{
+		hdr_Authorization.s_response = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
+	}
+
+	action parse_algorithm{
+		hdr_Authorization.s_algorithm = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_cnonce{
+		hdr_Authorization.s_cnonce = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
+	}
+
+	action parse_opaque{
+		hdr_Authorization.s_opaque = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
+	}
+
+	action parse_qop{
+		hdr_Authorization.s_qop = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_nc{
+		hdr_Authorization.s_nc = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_param{
+		tsk_ragel_add_param(s_str, p, i_tag_start, hdr_Authorization.ao_params);
+	}
+
+	action eob{
+	}
+	
+	#FIXME: Only Digest (MD5, AKAv1-MD5 and AKAv2-MD5) is supported
+	qop_value  = "auth" | "auth-int" | token;
+	other_response = (js_any+);
+	auth_param = generic_param>tag %parse_param;
+	
+	username = "username"i EQUAL quoted_string>tag %parse_username;
+	realm = "realm"i EQUAL quoted_string>tag %parse_realm;
+	nonce = "nonce"i EQUAL quoted_string>tag %parse_nonce;
+	digest_uri = "uri"i EQUAL LDQUOT <: (js_any*)>tag %parse_uri :> RDQUOT;
+	#dresponse = "response"i EQUAL LDQUOT <: (LHEX{32})>tag %parse_response :> RDQUOT;
+	dresponse = "response"i EQUAL quoted_string>tag %parse_response;
+	algorithm = "algorithm"i EQUAL <:token>tag %parse_algorithm;
+	cnonce = "cnonce"i EQUAL quoted_string>tag %parse_cnonce;
+	opaque = "opaque"i EQUAL quoted_string>tag %parse_opaque;
+	message_qop = "qop"i EQUAL qop_value>tag %parse_qop;
+	nonce_count = "nc"i EQUAL (LHEX{8})>tag %parse_nc;
+	
+	dig_resp = (username | realm | nonce | digest_uri | dresponse | algorithm | cnonce | opaque | message_qop | nonce_count)@1 | auth_param@0;
+	digest_response = dig_resp ( COMMA <:dig_resp )*;
+	credentials = ( ("Digest"i%is_digest | "Basic"i%is_basic) LWS digest_response ) | other_response;
+	Authorization = ("Authorization"i>is_auth | "Proxy-Authorization"i>is_proxy) HCOLON credentials;
+
+	# Entry point
+	main := Authorization :>CRLF @eob;
+
+}%%
+
+%%write data;
+
+function tsip_header_Authorization(){
+    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Authorization);
+	this.s_scheme = null;
+	this.s_username = null;
+	this.s_realm = null;
+	this.s_nonce = null;
+	this.s_uri = null;
+	this.s_response = null;
+	this.s_algorithm = null;
+	this.s_cnonce = null;
+	this.s_opaque = null;
+	this.s_qop = null;
+	this.s_nc = null;
+    
+    this.toString = function(){
+        if(tsk_string_iequals(this.s_scheme, "Basic")){
+			return tsk_string_format("{0} {1}", this.s_scheme, this.s_response);
+		}
+		else{
+			return tsk_string_format("{0} {1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}{22}{23}{24}{25}{26}{27}", 
+				this.s_scheme,
+
+				this.s_username ? "username=\"" : "",
+				this.s_username ? this.s_username : "",
+				this.s_username ? "\"" : "",
+
+				this.s_realm ? ",realm=\"" : "",
+				this.s_realm ? this.s_realm : "",
+				this.s_realm ? "\"" : "",
+
+				this.s_nonce ? ",nonce=\"" : "",
+				this.s_nonce ? this.s_nonce : "",
+				this.s_nonce ? "\"" : "",
+
+				this.s_uri ? ",uri=\"" : "",
+				this.s_uri ? this.s_uri : "",
+				this.s_uri ? "\"" : "",
+					
+				this.s_response ? ",response=\"" : "",
+				this.s_response ? this.s_response : "",
+				this.s_response ? "\"" : "",
+					
+				this.s_algorithm ? ",algorithm=" : "",
+				this.s_algorithm ? this.s_algorithm : "",
+
+				this.s_cnonce ? ",cnonce=\"" : "",
+				this.s_cnonce ? this.s_cnonce : "",
+				this.s_cnonce ? "\"" : "",
+
+				this.s_opaque ? ",opaque=\"" : "",
+				this.s_opaque ? this.s_opaque : "",
+				this.s_opaque ? "\"" : "",
+
+				this.s_qop ? ",qop=" : "",
+				this.s_qop ? this.s_qop : "",
+
+				this.s_nc ? ",nc=" : "",
+				this.s_nc ? this.s_nc : ""
+				);
+		}
+    }
+}
+
+tsip_header_Authorization.prototype.Parse = function(s_str){
+	var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var hdr_Authorization = new tsip_header_Authorization();
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'Authorization' header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_Authorization;
+}

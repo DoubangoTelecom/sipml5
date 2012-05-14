@@ -1,0 +1,121 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_header_Route;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action create_route{
+		if(!curr_route){
+			curr_route = new tsip_header_Route(null);
+		}
+	}
+
+	action parse_display_name{
+		if(curr_route){
+		    curr_route.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+            curr_route.s_display_name = tsk_string_unquote_2(curr_route.s_display_name);
+		}
+	}
+
+	action parse_uri{
+	    if(curr_route && !curr_route.o_uri){
+		    var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+			if((curr_route.o_uri = tsip_uri.prototype.Parse(s_uri)) && curr_route.s_display_name){
+				curr_route.o_uri.s_display_name = tsk_strdup(curr_route.s_display_name);
+			}
+		}
+	}
+
+	action parse_param{
+		if(curr_route){
+		    tsk_ragel_add_param(s_str, p, i_tag_start, curr_route.ao_params);
+		}
+	}
+
+	action add_route{
+	     if(curr_route){
+	        hdr_routes.push(curr_route);
+	        curr_route = null;
+	    }
+	}
+
+	action eob{
+	}
+
+	
+	URI = (scheme HCOLON js_any+)>tag %parse_uri;
+	display_name = (( token LWS )+ | quoted_string)>tag %parse_display_name;
+	my_name_addr = display_name? :>LAQUOT<: URI :>RAQUOT;
+
+	rr_param = (generic_param)>tag %parse_param;
+	
+	#route_param	= 	(my_name_addr ( SEMI rr_param )*)>create_route %add_route;
+	#Route	= 	"Route"i HCOLON route_param (COMMA route_param)*;
+
+	route_value	= 	(my_name_addr ( SEMI rr_param )*) >create_route %add_route;
+	Route	= 		"Route"i HCOLON route_value (COMMA route_value)*;
+
+	# Entry point
+	main := Route :>CRLF @eob;
+
+}%%
+
+%%write data;
+
+function tsip_header_Route(o_uri){
+    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Route);
+    this.s_display_name = null;
+    this.o_uri = o_uri;
+    this.toString = function(){
+        if(this.o_uri){
+            return tsip_uri_tostring(this.o_uri, true, true);
+        }
+        return null;
+    }
+}
+
+// returns an array of 'Route' headers
+tsip_header_Route.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;
+	var hdr_routes = new Array();
+	var curr_route = null;
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'Route' header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_routes;
+}

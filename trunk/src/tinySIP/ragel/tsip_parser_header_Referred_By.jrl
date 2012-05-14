@@ -1,0 +1,112 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_header_Referred_By;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action parse_uri{	
+		if(r_by && !r_by.o_uri) /* Only one URI */{
+			var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+			if((r_by.o_uri = tsip_uri.prototype.Parse(s_uri)) && r_by.s_display_name){
+				r_by.o_uri.s_display_name = tsk_strdup(r_by.s_display_name);
+			}
+		}
+	}
+
+	action parse_display_name{
+		if(!r_by.s_display_name){
+			r_by.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+            r_by.s_display_name = tsk_string_unquote_2(r_by.s_display_name);
+		}
+	}
+
+	action parse_cid{
+	    r_by.s_cid = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	    r_by.s_cid = tsk_string_unquote_2(r_by.s_cid);
+	}
+
+	action parse_param{
+		tsk_ragel_add_param(s_str, p, i_tag_start, r_by.ao_params);
+	}
+
+	action eob{
+	}
+		
+	URI = (scheme HCOLON js_any+)>tag %parse_uri;
+	display_name = (( token LWS )+ | quoted_string)>tag %parse_display_name;
+	my_name_addr = display_name? :>LAQUOT<: URI :>RAQUOT;
+
+	referrer_uri = ( my_name_addr>0 | URI>1 );
+	atom = ( alphanum | "-" | "!" | "%" | "*" | "_" | "+" | "'" | "`" | "~" )+;
+	dot_atom = atom ( "." atom )*;
+	sip_clean_msg_id = LDQUOT dot_atom "@" ( dot_atom | host ) RDQUOT;
+	referredby_id_param = "cid"i EQUAL sip_clean_msg_id>tag %parse_cid;	
+	Referred_By = ( "Referred-By"i | "b"i ) HCOLON referrer_uri ( SEMI ( referredby_id_param@1 | generic_param@0>tag %parse_param ) )*;
+
+	# Entry point
+	main := Referred_By :>CRLF @eob;
+}%%
+
+%%write data;
+
+function tsip_header_Referred_By(o_uri, s_cid){
+    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Referred_By);
+    this.o_uri = o_uri;
+    this.s_cid = s_cid;
+    this.s_display_name = null;
+    this.toString = function(){
+        if(this.o_uri){
+            var s_str = tsip_uri_tostring(this.o_uri, true, true);
+            if(this.s_cid){
+                s_str += tsk_string_format(";cid=\"{0}\"", this.s_cid);
+            }
+            return s_str;
+        }
+        return null;
+    }
+}
+
+tsip_header_Referred_By.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var r_by = new tsip_header_Referred_By();
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'Referred-By' header: %s", s_str);
+		return null;
+	}
+	
+	return r_by;
+}
+

@@ -1,0 +1,105 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsdp_machine_parser_header_A;
+
+	# Includes
+	include tsdp_machine_utils "./tsdp_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action parse_field{
+		hdr_A.s_field = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+	
+	action parse_value{
+		hdr_A.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+	
+	field = token>tag %parse_field;
+	value = js_any*>tag %parse_value;
+	
+	A = 'a' SP* "=" SP*<: ((field ":" value) | (field));
+	
+	# Entry point
+	main := A :>CRLF?;
+
+}%%
+
+%%write data;
+
+function tsdp_header_A(s_field, s_value){
+	this.__proto__ = new tsdp_header(tsdp_header_type_e.A);
+	this.s_field = s_field;
+	this.s_value = s_value;
+	this.toString = function(){
+		return tsk_string_format("{0}{1}{2}",
+				this.s_field,
+
+				this.s_value ? ":" : "",
+				this.s_value ? this.s_value : "");
+	}
+}
+
+tsdp_header_A.prototype.RemoveAllByField = function(ao_headers, s_field){
+	var o_hdr_A;
+
+	if(!ao_headers || !s_field){
+		console.error("Invalid parameter");
+		return -1;
+	}
+
+	for(i = 0; i < ao_headers.length; ){
+		o_hdr_A = ao_headers[i];
+		if(tsk_string_iequals(s_field, o_hdr_A.s_field)){
+			ao_headers.splice(i, 1);
+			continue;
+		}
+		++i;
+	}
+
+	return 0;
+}
+
+tsdp_header_A.prototype.Parse = function(s_str){
+	var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var hdr_A = new tsdp_header_A(null, null);
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse \"a=\" header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_A;
+}
+
+
+

@@ -1,0 +1,88 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+var TSIP_HEADER_CSEQ_NONE = 0;
+var TSIP_HEADER_CSEQ_DEFAULT = 1;
+
+%%{
+	machine tsip_machine_parser_header_CSeq;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action parse_method{
+		hdr_cseq.s_method = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+		hdr_cseq.e_req_type = tsip_message.prototype.GetRequestType(hdr_cseq.s_method);
+	}
+
+	action parse_seq{
+	    hdr_cseq.i_seq = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
+	}
+
+	action eob{
+	}
+	
+	CSeq = "CSeq"i HCOLON DIGIT+>tag %parse_seq LWS Method >tag %parse_method;
+	
+	# Entry point
+	main := CSeq :>CRLF @eob;
+
+}%%
+
+%%write data;
+
+function tsip_header_CSeq(i_seq, s_method){
+    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.CSeq);
+    this.i_seq = i_seq;
+    this.s_method = s_method;
+	if(s_method){
+		this.e_req_type = tsip_message.prototype.GetRequestType(this.s_method);
+	}
+	else{
+		this.e_req_type = tsip_request_type_e.UNKNOWN;
+	}
+    this.toString = function(){
+        return tsk_string_format("{0} {1}", this.i_seq, this.s_method);
+    }
+}
+
+tsip_header_CSeq.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var hdr_cseq = new tsip_header_CSeq(TSIP_HEADER_CSEQ_NONE);
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'CSeq' header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_cseq;
+}

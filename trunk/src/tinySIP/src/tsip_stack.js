@@ -1,0 +1,696 @@
+﻿/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+/**@page page_tsip_stack SIP Stack
+The SIP stack is the base object used to create all sessions (registration, publication, call...). You must create a stack before starting to make or receive calls.
+<h2>Creating a SIP Stack</h2>
+@code
+var o_stack = new tsip_stack("doubango.org", "alice", "sip:alice@doubango.org", "192.168.0.12", 5062,
+    tsip_stack.prototype.SetPassword ("mysecret"),
+    tsip_stack.prototype.SetDisplayName("alice"),
+    tsip_stack.prototype.SetHeader("User-Agent", "IM-client/OMA1.0 sipML5/v0.0.0000.0"),
+    tsip_stack.prototype.SetHeader("Organization", "Doubango Telecom")
+);
+@endcode
+ - 'doubango.org': SIP domain name a.k.a. <i>realm</i>
+ - 'alice': Your IMS Private Identity a.k.a <i>authentication name</i>
+ - 'sip:alice@doubango.org': Your IMS Public Identity a.k.a <i>SIP address</i>
+ - '192.168.0.12': WebSocket outbound proxy Host. Must be a SIP server supporting SIP over WebSockets as per <a href="http://tools.ietf.org/html/draft-ibc-sipcore-sip-websocket-02">draft-ibc-sipcore-sip-websocket-02</a>. If
+ your SIP server don't support this protocol then replace the host address by <b>simpl5.org</b>. When using <b>sipML5</b> outbound proxy, all crequests will be forward to your SIP server according to the result of DNS NAPTR + SRV (realm).
+ - 5062: Websocket outbound proxy port
+
+ In the above example, the SIP stack is created to connect to a SIP server/proxy supporting SIP o/ WebSocket at '192.168.0.12:5062'. All requests received through the WebSocket channel will be forwarded to 'doubango.org' using UDP, TCP or TLS protocol.
+
+ @image html global_view.png "Global View"
+
+<h2>Setting Outbound Proxy</h2>
+It could be useful define an outbound proxy if no DNS entries are defined for the defined <i>realm</i>.
+Please note that this outbound proxy could be defined at the stack creation like this:
+@code
+var o_stack = new tsip_stack(....
+    tsip_stack.prototype.SetProxyOutBound("192.168.0.10", 5060, tsip_transport_type_e.UDP)
+);
+
+@endcode
+
+
+*/
+
+
+/**
+* Callback function called to report Stack related events.
+*
+@code
+o_stack.on_event_stack = function (evt: tsip_event) {
+console.debug(evt.s_phrase);
+    switch (evt.i_code) {
+        case tsip_event_code_e.STACK_STARTED:
+        case tsip_event_code_e.STACK_STOPPING:
+        case tsip_event_code_e.STACK_STOPPED:
+        case tsip_event_code_e.STACK_STARTING:
+        case tsip_event_code_e.STACK_FAILED_TO_START:
+        case tsip_event_code_e.STACK_FAILED_TO_STOP:
+        default: break;
+    }
+};
+@endcode
+*/
+tsip_stack.prototype.on_event_stack = null;
+/**
+* Callback function called to report dialog events. This event is common to all sessions (INVITE, REGISTER, PUBLISH, INFO...) and used to report connection states (CONNECTED, CONNECTING, TERMINATING, TERMINATED....)
+and errors.
+*
+@code
+o_stack.on_event_dialog = function (evt: tsip_event) {
+    console.debug("phrase=%s", evt.s_phrase);
+    console.debug("sesssion id=%d", evt.get_session().get_id());
+    switch (evt.i_code) {
+        case tsip_event_code_e.DIALOG_TRANSPORT_ERROR:
+        case tsip_event_code_e.DIALOG_GLOBAL_ERROR:
+        case tsip_event_code_e.DIALOG_MESSAGE_ERROR:
+        case tsip_event_code_e.DIALOG_WEBRTC_ERROR:
+
+        case tsip_event_code_e.DIALOG_REQUEST_INCOMING:
+        case tsip_event_code_e.DIALOG_REQUEST_OUTGOING:
+        case tsip_event_code_e.DIALOG_REQUEST_CANCELLED:
+        case tsip_event_code_e.DIALOG_REQUEST_SENT:
+        case tsip_event_code_e.DIALOG_MEDIA_ADDED:
+        case tsip_event_code_e.DIALOG_MEDIA_REMOVED:
+
+        case tsip_event_code_e.DIALOG_CONNECTING:
+        case tsip_event_code_e.DIALOG_CONNECTED:
+
+        case tsip_event_code_e.DIALOG_TERMINATING:
+        case tsip_event_code_e.DIALOG_TERMINATED:
+        
+        default: break;
+    }
+};
+@endcode
+*/
+tsip_stack.prototype.on_event_dialog = null;
+/**
+* Callback function used to report audio/video call (SIP INVITE) session events. Note that this callback won't report connection state. To get connection state, you should use @ref on_event_dialog event.
+*
+@code
+o_stack.on_event_invite = function (evt: tsip_event_invite) {
+    console.debug("phrase=%s", evt.s_phrase);
+    console.debug("sesssion id=%d", evt.get_session().get_id());
+    switch (evt.e_invite_type) {
+        case tsip_event_invite_type_e.I_NEW_CALL:
+        case tsip_event_invite_type_e.I_AO_REQUEST:
+        case tsip_event_invite_type_e.M_EARLY_MEDIA:
+        case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
+        case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED:
+        case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
+        case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED:
+        default: break;
+    }
+};
+@endcode
+*/
+tsip_stack.prototype.on_event_invite = null;
+/**
+* Callback function used to report messaging (SIP MESSAGE) session events.
+*
+@code
+o_stack.on_event_message = function (evt: tsip_event_message) {
+    console.debug("phrase=%s", evt.s_phrase);
+    console.debug("sesssion id=%d", evt.get_session().get_id());
+    switch (evt.e_message_type) {
+        case tsip_event_message_type_e.I_MESSAGE:
+        case tsip_event_message_type_e.AO_MESSAGE:
+        default: break;
+    }
+};
+@endcode
+*/
+tsip_stack.prototype.on_event_message = null;
+
+/* Parameter type (Internal use) */
+var tsip_stack_param_type_e =
+{	
+	/* === Identity === */
+	DISPLAY_NAME : 0,
+	IMPU : 1,
+	PREFERRED_ID : 2,
+	IMPI : 3,
+	PASSWORD : 4,
+
+	/* === SigComp === */
+	SIGCOMP : 10,
+	SIGCOMP_ADD_COMPARTMENT : 11,
+	SIGCOMP_REMOVE_COMPARTMENT : 12,
+
+	/* === Network === */
+	REALM : 20,
+	LOCAL_IP : 21,
+	LOCAL_PORT : 22,
+	AOR : 23,
+	DISCOVERY_NAPTR : 24,
+	DISCOVERY_DHCP : 25,
+	PROXY_CSCF : 26,
+	DNSSERVER : 27,
+	MODE_SERVER: 28,
+    PROXY_OUTBOUND: 30,
+	
+	/* === Security === */
+	EARLY_IMS : 40,
+	SECAGREE_IPSEC : 41,
+	SECAGREE_TLS : 42,
+	AMF : 43,
+	OPERATOR_ID : 44,
+	TLS_CERTS : 45,
+	IPSEC_PARAMS : 46,
+
+	/* === Dummy Headers === */
+	HEADER: 50,
+
+	/* Nat Traversal */
+	STUN_SERVER : 60,
+	STUN_CRED : 61,
+
+	/* === User Data === */
+	USERDATA : 70
+};
+
+/* Network transport state (Internal use) */
+var tsip_transport_state_e =
+{
+    NONE: -1,
+
+    STARTING: 0,
+    STARTED: 1,
+    STOPPING: 3,
+    STOPPED: 4
+};
+
+/**
+* Signature: tsip_stack_create(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf_port, ...set())
+* @ctor
+* This is the main function (constructor) used to create a SIP/IMS stack and it <b>takes variable arguments</b>.
+* @tparam String s_realm the SIP domain name. e.g. 'doubango.org'
+* @tparam String s_impi the IMS Private identity. e.g. 'alice'
+* @tparam String s_impu_uri the IMS public identity wich must be a valid SIP Uri. e.g. 'sip:alice@doubango.org'
+* @tparam String s_proxy_cscf_host the Proxy domain name or IP address. e.g. '192.168.0.1' or 'example.org'.
+* @tparam int i_proxy_cscf_port the proxy port.
+*
+*@code
+* var o_stack = new tsip_stack("doubango.org", "alice", "sip:alice@doubango.org", "192.168.0.12", 5062,
+    tsip_stack.prototype.SetPassword ("mypassword"),
+    tsip_stack.prototype.SetDisplayName("alice"),
+    tsip_stack.prototype.SetHeader("User-Agent", "IM-client/OMA1.0 sipML5/v0.0.0000.0"),
+    tsip_stack.prototype.SetHeader("Organization", "Doubango Telecom")
+);
+@endcode
+*/
+function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf_port) {
+    if (!s_realm || !s_impi || !s_impu_uri) {
+        console.error("Invalid argument");
+        return null;
+    }
+
+    var o_uri_impu = tsip_uri.prototype.Parse(s_impu_uri);
+    if (!o_uri_impu) {
+        console.error("'%s' is not a valid IMPU Uri", s_impu_uri);
+        return null;
+    }
+
+    if (tsk_string_index_of(s_realm, s_realm.length, "sip:") != 0 && tsk_string_index_of(s_realm, s_realm.length, "sips:") != 0){
+        s_realm = tsk_string_format("sip:{0}", s_realm);
+    }
+    var o_uri_realm = tsip_uri.prototype.Parse(s_realm);
+    if(!o_uri_realm){
+        console.error("'%s' is not a valid realm", s_realm);
+        return null;
+    }
+
+    this.e_state = tsip_transport_state_e.NONE;
+
+    /* === Identity === */
+    this.identity = {};
+    this.identity.s_display_name = o_uri_impu.s_user_name;
+    this.identity.o_uri_impu = o_uri_impu;
+    this.identity.o_uri_pref = null;
+    this.identity.s_impi = s_impi;
+    this.identity.s_password = null;
+
+    /* === Network === */
+    this.network = {};
+    this.network.o_transport = null;
+    this.network.s_transport = "ws";
+    this.network.s_local_ip = null;
+    this.network.i_local_port = 0;
+    this.network.s_proxy_cscf_host = s_proxy_cscf_host;
+    this.network.i_proxy_cscf_port = i_proxy_cscf_port;
+    this.network.e_proxy_cscf_type = tsip_transport_type_e.WS;
+    this.network.o_uri_realm = o_uri_realm;
+    this.network.s_proxy_outbound_host = null;
+    this.network.i_proxy_outbound_port = 5060;
+    this.network.e_proxy_outbound_type = this.network.e_proxy_cscf_type;
+
+    this.network.aor = {};
+    this.network.aor.s_ip = null;
+    this.network.aor.i_port = 0;
+
+    /* === Security === */
+    this.security = {};
+    this.security.b_earlyIMS = true;
+
+    this.security.tls = {};
+    this.security.tls.s_ca = null;
+    this.security.tls.s_pbk = null;
+    this.security.tls.s_pvk = null;
+
+    /* NAT Traversal */
+    this.natt = {};
+    this.natt.stun = {};
+    this.natt.stun.s_ip = null;
+    this.natt.stun.i_port = 0;
+    this.natt.stun.s_login = null;
+    this.natt.stun.s_pwd = null;
+
+    /* Internals */
+    this.o_timers = new tsip_timers();
+    this.ao_sessions = new Array();
+    this.ao_headers = new Array();
+    this.o_usr_data = null;
+
+    this.ao_uri_paths = new Array();
+    this.ao_uri_service_routes = new Array();
+    this.ao_uri_associated_uris = new Array();
+
+    /* Layers */
+    this.o_layer_dialog = new tsip_dialog_layer(this);
+    this.o_layer_transac = new tsip_transac_layer(this);
+    this.o_layer_transport = new tsip_transport_layer(this);
+
+    this.__set(Array.prototype.slice.call(arguments, 5));
+}
+
+/**
+* Starts the SIP stack. This function must be the first one to be called. This function is asynchronous which means that the stack will not be immediately started after the call.
+* To get feedbacks about the status (success or error), you must subscribe to @ref on_event_stack.
+* @treturn int 0 if succeed and non-zero value otherwise
+*/
+tsip_stack.prototype.start = function () {
+    if (this.e_state == tsip_transport_state_e.STARTED) {
+        console.warn("Already started");
+        return 0;
+    }
+    else if (this.e_state == tsip_transport_state_e.STARTING) {
+        tsip_stack_stop(this);
+    }
+
+    if (!this.network.s_proxy_cscf_host) {
+        console.error("'%s' not valid as proxy host", this.network.s_proxy_cscf_host);
+        return -2;
+    }
+
+    console.debug("SIP stack start: proxy='%s:%d', realm='%s', impi='%s', impu='%s'",
+        this.network.s_proxy_cscf_host, this.network.i_proxy_cscf_port,
+        this.network.o_uri_realm.toString(),
+        this.identity.s_impi,
+        this.identity.o_uri_impu.toString());
+
+    this.network.o_transport = this.o_layer_transport.transport_new(this.network.e_proxy_cscf_type, this.network.s_proxy_cscf_host, this.network.i_proxy_cscf_port, "SIP Transport", __tsip_stack_transport_callback);
+    if (!this.network.o_transport) {
+        console.error("Failed to create transport with type=%d", this.network.e_proxy_cscf_type);
+        return -2;
+    }
+
+    this.e_state = tsip_transport_state_e.STARTING;
+    this.signal(tsip_event_code_e.STACK_STARTING, "Stack starting");
+    return this.network.o_transport.start();
+}
+
+/**
+* Stops the SIP stack. Feedbacks will be reported to @ref on_event_stack callback function
+* @tparam int i_timeout Optional parameter used to defined maximum time in milliseconds to take to stop the stack. 
+* Default value: 2000 millis
+* @treturn int 0 if succeed and non-zero value otherwise
+*/
+tsip_stack.prototype.stop = function (i_timeout) {
+    var This = this;
+    setTimeout(function () {
+        switch (This.e_state) {
+            case tsip_transport_state_e.STOPPED:
+            case tsip_transport_state_e.STOPPING:
+            case tsip_transport_state_e.NONE:
+                return 0;
+            default:
+                break;
+        }
+
+        if (typeof i_timeout == "undefined") {
+            i_timeout = tsip_dialog.prototype.__i_timer_shutdown;
+        }
+
+        var i_register_dialogs_count = 0;
+        var b_has_non_register_dialogs = false;
+        var b_register_shutdown_sent = false;
+        var i_ret;
+        var i_timeout_non_register = (i_timeout << 1) / 3;
+        var o_date_start = o_date_start = new Date();
+
+        // shutdown all non-REGISTER dialogs
+        for (var i = 0; i < This.o_layer_dialog.ao_dialogs.length; ++i) {
+            if (This.o_layer_dialog.ao_dialogs[i].e_type == tsip_dialog_type_e.REGISTER) {
+                ++i_register_dialogs_count;
+                continue;
+            }
+            if ((i_ret = This.o_layer_dialog.ao_dialogs[i].shutdown()) == 0) {
+                b_has_non_register_dialogs = true;
+            }
+        }
+
+        var func_shutdown_non_register = function () {
+            if (b_has_non_register_dialogs) {
+                do {
+                    if ((This.o_layer_dialog.ao_dialogs.length <= i_register_dialogs_count)) {
+                        setTimeout(func_shutdown_register, 1); // success: move to next
+                        return;
+                    }
+                    if ((new Date() - o_date_start) >= i_timeout_non_register) {
+                        setTimeout(func_shutdown_register, 1); // timeout: move to next
+                        return;
+                    }
+                }
+                while (false);
+            }
+
+            setTimeout(func_shutdown_non_register, 1); // again
+        }
+
+        var func_shutdown_register = function () {
+            // shutdown all REGISTER dialogs
+            if (!b_register_shutdown_sent) {
+                if (i_register_dialogs_count > 0) {
+                    i_register_dialogs_count = 0;
+                    for (var i = 0; i < This.o_layer_dialog.ao_dialogs.length; ++i) {
+                        if (This.o_layer_dialog.ao_dialogs[i].e_type == tsip_dialog_type_e.REGISTER) {
+                            if ((i_ret = This.o_layer_dialog.ao_dialogs[i].shutdown()) == 0) {
+                                ++i_register_dialogs_count;
+                            }
+                        }
+                    }
+                }
+                b_register_shutdown_sent = true;
+            }
+
+            do {
+                if (This.o_layer_dialog.ao_dialogs.length == 0 || (new Date() - o_date_start) >= i_timeout) {
+                    setTimeout(func_shutdown_transport, 1); // timeout/no-dialog-left: move to next
+                    return;
+                }
+            }
+            while (false);
+
+            setTimeout(func_shutdown_register, 1); // again
+        }
+
+        var func_shutdown_transport = function () {
+            if (This.o_layer_transport) {
+                This.o_layer_transport.stop();
+            }
+
+            This.signal(tsip_event_code_e.STACK_STOPPED, "Stack stopped");
+        }
+
+
+        // Execute
+        if (b_has_non_register_dialogs) {
+            func_shutdown_non_register();
+        }
+        else if (i_register_dialogs_count) {
+            func_shutdown_register();
+        }
+        else {
+            func_shutdown_transport();
+        }
+
+    }, 1);
+
+    return 0;
+}
+
+/**
+* Sets static parameters.
+* The function takes parameters created using static functions @b tsip_stack.prototype.Set*
+* @sa @ref SetDisplayName
+*/
+tsip_stack.prototype.set = function () {
+    return this.__set(arguments);
+}
+
+/**
+* Sets SIP Display Name
+* @tparam String s_display_name New SIP Display Name value
+* @treturn Object Parameter object
+*
+@code
+o_stack.set(tsip_stack.prototype.SetDisplayName('alice'));
+@endcode
+*/
+tsip_stack.prototype.SetDisplayName = function (s_display_name) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.DISPLAY_NAME, s_display_name);
+}
+
+/**
+* Sets SIP password for authentication
+* @tparam String s_password SIP password for authentication
+* @treturn Object Parameter object
+*
+@code
+o_stack.set(tsip_stack.prototype.SetPassword('mysecret'));
+@endcode
+*/
+tsip_stack.prototype.SetPassword = function (s_password) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.PASSWORD, s_password);
+}
+
+/**
+* Updates SIP Proxy host, port and type. Using version 1.0 of sipML5 only WebSocket type is supported.
+* @tparam String s_proxy_host Proxy IP address or hostname
+* @tparam int i_proxy_port Proxy port
+* @tparam tsip_transport_type_e e_proxy_type Network type. For now only @b WS and @b WSS are supported.
+* @treturn Object Parameter object
+*
+@code
+o_stack.set(tsip_stack.prototype.SetProxyCSCF("192.168.0.10", 5060, tsip_transport_type_e.UDP));
+@endcode
+*/
+tsip_stack.prototype.SetProxyCSCF = function (s_proxy_host, i_proxy_port, e_proxy_type) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.PROXY_CSCF, s_proxy_host, i_proxy_port, e_proxy_type);
+}
+
+/**
+* Static parameter function used to set the SIP outbound proxy. This function is only needed if there is no DNS entries for the @b realm defined in the SIP stack creation.
+* @tparam String s_proxy_host Outbound proxy host IP address or domain name. e.g. '192.168.0.10' or 'example.com'
+* @tparam int i_proxy_port Outbound proxy port. e.g. 5060
+* @tparam tsip_transport_type_e e_proxy_type Transport protocol type
+*
+@code
+var o_stack = new tsip_stack("doubango.org", "alice", "sip:alice@doubango.org", "192.168.0.12", 5062,
+tsip_stack.prototype.SetProxyOutBound("192.168.0.10", 5060, tsip_transport_type_e.UDP)
+tsip_stack.prototype.SetPassword ("mypassword"),
+tsip_stack.prototype.SetDisplayName("alice"),
+tsip_stack.prototype.SetHeader("User-Agent", "IM-client/OMA1.0 sipML5/v0.0.0000.0"),
+tsip_stack.prototype.SetHeader("Organization", "Doubango Telecom")
+);
+// or
+o_stack.set(tsip_stack.prototype.SetProxyOutBound("192.168.0.10", 5060, tsip_transport_type_e.UDP));
+@endcode
+*/
+tsip_stack.prototype.SetProxyOutBound = function (s_proxy_host, i_proxy_port, e_proxy_type) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.PROXY_OUTBOUND, s_proxy_host, i_proxy_port, e_proxy_type);
+}
+
+/**
+* Adds SIP header to all sessions created using this stack
+* @tparam String s_name SIP header name
+* @tparam String s_value SIP valaue
+* @treturn Object Parameter object
+*
+@code
+o_stack.set(
+    tsip_stack.prototype.SetHeader('User-Agent', 'sipML5 client'),
+    tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom')
+);
+@endcode
+*/
+tsip_stack.prototype.SetHeader = function(s_name, s_value) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.HEADER, s_name, s_value);
+}
+
+/*
+* Internal function used to set any parameter
+*/
+tsip_stack.prototype.__set = function (ao_params) {
+    var o_curr;
+    for (var i = 0; i < ao_params.length; ++i) {
+        o_curr = ao_params[i];
+        if (!o_curr) {
+            continue;
+        }
+
+        switch (o_curr.e_type) {
+
+            /* === Identity === */ 
+            case tsip_stack_param_type_e.DISPLAY_NAME:
+                {
+                    this.identity.s_display_name = o_curr.ao_values[0];
+                    break;
+                }
+            case tsip_stack_param_type_e.PASSWORD:
+                {
+                    this.identity.s_password = o_curr.ao_values[0];
+                    break;
+                }
+
+
+                /* === Network === */
+            case tsip_stack_param_type_e.PROXY_CSCF:
+                {
+                    this.network.s_proxy_cscf_host = o_curr.ao_values[0];
+                    this.network.i_proxy_cscf_port = o_curr.ao_values[1];
+                    this.network.e_proxy_cscf_type = o_curr.ao_values[2];
+                    break;
+                }
+            case tsip_stack_param_type_e.PROXY_OUTBOUND:
+                {
+                    this.network.s_proxy_outbound_host = o_curr.ao_values[0];
+                    this.network.i_proxy_outbound_port = o_curr.ao_values[1];
+                    this.network.e_proxy_outbound_type = o_curr.ao_values[2];
+                    break;
+                }
+
+
+                /* === Dummy Headers === */
+            case tsip_stack_param_type_e.HEADER:
+                {
+                    if (o_curr.ao_values[1]) { // add
+                        this.ao_headers.push(new tsip_header_Dummy(o_curr.ao_values[0], o_curr.ao_values[1]));
+                    }
+                    else { // remove
+                        var i_index = tsip_header.prototype.IndexOfByName(this.ao_headers, o_curr.ao_values[0]);
+                        if (i_index != -1) {
+                            this.ao_headers.splice(i_index, 1);
+                        }
+                    }
+                    break;
+                }
+        }
+
+    }
+    return 0;
+}
+
+/*
+* Internal function
+*/
+tsip_stack.prototype.__get_contact_uri = function (s_protocol) {
+    for (var i = 0; i < this.o_layer_transport.ao_transports.length; ++i) {
+        var o_uri = this.o_layer_transport.ao_transports[i].get_uri(false);
+        if (o_uri) {
+            o_uri.s_user_name = this.identity.o_uri_impu.s_user_name;
+            return o_uri;
+        }
+    }
+    return null;
+}
+
+/*
+* Internal function
+*/
+tsip_stack.prototype.__get_proxy_outbound_uri_string = function () {
+    if (this.network.s_proxy_outbound_host) {
+        var s_tansport;
+        switch (this.network.e_proxy_outbound_type) {
+            case tsip_transport_type_e.TCP: s_tansport= "tcp"; break;
+            case tsip_transport_type_e.TLS: s_tansport= "tls"; break;
+            case tsip_transport_type_e.SCTP: s_tansport= "sctp"; break;
+            case tsip_transport_type_e.DTLS: s_tansport= "dtls"; break;
+            case tsip_transport_type_e.WS: s_tansport= "ws"; break;
+            case tsip_transport_type_e.WSS: s_tansport= "wss"; break;
+            case tsip_transport_type_e.UDP: default: s_tansport= "udp"; break;
+        }
+        return tsk_string_format("<sip:{0}:{1};lr;transport={2}>", this.network.s_proxy_outbound_host, this.network.i_proxy_outbound_port, s_tansport);
+    }
+    return null;
+}
+
+/*
+* Internal function
+*/
+tsip_stack.prototype.SetAny = function(e_type){
+    var obj = new Object();
+    obj.e_type = e_type;
+    obj.ao_values = Array.prototype.slice.call(arguments, 1);
+    return obj;
+}
+
+/*
+* Internal function
+*/
+tsip_stack.prototype.signal = function (i_code, s_phrase) {
+    if (this.on_event_stack) {
+        var on_event = this.on_event_stack;
+        var o_event = new tsip_event(null, i_code, s_phrase, null, tsip_event_type_e.STACK);
+        setTimeout(function () { on_event(o_event) }, 1);
+    }
+    return 0;
+}
+
+/*
+* Internal function
+*/
+function __tsip_stack_transport_callback(evt) {
+    var o_stack = evt.o_transport.o_stack;
+
+    switch (evt.e_type) {
+        case tsip_transport_event_type_e.STARTED:
+            {
+                o_stack.e_state = tsip_transport_state_e.STARTED;
+                o_stack.signal(tsip_event_code_e.STACK_STARTED, "Stack started");
+                break;
+            }
+
+        case tsip_transport_event_type_e.STOPPED:
+            {
+                if (o_stack.e_state == tsip_transport_state_e.STARTING) {
+                    o_stack.signal(tsip_event_code_e.STACK_FAILED_TO_START, "Failed to start stack");
+                }
+                else {
+                    o_stack.signal(tsip_event_code_e.STACK_STOPPED, "Stack stopped");
+                }
+                o_stack.e_state = tsip_transport_state_e.STOPPED;
+                o_stack.o_layer_transport.transport_remove(evt.o_transport);
+                break;
+            }
+
+        case tsip_transport_event_type_e.ERROR:
+            {
+                break;
+            }
+    }
+        
+    return 0;
+}

@@ -1,0 +1,110 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_header_Warning;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action create_warning{
+		if(!curr_warning){
+			curr_warning = new tsip_header_Warning(-1, null, null);
+		}
+	}
+
+	action parse_agent{
+		if(curr_warning){
+		    curr_warning.s_agent = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+		}
+	}
+
+	action parse_text{
+		if(curr_warning){
+		    curr_warning.s_text = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+		}
+	}
+
+	action parse_code{
+		if(curr_warning){
+		    curr_warning.i_code = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
+		}
+	}
+
+	action add_warning{
+		if(curr_warning){
+	        hdr_warnings.push(curr_warning);
+	        curr_warning = null;
+	    }
+	}
+
+	action eob{
+	}
+
+	warn_code = DIGIT{3};
+	pseudonym = token;
+	warn_agent = hostport | pseudonym;
+	warn_text = quoted_string;
+	warning_value = (warn_code>tag %parse_code :>SP warn_agent>tag %parse_agent :>SP warn_text>tag %parse_text) >create_warning %add_warning;
+	Warning = "Warning"i HCOLON warning_value ( COMMA warning_value )*;
+
+	# Entry point
+	main := Warning :>CRLF @eob;
+
+}%%
+
+%%write data;
+
+function tsip_header_Warning(i_code, s_agent, s_text){
+	this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Warning);
+    this.i_code = i_code;
+    this.s_agent = s_agent;
+    this.s_text = s_text;
+	this.toString = function(){
+		return tsk_string_format("{0} {1} {2}",
+			this.i_code, this.s_agent, this.s_text);
+	};
+}
+
+// returns an array of 'Warning' headers
+tsip_header_Warning.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;
+	var hdr_warnings = new Array();
+	var curr_warning = null;
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse 'Warning' header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_warnings;
+}

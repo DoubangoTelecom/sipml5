@@ -1,0 +1,169 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>sipML5 - The world's first open source HTML5 client</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="Keywords" content="doubango, VoIP, HTML5, WebRTC, RTCWeb, SIP, IMS, Video chat, VP8 " />
+    <meta name="Description" content="HTML5 SIP client using WebRTC framework" />
+    <meta name="author" content="Doubango Telecom">
+
+    <!-- Le styles -->
+    <link href="./assets/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 80px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <link href="./assets/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="./assets/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="./assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="./assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="./assets/ico/apple-touch-icon-57-precomposed.png">
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <img alt="sipML5" class="brand" src="./images/sipml-90x102.png" />
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#">Home</a></li>
+              <li><a href="contact.htm">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h2>World's first HTML5 SIP client</h2>
+        <p>This is the world's first open source HTML5 SIP client entirely written in javascript for integration in social networks (FaceBook, Twitter, Google+), online games, e-commerce websites... No extension, plugin or gateway is needed. The media stack rely on <a href="http://en.wikipedia.org/wiki/WebRTC" target="_blank">WebRTC</a>.<br />
+         The client can be used to connect to any SIP or IMS network from your preferred browser to make and receive audio/video calls and instant messages.<br />
+        </p>
+        <p><a class="btn btn-primary btn-large" href="call.htm" target="_blank">Enjoy our live demo &raquo;</a></p>
+      </div>
+
+      <!-- Example row of columns -->
+      <div class="row-fluid">
+        <div class="span4">
+          <h3>Javascript SIP/SDP stack</h3>
+           <p>The SIP and SDP stacks are entirely written in javascript and the network transport uses WebSockets as per <a href="http://tools.ietf.org/html/draft-ibc-sipcore-sip-websocket-02">draft-ibc-sipcore-sip-websocket-02</a>.
+           This <a href="call.htm" target="_blank">live demo</a> doesn't require any installation and can be used to connect to any SIP server using UDP, TCP or TLS transports.
+           </p>
+           <p>Short but not exhaustive list of supported features:</p>
+          <ul>
+            <li>Audio / Video call</li>
+            <li>Instant messaging</li>
+            <li>Presence</li>
+            <li>Call Hold / Resume</li>
+            <li>Explicit Call transfer</li>
+            <li>Multi-line and multi-account</li>
+            <li>Dual-tone multi-frequency signaling (DTMF) using SIP INFO</li>
+          </ul>
+          <p><a class="btn" href="http://code.google.com/p/sipml5/" target="_blank">View details &raquo;</a></p>
+        </div>
+        <div class="span4">
+          <h3>Media Stack</h3>
+           <p>The media stack depends on <a href="http://en.wikipedia.org/wiki/WebRTC">WebRTC (Web Real Time Communication)</a> wich is natively provided by the web browser.
+           <b>sipML5</b> should work on any web browser supporting WebRTC but we highly recommend using <a href="https://tools.google.com/dlpage/chromesxs">Google chrome Canary 20.0.1127.0</a> or later for testing. <br />
+           For more information on how to enable WebRTC on chrome, please visit <a href="http://code.google.com/p/sipml5/wiki/Enable_WebRTC_On_Chrome" target="_blank"> this page</a>.
+           </p>
+          <p><a class="btn" href="http://code.google.com/p/sipml5/" target="_blank">View details &raquo;</a></p>
+       </div>
+         <div class="span4">
+          <h3>Interoperability</h3>
+          <p>The implementation follows the standards defined by the <a href="http://tools.ietf.org/wg/rtcweb/" target="_blank">RTCWeb</a> and <a href="http://www.w3.org/TR/webrtc/" target="_blank">W3C</a> working groups. You can call any SIP client (mobile devices, browser, desktop client, set-top box...).</p>
+          <p>For interoperability with rich SIP clients we recommend:</p>
+          <ul>
+            <li><a href="http://code.google.com/p/boghe/">Boghe</a>: Windows XP, Vista and 7</li>
+            <li><a href="http://code.google.com/p/imsdroid/">IMSDroid</a>: Android</li>
+            <li><a href="http://code.google.com/p/idoubs/">iDoubs</a>: iOS (iPad, iPhone and iPod Touch) and MAC OS X</li>
+          </ul>
+          All these clients are developed using <a href="http://www.doubango.org" target="_blank"> Doubango IMS Framework</a>.
+          <p><a class="btn" href="http://code.google.com/p/sipml5/" target="_blank">View details &raquo;</a></p>
+        </div>
+       </div>
+
+       <br />
+
+       <table>
+           <tr>
+                <td>
+                    <iframe id="ytplayer" type="text/html" width="512" height="312"
+                      src="http://www.youtube.com/embed/ro3FFNx7d-g?autoplay=0&origin=http://sipml5.org"
+                      frameborder="0"> </iframe>&nbsp;&nbsp;
+                </td>
+                <td>
+                    <iframe id="Iframe1" type="text/html" width="512" height="312"
+                      src="http://www.youtube.com/embed/7HEMyxAnATI?autoplay=0&origin=http://sipml5.org"
+                      frameborder="0"> </iframe>
+                </td>
+           </tr>
+           <tr>
+                <td align="center"><i>Call between Google Chrome and iPad device</i></td>
+                <td align="center"><i>Call between Google Chrome and Android device</i></td>
+           </tr>
+       </table>
+
+      <hr>
+
+
+
+      <footer>
+        <p>&copy; Doubango Telecom 2012</p>
+        <i>Inspiring the future</i>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="./assets/js/jquery.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-transition.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-alert.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-modal.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-dropdown.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-scrollspy.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-tab.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-tooltip.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-popover.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-button.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-collapse.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-carousel.js"></script>
+    <script type="text/javascript" src="./assets/js/bootstrap-typeahead.js"></script>
+
+    <!-- GOOGLE ANALYTICS -->
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-6868621-19");
+            pageTracker._trackPageview();
+        } catch (err) { }
+    </script>
+
+  </body>
+</html>

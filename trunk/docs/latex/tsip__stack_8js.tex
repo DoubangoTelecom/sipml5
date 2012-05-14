@@ -1,0 +1,94 @@
+\section{C\-:/\-Projects/sipml5/trunk/src/tiny\-S\-I\-P/src/tsip\-\_\-stack.js File Reference}
+\label{tsip__stack_8js}\index{C\-:/\-Projects/sipml5/trunk/src/tiny\-S\-I\-P/src/tsip\-\_\-stack.\-js@{C\-:/\-Projects/sipml5/trunk/src/tiny\-S\-I\-P/src/tsip\-\_\-stack.\-js}}
+
+
+Sip Stack.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+function {\bf tsip\-\_\-stack} (s\-\_\-realm, s\-\_\-impi, s\-\_\-impu\-\_\-uri, s\-\_\-proxy\-\_\-cscf\-\_\-host, i\-\_\-proxy\-\_\-cscf\-\_\-port)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+{\bf tsip\-\_\-stack} prototype {\bfseries on\-\_\-event\-\_\-stack} = null\label{tsip__stack_8js_ae19e1096a345e0aa87fe7c8a264af686}
+
+\item 
+{\bf tsip\-\_\-stack} prototype {\bfseries on\-\_\-event\-\_\-dialog} = null\label{tsip__stack_8js_a28724b6c4d6a0048bdcb79e4a6925a93}
+
+\item 
+{\bf tsip\-\_\-stack} prototype {\bfseries on\-\_\-event\-\_\-invite} = null\label{tsip__stack_8js_a1e64f540f7e8aceb3f67a41e95c0a31e}
+
+\item 
+{\bf tsip\-\_\-stack} prototype {\bfseries on\-\_\-event\-\_\-message} = null\label{tsip__stack_8js_a5e03e908498888fdcf4810e08713ff80}
+
+\item 
+var {\bfseries tsip\-\_\-stack\-\_\-param\-\_\-type\-\_\-e}\label{tsip__stack_8js_a29a36403a142c66ad1dcb37c78be6ef7}
+
+\item 
+var {\bfseries tsip\-\_\-transport\-\_\-state\-\_\-e}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Sip Stack. \begin{DoxyAuthor}{Author}
+Mamadou Diop $<$diopmamadou(at)doubango[dot]org$>$ 
+\end{DoxyAuthor}
+
+
+\subsection{Function Documentation}
+\index{tsip\-\_\-stack.\-js@{tsip\-\_\-stack.\-js}!tsip\-\_\-stack@{tsip\-\_\-stack}}
+\index{tsip\-\_\-stack@{tsip\-\_\-stack}!tsip_stack.js@{tsip\-\_\-stack.\-js}}
+\subsubsection[{tsip\-\_\-stack}]{\setlength{\rightskip}{0pt plus 5cm}function {\bf tsip\-\_\-stack} (
+\begin{DoxyParamCaption}
+\item[{}]{s\-\_\-realm, }
+\item[{}]{s\-\_\-impi, }
+\item[{}]{s\-\_\-impu\-\_\-uri, }
+\item[{}]{s\-\_\-proxy\-\_\-cscf\-\_\-host, }
+\item[{}]{i\-\_\-proxy\-\_\-cscf\-\_\-port}
+\end{DoxyParamCaption}
+)}\label{tsip__stack_8js_ab1e338e054e69b1e29a8b83aad4d5691}
+Signature\-: tsip\-\_\-stack\-\_\-create(s\-\_\-realm, s\-\_\-impi, s\-\_\-impu\-\_\-uri, s\-\_\-proxy\-\_\-cscf\-\_\-host, i\-\_\-proxy\-\_\-cscf\-\_\-port, ...set()) This is the main function used to create a S\-I\-P/\-I\-M\-S stack. 
+\begin{DoxyParams}{Parameters}
+{\em s\-\_\-realm} & the S\-I\-P domain name. e.\-g. 'doubango.\-org' \\
+\hline
+{\em s\-\_\-impi} & the I\-M\-S Private identity. e.\-g. 'alice' \\
+\hline
+{\em s\-\_\-impu\-\_\-uri} & the I\-M\-S public identity wich must be a valid S\-I\-P Uri. e.\-g. 'sip\-:{\tt alice@doubango.\-org}' \\
+\hline
+{\em s\-\_\-proxy\-\_\-cscf\-\_\-host} & the Proxy domain name or I\-P address. e.\-g. '192.\-168.\-0.\-1' or 'example.\-org'. \\
+\hline
+{\em i\-\_\-proxy\-\_\-cscf\-\_\-port} & the proxy port.\\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyCode}
+ var o_stack = new tsip_stack("doubango.org", "alice", "sip:alice@doubango.org"
+      , "192.168.0.12", 5062,
+tsip_stack.prototype.SetPassword ("mypassword"),
+tsip_stack.prototype.SetDisplayName("alice"),
+tsip_stack.prototype.SetHeader("User-Agent", "IM-client/OMA1.0
+       sipML5/v0.0.0000.0"),
+tsip_stack.prototype.SetHeader("Organization", "Doubango Telecom"));
+*
+\end{DoxyCode}
+ 
+
+\subsection{Variable Documentation}
+\index{tsip\-\_\-stack.\-js@{tsip\-\_\-stack.\-js}!tsip\-\_\-transport\-\_\-state\-\_\-e@{tsip\-\_\-transport\-\_\-state\-\_\-e}}
+\index{tsip\-\_\-transport\-\_\-state\-\_\-e@{tsip\-\_\-transport\-\_\-state\-\_\-e}!tsip_stack.js@{tsip\-\_\-stack.\-js}}
+\subsubsection[{tsip\-\_\-transport\-\_\-state\-\_\-e}]{\setlength{\rightskip}{0pt plus 5cm}var tsip\-\_\-transport\-\_\-state\-\_\-e}\label{tsip__stack_8js_a72937d196e6ae581dce50280bd23dd64}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+
+{
+    NONE: -1,
+
+    STARTING: 0,
+    STARTED: 1,
+    STOPPING: 3,
+    STOPPED: 4
+}
+\end{DoxyCode}

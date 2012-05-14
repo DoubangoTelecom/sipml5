@@ -1,0 +1,70 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsdp_machine_parser_header_V;
+
+	# Includes
+	include tsdp_machine_utils "./tsdp_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+
+	action parse_version{
+		hdr_V.i_version = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
+	}
+		
+	V = 'v' SP* "=" SP*<: DIGIT+>tag %parse_version;
+	
+	# Entry point
+	main := V :>CRLF?;
+
+}%%
+
+%%write data;
+
+function tsdp_header_V(i_version){
+	this.__proto__ = new tsdp_header(tsdp_header_type_e.V);
+	this.i_version = i_version;
+	this.toString = function(){
+		return this.i_version.toString();
+	}
+}
+
+tsdp_header_V.prototype.Parse = function(s_str){
+	var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var hdr_V = new tsdp_header_V(0);
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse \"v=\" header: %s", s_str);
+		return null;
+	}
+	
+	return hdr_V;
+}

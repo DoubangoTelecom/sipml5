@@ -1,0 +1,147 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+%%{
+	machine tsip_machine_parser_uri;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	#include tsip_machine_userinfo;
+		
+	action tag{
+		i_tag_start = p;
+	}
+
+	#/* Sets URI type */
+	action is_sip {
+	    uri.e_type = tsip_uri_type_e.sip;
+	    uri.s_scheme = uri.e_type.s_scheme;
+	}
+	action is_sips { 
+	    uri.e_type = tsip_uri_type_e.sips;
+	    uri.s_scheme = uri.e_type.s_scheme;
+	}
+	action is_tel { 
+	    uri.e_type = tsip_uri_type_e.tel;
+	    uri.s_scheme = uri.e_type.s_scheme;
+	}
+
+	#/* Sets HOST type */
+	action is_ipv4 { 
+	    uri.e_host_type = tsip_host_type_e.ipv4; 
+	}
+	action is_ipv6 { 
+	    uri.e_host_type = tsip_host_type_e.ipv6; 
+	}
+	action is_hostname { 
+	    uri.e_host_type = tsip_host_type_e.hostname; 
+	}
+
+	action parse_scheme{
+	    uri.s_scheme = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_user_name{
+	    uri.s_user_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_password{
+	    uri.s_password = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_host{
+	    uri.s_host = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+	}
+
+	action parse_port{
+	    uri.i_port = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
+	}
+
+	action parse_param{
+	    var o_param = tsk_ragel_parser_get_param(s_str, p, i_tag_start);
+        if (o_param){
+            uri.ao_params.push(o_param);
+        }
+	}
+
+	action eob{
+	}
+
+	my_uri_parameter = (pname ( "=" pvalue )?) >tag %parse_param;
+	uri_parameters = ( ";" my_uri_parameter )*;
+
+	sip_usrinfo		:= ( ( user>tag %parse_user_name ) :> ( ':' password>tag %parse_password )? :>> '@' ) @{ fgoto main; };
+	
+	main			:= |*
+							("sip:"i>tag %is_sip | "sips:"i>tag %is_sips) @100
+							{
+								if(tsk_string_contains(s_str.substring(te), (pe - te), "@")){
+									fgoto sip_usrinfo;
+								}
+							};
+							
+							("tel:"i %is_tel (js_any+)>tag %parse_user_name :> uri_parameters) @100 { };
+							
+							( (IPv6reference >is_ipv6)@89 | (IPv4address >is_ipv4)@88 | (hostname >is_hostname)@87 ) @90
+							{
+							    uri.s_host = tsk_ragel_scanner_get_string(s_str, ts, te);
+								if(uri.e_host_type.i_id == tsip_host_type_e.ipv6.i_id){
+								    uri.s_host = tsk_string_unquote(uri.s_host, '[', ']');
+								}
+							};							
+
+							(":" port)@80
+							{
+								ts++;
+								uri.i_port = tsk_ragel_scanner_get_int(s_str, ts, te);
+							};
+							
+							( uri_parameters ) @70	{  };
+							(js_any)+ @0				{  };
+
+						
+
+					*|;
+
+	#main := ({ fcall SIP_URI; });
+
+}%%
+
+%%write data;
+
+tsip_uri.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var uri = new tsip_uri(tsip_uri_type_e.unknown);
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse SIP/SIPS/TEL URI: %s", s_str);
+		return null;
+	}
+	
+	return uri;
+}
