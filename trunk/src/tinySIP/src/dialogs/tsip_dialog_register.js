@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_dialog_register.prototype = Object.create(tsip_dialog.prototype);
 tsip_dialog_register.prototype.__b_debug_state_machine = true;
 
 var tsip_dialog_register_actions_e =
@@ -52,7 +53,7 @@ var tsip_dialog_register_states_e =
 };
 
 function tsip_dialog_register(o_session, s_call_id) {
-    this.__proto__.__proto__ = new tsip_dialog();
+    tsip_dialog.call(this);
     this.o_last_iRegister = null;
     this.b_unregistering = false;
     this.b_is_server = false;

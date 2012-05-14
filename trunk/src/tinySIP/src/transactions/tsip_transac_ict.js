@@ -22,6 +22,7 @@
 * SIP INVITE Client Transaction as per RFC 3261 subclause 17.1.1.
 */
 
+tsip_transac_ict.prototype = Object.create(tsip_transac.prototype);
 tsip_transac_ict.prototype.__b_debug_state_machine = false;
 
 var tsip_transac_ict_actions_e =
@@ -56,7 +57,7 @@ function tsip_transac_ict(b_reliable, i_cseq_value, s_callid, o_dialog) {
         console.error("Invalid argument");
         return null;
     }
-    this.__proto__.__proto__ = new tsip_transac();
+    tsip_transac.call(this);
 
     this.init(tsip_transac_type_e.ICT, b_reliable, i_cseq_value, "INVITE", s_callid, o_dialog, tsip_transac_ict_states_e.STARTED, tsip_transac_ict_states_e.TERMINATED);
     this.set_callback(__tsip_transac_ict_event_callback);

@@ -21,7 +21,7 @@
 /*
 * SIP Non-INVITE Server Transaction as per RFC 3261 subclause 17.2.2.
 */
-
+tsip_transac_nist.prototype = Object.create(tsip_transac.prototype);
 tsip_transac_nist.prototype.__b_debug_state_machine = false;
 
 var tsip_transac_nist_actions_e = 
@@ -51,7 +51,7 @@ function tsip_transac_nist(b_reliable, i_cseq_value, s_cseq_method, s_callid, o_
         console.error("Invalid argument");
         return null;
     }
-    this.__proto__.__proto__ = new tsip_transac();
+    tsip_transac.call(this);
 
     this.o_lastResponse = null;
 

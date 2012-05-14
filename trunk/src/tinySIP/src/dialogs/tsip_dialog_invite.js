@@ -42,6 +42,7 @@
 3GPP TS 24.615 : Communication Waiting
 3GPP TS 24.605 : Ad-Hoc Multi Party Conference
 */
+tsip_dialog_invite.prototype = Object.create(tsip_dialog.prototype);
 tsip_dialog_invite.prototype.__b_debug_state_machine = true;
 tsip_dialog_invite.prototype.__i_lo_sdp_request_timeout = 50000000; //FIXME
 
@@ -123,9 +124,8 @@ var tsip_dialog_invite_states_e =
 	TERMINATED: 61
 };
 
-
 function tsip_dialog_invite(o_session, s_call_id) {
-    this.__proto__.__proto__ = new tsip_dialog();
+    tsip_dialog.call(this);
 
     // default values
     this.o_last_oInvite = null;

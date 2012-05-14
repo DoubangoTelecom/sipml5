@@ -214,7 +214,7 @@
         oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, "sipml5.org", 4062,
                             tsip_stack.prototype.SetPassword(txtPassword.value),
                             tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
-                            // tsip_stack.prototype.SetProxyOutBound('xxxx.org', 5060, tsip_transport_type_e.UDP),
+                            // tsip_stack.prototype.SetProxyOutBound('192.168.0.12', 5060, tsip_transport_type_e.UDP), // uncommend to use SIP outbound proxy
                             tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5/v0.0.0000.0'),
                             tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
         if (oSipStack) {
@@ -382,7 +382,7 @@
             case tsip_event_code_e.STACK_STARTED:
                 {
                     oSipSessionRegister = new tsip_session_register(oSipStack,
-                                            tsip_session.prototype.SetExpires(300),
+                                            tsip_session.prototype.SetExpires(200),
                                             tsip_session.prototype.SetCaps("+g.oma.sip-im"),
                                             tsip_session.prototype.SetCaps("+audio"),
                                             tsip_session.prototype.SetCaps("language", "\"en,fr\""));

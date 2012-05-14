@@ -22,6 +22,9 @@
 * SIP <b>REGISTER</b> event types
 * @var
 */
+tsip_session_register.prototype = Object.create(tsip_session.prototype);
+tsip_event_register.prototype = Object.create(tsip_event.prototype);
+
 var tsip_event_register_type_e =
 {
 	I_NEW_REGISTER: 0,
@@ -40,12 +43,8 @@ var tsip_event_register_type_e =
 * @tparam tsip_stack o_stack SIP stack to use to create this session
 */
 function tsip_session_register(o_stack) {
-    var o_proto = new tsip_session(o_stack);
-    if (o_proto) {
-        this.__proto__.__proto__ = o_proto;
-        this.__set(Array.prototype.slice.call(arguments, 1));
-    }
-    return null;
+    tsip_session.call(this, o_stack);
+    this.__set(Array.prototype.slice.call(arguments, 1));
 }
 
 /**
@@ -69,7 +68,7 @@ o_session = new tsip_session_register(o_stack,
 @endcode
 */
 function tsip_event_register(o_session, i_code, s_phrase, o_sip_message, e_register_type) {
-    this.__proto__.__proto__ = new tsip_event(o_session, i_code, s_phrase, o_sip_message, tsip_event_type_e.REGISTER);
+    tsip_event.call(this, o_session, i_code, s_phrase, o_sip_message, tsip_event_type_e.REGISTER);
     this.e_register_type = e_register_type;
 }
 

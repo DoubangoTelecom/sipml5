@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_session_message.prototype = Object.create(tsip_session.prototype);
+
 var tsip_event_message_type_e =
 {
 	I_MESSAGE: 0,
@@ -30,11 +32,8 @@ function tsip_event_message(o_sip_session, i_code, s_phrase, o_message, e_messag
 }
 
 function tsip_session_message(o_stack) {
-    var o_proto = new tsip_session(o_stack);
-    if (o_proto) {
-        this.__proto__.__proto__ = o_proto;
-        this.__set(Array.prototype.slice.call(arguments, 1));
-    }
+    tsip_session.call(this, o_stack);    
+    this.__set(Array.prototype.slice.call(arguments, 1));
 }
 
 // send(o_content, s_content_type, ...)
