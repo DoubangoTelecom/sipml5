@@ -1085,3 +1085,11 @@ function tsip_dialog_compare(o_d1, o_d2) {
     }
     return -1;
 }
+
+tsip_api_add_js_scripts('head',
+    'src/tinySIP/src/dialogs/tsip_dialog_generic.js',
+    'src/tinySIP/src/dialogs/tsip_dialog_invite.js',
+    'src/tinySIP/src/dialogs/tsip_dialog_publish.js',
+    'src/tinySIP/src/dialogs/tsip_dialog_register.js',
+    'src/tinySIP/src/dialogs/tsip_dialog_subscribe.js'
+);

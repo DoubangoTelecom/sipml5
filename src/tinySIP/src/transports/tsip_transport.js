@@ -379,7 +379,7 @@ function __tsip_transport_ws_onmessage(evt) {
     var o_message = tsip_message.prototype.Parse(o_ragel_state, true);
 
     if (o_message) {
-        //-- console.debug("recv=%s", o_message.toString());
+         //--console.debug("recv=%s", o_message.toString());
         o_message.o_socket = this;
         return this.o_transport.get_layer().handle_incoming_message(o_message);
     }

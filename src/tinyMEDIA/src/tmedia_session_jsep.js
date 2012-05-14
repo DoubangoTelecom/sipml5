@@ -20,8 +20,10 @@
 */
 // http://tools.ietf.org/html/draft-uberti-rtcweb-jsep-02
 
+tmedia_session_jsep.prototype = Object.create(tmedia_session.prototype);
+
 function tmedia_session_jsep(o_mgr) {
-    this.__proto__.__proto__ = new tmedia_session(tmedia_type_e.AUDIO_VIDEO, o_mgr);
+    tmedia_session.call(this, tmedia_type_e.AUDIO_VIDEO, o_mgr);
     this.o_pc = null;
     this.o_local_stream = null;
     this.o_sdp_jsep_lo = null;

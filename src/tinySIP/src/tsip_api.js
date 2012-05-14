@@ -66,18 +66,18 @@ tsip_api_add_js_scripts('head',
 
 tsip_api_add_js_scripts('head', 
 'src/tinySIP/src/dialogs/tsip_dialog.js',
-'src/tinySIP/src/dialogs/tsip_dialog_generic.js',
+// 'src/tinySIP/src/dialogs/tsip_dialog_generic.js', #include_in<tsip_dialog.js>
 // 'src/tinySIP/src/dialogs/tsip_dialog_generic__message.js', #include_in<tsip_dialog_generic.js>
-'src/tinySIP/src/dialogs/tsip_dialog_invite.js',
+// 'src/tinySIP/src/dialogs/tsip_dialog_invite.js', #include_in<tsip_dialog.js>
 // 'src/tinySIP/src/dialogs/tsip_dialog_invite__client.js', #include_in<tsip_dialog_invite.js>
 // 'src/tinySIP/src/dialogs/tsip_dialog_invite__ect.js', #include_in<tsip_dialog_invite.js>
 // 'src/tinySIP/src/dialogs/tsip_dialog_invite__hold.js', #include_in<tsip_dialog_invite.js>
 // 'src/tinySIP/src/dialogs/tsip_dialog_invite__server.js', #include_in<tsip_dialog_invite.js>
 // 'src/tinySIP/src/dialogs/tsip_dialog_invite__timers.js' #include_in<tsip_dialog_invite.js>
-'src/tinySIP/src/dialogs/tsip_dialog_layer.js',
-'src/tinySIP/src/dialogs/tsip_dialog_publish.js',
-'src/tinySIP/src/dialogs/tsip_dialog_register.js',
-'src/tinySIP/src/dialogs/tsip_dialog_subscribe.js'
+'src/tinySIP/src/dialogs/tsip_dialog_layer.js'
+// 'src/tinySIP/src/dialogs/tsip_dialog_publish.js', #include_in<tsip_dialog.js>
+// 'src/tinySIP/src/dialogs/tsip_dialog_register.js', #include_in<tsip_dialog.js>
+// 'src/tinySIP/src/dialogs/tsip_dialog_subscribe.js' #include_in<tsip_dialog.js>
 );
 
 tsip_api_add_js_scripts('head',

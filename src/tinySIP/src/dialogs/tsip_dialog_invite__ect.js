@@ -22,7 +22,7 @@
 * Explicit Communication Transfer (ECT) using IP Multimedia (IM) Core Network (CN) subsystem (3GPP TS 24.629)
 * The Explicit Communication transfer (ECT) service provides a party involved in a communication to transfer that
 * communication to a third party.
-* This code inplement Consultative transfer mode (A.2).
+* This code implements Consultative transfer mode (A.2).
 */
 
 var x0400_Connected_2_Connected_X_fREFER = null;

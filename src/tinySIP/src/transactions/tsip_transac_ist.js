@@ -21,7 +21,7 @@
 /*
 * SIP INVITE Server Transaction as per RFC 3261 subclause 17.2.1.
 */
-
+tsip_transac_ist.prototype = Object.create(tsip_transac.prototype);
 tsip_transac_ist.prototype.__b_debug_state_machine = false;
 
 var tsip_transac_ist_actions_e =
@@ -52,13 +52,14 @@ var tsip_transac_ist_states_e =
 	TERMINATED: 5
 };
 
+
 function tsip_transac_ist(b_reliable, i_cseq_value, s_callid, o_dialog) {
     var o_stack;
     if (!o_dialog || !(o_stack = o_dialog.get_stack())) {
         console.error("Invalid argument");
         return null;
     }
-    this.__proto__.__proto__ = new tsip_transac();
+    tsip_transac.call(this);
 
     this.o_lastResponse = null;
 

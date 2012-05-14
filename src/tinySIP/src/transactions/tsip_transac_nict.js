@@ -21,7 +21,7 @@
 /*
 * SIP Non-INVITE Client Transaction as per RFC 3261 subcaluse 17.1.2.
 */
-
+tsip_transac_nict.prototype = Object.create(tsip_transac.prototype);
 tsip_transac_nict.prototype.__b_debug_state_machine = false;
 
 var tsip_transac_nict_actions_e = 
@@ -53,7 +53,7 @@ function tsip_transac_nict(b_reliable, i_cseq_value, s_cseq_method, s_callid, o_
         console.error("Invalid argument");
         return null;
     }
-    this.__proto__.__proto__ = new tsip_transac();
+    tsip_transac.call(this);
     this.o_request = null;
 
     this.init(tsip_transac_type_e.NICT, b_reliable, i_cseq_value, s_cseq_method, s_callid, o_dialog, tsip_transac_nict_states_e.STARTED, tsip_transac_nict_states_e.TERMINATED);

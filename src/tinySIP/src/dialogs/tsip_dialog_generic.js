@@ -26,6 +26,8 @@
 // SIP dialog MESSAGE as per RFC 3428
 // SIP dialog INFO as per RFC 6086
 
+tsip_dialog_generic.prototype = Object.create(tsip_dialog.prototype);
+
 var tsip_dialog_generic_actions_e =
 {
     ACCEPT: tsip_action_type_e.ACCEPT,
@@ -69,7 +71,7 @@ var tsip_dialog_generic_states_e =
 };
 
 function tsip_dialog_generic(e_type, o_session, s_call_id) {
-    this.__proto__.__proto__ = new tsip_dialog();
+    tsip_dialog.call(this);
 
     this.o_last_iMessage = null;
 
