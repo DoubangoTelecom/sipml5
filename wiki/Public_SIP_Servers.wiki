@@ -2,8 +2,8 @@
 #labels Featured,Phase-Support
 
 || *SIP server* || *Private Identity* || *Public identity* || *Realm* ||
-|| [https://mdns.sipthor.net/register_sip_account.phtml sip2sip.info]^t^ || bob || sip:bob@sip2sip.info || sip2sip.info||
 || [https://www.ekiga.net/index.php?page=register ekiga.net]^t^ || bob || sip:bob@ekiga.net || ekiga.net ||
+|| [https://mdns.sipthor.net/register_sip_account.phtml sip2sip.info]^t^ || bob || sip:bob@sip2sip.info || sip2sip.info||
 || freephonie.net^n^ || bob || sip:bob@freephonie.net || freephonie.net ||
 || [http://www.iptel.org/ iptel.org]^n^ || bob || sip:bob@iptel.org || iptel.org ||
 || pbxes.org^n^ || bob || sip:bob@pbxes.org || pbxes.org ||
