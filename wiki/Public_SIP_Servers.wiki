@@ -2,11 +2,6 @@
 #labels Featured,Phase-Support
 
 || *SIP server* || *Private Identity* || *Public identity* || *Realm* ||
-|| [https://www.ekiga.net/index.php?page=register ekiga.net]^t^ || bob || sip:bob@ekiga.net || ekiga.net ||
-|| [https://serweb.iptel.org/user/reg iptel.org]^t^ || bob || sip:bob@iptel.org || iptel.org ||
-|| [https://mdns.sipthor.net/register_sip_account.phtml sip2sip.info]^t^ || bob || sip:bob@sip2sip.info || sip2sip.info||
-|| pbxes.org^n^ || bob || sip:bob@pbxes.org || pbxes.org ||
-|| [https://www.linphone.org/eng/linphone/register-a-linphone-account.html sip.linphone.org]^n^ || bob || sip:bob@sip.linphone.org || sip.linphone.org ||
-
-^t^: Fully Tested. Recommended <br/>
-^n^: Not fully tested yet. Not recommended
+|| [https://www.ekiga.net/index.php?page=register ekiga.net] || bob || sip:bob@ekiga.net || ekiga.net ||
+|| [https://serweb.iptel.org/user/reg iptel.org] || bob || sip:bob@iptel.org || iptel.org ||
+|| [https://mdns.sipthor.net/register_sip_account.phtml sip2sip.info] || bob || sip:bob@sip2sip.info || sip2sip.info||
