@@ -21,12 +21,14 @@
 * along with sipML5.
 */
 
-/* line 66 "./ragel/tsdp_parser_header_O.jrl" */
+tsdp_header_O.prototype = Object.create(tsdp_header.prototype);
+
+/* line 68 "./ragel/tsdp_parser_header_O.jrl" */
 
 
 
 
-/* line 30 "./src/headers/tsdp_header_O.js" */
+/* line 32 "./src/headers/tsdp_header_O.js" */
 const _tsdp_machine_parser_header_O_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 2, 
@@ -96,26 +98,27 @@ const tsdp_machine_parser_header_O_error = 0;
 const tsdp_machine_parser_header_O_en_main = 1;
 
 
-/* line 70 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 72 "./ragel/tsdp_parser_header_O.jrl" */
 
 function tsdp_header_O(s_username, i_sess_id, i_sess_version, s_nettype, s_addrtype, s_addr){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.O);
+	tsdp_header.call(this, tsdp_header_type_e.O);
 	this.s_username = s_username;
 	this.i_sess_id = i_sess_id;
 	this.i_sess_version = i_sess_version;
 	this.s_nettype = s_nettype;
 	this.s_addrtype = s_addrtype;
 	this.s_addr = s_addr;
-	this.toString = function(){
-		// o=alice 2890844526 2890844526 IN IP4 host.atlanta.example.com
-			return tsk_string_format("{0} {1} {2} {3} {4} {5}",
-				this.s_username,
-				this.i_sess_id,
-				this.i_sess_version,
-				this.s_nettype,
-				this.s_addrtype,
-				this.s_addr);
-	}
+}
+
+tsdp_header_O.prototype.toString = function(){
+	// o=alice 2890844526 2890844526 IN IP4 host.atlanta.example.com
+	return tsk_string_format("{0} {1} {2} {3} {4} {5}",
+		this.s_username,
+		this.i_sess_id,
+		this.i_sess_version,
+		this.s_nettype,
+		this.s_addrtype,
+		this.s_addr);
 }
 
 
@@ -129,14 +132,14 @@ tsdp_header_O.prototype.Parse = function(s_str){
 	var hdr_O = new tsdp_header_O(null, 0, 0, null, null, null);
 	
 	
-/* line 133 "./src/headers/tsdp_header_O.js" */
+/* line 136 "./src/headers/tsdp_header_O.js" */
 {
 	 cs = tsdp_machine_parser_header_O_start;
 } /* JSCodeGen::writeInit */
 
-/* line 102 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 105 "./ragel/tsdp_parser_header_O.jrl" */
 	
-/* line 140 "./src/headers/tsdp_header_O.js" */
+/* line 143 "./src/headers/tsdp_header_O.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -220,41 +223,41 @@ tsdp_header_O.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_O_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_O.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_O.jrl" */
 
 		hdr_O.s_username = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_O.jrl" */
 
 		hdr_O.i_sess_id = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 39 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 41 "./ragel/tsdp_parser_header_O.jrl" */
 
 		hdr_O.i_sess_version = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 43 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 45 "./ragel/tsdp_parser_header_O.jrl" */
 
 		hdr_O.s_nettype = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 5:
-/* line 47 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 49 "./ragel/tsdp_parser_header_O.jrl" */
 
 		hdr_O.s_addrtype = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 6:
-/* line 51 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 53 "./ragel/tsdp_parser_header_O.jrl" */
 
 		hdr_O.s_addr= tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
-/* line 258 "./src/headers/tsdp_header_O.js" */
+/* line 261 "./src/headers/tsdp_header_O.js" */
 			} /* action switch */
 		}
 	}
@@ -283,16 +286,16 @@ case 6:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_O_actions[__acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_O.jrl" */
 
 		i_tag_start = p;
 			break;
 case 6:
-/* line 51 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 53 "./ragel/tsdp_parser_header_O.jrl" */
 
 		hdr_O.s_addr= tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
-/* line 296 "./src/headers/tsdp_header_O.js" */
+/* line 299 "./src/headers/tsdp_header_O.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -306,12 +309,12 @@ case 6:
 	}
 	}
 
-/* line 103 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 106 "./ragel/tsdp_parser_header_O.jrl" */
 	
 	if( cs < 
-/* line 313 "./src/headers/tsdp_header_O.js" */
+/* line 316 "./src/headers/tsdp_header_O.js" */
 14
-/* line 104 "./ragel/tsdp_parser_header_O.jrl" */
+/* line 107 "./ragel/tsdp_parser_header_O.jrl" */
  ){
 		console.error("Failed to parse \"o=\" header: %s", s_str);
 		return null;

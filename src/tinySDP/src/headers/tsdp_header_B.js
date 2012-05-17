@@ -21,11 +21,13 @@
 * along with sipML5.
 */
 
-/* line 47 "./ragel/tsdp_parser_header_B.jrl" */
+tsdp_header_B.prototype = Object.create(tsdp_header.prototype);
+
+/* line 49 "./ragel/tsdp_parser_header_B.jrl" */
 
 
 
-/* line 29 "./src/headers/tsdp_header_B.js" */
+/* line 31 "./src/headers/tsdp_header_B.js" */
 const _tsdp_machine_parser_header_B_actions = [
 	0, 1, 0, 1, 1, 1, 2
 ];
@@ -88,15 +90,16 @@ const tsdp_machine_parser_header_B_error = 0;
 const tsdp_machine_parser_header_B_en_main = 1;
 
 
-/* line 50 "./ragel/tsdp_parser_header_B.jrl" */
+/* line 52 "./ragel/tsdp_parser_header_B.jrl" */
 
 function tsdp_header_B(s_bwtype, i_bandwidth){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.B);
+	tsdp_header.call(this, tsdp_header_type_e.A);
 	this.s_bwtype = s_bwtype;
 	this.i_bandwidth = i_bandwidth;
-	this.toString = function(){
-		return tsk_string_format("{0}:{1}", this.s_bwtype, this.i_bandwidth);
-	}
+}
+
+tsdp_header_B.prototype.toString = function(){
+	return tsk_string_format("{0}:{1}", this.s_bwtype, this.i_bandwidth);
 }
 
 tsdp_header_B.prototype.Parse = function(s_str){
@@ -109,14 +112,14 @@ tsdp_header_B.prototype.Parse = function(s_str){
 	var hdr_B = new tsdp_header_B(null, 0);
 	
 	
-/* line 113 "./src/headers/tsdp_header_B.js" */
+/* line 116 "./src/headers/tsdp_header_B.js" */
 {
 	 cs = tsdp_machine_parser_header_B_start;
 } /* JSCodeGen::writeInit */
 
-/* line 70 "./ragel/tsdp_parser_header_B.jrl" */
+/* line 73 "./ragel/tsdp_parser_header_B.jrl" */
 	
-/* line 120 "./src/headers/tsdp_header_B.js" */
+/* line 123 "./src/headers/tsdp_header_B.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -201,21 +204,21 @@ tsdp_header_B.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_B_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_B.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_B.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_B.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_B.jrl" */
 
 		hdr_B.s_bwtype = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsdp_parser_header_B.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_B.jrl" */
 
 		hdr_B.i_bandwidth = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
-/* line 219 "./src/headers/tsdp_header_B.js" */
+/* line 222 "./src/headers/tsdp_header_B.js" */
 			} /* action switch */
 		}
 	}
@@ -244,11 +247,11 @@ case 2:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_B_actions[__acts - 1]) {
 case 2:
-/* line 35 "./ragel/tsdp_parser_header_B.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_B.jrl" */
 
 		hdr_B.i_bandwidth = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
-/* line 252 "./src/headers/tsdp_header_B.js" */
+/* line 255 "./src/headers/tsdp_header_B.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -262,12 +265,12 @@ case 2:
 	}
 	}
 
-/* line 71 "./ragel/tsdp_parser_header_B.jrl" */
+/* line 74 "./ragel/tsdp_parser_header_B.jrl" */
 	
 	if( cs < 
-/* line 269 "./src/headers/tsdp_header_B.js" */
+/* line 272 "./src/headers/tsdp_header_B.js" */
 7
-/* line 72 "./ragel/tsdp_parser_header_B.jrl" */
+/* line 75 "./ragel/tsdp_parser_header_B.jrl" */
  ){
 		console.error("Failed to parse \"b=\" header: %s", s_str);
 		return null;

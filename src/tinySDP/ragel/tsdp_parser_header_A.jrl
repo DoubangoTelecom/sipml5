@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+
+tsdp_header_A.prototype = Object.create(tsdp_header.prototype);
 %%{
 	machine tsdp_machine_parser_header_A;
 
@@ -49,16 +51,17 @@
 %%write data;
 
 function tsdp_header_A(s_field, s_value){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.A);
+	tsdp_header.call(this, tsdp_header_type_e.A);
 	this.s_field = s_field;
 	this.s_value = s_value;
-	this.toString = function(){
-		return tsk_string_format("{0}{1}{2}",
-				this.s_field,
+}
 
-				this.s_value ? ":" : "",
-				this.s_value ? this.s_value : "");
-	}
+tsdp_header_A.prototype.toString = function(){
+	return tsk_string_format("{0}{1}{2}",
+			this.s_field,
+
+			this.s_value ? ":" : "",
+			this.s_value ? this.s_value : "");
 }
 
 tsdp_header_A.prototype.RemoveAllByField = function(ao_headers, s_field){

@@ -1,0 +1,109 @@
+﻿<html>
+<!-- head -->
+<head>
+    <title>Test SIP messages</title>
+    <script src="src/tinySIP/src/tsip_api.js" type="text/javascript"> </script>
+</head>
+
+<script type="text/javascript">
+    var __msg1 = "REGISTER sip:open-ims.test SIP/2.0\r\n" +
+	"Test-Header: 0\r\n" +
+	"v: SIP/2.0/UDP [::]:1988;test=1234;comp=sigcomp;rport=254;ttl=457;received=192.0.2.101;branch=z9hG4bK1245420841406\r\n" +
+	"f: \"Mamadou\" <sip:mamadou@open-ims.test>;tag=29358\r\n" +
+	"t:    <sip:mamadou@open-ims.test>;tag= 12345\r\n" +
+	"i: M-fa53180346f7f55ceb8d8670f9223dbb\r\n" +
+	"CSeq: 201 REGISTER\r\n" +
+	"Max-Forwards: 70\r\n" +
+	"Allow: INVITE, ACK, CANCEL, BYE, MESSAGE, OPTIONS, NOTIFY, PRACK\r\n" +
+	"Allow: REFER, UPDATE\r\n" +
+	"u: talk, hold, conference, LocalModeStatus\r\n" +
+	"m: <sip:mamadou@[::]:1988;comp=sigcomp;transport=udp>;expires=600000;+deviceID=\"3ca50bcb-7a67-44f1-afd0-994a55f930f4\";mobility=\"fixed\";+g.3gpp.cs-voice;+g.3gpp.app%5fref=\"urn%3Aurnxxx%3A3gpp-application.ims.iari.gsmais\";+g.oma.sip-im.large-message;+g.oma.sip-im\r\n" +
+	"User-Agent: IM-client/OMA1.0 doubango/v0.0.0\r\n" +
+	"Require: pref, path\r\n" +
+	"Service-Route: <sip:orig@open-ims.test:6060;lr>,<sip:orig2@open-ims.test:6060;lr>\r\n" +
+	"Path: <sip:term@open-ims.test:4060;lr>\r\n" +
+	"Require: 100rel\r\n" +
+	"P-Preferred-Identity: <sip:mamadou@open-ims.test>\r\n" +
+	"k: path\r\n" +
+	"k: gruu, outbound, timer\r\n" +
+	"P-Access-Network-Info: 3GPP-UTRAN-TDD;utran-cell-id-3gpp=00000000\r\n" +
+	"Privacy: none;user;id\r\n" +
+	"Supported: gruu, outbound, path, timer\r\n" +
+	"Expires12: 1983\r\n" +
+	"l: 180\r\n" +
+	"\r\n";
+
+    var __msg2 = "SIP/2.0 200 This is my reason phrase\r\n" +
+	"To: <sip:mamadou@open-ims.test>;tag=bweyal\r\n" +
+	"Via: SIP/2.0/UDP 192.168.0.11:63140;branch=z9hG4bK1261611942868;rport=63140\r\n" +
+	"CSeq: 31516 REGISTER\r\n" +
+	"i: 1261611941121\r\n" +
+	"Min-Expires: 30\r\n" +
+    "Min-SE: 90\r\n" +
+	"Event: reg\r\n" +
+	"From: <sip:mamadou@open-ims.test>;tag=1261611941121\r\n" +
+	"Contact: <sip:mamadou@192.168.0.12:58827;transport=udp>;mobility=fixed;+deviceid=\"DD1289FA-C3D7-47bd-A40D-F1F1B2CC5FFC\";expires=300,<sip:mamadou@192.168.0.12:58828;transport=udp>;mobility=fixed;+deviceid=\"DD1289FA-C3D7-47bd-A40D-F1F1B2CC5FFC\";expires=300,<sip:mamadou@192.168.0.12:58829;transport=udp>;mobility=fixed;+deviceid=\"DD1289FA-C3D7-47bd-A40D-F1F1B2CC5FFC\";expires=300\r\n" +
+	"Contact: <sip:mamadou@192.168.0.11:63140>;expires=3600;q=1.0,<sip:mamadou@192.168.0.11:56717>;expires=3600;q=1.0\r\n" +
+	"Contact: <sip:mamadou@127.0.0.1:5060>;expires=3600;q=1.0\r\n" +
+	"Contact: <sip:mamadou@127.0.0.1>;expires=3600;q=1.0\r\n" +
+	"P-Preferred-Identity: <sip:mamadou@open-ims.test>\r\n" +
+	"Service-Route: <sip:orig@open-ims.test:6060;lr>, <sip:orig2@open-ims.test:6060;lr>,<sip:orig3@open-ims.test:6060;lr>\r\n" +
+    "Route: <sip:orig@open-ims.test:6060;lr>, <sip:orig2@open-ims.test:6060;lr>,<sip:orig3@open-ims.test:6060;lr>\r\n" +
+    "Record-Route: <sip:orig@open-ims.test:6060;lr>, <sip:orig2@open-ims.test:6060;lr>,<sip:orig3@open-ims.test:6060;lr>\r\n" +
+    "Record-Route: <sip:81.23.228.129;lr;ftag=Nm9KSxwX03KZEgD7MZkV;did=5d6.723ff3c2>\r\n" +
+    "Record-Route: <sip:81.23.228.150;lr;ftag=Nm9KSxwX03KZEgD7MZkV;did=5d6.68ef6cf1>\r\n" +
+    "Record-Route: <sip:81.23.228.129;lr;ftag=Nm9KSxwX03KZEgD7MZkV;did=5d6.623ff3c2>\r\n" +
+    "Record-Route: <sip:85.17.186.7;r2=on;lr;ftag=Nm9KSxwX03KZEgD7MZkV;did=5d6.7ea1dd44>\r\n" +
+    "Record-Route: <sip:85.17.186.7;transport=tcp;r2=on;lr;ftag=Nm9KSxwX03KZEgD7MZkV;did=5d6.7ea1dd44>\r\n" +
+	"Path: <sip:term@open-ims.test:4060;lr>\r\n" +
+	"P-Access-Network-Info: 3GPP-UTRAN-TDD;utran-cell-id-3gpp=00000000\r\n" +
+	"Authorization: Digest username=\"Alice\", realm=\"atlanta.com\",nonce=\"84a4cc6f3082121f32b42a2187831a9e\",response=\"7587245234b3434cc3412213e5f113a5432,test=123\"\r\n" +
+	"Privacy: none;user;id\r\n" +
+	"Proxy-Authenticate: Digest realm=\"atlanta.com\",domain=\"sip:ss1.carrier.com\",qop=\"auth,auth-int\",nonce=\"f84f1cec41e6cbe5aea9c8e88d359\",opaque=\"\", stale=FALSE, algorithm=MD5,test=124\r\n" +
+	"Authorization: Digest username=\"bçàb\", realm=\"atlanta.example.com\",nonce=\"ea9c8e88df84f1cec4341ae6cbe5a359\", opaque=\"\",uri=\"sips:ss2.biloxi.example.com\",test=\"7854\",response=\"dfe56131d1958046689d83306477ecc\"\r\n" +
+	"Proxy-Authorization: Digest username=\"Alice\", test=666,realm=\"atlanta.com\",nonce=\"c60f3082ee1212b402a21831ae\",response=\"245f23415f11432b3434341c022\"\r\n" +
+	"WWW-Authenticate: Digest realm=\"atlanta.com\",domain=\"sip:boxesbybob.com\", qop=\"auth\",nonce=\"f84f1cec41e6cbe5aea9c8e88d359\",opaque=\"\",stale=FALSE,algorithm=MD5,test=\"3\"\r\n" +
+	"WWW-Authenticate: Digest realm=\"ims.cingularme.com\",\r\n   nonce=\"b7c9036dbf3054aea9404c7286aee9703dc8f84c2008\",\r\n   opaque=\"Lss:scsf-stdn.imsgroup0-001.ims1.wtcdca1.mobility.att.net:5060\",\r\n   algorithm=MD5,\r\n   qop=\"auth\"\r\n" +
+    "P-Asserted-Identity: \"Cullen Jennings\" <sip:fluffy@cisco.com>,tel:+33\r\n" +
+    "P-Asserted-Identity: tel:+14085264000\r\n" +
+    "P-Associated-URI: \"Cullen Jennings\" <sip:fluffy@cisco.com>,tel:+33\r\n" +
+    "l: 3\r\n" +
+    "Allow: INVITE, ACK, CANCEL, BYE, MESSAGE, OPTIONS, NOTIFY, PRACK\r\n" +
+    "u: talk, hold, conference, LocalModeStatus\r\n" +
+    "Server: webrtc2sip\r\n" +
+    "SIP-ETag: dx200xyz\r\n" +
+    "SIP-If-Match: dx200xyz\r\n" +
+    "User-Agent: Doubango IMS Client\r\n" +
+    "Expires: 1983;t=5,u=0\r\n" +
+    "Max-Forwards: 70,u=7\r\n" +
+    "RSeq: 988789;l=9\r\n" +
+    "Refer-To: <sips:a8342043f@atlanta.example.com?Replaces=12345601%40atlanta.example.com%3Bfrom-tag%3D314159%3Bto-tag%3D1234567>\r\n" +
+    "Refer-To: sip:conf44@example.com;isfocus\r\n" +
+    "Referred-By: <sip:referrer@referrer.example>;cid=\"20398823.2UWQFN309shb3@referrer.example\"\r\n" +
+	"Subscription-State: active;reason=deactivated;expires=507099;retry-after=145;test=jk\r\n" +
+    "Supported: gruu, outbound, path, timer\r\n" +
+    "Require: pref, path\r\n" +
+	"\r\n" +
+    "abc";
+
+    function test_msg_parse() {
+        //var hdr = tsip_header_Content_Type.prototype.Parse("c: text/plain; charset=utf-8\r\n");
+        //console.info(hdr.tostring_full());
+
+        //var hdr = tsip_header_WWW_Authenticate.prototype.Parse("WWW-Authenticate: Digest realm=\"ims.cingularme.com\",\r\n   nonce=\"b7c9036dbf3054aea9404c7286aee9703dc8f84c2008\",\r\n   opaque=\"Lss:scsf-stdn.imsgroup0-001.ims1.wtcdca1.mobility.att.net:5060\",\r\n   algorithm=MD5,\r\n   qop=\"auth\"\r\n");
+        //console.info(hdr.tostring_full());
+
+        var o_ragel_state = tsk_ragel_state_create();
+        tsk_ragel_state_init_str(o_ragel_state, __msg2);
+        var msg = tsip_message.prototype.Parse(o_ragel_state, true);
+        console.info(msg.toString());
+    }
+</script>
+
+<!-- body -->
+<body>
+    <form action=''>
+    <input type="button" value="Parse" onclick='test_msg_parse();' />
+    </form>
+</body>
+</html>

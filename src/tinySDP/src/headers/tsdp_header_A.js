@@ -21,11 +21,13 @@
 * along with sipML5.
 */
 
-/* line 47 "./ragel/tsdp_parser_header_A.jrl" */
+tsdp_header_A.prototype = Object.create(tsdp_header.prototype);
+
+/* line 49 "./ragel/tsdp_parser_header_A.jrl" */
 
 
 
-/* line 29 "./src/headers/tsdp_header_A.js" */
+/* line 31 "./src/headers/tsdp_header_A.js" */
 const _tsdp_machine_parser_header_A_actions = [
 	0, 1, 0, 1, 1, 1, 2, 2, 
 	0, 2
@@ -90,19 +92,20 @@ const tsdp_machine_parser_header_A_error = 0;
 const tsdp_machine_parser_header_A_en_main = 1;
 
 
-/* line 50 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 52 "./ragel/tsdp_parser_header_A.jrl" */
 
 function tsdp_header_A(s_field, s_value){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.A);
+	tsdp_header.call(this, tsdp_header_type_e.A);
 	this.s_field = s_field;
 	this.s_value = s_value;
-	this.toString = function(){
-		return tsk_string_format("{0}{1}{2}",
-				this.s_field,
+}
 
-				this.s_value ? ":" : "",
-				this.s_value ? this.s_value : "");
-	}
+tsdp_header_A.prototype.toString = function(){
+	return tsk_string_format("{0}{1}{2}",
+			this.s_field,
+
+			this.s_value ? ":" : "",
+			this.s_value ? this.s_value : "");
 }
 
 tsdp_header_A.prototype.RemoveAllByField = function(ao_headers, s_field){
@@ -135,14 +138,14 @@ tsdp_header_A.prototype.Parse = function(s_str){
 	var hdr_A = new tsdp_header_A(null, null);
 	
 	
-/* line 139 "./src/headers/tsdp_header_A.js" */
+/* line 142 "./src/headers/tsdp_header_A.js" */
 {
 	 cs = tsdp_machine_parser_header_A_start;
 } /* JSCodeGen::writeInit */
 
-/* line 94 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 97 "./ragel/tsdp_parser_header_A.jrl" */
 	
-/* line 146 "./src/headers/tsdp_header_A.js" */
+/* line 149 "./src/headers/tsdp_header_A.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -227,21 +230,21 @@ tsdp_header_A.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_A_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_A.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_A.jrl" */
 
 		hdr_A.s_field = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_A.jrl" */
 
 		hdr_A.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
-/* line 245 "./src/headers/tsdp_header_A.js" */
+/* line 248 "./src/headers/tsdp_header_A.js" */
 			} /* action switch */
 		}
 	}
@@ -270,21 +273,21 @@ case 2:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_A_actions[__acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_A.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_A.jrl" */
 
 		hdr_A.s_field = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_A.jrl" */
 
 		hdr_A.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
-/* line 288 "./src/headers/tsdp_header_A.js" */
+/* line 291 "./src/headers/tsdp_header_A.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -298,12 +301,12 @@ case 2:
 	}
 	}
 
-/* line 95 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 98 "./ragel/tsdp_parser_header_A.jrl" */
 	
 	if( cs < 
-/* line 305 "./src/headers/tsdp_header_A.js" */
+/* line 308 "./src/headers/tsdp_header_A.js" */
 5
-/* line 96 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 99 "./ragel/tsdp_parser_header_A.jrl" */
  ){
 		console.error("Failed to parse \"a=\" header: %s", s_str);
 		return null;

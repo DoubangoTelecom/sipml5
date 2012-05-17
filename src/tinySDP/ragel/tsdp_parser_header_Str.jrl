@@ -1,0 +1,99 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+
+// Parse headers: E, I, K, P, S, U
+tsdp_header_Str.prototype = Object.create(tsdp_header.prototype);
+tsdp_header_E.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_I.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_K.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_P.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_S.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_U.prototype = Object.create(tsdp_header_Str.prototype);
+
+tsdp_header_Str.prototype.s_value = null;
+
+%%{
+	machine tsdp_machine_parser_header_Str;
+
+	# Includes
+	include tsdp_machine_utils "./tsdp_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+
+	action is_E{ o_hdr = new tsdp_header_E(); }
+	action is_I{ o_hdr = new tsdp_header_I(); }
+	action is_K{ o_hdr = new tsdp_header_K(); }
+	action is_P{ o_hdr = new tsdp_header_P(); }
+	action is_S{ o_hdr = new tsdp_header_S(); }
+	action is_U{ o_hdr = new tsdp_header_U(); }
+
+	action parse_value{
+		if(o_hdr){
+			o_hdr.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+		}
+	}
+		
+	Str = ('e'%is_E | 'i'%is_I | 'k'%is_K | 'p'%is_P | 's'%is_S | 'u'%is_U) SP* "=" SP*<: js_any*>tag %parse_value;
+	
+	# Entry point
+	main := Str :>CRLF?;
+
+}%%
+
+%%write data;
+
+function tsdp_header_Str(e_type, s_value){
+	tsdp_header.call(this, e_type);
+	this.s_value = s_value;
+}
+
+tsdp_header_Str.prototype.toString = function(){
+	return this.s_value;
+}
+
+tsdp_header_Str.prototype.Parse = function(s_str){
+	var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var o_hdr = null;
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse header: %s", s_str);
+		return null;
+	}
+	
+	return o_hdr;
+}
+
+function tsdp_header_E(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.E, s_value); }
+function tsdp_header_I(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.I, s_value); }
+function tsdp_header_K(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.K, s_value); }
+function tsdp_header_P(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.P, s_value); }
+function tsdp_header_S(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.S, s_value); }
+function tsdp_header_U(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.U, s_value); }

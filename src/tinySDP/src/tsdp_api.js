@@ -39,29 +39,26 @@ function tsdp_api_add_js_scripts(s_elt) {
 // add tinySAK API
 tsdp_api_add_js_scripts('head', 'src/tinySAK/src/tsk_api.js');
 
-// add tinySDP API
 tsdp_api_add_js_scripts('head',
-'src/tinySDP/src/tsdp_message.js'
-//'src/tinySDP/src/tsdp_parser_message.js' #include_in<tsdp_message.js>
-);
+    'src/tinySDP/src/headers/tsdp_header.js',
+    // 'src/tinySDP/src/headers/tsdp_header_A.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_B.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_C.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_Dummy.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_E.js', #see<tsdp_header_Str.js>
+    // 'src/tinySDP/src/headers/tsdp_header_I.js', #see<tsdp_header_Str.js>
+    // 'src/tinySDP/src/headers/tsdp_header_K.js', #see<tsdp_header_Str.js>
+    // 'src/tinySDP/src/headers/tsdp_header_M.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_O.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_P.js', #see<tsdp_header_Str.js>
+    // 'src/tinySDP/src/headers/tsdp_header_R.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_S.js', #see<tsdp_header_Str.js>
+    // 'src/tinySDP/src/headers/tsdp_header_Str.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_T.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_U.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_V.js', #include_in<tsdp_header.js>
+    // 'src/tinySDP/src/headers/tsdp_header_Z.js' #include_in<tsdp_header.js>
 
-
-tsdp_api_add_js_scripts('head',
-'src/tinySDP/src/headers/tsdp_header.js',
-'src/tinySDP/src/headers/tsdp_header_A.js',
-'src/tinySDP/src/headers/tsdp_header_B.js',
-'src/tinySDP/src/headers/tsdp_header_C.js',
-'src/tinySDP/src/headers/tsdp_header_Dummy.js',
-'src/tinySDP/src/headers/tsdp_header_E.js',
-'src/tinySDP/src/headers/tsdp_header_I.js',
-'src/tinySDP/src/headers/tsdp_header_K.js',
-'src/tinySDP/src/headers/tsdp_header_M.js',
-'src/tinySDP/src/headers/tsdp_header_O.js',
-'src/tinySDP/src/headers/tsdp_header_P.js',
-'src/tinySDP/src/headers/tsdp_header_R.js',
-'src/tinySDP/src/headers/tsdp_header_S.js',
-'src/tinySDP/src/headers/tsdp_header_T.js',
-'src/tinySDP/src/headers/tsdp_header_U.js',
-'src/tinySDP/src/headers/tsdp_header_V.js',
-'src/tinySDP/src/headers/tsdp_header_Z.js'
+    'src/tinySDP/src/tsdp_message.js'
+    //'src/tinySDP/src/tsdp_parser_message.js' #include_in<tsdp_message.js>
 );

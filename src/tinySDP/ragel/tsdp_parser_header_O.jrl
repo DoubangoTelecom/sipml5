@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+
+tsdp_header_O.prototype = Object.create(tsdp_header.prototype);
 %%{
 	machine tsdp_machine_parser_header_O;
 
@@ -69,23 +71,24 @@
 %%write data;
 
 function tsdp_header_O(s_username, i_sess_id, i_sess_version, s_nettype, s_addrtype, s_addr){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.O);
+	tsdp_header.call(this, tsdp_header_type_e.O);
 	this.s_username = s_username;
 	this.i_sess_id = i_sess_id;
 	this.i_sess_version = i_sess_version;
 	this.s_nettype = s_nettype;
 	this.s_addrtype = s_addrtype;
 	this.s_addr = s_addr;
-	this.toString = function(){
-		// o=alice 2890844526 2890844526 IN IP4 host.atlanta.example.com
-			return tsk_string_format("{0} {1} {2} {3} {4} {5}",
-				this.s_username,
-				this.i_sess_id,
-				this.i_sess_version,
-				this.s_nettype,
-				this.s_addrtype,
-				this.s_addr);
-	}
+}
+
+tsdp_header_O.prototype.toString = function(){
+	// o=alice 2890844526 2890844526 IN IP4 host.atlanta.example.com
+	return tsk_string_format("{0} {1} {2} {3} {4} {5}",
+		this.s_username,
+		this.i_sess_id,
+		this.i_sess_version,
+		this.s_nettype,
+		this.s_addrtype,
+		this.s_addr);
 }
 
 

@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+//@deprecated THIS IMPLEMENTATION IS DEPRECATED
 // http://tools.ietf.org/html/draft-jennings-rtcweb-signaling-01
 
 var __o_session_roap = null;

@@ -32,7 +32,7 @@
    <div id="projectname">sipML5
    &#160;<span id="projectnumber">1.0</span>
    </div>
-   <div id="projectbrief">World&#39;s first open source HTML5 SIP Client</div>
+   <div id="projectbrief">World&#39;s first HTML5 SIP Client</div>
   </td>
   
   
@@ -485,17 +485,43 @@ o_stack.set(<a class="code" href="classtsip__stack.html">tsip_stack</a>.prototyp
 </div>
 <div class="memdoc">
 <p>Callback function used to report audio/video call (SIP INVITE) session events. Note that this callback won't report connection state. To get connection state, you should use <a class="el" href="classtsip__stack.html#aae58d97571234f488efab116a83db829">on_event_dialog</a> event.</p>
-<div class="fragment"><pre class="fragment">o_stack.on_event_invite = <span class="keyword">function</span> (evt: <a class="code" href="classtsip__event__invite.html">tsip_event_invite</a>) {
+<div class="fragment"><pre class="fragment">o_stack.on_event_invite = <span class="keyword">function</span> (evt: tsip_event_invite) {
     console.debug(<span class="stringliteral">&quot;phrase=%s&quot;</span>, evt.s_phrase);
     console.debug(<span class="stringliteral">&quot;sesssion id=%d&quot;</span>, evt.get_session().get_id());
     <span class="keywordflow">switch</span> (evt.e_invite_type) {
         <span class="keywordflow">case</span> tsip_event_invite_type_e.I_NEW_CALL:
-        <span class="keywordflow">case</span> tsip_event_invite_type_e.I_AO_REQUEST:
-        <span class="keywordflow">case</span> tsip_event_invite_type_e.M_EARLY_MEDIA:
+        
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.I_REQUEST:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.I_AO_REQUEST:
+        
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.O_ECT_TRYING:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.O_ECT_ACCEPTED:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.O_ECT_COMPLETED:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.O_ECT_FAILED:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.O_ECT_NOTIFY:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.I_ECT_REQUESTED:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.I_ECT_NEW_CALL:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.I_ECT_COMPLETED:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.I_ECT_FAILED:
+        <span class="keywordflow">case</span> tsip_event_invite_type_e.I_ECT_NOTIFY:
+
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_EARLY_MEDIA:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_UPDATING:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_UPDATED:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_STREAM_CONNECTING:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_STREAM_CONNECTED:
         <span class="keywordflow">case</span> tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
         <span class="keywordflow">case</span> tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED:
         <span class="keywordflow">case</span> tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
         <span class="keywordflow">case</span> tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED:
+        
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_LOCAL_HOLD_OK:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_LOCAL_HOLD_NOK:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_LOCAL_RESUME_OK:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_LOCAL_RESUME_NOK:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_REMOTE_HOLD:
+            <span class="keywordflow">case</span> tsip_event_invite_type_e.M_REMOTE_RESUME:
+
         <span class="keywordflow">default</span>: <span class="keywordflow">break</span>;
     }
 };
@@ -558,7 +584,7 @@ console.debug(evt.s_phrase);
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 8 2012 01:55:56 for sipML5 by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 16 2012 23:47:02 for sipML5 by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.0
 </small></address>

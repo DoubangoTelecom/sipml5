@@ -21,11 +21,13 @@
 * along with sipML5.
 */
 
-/* line 40 "./ragel/tsdp_parser_header_V.jrl" */
+tsdp_header_V.prototype = Object.create(tsdp_header.prototype);
+
+/* line 42 "./ragel/tsdp_parser_header_V.jrl" */
 
 
 
-/* line 29 "./src/headers/tsdp_header_V.js" */
+/* line 31 "./src/headers/tsdp_header_V.js" */
 const _tsdp_machine_parser_header_V_actions = [
 	0, 1, 0, 1, 1
 ];
@@ -72,10 +74,10 @@ const tsdp_machine_parser_header_V_error = 0;
 const tsdp_machine_parser_header_V_en_main = 1;
 
 
-/* line 43 "./ragel/tsdp_parser_header_V.jrl" */
+/* line 45 "./ragel/tsdp_parser_header_V.jrl" */
 
 function tsdp_header_V(i_version){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.V);
+	tsdp_header.call(this, tsdp_header_type_e.V);
 	this.i_version = i_version;
 	this.toString = function(){
 		return this.i_version.toString();
@@ -92,14 +94,14 @@ tsdp_header_V.prototype.Parse = function(s_str){
 	var hdr_V = new tsdp_header_V(0);
 	
 	
-/* line 96 "./src/headers/tsdp_header_V.js" */
+/* line 98 "./src/headers/tsdp_header_V.js" */
 {
 	 cs = tsdp_machine_parser_header_V_start;
 } /* JSCodeGen::writeInit */
 
-/* line 62 "./ragel/tsdp_parser_header_V.jrl" */
+/* line 64 "./ragel/tsdp_parser_header_V.jrl" */
 	
-/* line 103 "./src/headers/tsdp_header_V.js" */
+/* line 105 "./src/headers/tsdp_header_V.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -183,16 +185,16 @@ tsdp_header_V.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_V_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_V.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_V.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_V.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_V.jrl" */
 
 		hdr_V.i_version = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
-/* line 196 "./src/headers/tsdp_header_V.js" */
+/* line 198 "./src/headers/tsdp_header_V.js" */
 			} /* action switch */
 		}
 	}
@@ -221,11 +223,11 @@ case 1:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_V_actions[__acts - 1]) {
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_V.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_V.jrl" */
 
 		hdr_V.i_version = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
-/* line 229 "./src/headers/tsdp_header_V.js" */
+/* line 231 "./src/headers/tsdp_header_V.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -239,12 +241,12 @@ case 1:
 	}
 	}
 
-/* line 63 "./ragel/tsdp_parser_header_V.jrl" */
+/* line 65 "./ragel/tsdp_parser_header_V.jrl" */
 	
 	if( cs < 
-/* line 246 "./src/headers/tsdp_header_V.js" */
+/* line 248 "./src/headers/tsdp_header_V.js" */
 5
-/* line 64 "./ragel/tsdp_parser_header_V.jrl" */
+/* line 66 "./ragel/tsdp_parser_header_V.jrl" */
  ){
 		console.error("Failed to parse \"v=\" header: %s", s_str);
 		return null;

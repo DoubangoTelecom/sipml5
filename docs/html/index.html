@@ -32,7 +32,7 @@
    <div id="projectname">sipML5
    &#160;<span id="projectnumber">1.0</span>
    </div>
-   <div id="projectbrief">World&#39;s first open source HTML5 SIP Client</div>
+   <div id="projectbrief">World&#39;s first HTML5 SIP Client</div>
   </td>
   
   
@@ -89,15 +89,41 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">Foreword </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1>Foreword </h1>
-<p>This is the world's first open source HTML5 SIP client entirely written in javascript for integration in social networks (FaceBook, Twitter, Google+), online games, e-commerce sites... No extension, plugin or gateway is needed.<br/>
+<div class="textblock"><p>This is the world's first open source HTML5 SIP client entirely written in javascript for integration in social networks (FaceBook, Twitter, Google+), online games, e-commerce sites... No extension, plugin or gateway is needed.<br/>
  The client can be used to connect to any SIP or IMS network from your preferred browser to make and receive audio/video calls and instant messages.<br/>
  The protocol parsers (SIP, SDP...) are highly optimized using <a href="http://www.complang.org/ragel/">Ragel</a> lookup tables and is suitable for embedded systems with limited memory and low computing power. </p>
+<div class="image">
+<img src="architecture.png" alt="architecture.png"/>
+<div class="caption">
+sipML5 solution architecture</div></div>
+<p><br/>
+ This document has been written by us (<a href="http://www.doubango.org">Doubango Telecom</a>) to help developers to quickly create innovative multimedia applications for the Windows, MAC OS X, Linux, iOS and Android platforms. If you are a developer and is looking for the best way to develop a NGN (VoIP, Messaging, Video Conferencing, ...) or rich application for these platforms then your are at the right place. <br/>
+ If you want to get help or have some feedbacks then please visit our website: <a href="http://code.google.com/p/sipml5/">http://code.google.com/p/sipml5/</a> or subscribe to our <a href="http://groups.google.com/group/doubango/">developer mailing list</a>.</p>
+<h3>Quick start </h3>
+<ul>
+<li><a class="el" href="page_create_sip_stack.html">Create SIP Stack</a></li>
+<li><a class="el" href="page_login.html">LogIn / LogOut</a></li>
+<li><a class="el" href="page_sms_like.html">Instant messaging (SMS-like)</a></li>
+<li><a class="el" href="page_avcalls.html">Audio/Video calls</a></li>
+<li>Presence</li>
+</ul>
+<p><br/>
+ </p>
+<h3>Checking out the source code</h3>
+<p><br/>
+ To check out the source code of the NGN library you will need a SVN client.<br/>
+ Use this command to anonymously check out the last project source: </p>
+<div class="fragment"><pre class="fragment">svn checkout http:<span class="comment">//sipml5.googlecode.com/svn sipml5</span>
+</pre></div><p> The source code of the library is under: </p>
+<div class="fragment"><pre class="fragment">sipml5/trunk/src
+</pre></div><p> the main page for testing is at: </p>
+<div class="fragment"><pre class="fragment">sipml5/trunk/src/call.htm
+</pre></div><p> you don't need to change anything in the code to start testing. Just drag and drop <b>index.htm</b> to your web browser and start enjoying. </p>
 </div></div><!-- contents -->
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 8 2012 01:55:56 for sipML5 by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 16 2012 23:47:02 for sipML5 by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.0
 </small></address>

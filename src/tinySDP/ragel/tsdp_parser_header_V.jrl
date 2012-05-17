@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+
+tsdp_header_V.prototype = Object.create(tsdp_header.prototype);
 %%{
 	machine tsdp_machine_parser_header_V;
 
@@ -42,7 +44,7 @@
 %%write data;
 
 function tsdp_header_V(i_version){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.V);
+	tsdp_header.call(this, tsdp_header_type_e.V);
 	this.i_version = i_version;
 	this.toString = function(){
 		return this.i_version.toString();

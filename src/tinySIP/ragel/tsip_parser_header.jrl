@@ -383,8 +383,12 @@ function prev_not_comma(o_ragel_state, i_p){
 	# /*== P-Preferred-Identity: ==*/
 	action parse_header_P_Preferred_Identity
 	{
-	    var header = tsip_header_P_Preferred_Identity.prototype.Parse(s_str);
-		o_msg.add_headers(header);
+		var headers = tsip_header_P_Preferred_Identity.prototype.Parse(s_str);
+		if(headers){
+			for(var i = 0; i < headers.length; ++i){
+				o_msg.add_header(headers[i]);
+			}
+		}
 	}
 
 	# /*== P-Profile-Key: ==*/
@@ -453,8 +457,6 @@ function prev_not_comma(o_ragel_state, i_p){
 	{
 	    var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
-		//tsip_header_Proxy_Require_t *header = tsip_header_Proxy_Require.prototype.Parse(s_str);
-		//ADD_HEADER(header);
 	}
 
 	# /*== RAck: ==*/

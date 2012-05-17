@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+
+tsdp_header_Z.prototype = Object.create(tsdp_header.prototype);
 %%{
 	machine tsdp_machine_parser_header_Z;
 
@@ -81,7 +83,7 @@ function tsdp_zone(i_time, b_shifted_back, s_typed_time){
 }
 
 function tsdp_header_Z(i_time, b_shifted_back, s_typed_time){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.Z);
+	tsdp_header.call(this, tsdp_header_type_e.Z);
 	this.ao_zones = new Array();
 	if(s_typed_time){
 		this.ao_zones.push(new tsdp_zone(i_time, b_shifted_back, s_typed_time));

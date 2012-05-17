@@ -97,6 +97,7 @@
     var videoRemote, videoLocal;
     var divVideo, divCallOptions;
     var bFullScreen = false;
+    var oNotifICall;
 
     window.onload = function () {
         if (!haveWebSocket()) {
@@ -150,15 +151,18 @@
         document.body.style.cursor = 'default';
     };
 
+    // checks whether the browser supports WebRTC
     function haveWebRTC() {
         // 'webkitDeprecatedPeerConnection' is not used 
         return (navigator.webkitGetUserMedia && (webkitPeerConnection00));
     }
 
+    // checks whether the browser supports WebSockets
     function haveWebSocket() {
         return (WebSocket != null);
     }
 
+    // checks whether the user accepted access to the webcam/soundcard
     function gotMediaStream() {
         return (__o_stream != null);
     }
@@ -195,6 +199,7 @@
         }
     };
 
+    // sends SIP REGISTER request to login
     function sipRegister() {
         btnRegister.disabled = true;
         if (!txtRealm.value || !txtPrivateIdentity.value || !txtPublicIdentity.value) {
@@ -208,13 +213,20 @@
             btnRegister.disabled = false;
             return;
         }
+
+        // enable notifications if not already done
+        if (window.webkitNotifications && window.webkitNotifications.checkPermission() != 0) {
+            window.webkitNotifications.requestPermission();
+        }
         
+        // save credentials
         saveCredentials();
 
+        // create a new SIP stack. Not mandatory as it's possible to reuse the same satck
         oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, "sipml5.org", 4062,
                             tsip_stack.prototype.SetPassword(txtPassword.value),
                             tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
-                            // tsip_stack.prototype.SetProxyOutBound('192.168.0.12', 5060, tsip_transport_type_e.UDP), // uncommend to use SIP outbound proxy
+                            //tsip_stack.prototype.SetProxyOutBound('192.168.0.10', 5060, tsip_transport_type_e.UDP), // uncommend to use SIP outbound proxy
                             tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5/v0.0.0000.0'),
                             tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
         if (oSipStack) {
@@ -230,12 +242,14 @@
         btnRegister.disabled = false;
     }
 
+    // sends SIP REGISTER (expires=0) to logout
     function sipUnRegister() {
         if (oSipStack) {
             oSipStack.stop(); // shutdown all sessions
         }
     }
 
+    // makes a call (SIP INVITE)
     function sipCall() {
         if (oSipStack && !oSipSessionCall && !tsk_string_is_null_or_empty(txtPhoneNumber.value)) {
             btnCall.disabled = true;
@@ -259,6 +273,7 @@
         }
     }
 
+    // transfers the call
     function sipTransfer() {
         if (oSipSessionCall) {
             var s_destination = prompt('Enter destination number', '');
@@ -273,7 +288,8 @@
             }
         }
     }
-
+    
+    // holds or resumes the call
     function sipToggleHoldResume() {
         if (oSipSessionCall) {
             var i_ret;
@@ -288,6 +304,7 @@
         }
     }
 
+    // terminates the call (SIP BYE or CANCEL)
     function sipHangUp() {
         if (oSipSessionCall) {
             txtCallStatus.innerHTML = '<i>Terminating the call...</i>';
@@ -353,6 +370,18 @@
         }
     }
 
+    function showNotifICall(s_number) {
+        // permission already asked when we registered
+        if (window.webkitNotifications && window.webkitNotifications.checkPermission() == 0) {
+            if (oNotifICall) {
+                oNotifICall.cancel();
+            }
+            oNotifICall = window.webkitNotifications.createNotification('images/sipml-34x39.png', 'Incaming call', 'Incoming call from ' + s_number);
+            oNotifICall.onclose = function () { oNotifICall = null; };
+            oNotifICall.show();
+        }
+    }
+
     function onKeyUp(evt) {
         evt = evt || window.event;
         if (evt.keyCode == 27) {
@@ -374,6 +403,7 @@
         btnHangUp.disabled = !oSipSessionCall;
     }
 
+    // Callback function for SIP Stacks
     function onSipEventStack(evt) {
         // this is a special event shared by all sessions and there is no "e_stack_type"
         // check the 'sip/stack' code
@@ -381,6 +411,7 @@
         switch (evt.i_code) {
             case tsip_event_code_e.STACK_STARTED:
                 {
+                    // LogIn (REGISTER) as soon as the stack finish starting
                     oSipSessionRegister = new tsip_session_register(oSipStack,
                                             tsip_session.prototype.SetExpires(200),
                                             tsip_session.prototype.SetCaps("+g.oma.sip-im"),
@@ -419,6 +450,7 @@
         }
     };
 
+    // Callback function for all SIP dialogs (INVITE, REGISTER, INFO...)
     function onSipEventDialog(evt) {
         // this is special event shared by all sessions and there is no "e_dialog_type"
         // check the 'sip/dialog' code
@@ -457,6 +489,11 @@
                         if (b_connected) {
                             stopRingbackTone();
                             stopRingTone();
+
+                            if (oNotifICall) {
+                                oNotifICall.cancel();
+                                oNotifICall = null;
+                            }
                         }
 
                         txtCallStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
@@ -491,6 +528,11 @@
                         divVideo.style.height = '0px';
                         divCallOptions.style.opacity = 0;
 
+                        if (oNotifICall) {
+                            oNotifICall.cancel();
+                            oNotifICall = null;
+                        }
+
                         setTimeout(function () { if (!oSipSessionCall) txtCallStatus.innerHTML = ''; }, 2500);
                     }
                     break;
@@ -498,6 +540,7 @@
         }
     };
 
+    // Call back function for SIP INVITE Dialog
     function onSipEventInvite(evt) {
         console.debug(evt.s_phrase);
         
@@ -518,7 +561,9 @@
 
                         startRingTone();
 
-                        txtCallStatus.innerHTML = "<i>Incoming call from [<b>" + (oSipSessionCall.o_uri_from.s_display_name ? oSipSessionCall.o_uri_from.s_display_name : oSipSessionCall.o_uri_from.s_user_name) + "</b>]</i>";
+                        var s_number = (oSipSessionCall.o_uri_from.s_display_name ? oSipSessionCall.o_uri_from.s_display_name : oSipSessionCall.o_uri_from.s_user_name);
+                        txtCallStatus.innerHTML = "<i>Incoming call from [<b>" + s_number + "</b>]</i>";
+                        showNotifICall(s_number);
                     }
                     break;
                 }
@@ -788,7 +833,7 @@
                 <table style='width: 100%;'>
                     <tr>
                         <td style="white-space:nowrap;">
-                            <input type="text" style="width: 100%; height:30px" id="txtPhoneNumber" value="" placeholder="Enter phone number to call" />                            
+                            <input type="text" style="width: 100%; height:100%" id="txtPhoneNumber" value="" placeholder="Enter phone number to call" />                            
                         </td>
                     </tr>
                     <tr>
@@ -850,5 +895,20 @@
     <script type="text/javascript" src="./assets/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="./assets/js/bootstrap-carousel.js"></script>
     <script type="text/javascript" src="./assets/js/bootstrap-typeahead.js"></script>
+
+
+    <!-- GOOGLE ANALYTICS -->
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+
+    <script type="text/javascript">
+        try {
+            var pageTracker = _gat._getTracker("UA-6868621-19");
+            pageTracker._trackPageview();
+        } catch (err) { }
+    </script>
+
 </body>
 </html>

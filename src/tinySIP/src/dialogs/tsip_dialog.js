@@ -865,7 +865,6 @@ tsip_dialog.prototype.update_with_invite = function (o_invite) {
         for (i_index = 0; (o_hdr_recordRoute = o_invite.get_header_at(tsip_header_type_e.Record_Route, i_index)); ++i_index) {
             this.ao_hdr_record_routes.push(o_hdr_recordRoute);
         }
-        this.ao_hdr_record_routes.reverse();
     }
 
     this.e_state = tsip_dialog_state_e.EARLY;
@@ -1014,7 +1013,7 @@ tsip_dialog.prototype.get_newdelay = function (o_response) {
 
     /* Expires header */
     if (!b_found && (o_hdr = o_response.get_header(tsip_header_type_e.Expires))) {
-        i_expires = o_hdr.i_delta_sec;
+        i_expires = o_hdr.i_value;
         b_found = true;
     }
 

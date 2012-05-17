@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+
+tsdp_header_R.prototype = Object.create(tsdp_header.prototype);
 %%{
 	machine tsdp_machine_parser_header_R;
 
@@ -51,20 +53,21 @@
 %%write data;
 
 function tsdp_header_R(s_repeat_interval, s_typed_time){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.R);
+	tsdp_header.call(this, tsdp_header_type_e.R);
 	this.s_repeat_interval = s_repeat_interval;
 	this.as_typed_times = new Array();
 	if(s_typed_time){
 		this.as_typed_times.push(s_typed_time);
 	}
-	this.toString = function(){
-		// r=7d 1h 0 25h
-		var s_str = this.s_repeat_interval;
-		for(var i = 0; i < this.as_typed_times.length; ++i){
-			s_str += " " + this.as_typed_times[i];
-		}
-		return s_str;
+}
+
+tsdp_header_R.prototype.toString = function(){
+	// r=7d 1h 0 25h
+	var s_str = this.s_repeat_interval;
+	for(var i = 0; i < this.as_typed_times.length; ++i){
+		s_str += " " + this.as_typed_times[i];
 	}
+	return s_str;
 }
 
 tsdp_header_R.prototype.Parse = function(s_str){

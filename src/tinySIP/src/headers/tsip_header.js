@@ -184,3 +184,12 @@ tsip_header.prototype.FindByType = function(ao_headers, e_type) {
     }
     return null;
 }
+
+
+tsip_api_add_js_scripts('head',
+    'src/tinySIP/src/headers/tsip_header_Int.js', // 'Content-Length', 'Expires', 'Max-Forwards', 'Min_Expires', 'Min-SE', 'RSeq'
+    'src/tinySIP/src/headers/tsip_header_NameAddr.js', // 'From', 'To', 'Refer-To', 'Referred-By'
+    'src/tinySIP/src/headers/tsip_header_NameAddrArray.js', // 'P-Asserted-Identity', 'P-Associated-URI', 'Path', 'Record-Route', 'Route', 'Service-Route'
+    'src/tinySIP/src/headers/tsip_header_Str.js', // Call-ID, 'Event', P-Access-Network-Info, Server, SIP-ETag, SIP-If-Match, User-Agent
+    'src/tinySIP/src/headers/tsip_header_StrArray.js' // 'Allow', 'Allow-Events', 'Privacy', 'Require', 'Supported'
+);

@@ -1,0 +1,104 @@
+﻿<html>
+<!-- head -->
+<head>
+    <title>Test SIP messages</title>
+    <script src="src/tinySDP/src/tsdp_api.js" type="text/javascript"> </script>
+</head>
+
+<script type="text/javascript">
+
+    var __msg1 = "v=0\r\n" +
+	"o=alice 2890844526 2890844526 IN IP4 host.atlanta.example.com\r\n" +
+	"s=\r\n" +
+	"i=A Seminar on the session description protocol\r\n" +
+	"u=http://www.example.com/seminars/sdp.pdf\r\n" +
+	"e=j.doe@example.com (Jane Doe)\r\n" +
+	"p=+1 617 555-6011\r\n" +
+	"c=IN IP4 host.atlanta.example.com\r\n" +
+	"b=X-YZ:128\r\n" +
+	"z=2882844526 -1h 2898848070 0\r\n" +
+	"k=base64:ZWFzdXJlLg==\r\n" +
+	"t=3034423619 3042462419\r\n" +
+    "r=7d 1h 0 25h\r\n" +
+	"r=604800 3600 0 90000\r\n" +
+	"w=my dummy header\r\n" +
+	"m=audio 49170 RTP/AVP 0 8 97 98\r\n" +
+	"i=Audio line\r\n" +
+	"c=IN IP4 otherhost.biloxi.example.com\r\n" +
+	"k=base64:ZWFzdXJlLgdddddddddddddddddddddd==\r\n" +
+	"a=rtpmap:0 PCMU/8000\r\n" +
+	"a=rtpmap:8 PCMA/8000\r\n" +
+	"a=rtpmap:97 iLBC/8000\r\n" +
+	"a=rtpmap:98 AMR-WB/16000\r\n" +
+    "a=fmtp:98 octet-align=1\r\n" +
+	"m=video 51372 RTP/AVP 31 32\r\n" +
+	"i=Video line\r\n" +
+	"b=A-YZ:92\r\n" +
+	"b=B-YZ:256\r\n" +
+	"a=rtpmap:31 H261/90000\r\n" +
+	"a=rtpmap:32 MPV/90000\r\n" +
+    "a=ssrc:3678808980 label:PÃ©riphÃ©rique vidÃ©o US\r\n" +
+	"a=recvonly\r\n";
+
+    var __msg2 = "v=0\r\n" +
+    "o=- 0 0 IN IP4 127.0.0.1\r\n" +
+    "s=-\r\n" +
+    "t=0 0\r\n" +
+    "e=Jane Doe <j.doe@example.com>\r\n" +
+    "u=sip:alice@doubango.org\r\n" +
+    "p=+1 617 555-6011\r\n" +
+    "s=testing sdp parser\r\n" +
+    "i=session-level information\r\n" +
+    "m=audio 1660 RTP/AVP 103 104 0 8 106 105 13 126\r\n" +
+    "i=media-level information\r\n" +
+    "k=audio_key\r\n" +
+    "c=IN IP4 192.168.0.12\r\n" +
+    "a=rtcp:1659 IN IP4 192.168.0.12\r\n" +
+    "a=candidate:1 2 udp 1 192.168.0.12 1659 typ host name rtcp network_name {9EBBE687-CCE6-42D3-87F5-B57BB30DEE23} username UsVLB4eUbeUoNqNX password bb2g1bdEtuzSPNYXvekos1 generation 0\r\n" +
+    "a=candidate:1 1 udp 1 192.168.0.12 1660 typ host name rtp network_name {9EBBE687-CCE6-42D3-87F5-B57BB30DEE23} username EmcJDeNlp5eowR78 password gigGs6fimM/xmBHBuxv9tM generation 0\r\n" +
+    "a=mid:audio\r\n" +
+    "a=rtcp-mux\r\n" +
+    "a=crypto:0 AES_CM_128_HMAC_SHA1_32 inline:HE2wXFpJetC6Crt2IYh2+DU9DgGRP9/GNF5k8duc \r\n" +
+    "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:Rb1sTMzeh4F1PwMBhsGAkE7IXU4bRsnPwYTe0V1C \r\n" +
+    "a=rtpmap:103 ISAC/16000\r\n" +
+    "a=rtpmap:104 ISAC/32000\r\n" +
+    "a=rtpmap:0 PCMU/8000\r\n" +
+    "a=rtpmap:8 PCMA/8000\r\n" +
+    "a=rtpmap:106 CN/32000\r\n" +
+    "a=rtpmap:105 CN/16000\r\n" +
+    "a=rtpmap:13 CN/8000\r\n" +
+    "a=rtpmap:126 telephone-event/8000\r\n" +
+    "a=ssrc:516108910 cname:sET0y/IbFJhjVQNv\r\n" +
+    "a=ssrc:516108910 mslabel:fd6ca735-ce47-4095-bcc8-659b86a16638\r\n" +
+    "a=ssrc:516108910 label:Default\r\n" +
+    "m=video 1662 RTP/AVP 100 101 102\r\n" +
+    "i=media-level information\r\n" +
+    "k=video_key\r\n" +
+    "c=IN IP4 192.168.0.12\r\n" +
+    "a=rtcp:1661 IN IP4 192.168.0.12\r\n" +
+    "a=candidate:1 2 udp 1 192.168.0.12 1661 typ host name video_rtcp network_name {9EBBE687-CCE6-42D3-87F5-B57BB30DEE23} username +t7KNjDJQ2Hu7G/G password vEMwN5dTMPhWLDAvVmmGOo generation 0\r\n" +
+    "a=candidate:1 1 udp 1 192.168.0.12 1662 typ host name video_rtp network_name {9EBBE687-CCE6-42D3-87F5-B57BB30DEE23} username HPOEJJ1JNO89vKqp password Q0S2fUEFYhRlFVrPH1b6zk generation 0\r\n" +
+    "a=mid:video\r\n" +
+    "a=rtcp-mux\r\n" +
+    "a=crypto:0 AES_CM_128_HMAC_SHA1_80 inline:b1PujeHajYE0EqBykzHzMz7n+QGdXWv7nHdb9RBa \r\n" +
+    "a=rtpmap:100 VP8/90000\r\n" +
+    "a=rtpmap:101 red/90000\r\n" +
+    "a=rtpmap:102 ulpfec/90000\r\n" +
+    "a=ssrc:3678808980 cname:sET0y/IbFJhjVQNv\r\n" +
+    "a=ssrc:3678808980 mslabel:fd6ca735-ce47-4095-bcc8-659b86a16638\r\n" +
+    "a=ssrc:1197373411 label:Priphrique vido US\r\n";
+
+    function test_msg_parse() {
+        var i_length = __msg2.length;
+        var o_message = tsdp_message.prototype.Parse(__msg2);
+        console.info(o_message.toString());
+    }
+</script>
+
+<!-- body -->
+<body>
+    <form action=''>
+    <input type="button" value="Parse" onclick='test_msg_parse();' />
+    </form>
+</body>
+</html>
