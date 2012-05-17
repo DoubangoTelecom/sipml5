@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+
+tsdp_header_B.prototype = Object.create(tsdp_header.prototype);
 %%{
 	machine tsdp_machine_parser_header_B;
 
@@ -49,12 +51,13 @@
 %%write data;
 
 function tsdp_header_B(s_bwtype, i_bandwidth){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.B);
+	tsdp_header.call(this, tsdp_header_type_e.A);
 	this.s_bwtype = s_bwtype;
 	this.i_bandwidth = i_bandwidth;
-	this.toString = function(){
-		return tsk_string_format("{0}:{1}", this.s_bwtype, this.i_bandwidth);
-	}
+}
+
+tsdp_header_B.prototype.toString = function(){
+	return tsk_string_format("{0}:{1}", this.s_bwtype, this.i_bandwidth);
 }
 
 tsdp_header_B.prototype.Parse = function(s_str){

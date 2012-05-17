@@ -437,11 +437,11 @@ tsip_dialog_invite.prototype.send_prack = function (o_r1xx) {
         UAC.  An implementation MAY discard the response, or MAY cache the
         response in the hopes of receiving the missing responses.
         */
-        if (self.i_rseq && (o_hdr_RSeq.i_seq <= this.i_rseq)) {
+        if (self.i_rseq && (o_hdr_RSeq.i_value <= this.i_rseq)) {
             console.warn("1xx.RSeq value is not one higher than lastINVITE.RSeq");
             return 0; /* Not error */
         }
-        this.i_rseq = o_hdr_RSeq.i_seq;
+        this.i_rseq = o_hdr_RSeq.i_value;
     }
 
     /* RFC 3262 - 4 UAC Behavior

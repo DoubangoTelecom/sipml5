@@ -82,6 +82,7 @@ o_session.set(tsip_session.prototype.SetExpires(1800));
 	void set() { }
 	int i_expires;
 	static int __i_session_id_invalid;
+	int b_server;
 
 /**
 * Adds session capabilities

@@ -1,0 +1,146 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+
+// Parse headers: 'P-Asserted-Identity', 'P-Associated-URI', 'P-Preferred-Identity', 'Path', 'Record-Route', 'Route', 'Service-Route'
+
+tsip_header_P_Asserted_Identity.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_P_Associated_URI.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_P_Preferred_Identity.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_Path.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_Record_Route.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_Route.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_Service_Route.prototype = Object.create(tsip_header_NameAddr.prototype);
+
+function tsip_header_P_Asserted_Identity(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.P_Asserted_Identity, o_uri); }
+function tsip_header_P_Associated_URI(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.P_Associated_URI, o_uri); }
+function tsip_header_P_Preferred_Identity(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.P_Preferred_Identity, o_uri); }
+function tsip_header_Path(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Path, o_uri); }
+function tsip_header_Record_Route(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Record_Route, o_uri); }
+function tsip_header_Route(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Route, o_uri); }
+function tsip_header_Service_Route(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Service_Route, o_uri); }
+
+%%{
+	machine tsip_machine_parser_header_NameAddrArray;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action name_addr_create{
+		if(!o_curr_hdr){
+			o_curr_hdr = new t_curr_class();
+		}
+	}
+
+	action parse_display_name{
+	    if(o_curr_hdr){			
+			o_curr_hdr.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+            o_curr_hdr.s_display_name = tsk_string_unquote_2(o_curr_hdr.s_display_name);
+		}
+	}
+
+	action parse_uri{
+		if(o_curr_hdr && !o_curr_hdr.o_uri){
+		    var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+			if((o_curr_hdr.o_uri = tsip_uri.prototype.Parse(s_uri)) && o_curr_hdr.s_display_name){
+				o_curr_hdr.o_uri.s_display_name = tsk_strdup(o_curr_hdr.s_display_name);
+			}
+		}
+	}
+
+	action parse_param{
+		if(o_curr_hdr){
+			tsk_ragel_add_param(s_str, p, i_tag_start, o_curr_hdr.ao_params);
+		}
+	}
+
+	action name_addr_add{
+		if(o_curr_hdr){
+	        ao_hdrs.push(o_curr_hdr);
+	        o_curr_hdr = null;
+	    }
+	}
+
+	action is_P_Asserted_Identity{ t_curr_class = tsip_header_P_Asserted_Identity; }
+	action is_P_Associated_URI{ t_curr_class = tsip_header_P_Associated_URI; }
+	action is_P_Preferred_Identity{ t_curr_class = tsip_header_P_Preferred_Identity; }
+	action is_Path{ t_curr_class = tsip_header_Path; }
+	action is_Record_Route{ t_curr_class = tsip_header_Record_Route; }
+	action is_Route{ t_curr_class = tsip_header_Route; }
+	action is_Service_Route{ t_curr_class = tsip_header_Service_Route; }
+
+	action eob{ }
+
+	URI = (scheme HCOLON js_any+)>tag %parse_uri;
+	display_name = (( token LWS )+ | quoted_string)>tag %parse_display_name;
+	my_name_addr = display_name? :>LAQUOT<: URI :>RAQUOT;
+	name_addr_param = (generic_param) >tag %parse_param;
+	name_addr_value = (my_name_addr | URI) >name_addr_create %name_addr_add :>( SEMI name_addr_param )*;
+	
+	NameAddrArray =	(
+				( "P-Asserted-Identity"i )%is_P_Asserted_Identity |
+				( "P-Associated-URI"i )%is_P_Associated_URI |
+				( "P-Preferred-Identity"i )%is_P_Preferred_Identity |
+				( "Path"i )%is_Path |
+				( "Record-Route"i )%is_Record_Route |
+				( "Route"i )%is_Route |
+				( "Service-Route"i )%is_Service_Route
+			)
+			 HCOLON name_addr_value ( COMMA name_addr_value )*;
+
+	# Entry point
+	main := NameAddrArray :>CRLF @eob;
+
+}%%
+
+%%write data;
+
+tsip_header_P_Asserted_Identity.prototype.Parse =
+tsip_header_P_Associated_URI.prototype.Parse =
+tsip_header_P_Preferred_Identity.prototype.Parse =
+tsip_header_Path.prototype.Parse =
+tsip_header_Record_Route.prototype.Parse =
+tsip_header_Route.prototype.Parse =
+tsip_header_Service_Route.prototype.Parse =
+function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;
+	var ao_hdrs = new Array();
+	var o_curr_hdr = null;
+	var t_curr_class = null;
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse header: %s", s_str);
+		return null;
+	}
+	
+	return ao_hdrs;
+}

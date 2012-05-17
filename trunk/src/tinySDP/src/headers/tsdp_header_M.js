@@ -21,12 +21,14 @@
 * along with sipML5.
 */
 
-/* line 62 "./ragel/tsdp_parser_header_M.jrl" */
+tsdp_header_M.prototype = Object.create(tsdp_header.prototype);
+
+/* line 64 "./ragel/tsdp_parser_header_M.jrl" */
 
 
 
 
-/* line 30 "./src/headers/tsdp_header_M.js" */
+/* line 32 "./src/headers/tsdp_header_M.js" */
 const _tsdp_machine_parser_header_M_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4
@@ -109,10 +111,10 @@ const tsdp_machine_parser_header_M_error = 0;
 const tsdp_machine_parser_header_M_en_main = 1;
 
 
-/* line 66 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 68 "./ragel/tsdp_parser_header_M.jrl" */
 
 function tsdp_header_M(s_media, i_port, s_proto){
-	this.__proto__.__proto__ = new tsdp_header(tsdp_header_type_e.M);
+	tsdp_header.call(this, tsdp_header_type_e.M);
 	this.s_media = s_media;
 	this.i_port = i_port;
 	this.i_nports = 0; // number of ports
@@ -124,67 +126,67 @@ function tsdp_header_M(s_media, i_port, s_proto){
 	this.ao_hdr_B = new Array();
 	this.o_hdr_K = null;
 	this.ao_hdr_A = new Array();
+}
 
-	this.toString = function(s_endline){
-		if(!s_endline){
-			s_endline = "\r\n";
-		}
-		/*	IMPORTANT: Keep the order.
-			
-			m=  (media name and transport address)
-			i=* (media title)
-			c=* (connection information -- optional if included at
-					session level)
-			b=* (zero or more bandwidth information lines)
-			k=* (encryption key)
-			a=* (zero or more media attribute lines)
-		*/
-		var s_str = tsk_string_format("{0} {1}{2}{3} {4}",
-				this.s_media,
-				this.i_port,
-			
-				this.i_nports ? "/" : "",
-				this.i_nports ? this.i_nports : "",
-
-				this.s_proto);
-
-		// FMTs
-		for(var i = 0; i < this.as_fmt.length; ++i){
-			s_str += " " + this.as_fmt[i];
-		}
-		
-		var b_single_line = !this.o_hdr_I && !this.o_hdr_C && this.ao_hdr_B.length==0 && !this.o_hdr_K && this.ao_hdr_A.length.length==0;
-		if(b_single_line){
-			return s_str;
-		}
-
-		// close the "m=" line
-		s_str += s_endline;
-
-		// i=* (media title)
-		if(this.o_hdr_I){
-			s_str += this.o_hdr_I.tostring_full(false, s_endline);
-		}
-		// c=* (connection information -- optional if included at session level)
-		if(this.o_hdr_C){
-			s_str += this.o_hdr_C.tostring_full(false, s_endline);
-		}
-		// b=* (zero or more bandwidth information lines)
-		for(var i = 0; i < this.ao_hdr_B.length; ++i){
-			s_str += this.ao_hdr_B[i].tostring_full(false, s_endline);
-		}
-		
-		// k=* (encryption key)
-		if(this.o_hdr_K){
-			s_str += this.o_hdr_K.tostring_full(false, s_endline);
-		}
-		// a=* (zero or more media attribute lines)
-		for(var i = 0; i < this.ao_hdr_A.length; ++i){
-			s_str += this.ao_hdr_A[i].tostring_full(false, s_endline);
-		}
-		
-		return s_str.substring(0, s_str.length - s_endline.length);
+tsdp_header_M.prototype.toString = function(s_endline){
+	if(!s_endline){
+		s_endline = "\r\n";
 	}
+	/*	IMPORTANT: Keep the order.
+			
+		m=  (media name and transport address)
+		i=* (media title)
+		c=* (connection information -- optional if included at
+				session level)
+		b=* (zero or more bandwidth information lines)
+		k=* (encryption key)
+		a=* (zero or more media attribute lines)
+	*/
+	var s_str = tsk_string_format("{0} {1}{2}{3} {4}",
+			this.s_media,
+			this.i_port,
+			
+			this.i_nports ? "/" : "",
+			this.i_nports ? this.i_nports : "",
+
+			this.s_proto);
+
+	// FMTs
+	for(var i = 0; i < this.as_fmt.length; ++i){
+		s_str += " " + this.as_fmt[i];
+	}
+		
+	var b_single_line = !this.o_hdr_I && !this.o_hdr_C && this.ao_hdr_B.length==0 && !this.o_hdr_K && this.ao_hdr_A.length.length==0;
+	if(b_single_line){
+		return s_str;
+	}
+
+	// close the "m=" line
+	s_str += s_endline;
+
+	// i=* (media title)
+	if(this.o_hdr_I){
+		s_str += this.o_hdr_I.tostring_full(false, s_endline);
+	}
+	// c=* (connection information -- optional if included at session level)
+	if(this.o_hdr_C){
+		s_str += this.o_hdr_C.tostring_full(false, s_endline);
+	}
+	// b=* (zero or more bandwidth information lines)
+	for(var i = 0; i < this.ao_hdr_B.length; ++i){
+		s_str += this.ao_hdr_B[i].tostring_full(false, s_endline);
+	}
+		
+	// k=* (encryption key)
+	if(this.o_hdr_K){
+		s_str += this.o_hdr_K.tostring_full(false, s_endline);
+	}
+	// a=* (zero or more media attribute lines)
+	for(var i = 0; i < this.ao_hdr_A.length; ++i){
+		s_str += this.ao_hdr_A[i].tostring_full(false, s_endline);
+	}
+		
+	return s_str.substring(0, s_str.length - s_endline.length);
 }
 
 // for A headers, use "tsdp_header_A_removeAll_by_field()"
@@ -422,14 +424,14 @@ tsdp_header_M.prototype.Parse = function(s_str){
 	var hdr_M = new tsdp_header_M(null, 0, null);
 	
 	
-/* line 426 "./src/headers/tsdp_header_M.js" */
+/* line 428 "./src/headers/tsdp_header_M.js" */
 {
 	 cs = tsdp_machine_parser_header_M_start;
 } /* JSCodeGen::writeInit */
 
-/* line 378 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 380 "./ragel/tsdp_parser_header_M.jrl" */
 	
-/* line 433 "./src/headers/tsdp_header_M.js" */
+/* line 435 "./src/headers/tsdp_header_M.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -514,31 +516,31 @@ tsdp_header_M.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_M_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_M.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_M.jrl" */
 
 		hdr_M.s_media = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_M.jrl" */
 
 		hdr_M.i_port= tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 43 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 45 "./ragel/tsdp_parser_header_M.jrl" */
 
 		hdr_M.s_proto = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 47 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 49 "./ragel/tsdp_parser_header_M.jrl" */
 
 		tsk_ragel_parser_add_string(s_str, p, i_tag_start, hdr_M.as_fmt);
 			break;
-/* line 542 "./src/headers/tsdp_header_M.js" */
+/* line 544 "./src/headers/tsdp_header_M.js" */
 			} /* action switch */
 		}
 	}
@@ -567,16 +569,16 @@ case 4:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_M_actions[__acts - 1]) {
 case 3:
-/* line 43 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 45 "./ragel/tsdp_parser_header_M.jrl" */
 
 		hdr_M.s_proto = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 47 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 49 "./ragel/tsdp_parser_header_M.jrl" */
 
 		tsk_ragel_parser_add_string(s_str, p, i_tag_start, hdr_M.as_fmt);
 			break;
-/* line 580 "./src/headers/tsdp_header_M.js" */
+/* line 582 "./src/headers/tsdp_header_M.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -590,12 +592,12 @@ case 4:
 	}
 	}
 
-/* line 379 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 381 "./ragel/tsdp_parser_header_M.jrl" */
 	
 	if( cs < 
-/* line 597 "./src/headers/tsdp_header_M.js" */
+/* line 599 "./src/headers/tsdp_header_M.js" */
 13
-/* line 380 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 382 "./ragel/tsdp_parser_header_M.jrl" */
  ){
 		console.error("Failed to parse \"m=\" header: %s", s_str);
 		return null;

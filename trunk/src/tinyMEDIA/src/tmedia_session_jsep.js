@@ -216,10 +216,11 @@ tmedia_session_jsep.prototype.__set_ro = function (o_sdp, b_is_offer) {
     this.o_sdp_ro = o_sdp;
     this.b_sdp_ro_offer = b_is_offer;
 
+    // console.debug("SDP_RO=%s", this.o_sdp_ro.toString());
     if (this.o_pc) {
         try {
             this.o_pc.setRemoteDescription(b_is_offer ? webkitPeerConnection00.SDP_OFFER : webkitPeerConnection00.SDP_ANSWER,
-                            new SessionDescription(this.o_sdp_ro));
+                            new SessionDescription(this.o_sdp_ro.toString()));
             if (!this.b_sdp_ro_pending && b_is_offer) {
                 this.o_sdp_lo = null; // to force new SDP when get_lo() is called
             }

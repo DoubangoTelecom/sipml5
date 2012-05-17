@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+
+tsdp_header_M.prototype = Object.create(tsdp_header.prototype);
 %%{
 	machine tsdp_machine_parser_header_M;
 
@@ -65,7 +67,7 @@
 %%write data;
 
 function tsdp_header_M(s_media, i_port, s_proto){
-	this.__proto__.__proto__ = new tsdp_header(tsdp_header_type_e.M);
+	tsdp_header.call(this, tsdp_header_type_e.M);
 	this.s_media = s_media;
 	this.i_port = i_port;
 	this.i_nports = 0; // number of ports
@@ -77,67 +79,67 @@ function tsdp_header_M(s_media, i_port, s_proto){
 	this.ao_hdr_B = new Array();
 	this.o_hdr_K = null;
 	this.ao_hdr_A = new Array();
+}
 
-	this.toString = function(s_endline){
-		if(!s_endline){
-			s_endline = "\r\n";
-		}
-		/*	IMPORTANT: Keep the order.
-			
-			m=  (media name and transport address)
-			i=* (media title)
-			c=* (connection information -- optional if included at
-					session level)
-			b=* (zero or more bandwidth information lines)
-			k=* (encryption key)
-			a=* (zero or more media attribute lines)
-		*/
-		var s_str = tsk_string_format("{0} {1}{2}{3} {4}",
-				this.s_media,
-				this.i_port,
-			
-				this.i_nports ? "/" : "",
-				this.i_nports ? this.i_nports : "",
-
-				this.s_proto);
-
-		// FMTs
-		for(var i = 0; i < this.as_fmt.length; ++i){
-			s_str += " " + this.as_fmt[i];
-		}
-		
-		var b_single_line = !this.o_hdr_I && !this.o_hdr_C && this.ao_hdr_B.length==0 && !this.o_hdr_K && this.ao_hdr_A.length.length==0;
-		if(b_single_line){
-			return s_str;
-		}
-
-		// close the "m=" line
-		s_str += s_endline;
-
-		// i=* (media title)
-		if(this.o_hdr_I){
-			s_str += this.o_hdr_I.tostring_full(false, s_endline);
-		}
-		// c=* (connection information -- optional if included at session level)
-		if(this.o_hdr_C){
-			s_str += this.o_hdr_C.tostring_full(false, s_endline);
-		}
-		// b=* (zero or more bandwidth information lines)
-		for(var i = 0; i < this.ao_hdr_B.length; ++i){
-			s_str += this.ao_hdr_B[i].tostring_full(false, s_endline);
-		}
-		
-		// k=* (encryption key)
-		if(this.o_hdr_K){
-			s_str += this.o_hdr_K.tostring_full(false, s_endline);
-		}
-		// a=* (zero or more media attribute lines)
-		for(var i = 0; i < this.ao_hdr_A.length; ++i){
-			s_str += this.ao_hdr_A[i].tostring_full(false, s_endline);
-		}
-		
-		return s_str.substring(0, s_str.length - s_endline.length);
+tsdp_header_M.prototype.toString = function(s_endline){
+	if(!s_endline){
+		s_endline = "\r\n";
 	}
+	/*	IMPORTANT: Keep the order.
+			
+		m=  (media name and transport address)
+		i=* (media title)
+		c=* (connection information -- optional if included at
+				session level)
+		b=* (zero or more bandwidth information lines)
+		k=* (encryption key)
+		a=* (zero or more media attribute lines)
+	*/
+	var s_str = tsk_string_format("{0} {1}{2}{3} {4}",
+			this.s_media,
+			this.i_port,
+			
+			this.i_nports ? "/" : "",
+			this.i_nports ? this.i_nports : "",
+
+			this.s_proto);
+
+	// FMTs
+	for(var i = 0; i < this.as_fmt.length; ++i){
+		s_str += " " + this.as_fmt[i];
+	}
+		
+	var b_single_line = !this.o_hdr_I && !this.o_hdr_C && this.ao_hdr_B.length==0 && !this.o_hdr_K && this.ao_hdr_A.length.length==0;
+	if(b_single_line){
+		return s_str;
+	}
+
+	// close the "m=" line
+	s_str += s_endline;
+
+	// i=* (media title)
+	if(this.o_hdr_I){
+		s_str += this.o_hdr_I.tostring_full(false, s_endline);
+	}
+	// c=* (connection information -- optional if included at session level)
+	if(this.o_hdr_C){
+		s_str += this.o_hdr_C.tostring_full(false, s_endline);
+	}
+	// b=* (zero or more bandwidth information lines)
+	for(var i = 0; i < this.ao_hdr_B.length; ++i){
+		s_str += this.ao_hdr_B[i].tostring_full(false, s_endline);
+	}
+		
+	// k=* (encryption key)
+	if(this.o_hdr_K){
+		s_str += this.o_hdr_K.tostring_full(false, s_endline);
+	}
+	// a=* (zero or more media attribute lines)
+	for(var i = 0; i < this.ao_hdr_A.length; ++i){
+		s_str += this.ao_hdr_A[i].tostring_full(false, s_endline);
+	}
+		
+	return s_str.substring(0, s_str.length - s_endline.length);
 }
 
 // for A headers, use "tsdp_header_A_removeAll_by_field()"

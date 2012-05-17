@@ -1,0 +1,137 @@
+/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+*
+* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
+*	
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*
+* sipML5 is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as publishd by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*	
+* sipML5 is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*	
+* You should have received a copy of the GNU General Public License
+* along with sipML5.
+*/
+
+// Parse headers: 'From', 'To', 'Refer-To'
+tsip_header_NameAddr.prototype = Object.create(tsip_header.prototype);
+tsip_header_NameAddr.prototype.s_display_name = null;
+tsip_header_NameAddr.prototype.o_uri = null;
+tsip_header_NameAddr.prototype.s_tag = null;
+
+tsip_header_From.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_To.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_Refer_To.prototype = Object.create(tsip_header_NameAddr.prototype);
+tsip_header_Referred_By.prototype = Object.create(tsip_header_NameAddr.prototype);
+
+%%{
+	machine tsip_machine_parser_header_NameAddr;
+
+	# Includes
+	include tsip_machine_utils "./tsip_machine_utils.jrl";
+	
+	action tag{
+		i_tag_start = p;
+	}
+	
+	action parse_uri{
+	    if(o_hdr && !o_hdr.o_uri){
+		    var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+			if((o_hdr.o_uri = tsip_uri.prototype.Parse(s_uri)) && o_hdr.s_display_name){
+				o_hdr.o_uri.s_display_name = tsk_strdup(o_hdr.s_display_name);
+			}
+		}
+	}
+
+	action parse_display_name{
+		if(o_hdr){
+			o_hdr.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+			o_hdr.s_display_name = tsk_string_unquote_2(o_hdr.s_display_name);
+		}
+	}
+
+	action parse_tag{
+		if(o_hdr){
+			o_hdr.s_tag = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+		}
+	}
+
+	action parse_param{
+	    tsk_ragel_add_param(s_str, p, i_tag_start, o_hdr.ao_params);
+	}
+
+	action is_From { o_hdr = new tsip_header_From(); }
+	action is_To { o_hdr = new tsip_header_To(); }
+	action is_Refer_To { o_hdr = new tsip_header_Refer_To(); }
+	action is_Referred_By { o_hdr = new tsip_header_Referred_By(); }
+
+	action eob{ }
+
+	URI = (scheme HCOLON js_any+)>tag %parse_uri;
+	display_name = (( token LWS )+ | quoted_string)>tag %parse_display_name;
+	my_name_addr = display_name? :>LAQUOT<: URI :>RAQUOT;
+	my_tag_param = "tag"i EQUAL token>tag %parse_tag;
+	name_addr_param = (my_tag_param)@1 | (generic_param)@0 >tag %parse_param;
+	
+	NameAddr =	(
+				( "From"i | "f"i )%is_From |
+				( "To"i | "t"i )%is_To |
+				( "Refer-To"i | "r"i )%is_Refer_To |
+				( "Referred-By"i | "b"i )%is_Referred_By
+			)
+			 HCOLON ( my_name_addr | URI ) :> ( SEMI name_addr_param )*;
+	
+	# Entry point
+	main := NameAddr :>CRLF @eob;
+
+}%%
+
+
+%%write data;
+
+function tsip_header_NameAddr(e_type, o_uri, s_tag){
+	tsip_header.call(this, e_type);
+    this.s_display_name = o_uri ? o_uri.s_display_name : null;
+	this.o_uri = o_uri;
+	this.s_tag = s_tag;
+}
+
+tsip_header_NameAddr.prototype.toString = function(){
+    var s_str = tsip_uri_tostring(this.o_uri, true, true);
+    if(s_str && this.s_tag){
+        s_str += tsk_string_format(";tag={0}", this.s_tag);
+    }
+    return s_str;
+}
+
+tsip_header_NameAddr.prototype.Parse = function(s_str){
+    var cs = 0;
+	var p = 0;
+	var pe = s_str.length;
+	var eof = pe;
+	var data = tsk_buff_str2ib(s_str);
+	var i_tag_start;	
+	var o_hdr;
+	
+	%%write init;
+	%%write exec;
+	
+	if( cs < %%{ write first_final; }%% ){
+		console.error("Failed to parse header: %s", s_str);
+		return null;
+	}
+	
+	return o_hdr;
+}
+
+function tsip_header_From(o_uri, s_tag){ tsip_header_NameAddr.call(this, tsip_header_type_e.From, o_uri, s_tag); }
+function tsip_header_To(o_uri, s_tag){ tsip_header_NameAddr.call(this, tsip_header_type_e.To, o_uri, s_tag); }
+function tsip_header_Refer_To(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Refer_To, o_uri); }
+function tsip_header_Referred_By(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Referred_By, o_uri); }
+

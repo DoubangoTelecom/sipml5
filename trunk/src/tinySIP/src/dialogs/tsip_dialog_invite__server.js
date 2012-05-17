@@ -145,7 +145,7 @@ function __tsip_dialog_invite_cond_is_toosmall(o_dialog, o_message){
 				o_dialog.stimers.s_refresher = o_hdr_Session_Expires.b_refresher_uas ? "uas" : "uac";
 				o_dialog.stimers.b_is_refresher = tsk_string_iequals(o_dialog.stimers.s_refresher, "uas");
 				if((o_hdr_Min_SE = o_message.get_header(tsip_header_type_e.Min_SE))){
-					o_dialog.stimers.i_minse = o_hdr_Min_SE.i_delta_seconds;
+					o_dialog.stimers.i_minse = o_hdr_Min_SE.i_value;
 				}
 			}
 		}

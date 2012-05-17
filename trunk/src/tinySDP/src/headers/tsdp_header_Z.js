@@ -21,11 +21,13 @@
 * along with sipML5.
 */
 
-/* line 73 "./ragel/tsdp_parser_header_Z.jrl" */
+tsdp_header_Z.prototype = Object.create(tsdp_header.prototype);
+
+/* line 75 "./ragel/tsdp_parser_header_Z.jrl" */
 
 
 
-/* line 29 "./src/headers/tsdp_header_Z.js" */
+/* line 31 "./src/headers/tsdp_header_Z.js" */
 const _tsdp_machine_parser_header_Z_actions = [
 	0, 1, 0, 1, 3, 1, 4, 2, 
 	1, 0, 2, 4, 2, 2, 5, 0, 
@@ -100,7 +102,7 @@ const tsdp_machine_parser_header_Z_error = 0;
 const tsdp_machine_parser_header_Z_en_main = 1;
 
 
-/* line 76 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 78 "./ragel/tsdp_parser_header_Z.jrl" */
 
 function tsdp_zone(i_time, b_shifted_back, s_typed_time){
 	this.i_time = i_time;
@@ -109,7 +111,7 @@ function tsdp_zone(i_time, b_shifted_back, s_typed_time){
 }
 
 function tsdp_header_Z(i_time, b_shifted_back, s_typed_time){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.Z);
+	tsdp_header.call(this, tsdp_header_type_e.Z);
 	this.ao_zones = new Array();
 	if(s_typed_time){
 		this.ao_zones.push(new tsdp_zone(i_time, b_shifted_back, s_typed_time));
@@ -142,14 +144,14 @@ tsdp_header_Z.prototype.Parse = function(s_str){
 	var o_zone = null;
 	
 	
-/* line 146 "./src/headers/tsdp_header_Z.js" */
+/* line 148 "./src/headers/tsdp_header_Z.js" */
 {
 	 cs = tsdp_machine_parser_header_Z_start;
 } /* JSCodeGen::writeInit */
 
-/* line 117 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 119 "./ragel/tsdp_parser_header_Z.jrl" */
 	
-/* line 153 "./src/headers/tsdp_header_Z.js" */
+/* line 155 "./src/headers/tsdp_header_Z.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -234,19 +236,19 @@ tsdp_header_Z.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_Z_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		if(!o_zone){
 			o_zone = new tsdp_zone(0, false, null);
 		}
 			break;
 case 2:
-/* line 37 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 39 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		if(o_zone){
 			hdr_Z.ao_zones.push(o_zone);
@@ -254,27 +256,27 @@ case 2:
 		}
 			break;
 case 3:
-/* line 44 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 46 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		if(o_zone){
 			o_zone.i_time = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 		}
 			break;
 case 4:
-/* line 50 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 52 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		if(o_zone){
 			o_zone.s_typed_time = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
 case 5:
-/* line 56 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 58 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		if(o_zone){
 			o_zone.b_shifted_back = true;
 		}
 			break;
-/* line 278 "./src/headers/tsdp_header_Z.js" */
+/* line 280 "./src/headers/tsdp_header_Z.js" */
 			} /* action switch */
 		}
 	}
@@ -303,14 +305,14 @@ case 5:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_Z_actions[__acts - 1]) {
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		if(!o_zone){
 			o_zone = new tsdp_zone(0, false, null);
 		}
 			break;
 case 2:
-/* line 37 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 39 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		if(o_zone){
 			hdr_Z.ao_zones.push(o_zone);
@@ -318,13 +320,13 @@ case 2:
 		}
 			break;
 case 4:
-/* line 50 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 52 "./ragel/tsdp_parser_header_Z.jrl" */
 
 		if(o_zone){
 			o_zone.s_typed_time = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
-/* line 328 "./src/headers/tsdp_header_Z.js" */
+/* line 330 "./src/headers/tsdp_header_Z.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -338,12 +340,12 @@ case 4:
 	}
 	}
 
-/* line 118 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 120 "./ragel/tsdp_parser_header_Z.jrl" */
 	
 	if( cs < 
-/* line 345 "./src/headers/tsdp_header_Z.js" */
+/* line 347 "./src/headers/tsdp_header_Z.js" */
 12
-/* line 119 "./ragel/tsdp_parser_header_Z.jrl" */
+/* line 121 "./ragel/tsdp_parser_header_Z.jrl" */
  ){
 		console.error("Failed to parse \"z=\" header: %s", s_str);
 		return null;

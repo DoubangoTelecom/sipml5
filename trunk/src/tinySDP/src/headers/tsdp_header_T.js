@@ -21,11 +21,13 @@
 * along with sipML5.
 */
 
-/* line 55 "./ragel/tsdp_parser_header_T.jrl" */
+tsdp_header_T.prototype = Object.create(tsdp_header.prototype);
+
+/* line 57 "./ragel/tsdp_parser_header_T.jrl" */
 
 
 
-/* line 29 "./src/headers/tsdp_header_T.js" */
+/* line 31 "./src/headers/tsdp_header_T.js" */
 const _tsdp_machine_parser_header_T_actions = [
 	0, 1, 0, 1, 1, 1, 2
 ];
@@ -79,34 +81,34 @@ const tsdp_machine_parser_header_T_error = 0;
 const tsdp_machine_parser_header_T_en_main = 1;
 
 
-/* line 58 "./ragel/tsdp_parser_header_T.jrl" */
+/* line 60 "./ragel/tsdp_parser_header_T.jrl" */
 
 function tsdp_header_T(i_start, i_stop){
-	this.__proto__ = new tsdp_header(tsdp_header_type_e.T);
+	tsdp_header.call(this, tsdp_header_type_e.T);
 	this.i_start = i_start;
 	this.i_stop = i_stop;
 	this.ao_hdr_R = new Array();
+}
 
-	this.toString = function(){
-		//"t=3034423619 3042462419\r\n"
-		//"r=7d 1h 0 25h\r\n"
-		// IMPORTANT: Do not append the last CRLF (because we only print the header value).
-		var s_str = tsk_string_format( "{0} {1}", this.i_start, this.i_stop);
+tsdp_header_T.prototype.toString = function(){
+	//"t=3034423619 3042462419\r\n"
+	//"r=7d 1h 0 25h\r\n"
+	// IMPORTANT: Do not append the last CRLF (because we only print the header value).
+	var s_str = tsk_string_format( "{0} {1}", this.i_start, this.i_stop);
 
-		for(var i = 0; i < this.ao_hdr_R.length; ++i){
-			if(i == 0){
-				s_str += "\r\n";
-			}
-			s_str += tsk_string_format("{0}=", this.ao_hdr_R[i].e_type.s_name);
-			s_str += this.ao_hdr_R[i];
-
-			if(i != (this.ao_hdr_R.length - 1)){
-				s_str += "\r\n";
-			}
+	for(var i = 0; i < this.ao_hdr_R.length; ++i){
+		if(i == 0){
+			s_str += "\r\n";
 		}
+		s_str += tsk_string_format("{0}=", this.ao_hdr_R[i].e_type.s_name);
+		s_str += this.ao_hdr_R[i];
 
-		return s_str;
+		if(i != (this.ao_hdr_R.length - 1)){
+			s_str += "\r\n";
+		}
 	}
+
+	return s_str;
 }
 
 tsdp_header_T.prototype.Parse = function(s_str){
@@ -119,14 +121,14 @@ tsdp_header_T.prototype.Parse = function(s_str){
 	var hdr_T = new tsdp_header_T(0, 0);
 	
 	
-/* line 123 "./src/headers/tsdp_header_T.js" */
+/* line 125 "./src/headers/tsdp_header_T.js" */
 {
 	 cs = tsdp_machine_parser_header_T_start;
 } /* JSCodeGen::writeInit */
 
-/* line 97 "./ragel/tsdp_parser_header_T.jrl" */
+/* line 99 "./ragel/tsdp_parser_header_T.jrl" */
 	
-/* line 130 "./src/headers/tsdp_header_T.js" */
+/* line 132 "./src/headers/tsdp_header_T.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -210,21 +212,21 @@ tsdp_header_T.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_T_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsdp_parser_header_T.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_T.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsdp_parser_header_T.jrl" */
+/* line 33 "./ragel/tsdp_parser_header_T.jrl" */
 
 		hdr_T.i_start = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsdp_parser_header_T.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_T.jrl" */
 
 		hdr_T.i_stop = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
-/* line 228 "./src/headers/tsdp_header_T.js" */
+/* line 230 "./src/headers/tsdp_header_T.js" */
 			} /* action switch */
 		}
 	}
@@ -253,11 +255,11 @@ case 2:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_T_actions[__acts - 1]) {
 case 2:
-/* line 35 "./ragel/tsdp_parser_header_T.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_T.jrl" */
 
 		hdr_T.i_stop = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
-/* line 261 "./src/headers/tsdp_header_T.js" */
+/* line 263 "./src/headers/tsdp_header_T.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -271,12 +273,12 @@ case 2:
 	}
 	}
 
-/* line 98 "./ragel/tsdp_parser_header_T.jrl" */
+/* line 100 "./ragel/tsdp_parser_header_T.jrl" */
 	
 	if( cs < 
-/* line 278 "./src/headers/tsdp_header_T.js" */
+/* line 280 "./src/headers/tsdp_header_T.js" */
 7
-/* line 99 "./ragel/tsdp_parser_header_T.jrl" */
+/* line 101 "./ragel/tsdp_parser_header_T.jrl" */
  ){
 		console.error("Failed to parse \"t=\" header: %s", s_str);
 		return null;

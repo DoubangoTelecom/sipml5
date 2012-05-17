@@ -96,10 +96,12 @@ tsip_dialog_invite.prototype.ect_send_refer = function(s_to){
 	}
 
 	if((o_refer = this.request_new("REFER"))){
-		var s_cid = tsk_string_random(11);
+	    var o_hdr_Referred_By = new tsip_header_Referred_By(this.get_stack().identity.o_uri_impu);
+        o_hdr_Referred_By.add_param("cid", tsk_string_random(11));
+                
         o_refer.add_headers(
             new tsip_header_Refer_To(o_toUri),
-            new tsip_header_Referred_By(this.get_stack().identity.o_uri_impu, s_cid),
+            o_hdr_Referred_By,
             new tsip_header_Refer_Sub(this.supported.b_refer_sub)
         );
 		if(this.supported.b_norefsub){

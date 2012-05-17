@@ -18,6 +18,9 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_response.prototype = Object.create(tsip_message.prototype);
+tsip_request.prototype = Object.create(tsip_message.prototype);
+
 tsip_message.prototype.__s_version_10 = "SIP/1.0";
 tsip_message.prototype.__s_version_20 = "SIP/2.0";
 tsip_message.prototype.__s_version_default = tsip_message.prototype.__s_version_20;
@@ -89,7 +92,7 @@ function tsip_response(i_status_code, s_reason_phrase, o_request) {
         console.error("Invalid argument");
         return null;
     }
-    this.__proto__ = new tsip_message(tsip_message_type_e.RESPONSE);
+    tsip_message.call(this, tsip_message_type_e.RESPONSE);
 	this.line.response.i_status_code = i_status_code;
 	this.line.response.s_reason_phrase = s_reason_phrase; 
 				
@@ -149,7 +152,7 @@ function tsip_request(s_method, o_uri_request, o_uri_from, o_uri_to, s_call_id, 
         return null;
     }
 
-    this.__proto__ = new tsip_message(tsip_message_type_e.REQUEST);
+    tsip_message.call(this, tsip_message_type_e.REQUEST);
     this.line.request.s_method = s_method;
     this.line.request.o_uri = o_uri_request;
     this.line.request.e_type = tsip_message.prototype.GetRequestType(s_method);
@@ -167,8 +170,8 @@ function tsip_request(s_method, o_uri_request, o_uri_from, o_uri_to, s_call_id, 
 		which contains the method, Request-URI, and SIP version.
 	*/
     this.add_headers( 
-        new tsip_header_To(o_uri_to ? o_uri_to.s_display_name : null, o_uri_to, null),
-        new tsip_header_From(o_uri_from ? o_uri_from.s_display_name : null, o_uri_from, null),
+        new tsip_header_To(o_uri_to, null),
+        new tsip_header_From(o_uri_from, null),
         new tsip_header_CSeq(i_cseq, s_method),
         new tsip_header_Call_ID(s_call_id),
         new tsip_header_Max_Forwards(TSIP_HEADER_MAX_FORWARDS_DEFAULT),
@@ -383,7 +386,7 @@ tsip_message.prototype.is_allowed = function (s_method) {
     var i_index = 0;
 
     while ((o_hdr_allow = this.get_header_at(tsip_header_type_e.Allow, i_index++))) {
-        if (o_hdr_allow.has_method(s_method)) {
+        if (o_hdr_allow.has_value(s_method)) {
             return true;
         }
     }
@@ -400,7 +403,7 @@ tsip_message.prototype.is_supported = function (s_option) {
     var i_index = 0;
 
     while ((o_hdr_supported = this.get_header_at(tsip_header_type_e.Supported, i_index++))) {
-        if (o_hdr_supported.has_option(s_option)) {
+        if (o_hdr_supported.has_value(s_option)) {
             return true;
         }
     }
@@ -417,7 +420,7 @@ tsip_message.prototype.is_required = function (s_option) {
     var i_index = 0;
 
     while ((o_hdr_require = this.get_header_at(tsip_header_type_e.Require, i_index++))) {
-        if (o_hdr_require.has_option(s_option)) {
+        if (o_hdr_require.has_value(s_option)) {
             return true;
         }
     }
@@ -426,7 +429,7 @@ tsip_message.prototype.is_required = function (s_option) {
 
 tsip_message.prototype.get_expires = function () {
     if (this.o_hdr_Expires) {
-        return this.o_hdr_Expires.i_delta_sec;
+        return this.o_hdr_Expires.i_value;
     }
     if (this.o_hdr_Contact) {
         return this.o_hdr_Contact.i_expires;
@@ -439,7 +442,7 @@ tsip_message.prototype.has_content = function () {
 }
 
 tsip_message.prototype.get_content_length = function () {
-    return this.o_hdr_Content_Length ? this.o_hdr_Content_Length.i_length : 0;
+    return this.o_hdr_Content_Length ? this.o_hdr_Content_Length.i_value : 0;
 }
 
 tsip_message.prototype.get_content_type = function () {

@@ -115,12 +115,38 @@ o_stack.on_event_invite = function (evt: tsip_event_invite) {
     console.debug("sesssion id=%d", evt.get_session().get_id());
     switch (evt.e_invite_type) {
         case tsip_event_invite_type_e.I_NEW_CALL:
-        case tsip_event_invite_type_e.I_AO_REQUEST:
-        case tsip_event_invite_type_e.M_EARLY_MEDIA:
+	
+	    case tsip_event_invite_type_e.I_REQUEST:
+	    case tsip_event_invite_type_e.I_AO_REQUEST:
+	
+        case tsip_event_invite_type_e.O_ECT_TRYING:
+        case tsip_event_invite_type_e.O_ECT_ACCEPTED:
+        case tsip_event_invite_type_e.O_ECT_COMPLETED:
+        case tsip_event_invite_type_e.O_ECT_FAILED:
+        case tsip_event_invite_type_e.O_ECT_NOTIFY:
+        case tsip_event_invite_type_e.I_ECT_REQUESTED:
+        case tsip_event_invite_type_e.I_ECT_NEW_CALL:
+        case tsip_event_invite_type_e.I_ECT_COMPLETED:
+        case tsip_event_invite_type_e.I_ECT_FAILED:
+        case tsip_event_invite_type_e.I_ECT_NOTIFY:
+
+	    case tsip_event_invite_type_e.M_EARLY_MEDIA:
+	    case tsip_event_invite_type_e.M_UPDATING:
+	    case tsip_event_invite_type_e.M_UPDATED:
+	    case tsip_event_invite_type_e.M_STREAM_CONNECTING:
+	    case tsip_event_invite_type_e.M_STREAM_CONNECTED:
         case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
         case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED:
         case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
         case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED:
+	
+	    case tsip_event_invite_type_e.M_LOCAL_HOLD_OK:
+	    case tsip_event_invite_type_e.M_LOCAL_HOLD_NOK:
+	    case tsip_event_invite_type_e.M_LOCAL_RESUME_OK:
+	    case tsip_event_invite_type_e.M_LOCAL_RESUME_NOK:
+	    case tsip_event_invite_type_e.M_REMOTE_HOLD:
+	    case tsip_event_invite_type_e.M_REMOTE_RESUME:
+
         default: break;
     }
 };

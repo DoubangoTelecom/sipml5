@@ -29,7 +29,7 @@ function prev_not_comma(o_ragel_state, i_p){
 }
 
 
-/* line 736 "./ragel/tsip_parser_header.jrl" */
+/* line 738 "./ragel/tsip_parser_header.jrl" */
 
 
 
@@ -5103,7 +5103,7 @@ const tsip_machine_parser_headers_error = 0;
 const tsip_machine_parser_headers_en_main = 1;
 
 
-/* line 739 "./ragel/tsip_parser_header.jrl" */
+/* line 741 "./ragel/tsip_parser_header.jrl" */
 
 function tsip_header_parse(o_ragel_state, o_msg){
 	var cs = 0;
@@ -5119,7 +5119,7 @@ function tsip_header_parse(o_ragel_state, o_msg){
 	 cs = tsip_machine_parser_headers_start;
 } /* JSCodeGen::writeInit */
 
-/* line 749 "./ragel/tsip_parser_header.jrl" */
+/* line 751 "./ragel/tsip_parser_header.jrl" */
 	
 /* line 5125 "./src/parsers/tsip_parser_header.js" */
 {
@@ -5510,29 +5510,33 @@ case 47:
 case 48:
 /* line 385 "./ragel/tsip_parser_header.jrl" */
 
-	    var header = tsip_header_P_Preferred_Identity.prototype.Parse(s_str);
-		o_msg.add_headers(header);
+		var headers = tsip_header_P_Preferred_Identity.prototype.Parse(s_str);
+		if(headers){
+			for(var i = 0; i < headers.length; ++i){
+				o_msg.add_header(headers[i]);
+			}
+		}
 			break;
 case 49:
-/* line 392 "./ragel/tsip_parser_header.jrl" */
+/* line 396 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 50:
-/* line 399 "./ragel/tsip_parser_header.jrl" */
+/* line 403 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 51:
-/* line 406 "./ragel/tsip_parser_header.jrl" */
+/* line 410 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 52:
-/* line 413 "./ragel/tsip_parser_header.jrl" */
+/* line 417 "./ragel/tsip_parser_header.jrl" */
 
 	    var headers = tsip_header_Path.prototype.Parse(s_str);
 		if(headers){
@@ -5542,52 +5546,50 @@ case 52:
 		}
 			break;
 case 53:
-/* line 424 "./ragel/tsip_parser_header.jrl" */
+/* line 428 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 54:
-/* line 431 "./ragel/tsip_parser_header.jrl" */
+/* line 435 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Privacy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 55:
-/* line 438 "./ragel/tsip_parser_header.jrl" */
+/* line 442 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_WWW_Authenticate.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 		p = (pe - 1); // hack: Ragel "when" clause not supported in javascript
 			break;
 case 56:
-/* line 446 "./ragel/tsip_parser_header.jrl" */
+/* line 450 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Authorization.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 57:
-/* line 453 "./ragel/tsip_parser_header.jrl" */
+/* line 457 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
-		//tsip_header_Proxy_Require_t *header = tsip_header_Proxy_Require.prototype.Parse(s_str);
-		//ADD_HEADER(header);
 			break;
 case 58:
-/* line 462 "./ragel/tsip_parser_header.jrl" */
+/* line 464 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_RAck.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 59:
-/* line 469 "./ragel/tsip_parser_header.jrl" */
+/* line 471 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 60:
-/* line 476 "./ragel/tsip_parser_header.jrl" */
+/* line 478 "./ragel/tsip_parser_header.jrl" */
 
 	    var headers = tsip_header_Record_Route.prototype.Parse(s_str);
 		if(headers){
@@ -5597,67 +5599,67 @@ case 60:
 		}
 			break;
 case 61:
-/* line 487 "./ragel/tsip_parser_header.jrl" */
+/* line 489 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Refer_Sub.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 62:
-/* line 494 "./ragel/tsip_parser_header.jrl" */
+/* line 496 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Refer_To.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 63:
-/* line 501 "./ragel/tsip_parser_header.jrl" */
+/* line 503 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Referred_By.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 64:
-/* line 508 "./ragel/tsip_parser_header.jrl" */
+/* line 510 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 65:
-/* line 515 "./ragel/tsip_parser_header.jrl" */
+/* line 517 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 66:
-/* line 522 "./ragel/tsip_parser_header.jrl" */
+/* line 524 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 67:
-/* line 529 "./ragel/tsip_parser_header.jrl" */
+/* line 531 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 68:
-/* line 536 "./ragel/tsip_parser_header.jrl" */
+/* line 538 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Require.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 69:
-/* line 543 "./ragel/tsip_parser_header.jrl" */
+/* line 545 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 70:
-/* line 550 "./ragel/tsip_parser_header.jrl" */
+/* line 552 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 71:
-/* line 557 "./ragel/tsip_parser_header.jrl" */
+/* line 559 "./ragel/tsip_parser_header.jrl" */
 
 	    var headers = tsip_header_Route.prototype.Parse(s_str);
 		if(headers){
@@ -5667,37 +5669,37 @@ case 71:
 		}
 			break;
 case 72:
-/* line 568 "./ragel/tsip_parser_header.jrl" */
+/* line 570 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_RSeq.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 73:
-/* line 575 "./ragel/tsip_parser_header.jrl" */
+/* line 577 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 74:
-/* line 582 "./ragel/tsip_parser_header.jrl" */
+/* line 584 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 75:
-/* line 589 "./ragel/tsip_parser_header.jrl" */
+/* line 591 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 76:
-/* line 596 "./ragel/tsip_parser_header.jrl" */
+/* line 598 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Server.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 77:
-/* line 603 "./ragel/tsip_parser_header.jrl" */
+/* line 605 "./ragel/tsip_parser_header.jrl" */
 
 	    var headers = tsip_header_Service_Route.prototype.Parse(s_str);
 		if(headers){
@@ -5707,73 +5709,73 @@ case 77:
 		}
 			break;
 case 78:
-/* line 614 "./ragel/tsip_parser_header.jrl" */
+/* line 616 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Session_Expires.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 79:
-/* line 621 "./ragel/tsip_parser_header.jrl" */
+/* line 623 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_SIP_ETag.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 80:
-/* line 628 "./ragel/tsip_parser_header.jrl" */
+/* line 630 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_SIP_If_Match.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 81:
-/* line 635 "./ragel/tsip_parser_header.jrl" */
+/* line 637 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 82:
-/* line 642 "./ragel/tsip_parser_header.jrl" */
+/* line 644 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Subscription_State.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 83:
-/* line 649 "./ragel/tsip_parser_header.jrl" */
+/* line 651 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_Supported.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 84:
-/* line 656 "./ragel/tsip_parser_header.jrl" */
+/* line 658 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 85:
-/* line 663 "./ragel/tsip_parser_header.jrl" */
+/* line 665 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 86:
-/* line 670 "./ragel/tsip_parser_header.jrl" */
+/* line 672 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_To.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 87:
-/* line 677 "./ragel/tsip_parser_header.jrl" */
+/* line 679 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 88:
-/* line 684 "./ragel/tsip_parser_header.jrl" */
+/* line 686 "./ragel/tsip_parser_header.jrl" */
 
 	    var header = tsip_header_User_Agent.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
 case 89:
-/* line 691 "./ragel/tsip_parser_header.jrl" */
+/* line 693 "./ragel/tsip_parser_header.jrl" */
 	
 	    var headers = tsip_header_Via.prototype.Parse(s_str);
 		if(headers){
@@ -5783,7 +5785,7 @@ case 89:
 		}
 			break;
 case 90:
-/* line 702 "./ragel/tsip_parser_header.jrl" */
+/* line 704 "./ragel/tsip_parser_header.jrl" */
 
 	    var headers = tsip_header_Warning.prototype.Parse(s_str);
 		if(headers){
@@ -5793,19 +5795,19 @@ case 90:
 		}
 			break;
 case 91:
-/* line 713 "./ragel/tsip_parser_header.jrl" */
+/* line 715 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_WWW_Authenticate.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 		p = (pe - 1); // hack: Ragel "when" clause not supported in javascript
 			break;
 case 92:
-/* line 721 "./ragel/tsip_parser_header.jrl" */
+/* line 723 "./ragel/tsip_parser_header.jrl" */
 
 		var header = tsip_header_Dummy.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 			break;
-/* line 5809 "./src/parsers/tsip_parser_header.js" */
+/* line 5811 "./src/parsers/tsip_parser_header.js" */
 			} /* action switch */
 		}
 	}
@@ -5832,12 +5834,12 @@ case 92:
 	}
 	}
 
-/* line 750 "./ragel/tsip_parser_header.jrl" */
+/* line 752 "./ragel/tsip_parser_header.jrl" */
 	
 	if( cs < 
-/* line 5839 "./src/parsers/tsip_parser_header.js" */
+/* line 5841 "./src/parsers/tsip_parser_header.js" */
 1395
-/* line 751 "./ragel/tsip_parser_header.jrl" */
+/* line 753 "./ragel/tsip_parser_header.jrl" */
  ){
 	    console.error("Failed to parse header: %s", s_str);
 	    return -2;
