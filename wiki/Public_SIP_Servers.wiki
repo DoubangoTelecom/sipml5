@@ -5,4 +5,5 @@
 || [https://www.ekiga.net/index.php?page=register ekiga.net] || bob || sip:bob@ekiga.net || ekiga.net ||
 || [https://serweb.iptel.org/user/reg iptel.org] || bob || sip:bob@iptel.org || iptel.org ||
 || [https://mdns.sipthor.net/register_sip_account.phtml sip2sip.info] || bob || sip:bob@sip2sip.info || sip2sip.info||
+<br />
 _To be continued..._
