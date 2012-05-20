@@ -153,8 +153,14 @@
 
     // checks whether the browser supports WebRTC
     function haveWebRTC() {
-        // 'webkitDeprecatedPeerConnection' is not used 
-        return (navigator.webkitGetUserMedia && (webkitPeerConnection00));
+        // 'webkitDeprecatedPeerConnection' is not used
+        try {
+            return (navigator.webkitGetUserMedia && (webkitPeerConnection00));
+        }
+        catch (e) {
+            // console.error(e);
+            return false;
+        }
     }
 
     // checks whether the browser supports WebSockets
