@@ -228,8 +228,14 @@
         // save credentials
         saveCredentials();
 
+        // there are at least 5 servers running on the cloud on ports: 4062, 5062, 6062, 7062 and 8062
+        // we will connect to one of them and let the balancer to choose the right one (less connected sockets)
+        // each port can accept up to 65K connections which means that the cloud can manage 325K active connections
+        // the number of port will be increased or decreased based on the current trafic
+        var i_port = 4062 + (((new Date().getTime()) % 5) * 1000);
+
         // create a new SIP stack. Not mandatory as it's possible to reuse the same satck
-        oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, "sipml5.org", 4062,
+        oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, "sipml5.org", i_port,
                             tsip_stack.prototype.SetPassword(txtPassword.value),
                             tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
                             //tsip_stack.prototype.SetProxyOutBound('192.168.0.10', 5060, tsip_transport_type_e.UDP), // uncommend to use SIP outbound proxy
