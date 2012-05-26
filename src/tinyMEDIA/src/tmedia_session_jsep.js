@@ -215,10 +215,13 @@ tmedia_session_jsep.prototype.__set_ro = function (o_sdp, b_is_offer) {
     /* update remote offer */
     this.o_sdp_ro = o_sdp;
     this.b_sdp_ro_offer = b_is_offer;
-
-    // console.debug("SDP_RO=%s", this.o_sdp_ro.toString());
+    
     if (this.o_pc) {
         try {
+            // console.debug("SDP_RO=%s", this.o_sdp_ro.toString());
+            // FIXME: Chrome fails to parse SDP with global SDP "a=" attributes
+            // Chrome 21.0.1151.0+ generate "a=group:BUNDLE audio video" but cannot parse it: Amazing!!
+            this.o_sdp_ro.remove_header(tsdp_header_type_e.A); 
             this.o_pc.setRemoteDescription(b_is_offer ? webkitPeerConnection00.SDP_OFFER : webkitPeerConnection00.SDP_ANSWER,
                             new SessionDescription(this.o_sdp_ro.toString()));
             if (!this.b_sdp_ro_pending && b_is_offer) {
