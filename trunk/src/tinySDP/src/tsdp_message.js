@@ -98,6 +98,16 @@ tsdp_message.prototype.add_header = function (o_header) {
     this.add_headers(o_header);
 }
 
+tsdp_message.prototype.remove_header = function (e_type) {
+    for (var i_index = 0; i_index < this.ao_headers.length; ) {
+        if (this.ao_headers[i_index].e_type == e_type) {
+            this.ao_headers.splice(i_index, 1);
+            continue;
+        }
+        ++i_index;
+    }
+}
+
 tsdp_message.prototype.get_header_at = function(e_type, i_index){
     var i_pos = 0;
     for (var i = 0; i < this.ao_headers.length; ++i) {
