@@ -302,7 +302,7 @@
             oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, s_proxy, i_port,
                                     tsip_stack.prototype.SetPassword(txtPassword.value),
                                     tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
-            //tsip_stack.prototype.SetProxyOutBound('192.168.0.10', 5060, tsip_transport_type_e.UDP), // uncommend to use SIP outbound proxy
+                                    //tsip_stack.prototype.SetProxyOutBound('192.168.0.10', 5060, tsip_transport_type_e.UDP), // uncomment to use SIP outbound proxy
                                     tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5/v0.0.0000.0'),
                                     tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
             if (oSipStack) {
@@ -537,7 +537,10 @@
                 }
             case tsip_event_code_e.STACK_STOPPING:
             case tsip_event_code_e.STACK_STOPPED:
+            case tsip_event_code_e.STACK_FAILED_TO_START:
+            case tsip_event_code_e.STACK_FAILED_TO_STOP:
                 {
+                    var b_failure = ((evt.i_code == tsip_event_code_e.STACK_FAILED_TO_START) || (evt.i_code == tsip_event_code_e.STACK_FAILED_TO_STOP));
                     oSipStack = null;
                     oSipSessionRegister = null;
                     oSipSessionCall = null;
@@ -551,13 +554,11 @@
                     divCallOptions.style.opacity = 0;
 
                     txtCallStatus.innerHTML = '';
-                    txtRegStatus.innerHTML = '<i>Disconnected</i>';
+                    txtRegStatus.innerHTML = b_failure ? "<i>Disconnected: <b>" + evt.s_phrase + "</b></i>" : "<i>Disconnected</i>";
                     break;
                 }
 
             case tsip_event_code_e.STACK_STARTING:
-            case tsip_event_code_e.STACK_FAILED_TO_START:
-            case tsip_event_code_e.STACK_FAILED_TO_STOP:
             default:
                 {
                     break;
@@ -630,7 +631,7 @@
                         oSipSessionCall = null;
                         oSipSessionRegister = null;
 
-                        txtRegStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
+                        txtRegStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";                        
                     }
                     else if (oSipSessionCall && evt.get_session().get_id() == oSipSessionCall.get_id()) {
                         btnCall.value = 'Call';
