@@ -110,11 +110,11 @@ o_stack.on_event_message = function(evt){
 // start the stack
 var i_ret = o_stack.stop();
 if(i_ret == 0){
-    console.debug('Stack starting');
+    tsk_utils_log_info('Stack starting');
     // not that success case doesn't mean that the stack started. You have to listen for  @b on_event_stack to get notified when the stack finish starting.
 }
 else{
-    console.error('Failed to start the stack');
+    tsk_utils_log_error('Failed to start the stack');
 }
 
 @endcode
@@ -147,7 +147,7 @@ Before connecting to your SIP network (SIP REGISTER) you have to create a SIP st
 // Sends SIP REGISTER for connection as soon as the stack finish starting
 var o_session_reg = null;
 o_stack.on_event_stack = function(evt) {
-        console.debug(evt.s_phrase);
+        tsk_utils_log_info(evt.s_phrase);
         switch (evt.i_code) {
             case tsip_event_code_e.STACK_STARTED:
                 {
@@ -191,21 +191,21 @@ Before sending or receiving SMS messages (SIP @b MESSAGE) you have to create a S
 To listen to the messaging events:
 @code
 o_stack.on_event_message = function (evt) {
-    console.debug(evt.s_phrase);
+    tsk_utils_log_info(evt.s_phrase);
     switch (evt.e_message_type) {
         case tsip_event_message_type_e.I_MESSAGE:
             {
                 evt.get_session().accept();
-                console.debug("Incoming message. content=%s from=%s", evt.get_message().get_content_as_string(), evt.get_session().o_uri_from);
+                tsk_utils_log_info("Incoming message. content=%s from=" + evt.get_message().get_content_as_string(), evt.get_session().o_uri_from);
                 break;
             }
         case tsip_event_message_type_e.AO_MESSAGE:
             {
                 if (evt.i_code >= 200 && evt.i_code <= 299) {
-                    console.debug("sent");
+                    tsk_utils_log_info("sent");
                 }
                 else if (evt.i_code >= 300) {
-                    console.debug("not sent (%d)", evt.i_code);
+                    tsk_utils_log_info("not sent (%d)", evt.i_code);
                 }
                 break;
             }
@@ -242,7 +242,7 @@ o_session = new tsip_session_invite(oSipStack,
 
 // make the call
 if (o_session.call(tmedia_type_e.AUDIO_VIDEO) != 0) {
-    console.error('Failed to make call');
+    tsk_utils_log_error('Failed to make call');
 }
 @endcode
 
@@ -254,28 +254,28 @@ o_session.hangup();
 To transfer the call to @b alice:
 @code
 if (o_session.transfer('alice') != 0) {
-    console.error('Failed to transfer the call');
+    tsk_utils_log_error('Failed to transfer the call');
 }
 @endcode
 
 To hold the call:
 @code
 if(o_session.hold() != 0){
-    console.error('Failed to hold the call');
+    tsk_utils_log_error('Failed to hold the call');
 }
 @endcode
 
 To resume the call:
 @code
 if(o_session.resume() != 0){
-    console.error('Failed to resume the call');
+    tsk_utils_log_error('Failed to resume the call');
 }
 @endcode
 
 To send DTMF digit @b '#':
 @code
 if(o_session.dtmf('#') != 0){
-    console.error('Failed to send DTMF');
+    tsk_utils_log_error('Failed to send DTMF');
 }
 @endcode
 

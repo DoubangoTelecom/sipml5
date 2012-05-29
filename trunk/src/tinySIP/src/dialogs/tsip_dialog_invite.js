@@ -285,7 +285,7 @@ tsip_dialog_invite.prototype.send_offer = function (b_is_invite, b_force_sdp) {
     var b_wait4lo = false;
 
     if (!b_is_invite && b_force_sdp) {
-        console.warn("ACK is need to ensure the media session");
+        tsk_utils_log_warn("ACK is need to ensure the media session");
     }
 
     if ((o_request = this.request_new(b_is_invite ? "INVITE" : "UPDATE"))) {
@@ -413,7 +413,7 @@ tsip_dialog_invite.prototype.send_ack = function (o_response) {
 // "Require: 100rel\r\n" should be checked by the caller of this function
 tsip_dialog_invite.prototype.send_prack = function (o_r1xx) {
     if (!o_r1xx || !o_r1xx.o_hdr_CSeq) {
-        console.error("Invalid parameter");
+        tsk_utils_log_error("Invalid parameter");
         return -1;
     }
 
@@ -438,7 +438,7 @@ tsip_dialog_invite.prototype.send_prack = function (o_r1xx) {
         response in the hopes of receiving the missing responses.
         */
         if (self.i_rseq && (o_hdr_RSeq.i_value <= this.i_rseq)) {
-            console.warn("1xx.RSeq value is not one higher than lastINVITE.RSeq");
+            tsk_utils_log_warn("1xx.RSeq value is not one higher than lastINVITE.RSeq");
             return 0; /* Not error */
         }
         this.i_rseq = o_hdr_RSeq.i_value;
@@ -449,7 +449,7 @@ tsip_dialog_invite.prototype.send_prack = function (o_r1xx) {
     create a new request with method PRACK.
     */
     if (!(o_request = this.request_new("PRACK"))) {
-        console.error("Failed to create PRACK request");
+        tsk_utils_log_error("Failed to create PRACK request");
         return -2;
     }
 
@@ -587,7 +587,7 @@ tsip_dialog_invite.prototype.send_error = function (o_request, i_code, s_phrase,
         return this.response_send(o_response);
     }
     else {
-        console.error("Failed to create new message");
+        tsk_utils_log_error("Failed to create new message");
         return -1;
     }
 }
@@ -672,12 +672,12 @@ tsip_dialog_invite.prototype.send_cancel = function(){
 			return this.request_send(o_request);
 		}
 		else{
-			console.error("Failed to create CANCEL request");
+			tsk_utils_log_error("Failed to create CANCEL request");
 			return -2;
 		}
 	}
 	else{
-		console.warn("There is no INVITE request to cancel");
+		tsk_utils_log_warn("There is no INVITE request to cancel");
 		return 0;
 	}
 }
@@ -691,7 +691,7 @@ tsip_dialog_invite.prototype.notify_parent = function (o_response) {
         }
     }
     else {
-        console.error("Failed to find parent with id=%d", this.get_session().i_id_parent);
+        tsk_utils_log_error("Failed to find parent with id=" + this.get_session().i_id_parent + "");
     }
     return -1;
 }
@@ -704,7 +704,7 @@ tsip_dialog_invite.prototype.process_ro = function(o_message, b_is_offer){
 	var i_ret = 0;
 
 	if(!o_message){
-		console.error("Invalid parameter");
+		tsk_utils_log_error("Invalid parameter");
 		return -1;
 	}
 
@@ -712,12 +712,12 @@ tsip_dialog_invite.prototype.process_ro = function(o_message, b_is_offer){
 	if(o_message.has_content()){
 		if(tsk_string_iequals("application/sdp", o_message.get_content_type())){
 			if(!(o_sdp_ro = tsdp_message.prototype.Parse(o_message.get_content_as_string()))){
-				console.error("Failed to parse remote sdp message");
+				tsk_utils_log_error("Failed to parse remote sdp message");
 				return -2;
 			}
 		}
 		else{
-			console.error("[%s] content-type is not supportted", o_message.get_content_type());
+		    tsk_utils_log_error("[" + o_message.get_content_type() + "] content-type is not supportted");
 			return -3;
 		}
 	}
@@ -743,7 +743,7 @@ tsip_dialog_invite.prototype.process_ro = function(o_message, b_is_offer){
 	
 	if(o_sdp_ro){
 	    if ((i_ret = this.o_msession_mgr.set_ro(o_sdp_ro, b_is_offer))) {
-			console.error("Failed to set remote offer");
+			tsk_utils_log_error("Failed to set remote offer");
 			return i_ret;
 		}
 	}
@@ -798,7 +798,7 @@ function __tsip_dialog_invite_media_callback(o_self, e_event_type, e_media_type)
                     var s_sdp_lo = null;
                     if (o_sdp_lo && (s_sdp_lo = o_sdp_lo.toString())) {
                         o_self.o_wait_oMessage.add_content(new String(s_sdp_lo), "application/sdp");
-                        // console.debug("sending=%s", o_self.o_wait_oMessage.toString());
+                        // tsk_utils_log_info("sending=" + o_self.o_wait_oMessage.toString());
                         if (o_self.o_wait_oMessage.is_request()) {
                             if (o_self.o_wait_oMessage.is_ack()) {
                                 i_ret = o_self.get_stack().o_layer_transport.send(null, o_self.o_wait_oMessage);
@@ -1016,12 +1016,12 @@ function __tsip_dialog_invite_cond_is_23456_f_notify(o_dialog, o_message){
 //--------------------------------------------------------
 
 function x0000_Connected_2_Connected_X_oDTMF(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
 function x0000_Connected_2_Connected_X_oLMessage(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -1115,7 +1115,7 @@ function x0000_Connected_2_Connected_X_iINVITEorUPDATE(ao_args) {
 }
 
 function x0000_Connected_2_Connected_X_oINVITE(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -1191,13 +1191,13 @@ function x0000_Any_2_Any_X_oINFO(ao_args) {
         return i_ret;
 	}
 	else{
-		console.error("Failed to create new INFO request");
+		tsk_utils_log_error("Failed to create new INFO request");
 		return -1;
 	}
 }
 
 function x0000_Any_2_Any_X_iINFO(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -1253,7 +1253,7 @@ function x0000_Any_2_Any_X_i2xxINVITEorUPDATE(ao_args) {
 }
 
 function x0000_Any_2_Any_X_iPRACK(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -1315,17 +1315,17 @@ function x0000_Any_2_Trying_X_shutdown(ao_args) {
 }
 
 function x9997_Any_2_Any_X_LoSdpRequestTimeout(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
 function x9998_Any_2_Any_X_transportError(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
 function x9999_Any_2_Any_X_Error(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -1336,7 +1336,7 @@ function x9999_Any_2_Any_X_Error(ao_args) {
 
 
 function __tsip_dialog_invite_onterm(o_self) {
-    console.debug("=== INVITE Dialog terminated ===");
+    tsk_utils_log_info("=== INVITE Dialog terminated ===");
 
     o_self.timer_cancel('100Rel');
     o_self.timer_cancel('Session');

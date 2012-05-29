@@ -19,6 +19,8 @@
 * along with sipML5.
 */
 var __o_stream = null;
+var __o_peerconnection_class = undefined;
+var __o_sessiondescription_class = undefined;
 
 if (navigator.webkitGetUserMedia) {
     navigator.webkitGetUserMedia({ audio: true, video: true },
@@ -26,9 +28,9 @@ if (navigator.webkitGetUserMedia) {
             __o_stream = stream;
         },
         function (error) {
-            console.error(error);
+            tsk_utils_log_error(error);
         });
-}
+    }
 
 var tmedia_session_events_e =
 {
@@ -80,10 +82,30 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
     if (b_offerer) {
         this.load_sessions();
     }
+
+    // initialize media classes
+    if (__o_peerconnection_class == undefined) {
+        if (tsk_utils_have_webrtc4ie()) {
+            __o_peerconnection_class = msPeerConnection;
+            __o_sessiondescription_class = msSessionDescription;
+        }
+        else if (tsk_utils_have_webrtc()) {
+            __o_peerconnection_class = webkitPeerConnection00;
+            __o_sessiondescription_class = SessionDescription;
+        }
+        else { // force die
+            __o_peerconnection_class = null;
+            __o_sessiondescription_class = null;
+        }
+    }
 }
 
 tmedia_session_mgr.prototype.is_roap = function () {
-    return webkitPeerConnection00 ? false : true;
+    try {
+        return tsk_utils_have_webrtc4ie() ? false : (webkitPeerConnection00 ? false : true);
+    }
+    catch (e) { }
+    return false;
 }
 
 tmedia_session_mgr.prototype.is_jsep = function () {
@@ -264,7 +286,7 @@ tmedia_session_mgr.prototype.get_lo = function () {
     /* prepare the session manager if not already done (create all sessions) */
     if (this.ao_sessions.length == 0) {
         if (this.load_sessions() != 0) {
-            console.error("Failed to prepare the session manager");
+            tsk_utils_log_error("Failed to prepare the session manager");
             return null;
         }
     }
@@ -282,11 +304,6 @@ tmedia_session_mgr.prototype.get_lo = function () {
         this.b_mediaType_changed = false;
     }
 
-    // FIXME
-    //if (this.sdp.o_lo) {
-    //    return this.sdp.o_lo;
-    //}
-
     if (this.ao_sessions.length > 0) {
         this.sdp.o_lo = this.ao_sessions[0].get_lo();
     }
@@ -296,7 +313,7 @@ tmedia_session_mgr.prototype.get_lo = function () {
 
 tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     if (!o_sdp) {
-        console.error("Invalid parameter");
+        tsk_utils_log_error("Invalid parameter");
         return -1;
     }
 
@@ -318,13 +335,13 @@ tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     */
     if ((o_hdr_O = o_sdp.get_header(tsdp_header_type_e.O))) {
         if (this.sdp.i_ro_ver == o_hdr_O.i_sess_version) {
-            console.warn("Remote offer has not changed");
+            tsk_utils_log_warn("Remote offer has not changed");
             return 0;
         }
         this.sdp.i_ro_ver = o_hdr_O.i_sess_version;
     }
     else {
-        console.error("o= line is missing");
+        tsk_utils_log_error("o= line is missing");
         return -2;
     }
 
@@ -344,9 +361,9 @@ tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     if (this.sdp.o_lo) {
         e_new_mediatype = o_sdp.get_media_type();
         if ((b_is_mediatype_changed = (e_new_mediatype != this.e_type))) {
-            console.error("this.set_media_type(e_new_mediatype);");
+            tsk_utils_log_error("this.set_media_type(e_new_mediatype);");
             //this.set_media_type(e_new_mediatype);
-            console.debug("media type has changed");
+            tsk_utils_log_info("media type has changed");
         }
     }
 
@@ -360,7 +377,7 @@ tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     */
     if (this.b_started && !(this.is_roap() || this.is_jsep()) && ((!b_is_hold_resume && !b_is_loopback_address) || b_is_mediatype_changed)) {
         if ((i_ret = this.stop())) {
-            console.error("Failed to stop session manager");
+            tsk_utils_log_error("Failed to stop session manager");
             return i_ret;
         }
         b_stopped_to_reconf = true;
@@ -372,7 +389,7 @@ tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     /* prepare the session manager if not already done (create all sessions with their codecs) 
     * if network-initiated: think about tmedia_type_from_sdp() before creating the manager */
     if ((i_ret = this.load_sessions())) {
-        console.error("Failed to prepare the session manager");
+        tsk_utils_log_error("Failed to prepare the session manager");
         return i_ret;
     }
 
@@ -397,7 +414,7 @@ tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     /* manager was started and we stopped it in order to reconfigure it (codecs, network, ....) */
     if (b_stopped_to_reconf) {
         if ((i_ret = this.start())) {
-            console.warn("Failed to re-start session manager");
+            tsk_utils_log_warn("Failed to re-start session manager");
             return i_ret;
         }
     }
@@ -582,7 +599,7 @@ tmedia_session.prototype.Create = function (e_type, o_mgr) {
     switch (e_type) {
         case tmedia_type_e.AUDIO:
             {
-                if (webkitPeerConnection00) {
+                if (o_mgr.is_jsep()) {
                     return new tmedia_session_jsep(o_mgr);
                 }
                 else {
@@ -599,7 +616,7 @@ tmedia_session.prototype.Create = function (e_type, o_mgr) {
             }
         default:
             {
-                console.error("%d not supported as media type", e_type);
+                tsk_utils_log_error(e_type + " not supported as media type");
                 return null;
             }
     }

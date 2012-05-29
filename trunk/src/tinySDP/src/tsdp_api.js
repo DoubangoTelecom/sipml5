@@ -18,20 +18,12 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
-function tsdp_api_add_js_script(s_src, s_elt) {
-    var tag_hdr = document.getElementsByTagName(s_elt)[0];
-    var tag_script = document.createElement('script');
-    tag_script.setAttribute('type', 'text/javascript');
-    tag_script.setAttribute('src', s_src);
-    tag_hdr.appendChild(tag_script);
-};
-
 function tsdp_api_add_js_scripts(s_elt) {
     var tag_hdr = document.getElementsByTagName(s_elt)[0];
     for (var i = 1; i < arguments.length; ++i) {
         var tag_script = document.createElement('script');
         tag_script.setAttribute('type', 'text/javascript');
-        tag_script.setAttribute('src', arguments[i]);
+        tag_script.setAttribute('src', arguments[i] + "?svn=5");
         tag_hdr.appendChild(tag_script);
     }
 };

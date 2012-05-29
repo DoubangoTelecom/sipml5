@@ -20,21 +20,22 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Contact.prototype = Object.create(tsip_header.prototype);
 
-/* line 88 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 89 "./ragel/tsip_parser_header_Contact.jrl" */
 
 
 
 
-/* line 30 "./src/headers/tsip_header_Contact.js" */
-const _tsip_machine_parser_header_Contact_actions = [
+/* line 31 "./src/headers/tsip_header_Contact.js" */
+_tsip_machine_parser_header_Contact_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 2, 1, 0, 2, 3, 6, 2, 
 	4, 6, 2, 5, 6
 ];
 
-const _tsip_machine_parser_header_Contact_key_offsets = [
+_tsip_machine_parser_header_Contact_key_offsets = [
 	0, 0, 4, 6, 8, 10, 12, 14, 
 	16, 19, 40, 41, 43, 64, 65, 67, 
 	71, 74, 75, 79, 91, 94, 96, 99, 
@@ -53,7 +54,7 @@ const _tsip_machine_parser_header_Contact_key_offsets = [
 	784, 786, 805, 812, 829, 847, 851
 ];
 
-const _tsip_machine_parser_header_Contact_trans_keys = [
+_tsip_machine_parser_header_Contact_trans_keys = [
 	67, 77, 99, 109, 79, 111, 78, 110, 
 	84, 116, 65, 97, 67, 99, 84, 116, 
 	9, 32, 58, 9, 13, 32, 33, 34, 
@@ -163,7 +164,7 @@ const _tsip_machine_parser_header_Contact_trans_keys = [
 	13, 32, 60, 0
 ];
 
-const _tsip_machine_parser_header_Contact_single_lengths = [
+_tsip_machine_parser_header_Contact_single_lengths = [
 	0, 4, 2, 2, 2, 2, 2, 2, 
 	3, 11, 1, 2, 11, 1, 2, 4, 
 	3, 1, 0, 4, 3, 0, 1, 5, 
@@ -182,7 +183,7 @@ const _tsip_machine_parser_header_Contact_single_lengths = [
 	2, 9, 5, 7, 8, 4, 0
 ];
 
-const _tsip_machine_parser_header_Contact_range_lengths = [
+_tsip_machine_parser_header_Contact_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 5, 0, 0, 5, 0, 0, 0, 
 	0, 0, 2, 4, 0, 1, 1, 0, 
@@ -201,7 +202,7 @@ const _tsip_machine_parser_header_Contact_range_lengths = [
 	0, 5, 1, 5, 5, 0, 0
 ];
 
-const _tsip_machine_parser_header_Contact_index_offsets = [
+_tsip_machine_parser_header_Contact_index_offsets = [
 	0, 0, 5, 8, 11, 14, 17, 20, 
 	23, 27, 44, 46, 49, 66, 68, 71, 
 	76, 80, 82, 85, 94, 98, 100, 103, 
@@ -220,7 +221,7 @@ const _tsip_machine_parser_header_Contact_index_offsets = [
 	720, 723, 738, 745, 758, 772, 777
 ];
 
-const _tsip_machine_parser_header_Contact_indicies = [
+_tsip_machine_parser_header_Contact_indicies = [
 	0, 2, 0, 2, 1, 3, 3, 1, 
 	4, 4, 1, 5, 5, 1, 6, 6, 
 	1, 7, 7, 1, 2, 2, 1, 2, 
@@ -321,7 +322,7 @@ const _tsip_machine_parser_header_Contact_indicies = [
 	1, 1, 0
 ];
 
-const _tsip_machine_parser_header_Contact_trans_targs = [
+_tsip_machine_parser_header_Contact_trans_targs = [
 	2, 0, 8, 3, 4, 5, 6, 7, 
 	9, 9, 10, 35, 40, 123, 18, 45, 
 	11, 12, 12, 13, 14, 15, 16, 18, 
@@ -344,7 +345,7 @@ const _tsip_machine_parser_header_Contact_trans_targs = [
 	24, 17, 28, 122, 50, 124, 125, 125
 ];
 
-const _tsip_machine_parser_header_Contact_trans_actions = [
+_tsip_machine_parser_header_Contact_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 3, 3, 17, 17, 17, 3, 17, 
 	0, 0, 3, 3, 0, 0, 0, 0, 
@@ -367,28 +368,28 @@ const _tsip_machine_parser_header_Contact_trans_actions = [
 	23, 23, 23, 0, 9, 0, 5, 0
 ];
 
-const tsip_machine_parser_header_Contact_start = 1;
-const tsip_machine_parser_header_Contact_first_final = 126;
-const tsip_machine_parser_header_Contact_error = 0;
+tsip_machine_parser_header_Contact_start = 1;
+tsip_machine_parser_header_Contact_first_final = 126;
+tsip_machine_parser_header_Contact_error = 0;
 
-const tsip_machine_parser_header_Contact_en_main = 1;
+tsip_machine_parser_header_Contact_en_main = 1;
 
 
-/* line 92 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 93 "./ragel/tsip_parser_header_Contact.jrl" */
 
 function tsip_header_Contact(){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Contact);
+	tsip_header.call(this, tsip_header_type_e.Contact);
     this.s_display_name = null;
     this.o_uri = null;
     this.i_expires = -1;
+}
 
-    this.toString = function(){
-        var s_str = tsip_uri_tostring(this.o_uri, true, true);
-        if(s_str && this.i_expires >= 0){
-            s_str += tsk_string_format(";expires={0}", this.i_expires);
-        }
-        return s_str;
+tsip_header_Contact.prototype.toString = function(){
+    var s_str = tsip_uri_tostring(this.o_uri, true, true);
+    if(s_str && this.i_expires >= 0){
+        s_str += tsk_string_format(";expires={0}", this.i_expires);
     }
+    return s_str;
 }
 
 // returns an array of 'Contact' headers
@@ -403,14 +404,14 @@ tsip_header_Contact.prototype.Parse = function(s_str){
 	var curr_contact = null;
 	
 	
-/* line 407 "./src/headers/tsip_header_Contact.js" */
+/* line 408 "./src/headers/tsip_header_Contact.js" */
 {
 	 cs = tsip_machine_parser_header_Contact_start;
 } /* JSCodeGen::writeInit */
 
-/* line 120 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 121 "./ragel/tsip_parser_header_Contact.jrl" */
 	
-/* line 414 "./src/headers/tsip_header_Contact.js" */
+/* line 415 "./src/headers/tsip_header_Contact.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -495,19 +496,19 @@ tsip_header_Contact.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Contact_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 28 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 32 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(!curr_contact){
 			curr_contact = new tsip_header_Contact();
 		}
 			break;
 case 2:
-/* line 37 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 38 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact){
 		    curr_contact.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -515,7 +516,7 @@ case 2:
 		}
 			break;
 case 3:
-/* line 44 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 45 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact && !curr_contact.o_uri){
 		    var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -525,21 +526,21 @@ case 3:
 		}
 			break;
 case 4:
-/* line 53 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 54 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact){
 		    curr_contact.i_expires = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 		}
 			break;
 case 5:
-/* line 59 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 60 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact){
 		    tsk_ragel_add_param(s_str, p, i_tag_start, curr_contact.ao_params);
 		}
 			break;
 case 6:
-/* line 65 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 66 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact){
 		    hdr_contacts.push(curr_contact);
@@ -547,10 +548,10 @@ case 6:
 		}
 			break;
 case 7:
-/* line 72 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 73 "./ragel/tsip_parser_header_Contact.jrl" */
 
 			break;
-/* line 554 "./src/headers/tsip_header_Contact.js" */
+/* line 555 "./src/headers/tsip_header_Contact.js" */
 			} /* action switch */
 		}
 	}
@@ -577,14 +578,14 @@ case 7:
 	}
 	}
 
-/* line 121 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 122 "./ragel/tsip_parser_header_Contact.jrl" */
 	
 	if( cs < 
-/* line 584 "./src/headers/tsip_header_Contact.js" */
+/* line 585 "./src/headers/tsip_header_Contact.js" */
 126
-/* line 122 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 123 "./ragel/tsip_parser_header_Contact.jrl" */
  ){
-		console.error("Failed to parse 'Contact' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Contact' header: " + s_str);
 		return null;
 	}
 	

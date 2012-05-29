@@ -28,61 +28,61 @@ tsdp_header_C.prototype = Object.create(tsdp_header.prototype);
 
 
 /* line 31 "./src/headers/tsdp_header_C.js" */
-const _tsdp_machine_parser_header_C_actions = [
+_tsdp_machine_parser_header_C_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 2, 0, 2, 2, 0, 3
 ];
 
-const _tsdp_machine_parser_header_C_key_offsets = [
+_tsdp_machine_parser_header_C_key_offsets = [
 	0, 0, 1, 3, 6, 9, 12, 15, 
 	16, 19, 22
 ];
 
-const _tsdp_machine_parser_header_C_trans_keys = [
+_tsdp_machine_parser_header_C_trans_keys = [
 	99, 32, 61, 32, 0, 65535, 32, 0, 
 	65535, 32, 0, 65535, 32, 0, 65535, 10, 
 	13, 0, 65535, 13, 0, 65535, 0
 ];
 
-const _tsdp_machine_parser_header_C_single_lengths = [
+_tsdp_machine_parser_header_C_single_lengths = [
 	0, 1, 2, 1, 1, 1, 1, 1, 
 	1, 1, 0
 ];
 
-const _tsdp_machine_parser_header_C_range_lengths = [
+_tsdp_machine_parser_header_C_range_lengths = [
 	0, 0, 0, 1, 1, 1, 1, 0, 
 	1, 1, 0
 ];
 
-const _tsdp_machine_parser_header_C_index_offsets = [
+_tsdp_machine_parser_header_C_index_offsets = [
 	0, 0, 2, 5, 8, 11, 14, 17, 
 	19, 22, 25
 ];
 
-const _tsdp_machine_parser_header_C_trans_targs = [
+_tsdp_machine_parser_header_C_trans_targs = [
 	2, 0, 2, 3, 0, 3, 4, 0, 
 	5, 4, 0, 8, 6, 0, 8, 6, 
 	0, 10, 0, 7, 9, 0, 7, 9, 
 	0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_C_trans_actions = [
+_tsdp_machine_parser_header_C_trans_actions = [
 	0, 0, 0, 0, 0, 0, 1, 0, 
 	3, 0, 0, 9, 1, 0, 5, 0, 
 	0, 0, 0, 12, 1, 0, 7, 0, 
 	0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_C_eof_actions = [
+_tsdp_machine_parser_header_C_eof_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	12, 7, 0
 ];
 
-const tsdp_machine_parser_header_C_start = 1;
-const tsdp_machine_parser_header_C_first_final = 8;
-const tsdp_machine_parser_header_C_error = 0;
+tsdp_machine_parser_header_C_start = 1;
+tsdp_machine_parser_header_C_first_final = 8;
+tsdp_machine_parser_header_C_error = 0;
 
-const tsdp_machine_parser_header_C_en_main = 1;
+tsdp_machine_parser_header_C_en_main = 1;
 
 
 /* line 56 "./ragel/tsdp_parser_header_C.jrl" */
@@ -280,7 +280,7 @@ case 3:
 8
 /* line 83 "./ragel/tsdp_parser_header_C.jrl" */
  ){
-		console.error("Failed to parse \"c=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"c=\" header: " + s_str);
 		return null;
 	}
 	

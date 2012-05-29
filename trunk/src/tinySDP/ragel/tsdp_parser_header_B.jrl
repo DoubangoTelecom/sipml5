@@ -73,7 +73,7 @@ tsdp_header_B.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse \"b=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"b=\" header: " + s_str);
 		return null;
 	}
 	

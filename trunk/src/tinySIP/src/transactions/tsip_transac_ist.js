@@ -56,7 +56,7 @@ var tsip_transac_ist_states_e =
 function tsip_transac_ist(b_reliable, i_cseq_value, s_callid, o_dialog) {
     var o_stack;
     if (!o_dialog || !(o_stack = o_dialog.get_stack())) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     tsip_transac.call(this);
@@ -461,7 +461,7 @@ function __tsip_transac_ist_onterm(o_self) {
 
 function __tsip_transac_ist_event_callback(o_self, e_event_type, o_message) {
     if (!o_self) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
     var i_ret = -1;

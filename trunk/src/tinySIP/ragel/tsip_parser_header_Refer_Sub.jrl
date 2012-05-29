@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Refer_Sub.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_Refer_Sub;
 
@@ -53,11 +54,12 @@
 %%write data;
 
 function tsip_header_Refer_Sub(b_sub){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Refer_Sub);
+	tsip_header.call(this, tsip_header_type_e.Refer_Sub);
     this.b_sub = b_sub;
-    this.toString = function(){
-        return this.b_sub ? "true" : "false";
-    }
+}
+
+tsip_header_Refer_Sub.prototype.toString = function(){
+    return this.b_sub ? "true" : "false";
 }
 
 tsip_header_Refer_Sub.prototype.Parse = function(s_str){
@@ -73,7 +75,7 @@ tsip_header_Refer_Sub.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'Refer-Sub' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Refer-Sub' header: " + s_str);
 		return null;
 	}
 	

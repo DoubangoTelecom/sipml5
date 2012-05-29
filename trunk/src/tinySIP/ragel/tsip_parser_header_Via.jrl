@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Via.prototype = Object.create(tsip_header.prototype);
 tsip_header_Via.prototype.__s_proto_name_default = "SIP";
 tsip_header_Via.prototype.__s_proto_version_default = "2.0";
 
@@ -130,7 +131,7 @@ tsip_header_Via.prototype.__s_proto_version_default = "2.0";
 %%write data;
 
 function tsip_header_Via(s_proto_name, s_proto_version, s_transport, s_host, i_port){
-	this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Via);
+	tsip_header.call(this, tsip_header_type_e.Via);
     this.s_branch = null;
 	this.s_host = s_host;
 	this.i_port = i_port;
@@ -149,47 +150,48 @@ function tsip_header_Via(s_proto_name, s_proto_version, s_transport, s_host, i_p
 	this.is_transport_unreliable = function(){
 		return !this.is_transport_reliable();
 	};
-	this.toString = function(){
-		var b_ipv6 = (this.s_host && tsk_string_contains(this.s_host, this.s_host.length, ":"));
+}
 
-		// SIP/2.0/UDP [::]:1988;test=1234;comp=sigcomp;rport=254;ttl=457;received=192.0.2.101;branch=z9hG4bK1245420841406\r\n"
-		return tsk_string_format("{0}/{1}/{2} {3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}",
+tsip_header_Via.prototype.toString = function(){
+	var b_ipv6 = (this.s_host && tsk_string_contains(this.s_host, this.s_host.length, ":"));
 
-				this.s_proto_name ? this.s_proto_name : "SIP",
+	// SIP/2.0/UDP [::]:1988;test=1234;comp=sigcomp;rport=254;ttl=457;received=192.0.2.101;branch=z9hG4bK1245420841406\r\n"
+	return tsk_string_format("{0}/{1}/{2} {3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}",
 
-				this.s_proto_version ? this.s_proto_version : "2.0",
+			this.s_proto_name ? this.s_proto_name : "SIP",
 
-				this.s_transport ? this.s_transport : "UDP",
+			this.s_proto_version ? this.s_proto_version : "2.0",
 
-				b_ipv6 ? "[" : "",
-				this.s_host ? this.s_host : "127.0.0.1",
-				b_ipv6 ? "]" : "",
+			this.s_transport ? this.s_transport : "UDP",
 
-				this.i_port > 0 ? ":" : "",
-				this.i_port > 0 ? this.i_port : "",
+			b_ipv6 ? "[" : "",
+			this.s_host ? this.s_host : "127.0.0.1",
+			b_ipv6 ? "]" : "",
 
-				this.s_maddr ? ";maddr=" : "",
-				this.s_maddr ? this.s_maddr : "",
+			this.i_port > 0 ? ":" : "",
+			this.i_port > 0 ? this.i_port : "",
 
-				this.s_sigcomp_id ? ";sigcomp-id=" : "",
-				this.s_sigcomp_id ? this.s_sigcomp_id : "",
+			this.s_maddr ? ";maddr=" : "",
+			this.s_maddr ? this.s_maddr : "",
 
-				this.s_comp ? ";comp=" : "",
-				this.s_comp ? this.s_comp : "",
+			this.s_sigcomp_id ? ";sigcomp-id=" : "",
+			this.s_sigcomp_id ? this.s_sigcomp_id : "",
 
-				this.i_rport>=0 ? (this.i_rport>0?";rport=":";rport") : "",
-				this.i_rport>0 ? this.i_rport : "",
+			this.s_comp ? ";comp=" : "",
+			this.s_comp ? this.s_comp : "",
 
-				this.i_ttl>=0 ? (this.i_ttl>0?";ttl=":";ttl") : "",
-				this.i_ttl>0 ? this.i_ttl : "",
+			this.i_rport>=0 ? (this.i_rport>0?";rport=":";rport") : "",
+			this.i_rport>0 ? this.i_rport : "",
 
-				this.s_received ? ";received=" : "",
-				this.s_received ? this.s_received : "",
+			this.i_ttl>=0 ? (this.i_ttl>0?";ttl=":";ttl") : "",
+			this.i_ttl>0 ? this.i_ttl : "",
 
-				this.s_branch ? ";branch=" : "",
-				this.s_branch ? this.s_branch : ""
-			);
-	};
+			this.s_received ? ";received=" : "",
+			this.s_received ? this.s_received : "",
+
+			this.s_branch ? ";branch=" : "",
+			this.s_branch ? this.s_branch : ""
+		);
 }
 
 // returns an array of 'Via' headers
@@ -207,7 +209,7 @@ tsip_header_Via.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'Via' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Via' header: " + s_str);
 		return null;
 	}
 	

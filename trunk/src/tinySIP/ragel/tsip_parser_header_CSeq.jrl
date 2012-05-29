@@ -18,6 +18,8 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_CSeq.prototype = Object.create(tsip_header.prototype);
+
 var TSIP_HEADER_CSEQ_NONE = 0;
 var TSIP_HEADER_CSEQ_DEFAULT = 1;
 
@@ -53,7 +55,7 @@ var TSIP_HEADER_CSEQ_DEFAULT = 1;
 %%write data;
 
 function tsip_header_CSeq(i_seq, s_method){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.CSeq);
+	tsip_header.call(this, tsip_header_type_e.CSeq);
     this.i_seq = i_seq;
     this.s_method = s_method;
 	if(s_method){
@@ -62,9 +64,10 @@ function tsip_header_CSeq(i_seq, s_method){
 	else{
 		this.e_req_type = tsip_request_type_e.UNKNOWN;
 	}
-    this.toString = function(){
-        return tsk_string_format("{0} {1}", this.i_seq, this.s_method);
-    }
+}
+
+tsip_header_CSeq.prototype.toString = function(){
+    return tsk_string_format("{0} {1}", this.i_seq, this.s_method);
 }
 
 tsip_header_CSeq.prototype.Parse = function(s_str){
@@ -80,7 +83,7 @@ tsip_header_CSeq.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'CSeq' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'CSeq' header: " + s_str);
 		return null;
 	}
 	

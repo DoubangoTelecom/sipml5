@@ -38,13 +38,13 @@ tsip_header_RSeq.prototype = Object.create(tsip_header_Int.prototype);
 
 
 /* line 41 "./src/headers/tsip_header_Int.js" */
-const _tsip_machine_parser_header_Int_actions = [
+_tsip_machine_parser_header_Int_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8, 1, 9
 ];
 
-const _tsip_machine_parser_header_Int_key_offsets = [
+_tsip_machine_parser_header_Int_key_offsets = [
 	0, 0, 10, 12, 14, 16, 18, 20, 
 	22, 23, 25, 27, 29, 31, 33, 35, 
 	38, 41, 46, 47, 49, 53, 60, 65, 
@@ -62,7 +62,7 @@ const _tsip_machine_parser_header_Int_key_offsets = [
 	458, 461, 463, 466, 468, 470, 472, 475
 ];
 
-const _tsip_machine_parser_header_Int_trans_keys = [
+_tsip_machine_parser_header_Int_trans_keys = [
 	67, 69, 76, 77, 82, 99, 101, 108, 
 	109, 114, 79, 111, 78, 110, 84, 116, 
 	69, 101, 78, 110, 84, 116, 45, 76, 
@@ -125,7 +125,7 @@ const _tsip_machine_parser_header_Int_trans_keys = [
 	9, 32, 58, 0
 ];
 
-const _tsip_machine_parser_header_Int_single_lengths = [
+_tsip_machine_parser_header_Int_single_lengths = [
 	0, 10, 2, 2, 2, 2, 2, 2, 
 	1, 2, 2, 2, 2, 2, 2, 3, 
 	3, 3, 1, 2, 2, 5, 5, 1, 
@@ -143,7 +143,7 @@ const _tsip_machine_parser_header_Int_single_lengths = [
 	3, 2, 3, 2, 2, 2, 3, 0
 ];
 
-const _tsip_machine_parser_header_Int_range_lengths = [
+_tsip_machine_parser_header_Int_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 1, 0, 0, 1, 1, 0, 0, 
@@ -161,7 +161,7 @@ const _tsip_machine_parser_header_Int_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_header_Int_index_offsets = [
+_tsip_machine_parser_header_Int_index_offsets = [
 	0, 0, 11, 14, 17, 20, 23, 26, 
 	29, 31, 34, 37, 40, 43, 46, 49, 
 	53, 57, 62, 64, 67, 71, 78, 84, 
@@ -179,7 +179,7 @@ const _tsip_machine_parser_header_Int_index_offsets = [
 	473, 477, 480, 484, 487, 490, 493, 497
 ];
 
-const _tsip_machine_parser_header_Int_indicies = [
+_tsip_machine_parser_header_Int_indicies = [
 	0, 2, 3, 4, 5, 0, 2, 3, 
 	4, 5, 1, 6, 6, 1, 7, 7, 
 	1, 8, 8, 1, 9, 9, 1, 10, 
@@ -245,7 +245,7 @@ const _tsip_machine_parser_header_Int_indicies = [
 	1, 1, 0
 ];
 
-const _tsip_machine_parser_header_Int_trans_targs = [
+_tsip_machine_parser_header_Int_trans_targs = [
 	2, 0, 84, 15, 91, 115, 3, 4, 
 	5, 6, 7, 8, 9, 10, 11, 12, 
 	13, 14, 16, 17, 16, 17, 18, 21, 
@@ -266,7 +266,7 @@ const _tsip_machine_parser_header_Int_trans_targs = [
 	118, 16, 17
 ];
 
-const _tsip_machine_parser_header_Int_trans_actions = [
+_tsip_machine_parser_header_Int_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 7, 7, 0, 0, 0, 1, 
@@ -287,11 +287,11 @@ const _tsip_machine_parser_header_Int_trans_actions = [
 	0, 17, 17
 ];
 
-const tsip_machine_parser_header_Int_start = 1;
-const tsip_machine_parser_header_Int_first_final = 119;
-const tsip_machine_parser_header_Int_error = 0;
+tsip_machine_parser_header_Int_start = 1;
+tsip_machine_parser_header_Int_first_final = 119;
+tsip_machine_parser_header_Int_error = 0;
 
-const tsip_machine_parser_header_Int_en_main = 1;
+tsip_machine_parser_header_Int_en_main = 1;
 
 
 /* line 80 "./ragel/tsip_parser_header_Int.jrl" */
@@ -480,7 +480,7 @@ case 9:
 119
 /* line 102 "./ragel/tsip_parser_header_Int.jrl" */
  ){
-		console.error("Failed to parse header: %s", s_str);
+		tsk_utils_log_error("Failed to parse header: " + s_str);
 		return null;
 	}
 	

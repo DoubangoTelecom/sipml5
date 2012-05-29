@@ -20,18 +20,19 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Warning.prototype = Object.create(tsip_header.prototype);
 
-/* line 75 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 76 "./ragel/tsip_parser_header_Warning.jrl" */
 
 
 
-/* line 29 "./src/headers/tsip_header_Warning.js" */
-const _tsip_machine_parser_header_Warning_actions = [
+/* line 30 "./src/headers/tsip_header_Warning.js" */
+_tsip_machine_parser_header_Warning_actions = [
 	0, 1, 0, 1, 2, 1, 4, 1, 
 	6, 2, 1, 0, 2, 3, 5
 ];
 
-const _tsip_machine_parser_header_Warning_key_offsets = [
+_tsip_machine_parser_header_Warning_key_offsets = [
 	0, 0, 2, 4, 6, 8, 10, 12, 
 	14, 17, 22, 23, 25, 29, 31, 33, 
 	34, 51, 66, 70, 74, 75, 77, 80, 
@@ -46,7 +47,7 @@ const _tsip_machine_parser_header_Warning_key_offsets = [
 	644, 647, 650, 651, 652
 ];
 
-const _tsip_machine_parser_header_Warning_trans_keys = [
+_tsip_machine_parser_header_Warning_trans_keys = [
 	87, 119, 65, 97, 82, 114, 78, 110, 
 	73, 105, 78, 110, 71, 103, 9, 32, 
 	58, 9, 13, 32, 48, 57, 10, 9, 
@@ -131,7 +132,7 @@ const _tsip_machine_parser_header_Warning_trans_keys = [
 	48, 57, 46, 58, 0
 ];
 
-const _tsip_machine_parser_header_Warning_single_lengths = [
+_tsip_machine_parser_header_Warning_single_lengths = [
 	0, 2, 2, 2, 2, 2, 2, 2, 
 	3, 3, 1, 2, 2, 0, 0, 1, 
 	5, 5, 4, 4, 1, 2, 3, 4, 
@@ -146,7 +147,7 @@ const _tsip_machine_parser_header_Warning_single_lengths = [
 	1, 1, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_Warning_range_lengths = [
+_tsip_machine_parser_header_Warning_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 1, 0, 0, 1, 1, 1, 0, 
 	6, 5, 0, 0, 0, 0, 0, 2, 
@@ -161,7 +162,7 @@ const _tsip_machine_parser_header_Warning_range_lengths = [
 	1, 1, 0, 0, 0
 ];
 
-const _tsip_machine_parser_header_Warning_index_offsets = [
+_tsip_machine_parser_header_Warning_index_offsets = [
 	0, 0, 3, 6, 9, 12, 15, 18, 
 	21, 25, 30, 32, 35, 39, 41, 43, 
 	45, 57, 68, 73, 78, 80, 83, 87, 
@@ -176,7 +177,7 @@ const _tsip_machine_parser_header_Warning_index_offsets = [
 	541, 544, 547, 549, 551
 ];
 
-const _tsip_machine_parser_header_Warning_indicies = [
+_tsip_machine_parser_header_Warning_indicies = [
 	0, 0, 1, 2, 2, 1, 3, 3, 
 	1, 4, 4, 1, 5, 5, 1, 6, 
 	6, 1, 7, 7, 1, 7, 7, 8, 
@@ -249,7 +250,7 @@ const _tsip_machine_parser_header_Warning_indicies = [
 	0
 ];
 
-const _tsip_machine_parser_header_Warning_trans_targs = [
+_tsip_machine_parser_header_Warning_trans_targs = [
 	2, 0, 3, 4, 5, 6, 7, 8, 
 	9, 10, 13, 11, 12, 14, 15, 16, 
 	17, 33, 37, 56, 18, 17, 19, 20, 
@@ -265,7 +266,7 @@ const _tsip_machine_parser_header_Warning_trans_targs = [
 	88, 89, 90
 ];
 
-const _tsip_machine_parser_header_Warning_trans_actions = [
+_tsip_machine_parser_header_Warning_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 9, 0, 0, 0, 0, 5, 
 	1, 1, 1, 1, 3, 0, 1, 1, 
@@ -281,25 +282,26 @@ const _tsip_machine_parser_header_Warning_trans_actions = [
 	0, 0, 0
 ];
 
-const tsip_machine_parser_header_Warning_start = 1;
-const tsip_machine_parser_header_Warning_first_final = 92;
-const tsip_machine_parser_header_Warning_error = 0;
+tsip_machine_parser_header_Warning_start = 1;
+tsip_machine_parser_header_Warning_first_final = 92;
+tsip_machine_parser_header_Warning_error = 0;
 
-const tsip_machine_parser_header_Warning_en_main = 1;
+tsip_machine_parser_header_Warning_en_main = 1;
 
 
-/* line 78 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 79 "./ragel/tsip_parser_header_Warning.jrl" */
 
 function tsip_header_Warning(i_code, s_agent, s_text){
-	this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Warning);
+	tsip_header.call(this, tsip_header_type_e.Warning);
     this.i_code = i_code;
     this.s_agent = s_agent;
     this.s_text = s_text;
-	this.toString = function(){
-		return tsk_string_format("{0} {1} {2}",
-			this.i_code, this.s_agent, this.s_text);
-	};
 }
+
+tsip_header_Warning.prototype.toString = function(){
+	return tsk_string_format("{0} {1} {2}",
+		this.i_code, this.s_agent, this.s_text);
+};
 
 // returns an array of 'Warning' headers
 tsip_header_Warning.prototype.Parse = function(s_str){
@@ -313,14 +315,14 @@ tsip_header_Warning.prototype.Parse = function(s_str){
 	var curr_warning = null;
 	
 	
-/* line 317 "./src/headers/tsip_header_Warning.js" */
+/* line 319 "./src/headers/tsip_header_Warning.js" */
 {
 	 cs = tsip_machine_parser_header_Warning_start;
 } /* JSCodeGen::writeInit */
 
-/* line 102 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 104 "./ragel/tsip_parser_header_Warning.jrl" */
 	
-/* line 324 "./src/headers/tsip_header_Warning.js" */
+/* line 326 "./src/headers/tsip_header_Warning.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -405,40 +407,40 @@ tsip_header_Warning.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Warning_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 28 "./ragel/tsip_parser_header_Warning.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 32 "./ragel/tsip_parser_header_Warning.jrl" */
 
 		if(!curr_warning){
 			curr_warning = new tsip_header_Warning(-1, null, null);
 		}
 			break;
 case 2:
-/* line 37 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 38 "./ragel/tsip_parser_header_Warning.jrl" */
 
 		if(curr_warning){
 		    curr_warning.s_agent = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
 case 3:
-/* line 43 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 44 "./ragel/tsip_parser_header_Warning.jrl" */
 
 		if(curr_warning){
 		    curr_warning.s_text = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
 case 4:
-/* line 49 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 50 "./ragel/tsip_parser_header_Warning.jrl" */
 
 		if(curr_warning){
 		    curr_warning.i_code = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 		}
 			break;
 case 5:
-/* line 55 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 56 "./ragel/tsip_parser_header_Warning.jrl" */
 
 		if(curr_warning){
 	        hdr_warnings.push(curr_warning);
@@ -446,10 +448,10 @@ case 5:
 	    }
 			break;
 case 6:
-/* line 62 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 63 "./ragel/tsip_parser_header_Warning.jrl" */
 
 			break;
-/* line 453 "./src/headers/tsip_header_Warning.js" */
+/* line 455 "./src/headers/tsip_header_Warning.js" */
 			} /* action switch */
 		}
 	}
@@ -476,14 +478,14 @@ case 6:
 	}
 	}
 
-/* line 103 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 105 "./ragel/tsip_parser_header_Warning.jrl" */
 	
 	if( cs < 
-/* line 483 "./src/headers/tsip_header_Warning.js" */
+/* line 485 "./src/headers/tsip_header_Warning.js" */
 92
-/* line 104 "./ragel/tsip_parser_header_Warning.jrl" */
+/* line 106 "./ragel/tsip_parser_header_Warning.jrl" */
  ){
-		console.error("Failed to parse 'Warning' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Warning' header: " + s_str);
 		return null;
 	}
 	

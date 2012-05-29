@@ -438,7 +438,7 @@ function __tsip_dialog_register_InProgress_2_InProgress_X_423(ao_args) {
 		i_ret = o_dialog.send_register(false);
 	}
     else {
-        console.error("Missing header: Min_Expires");
+        tsk_utils_log_error("Missing header: Min_Expires");
 		i_ret = -1;
 	}
 
@@ -545,7 +545,7 @@ function __tsip_dialog_register_Any_2_Terminated_X_Error(ao_args) {
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 function __tsip_dialog_register_onterm(o_self) {
-    console.debug("=== REGISTER Dialog terminated ===");
+    tsk_utils_log_info("=== REGISTER Dialog terminated ===");
 
     o_self.timer_cancel('Refresh');
     o_self.timer_cancel('Shutdown');

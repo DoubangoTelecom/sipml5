@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Subscription_State.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_Subscription_State;
 
@@ -62,26 +63,27 @@
 %%write data;
 
 function tsip_header_Subscription_State(s_state, s_reason, i_expires, i_retry_after){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Subscription_State);
+	tsip_header.call(this, tsip_header_type_e.Subscription_State);
     this.s_state = s_state;
     this.s_reason = s_reason;
     this.i_expires = i_expires;
     this.i_retry_after = i_retry_after;
-    this.toString = function(){
-        var s_str = tsk_string_format("{0}{1}{2}",
-                        this.s_state,
+}
+
+tsip_header_Subscription_State.prototype.toString = function(){
+    var s_str = tsk_string_format("{0}{1}{2}",
+                    this.s_state,
 			
-			            this.s_reason ? ";reason=" : "",
-			            this.s_reason ? this.s_reason : ""
-                    );
-        if(this.i_expires >= 0){
-            s_str += tsk_string_format(";expires={0}", this.i_expires);
-        }
-        if(this.i_retry_after >= 0){
-            s_str += tsk_string_format(";retry-after={0}", this.i_retry_after);
-        }
-        return s_str;
-    };
+			        this.s_reason ? ";reason=" : "",
+			        this.s_reason ? this.s_reason : ""
+                );
+    if(this.i_expires >= 0){
+        s_str += tsk_string_format(";expires={0}", this.i_expires);
+    }
+    if(this.i_retry_after >= 0){
+        s_str += tsk_string_format(";retry-after={0}", this.i_retry_after);
+    }
+    return s_str;
 }
 
 tsip_header_Subscription_State.prototype.Parse = function(s_str){
@@ -97,7 +99,7 @@ tsip_header_Subscription_State.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'Subscription-State' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Subscription-State' header: " + s_str);
 		return null;
 	}
 	

@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Session_Expires.prototype = Object.create(tsip_header.prototype);
 var TSIP_SESSION_EXPIRES_DEFAULT_VALUE = 1800;
 
 %%{
@@ -61,15 +62,16 @@ var TSIP_SESSION_EXPIRES_DEFAULT_VALUE = 1800;
 %%write data;
 
 function tsip_header_Session_Expires(i_delta_seconds, b_refresher_uas){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Session_Expires);
+	tsip_header.call(this, tsip_header_type_e.Session_Expires);
     this.i_delta_seconds = i_delta_seconds;
     this.b_refresher_uas = b_refresher_uas;
-    this.toString = function(){
-        if(this.i_delta_seconds >= 0){
-            return tsk_string_format("{0};refresher={1}", this.i_delta_seconds, this.b_refresher_uas ? "uas" : "uac");
-        }
-        return null;
-    };
+}
+
+tsip_header_Session_Expires.prototype.toString = function(){
+    if(this.i_delta_seconds >= 0){
+        return tsk_string_format("{0};refresher={1}", this.i_delta_seconds, this.b_refresher_uas ? "uas" : "uac");
+    }
+    return null;
 }
 
 tsip_header_Session_Expires.prototype.Parse = function(s_str){
@@ -85,7 +87,7 @@ tsip_header_Session_Expires.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'Session-Expires' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Session-Expires' header: " + s_str);
 		return null;
 	}
 	

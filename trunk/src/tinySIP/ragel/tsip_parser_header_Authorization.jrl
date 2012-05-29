@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Authorization.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_Authorization;
 
@@ -37,11 +38,11 @@
 	}
 
 	action is_auth{
-		hdr_Authorization.__proto__.e_type = tsip_header_type_e.Authorization;
+		tsip_header.call(hdr_Authorization, tsip_header_type_e.Authorization);
 	}
 
 	action is_proxy{
-		hdr_Authorization.__proto__.e_type = tsip_header_type_e.Proxy_Authorization;
+		tsip_header.call(hdr_Authorization, tsip_header_type_e.Proxy_Authorization);
 	}
 
 	action parse_username{
@@ -121,7 +122,7 @@
 %%write data;
 
 function tsip_header_Authorization(){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Authorization);
+	tsip_header.call(this, tsip_header_type_e.Authorization);
 	this.s_scheme = null;
 	this.s_username = null;
 	this.s_realm = null;
@@ -132,55 +133,55 @@ function tsip_header_Authorization(){
 	this.s_cnonce = null;
 	this.s_opaque = null;
 	this.s_qop = null;
-	this.s_nc = null;
-    
-    this.toString = function(){
-        if(tsk_string_iequals(this.s_scheme, "Basic")){
-			return tsk_string_format("{0} {1}", this.s_scheme, this.s_response);
-		}
-		else{
-			return tsk_string_format("{0} {1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}{22}{23}{24}{25}{26}{27}", 
-				this.s_scheme,
+	this.s_nc = null; 
+}
 
-				this.s_username ? "username=\"" : "",
-				this.s_username ? this.s_username : "",
-				this.s_username ? "\"" : "",
+tsip_header_Authorization.prototype.toString = function(){
+    if(tsk_string_iequals(this.s_scheme, "Basic")){
+		return tsk_string_format("{0} {1}", this.s_scheme, this.s_response);
+	}
+	else{
+		return tsk_string_format("{0} {1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}{22}{23}{24}{25}{26}{27}", 
+			this.s_scheme,
 
-				this.s_realm ? ",realm=\"" : "",
-				this.s_realm ? this.s_realm : "",
-				this.s_realm ? "\"" : "",
+			this.s_username ? "username=\"" : "",
+			this.s_username ? this.s_username : "",
+			this.s_username ? "\"" : "",
 
-				this.s_nonce ? ",nonce=\"" : "",
-				this.s_nonce ? this.s_nonce : "",
-				this.s_nonce ? "\"" : "",
+			this.s_realm ? ",realm=\"" : "",
+			this.s_realm ? this.s_realm : "",
+			this.s_realm ? "\"" : "",
 
-				this.s_uri ? ",uri=\"" : "",
-				this.s_uri ? this.s_uri : "",
-				this.s_uri ? "\"" : "",
+			this.s_nonce ? ",nonce=\"" : "",
+			this.s_nonce ? this.s_nonce : "",
+			this.s_nonce ? "\"" : "",
+
+			this.s_uri ? ",uri=\"" : "",
+			this.s_uri ? this.s_uri : "",
+			this.s_uri ? "\"" : "",
 					
-				this.s_response ? ",response=\"" : "",
-				this.s_response ? this.s_response : "",
-				this.s_response ? "\"" : "",
+			this.s_response ? ",response=\"" : "",
+			this.s_response ? this.s_response : "",
+			this.s_response ? "\"" : "",
 					
-				this.s_algorithm ? ",algorithm=" : "",
-				this.s_algorithm ? this.s_algorithm : "",
+			this.s_algorithm ? ",algorithm=" : "",
+			this.s_algorithm ? this.s_algorithm : "",
 
-				this.s_cnonce ? ",cnonce=\"" : "",
-				this.s_cnonce ? this.s_cnonce : "",
-				this.s_cnonce ? "\"" : "",
+			this.s_cnonce ? ",cnonce=\"" : "",
+			this.s_cnonce ? this.s_cnonce : "",
+			this.s_cnonce ? "\"" : "",
 
-				this.s_opaque ? ",opaque=\"" : "",
-				this.s_opaque ? this.s_opaque : "",
-				this.s_opaque ? "\"" : "",
+			this.s_opaque ? ",opaque=\"" : "",
+			this.s_opaque ? this.s_opaque : "",
+			this.s_opaque ? "\"" : "",
 
-				this.s_qop ? ",qop=" : "",
-				this.s_qop ? this.s_qop : "",
+			this.s_qop ? ",qop=" : "",
+			this.s_qop ? this.s_qop : "",
 
-				this.s_nc ? ",nc=" : "",
-				this.s_nc ? this.s_nc : ""
-				);
-		}
-    }
+			this.s_nc ? ",nc=" : "",
+			this.s_nc ? this.s_nc : ""
+			);
+	}
 }
 
 tsip_header_Authorization.prototype.Parse = function(s_str){
@@ -196,7 +197,7 @@ tsip_header_Authorization.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'Authorization' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Authorization' header: " + s_str);
 		return null;
 	}
 	

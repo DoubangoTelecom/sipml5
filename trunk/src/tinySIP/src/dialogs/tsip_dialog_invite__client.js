@@ -76,7 +76,7 @@ function c0000_Started_2_Outgoing_X_oINVITE(ao_args){
 	o_dialog.get_session().media.e_type = o_action.media.e_type;
 	/* Appy media params received from the user */
 	if(o_action.media.ao_params.length > 0){
-        console.error("Not implemented");
+        tsk_utils_log_error("Not implemented");
         return -1;
 		// tmedia_session_mgr_set_3(o_dialog.msession_mgr, action->media.params);
 	}
@@ -112,7 +112,7 @@ function c0000_Started_2_Outgoing_X_oINVITE(ao_args){
 }
 
 function c0000_Outgoing_2_Outgoing_X_iINVITEorUPDATE(ao_args){
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 

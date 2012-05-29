@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_WWW_Authenticate.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_WWW_Authenticate;
 
@@ -37,11 +38,11 @@
 	}
 
 	action is_auth{
-		hdr_WWW_Authenticate.__proto__.e_type= tsip_header_type_e.WWW_Authenticate;
+		tsip_header.call(hdr_WWW_Authenticate, tsip_header_type_e.WWW_Authenticate);
 	}
 
 	action is_proxy{
-		hdr_WWW_Authenticate.__proto__.e_type = tsip_header_type_e.Proxy_Authenticate;
+		tsip_header.call(hdr_WWW_Authenticate, tsip_header_type_e.Proxy_Authenticate);
 	}
 
 	action parse_realm{
@@ -108,7 +109,7 @@
 %%write data;
 
 function tsip_header_WWW_Authenticate(){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.WWW_Authenticate);
+	tsip_header.call(this, tsip_header_type_e.WWW_Authenticate);
 	this.s_scheme = null;
 	this.s_realm = null;
 	this.s_domain = null;
@@ -117,36 +118,36 @@ function tsip_header_WWW_Authenticate(){
 	this.b_stale = false;
 	this.s_algorithm = null;
 	this.s_qop = null;
-    
-    this.toString = function(){
-		return tsk_string_format("{0} realm=\"{1}\"{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13},stale={14}{15}{16}", 
-			this.s_scheme,
-			this.s_realm ? this.s_realm : "",
+}
+
+tsip_header_WWW_Authenticate.prototype.toString = function(){
+	return tsk_string_format("{0} realm=\"{1}\"{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13},stale={14}{15}{16}", 
+		this.s_scheme,
+		this.s_realm ? this.s_realm : "",
 				
-			this.s_domain ? ",domain=\"" : "",
-			this.s_domain ? this.s_domain : "",
-			this.s_domain ? "\"" : "",
+		this.s_domain ? ",domain=\"" : "",
+		this.s_domain ? this.s_domain : "",
+		this.s_domain ? "\"" : "",
 				
 				
-			this.s_qop ? ",qop=\"" : "",
-			this.s_qop ? this.s_qop : "",
-			this.s_qop ? "\"" : "",
+		this.s_qop ? ",qop=\"" : "",
+		this.s_qop ? this.s_qop : "",
+		this.s_qop ? "\"" : "",
 
 
-			this.s_nonce ? ",nonce=\"" : "",
-			this.s_nonce ? this.s_nonce : "",
-			this.s_nonce ? "\"" : "",
+		this.s_nonce ? ",nonce=\"" : "",
+		this.s_nonce ? this.s_nonce : "",
+		this.s_nonce ? "\"" : "",
 
-			this.s_opaque ? ",opaque=\"" : "",
-			this.s_opaque ? this.s_opaque : "",
-			this.s_opaque ? "\"" : "",
+		this.s_opaque ? ",opaque=\"" : "",
+		this.s_opaque ? this.s_opaque : "",
+		this.s_opaque ? "\"" : "",
 
-			this.b_stale ? "TRUE" : "FALSE",
+		this.b_stale ? "TRUE" : "FALSE",
 
-			this.s_algorithm ? ",algorithm=" : "",
-			this.s_algorithm ? this.s_algorithm : ""
-			);
-    }
+		this.s_algorithm ? ",algorithm=" : "",
+		this.s_algorithm ? this.s_algorithm : ""
+		);
 }
 
 tsip_header_WWW_Authenticate.prototype.Parse = function(s_str){
@@ -162,7 +163,7 @@ tsip_header_WWW_Authenticate.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'WWW-Authenticate' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'WWW-Authenticate' header: " + s_str);
 		return null;
 	}
 	

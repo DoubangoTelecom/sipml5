@@ -67,7 +67,7 @@ tsip_uri.prototype.clone = function (b_with_params, b_quote) {
 
 function tsip_uri_make_valid(s_uri, s_domain) {
     if (!s_uri || !s_domain) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     if (tsk_string_index_of(s_uri, s_uri.length, "\"") == 0 || tsk_string_index_of(s_uri, s_uri.length, "<") == 0) {
@@ -126,7 +126,7 @@ function tsip_uri_tostring(o_self, b_with_params, b_quote){
 		}
 	}
 	else{
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return null;
 	}
 }

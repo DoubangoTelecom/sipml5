@@ -83,7 +83,7 @@ o_session.register();
 */
 tsip_session_register.prototype.register = function () {
     if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
-        console.error("Stack not started");
+        tsk_utils_log_error("Stack not started");
         return -2;
     }
 

@@ -45,7 +45,7 @@ function tsip_header_Service_Route(o_uri){ tsip_header_NameAddr.call(this, tsip_
 
 
 /* line 48 "./src/headers/tsip_header_NameAddrArray.js" */
-const _tsip_machine_parser_header_NameAddrArray_actions = [
+_tsip_machine_parser_header_NameAddrArray_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8, 1, 9, 1, 10, 1, 
@@ -53,7 +53,7 @@ const _tsip_machine_parser_header_NameAddrArray_actions = [
 	2, 3, 5
 ];
 
-const _tsip_machine_parser_header_NameAddrArray_key_offsets = [
+_tsip_machine_parser_header_NameAddrArray_key_offsets = [
 	0, 0, 6, 9, 13, 15, 17, 21, 
 	23, 25, 27, 29, 30, 32, 34, 36, 
 	38, 40, 42, 44, 46, 49, 52, 73, 
@@ -78,7 +78,7 @@ const _tsip_machine_parser_header_NameAddrArray_key_offsets = [
 	701, 703, 705, 707, 709, 712
 ];
 
-const _tsip_machine_parser_header_NameAddrArray_trans_keys = [
+_tsip_machine_parser_header_NameAddrArray_trans_keys = [
 	80, 82, 83, 112, 114, 115, 45, 65, 
 	97, 65, 80, 97, 112, 83, 115, 83, 
 	115, 69, 79, 101, 111, 82, 114, 84, 
@@ -171,7 +171,7 @@ const _tsip_machine_parser_header_NameAddrArray_trans_keys = [
 	0
 ];
 
-const _tsip_machine_parser_header_NameAddrArray_single_lengths = [
+_tsip_machine_parser_header_NameAddrArray_single_lengths = [
 	0, 6, 3, 4, 2, 2, 4, 2, 
 	2, 2, 2, 1, 2, 2, 2, 2, 
 	2, 2, 2, 2, 3, 3, 9, 1, 
@@ -196,7 +196,7 @@ const _tsip_machine_parser_header_NameAddrArray_single_lengths = [
 	2, 2, 2, 2, 3, 0
 ];
 
-const _tsip_machine_parser_header_NameAddrArray_range_lengths = [
+_tsip_machine_parser_header_NameAddrArray_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 6, 0, 
@@ -221,7 +221,7 @@ const _tsip_machine_parser_header_NameAddrArray_range_lengths = [
 	0, 0, 0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_header_NameAddrArray_index_offsets = [
+_tsip_machine_parser_header_NameAddrArray_index_offsets = [
 	0, 0, 7, 11, 16, 19, 22, 27, 
 	30, 33, 36, 39, 41, 44, 47, 50, 
 	53, 56, 59, 62, 65, 69, 73, 89, 
@@ -246,7 +246,7 @@ const _tsip_machine_parser_header_NameAddrArray_index_offsets = [
 	728, 731, 734, 737, 740, 744
 ];
 
-const _tsip_machine_parser_header_NameAddrArray_indicies = [
+_tsip_machine_parser_header_NameAddrArray_indicies = [
 	0, 2, 3, 0, 2, 3, 1, 4, 
 	5, 5, 1, 6, 7, 6, 7, 1, 
 	8, 8, 1, 9, 9, 1, 10, 11, 
@@ -343,7 +343,7 @@ const _tsip_machine_parser_header_NameAddrArray_indicies = [
 	1, 0
 ];
 
-const _tsip_machine_parser_header_NameAddrArray_trans_targs = [
+_tsip_machine_parser_header_NameAddrArray_trans_targs = [
 	2, 0, 144, 160, 3, 141, 4, 123, 
 	5, 6, 7, 112, 8, 9, 10, 11, 
 	12, 13, 14, 15, 16, 17, 18, 19, 
@@ -373,7 +373,7 @@ const _tsip_machine_parser_header_NameAddrArray_trans_targs = [
 	171, 172, 21, 22
 ];
 
-const _tsip_machine_parser_header_NameAddrArray_trans_actions = [
+_tsip_machine_parser_header_NameAddrArray_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
@@ -403,11 +403,11 @@ const _tsip_machine_parser_header_NameAddrArray_trans_actions = [
 	0, 0, 25, 25
 ];
 
-const tsip_machine_parser_header_NameAddrArray_start = 1;
-const tsip_machine_parser_header_NameAddrArray_first_final = 173;
-const tsip_machine_parser_header_NameAddrArray_error = 0;
+tsip_machine_parser_header_NameAddrArray_start = 1;
+tsip_machine_parser_header_NameAddrArray_first_final = 173;
+tsip_machine_parser_header_NameAddrArray_error = 0;
 
-const tsip_machine_parser_header_NameAddrArray_en_main = 1;
+tsip_machine_parser_header_NameAddrArray_en_main = 1;
 
 
 /* line 118 "./ragel/tsip_parser_header_NameAddrArray.jrl" */
@@ -625,7 +625,7 @@ case 13:
 173
 /* line 140 "./ragel/tsip_parser_header_NameAddrArray.jrl" */
  ){
-		console.error("Failed to parse header: %s", s_str);
+		tsk_utils_log_error("Failed to parse header: " + s_str);
 		return null;
 	}
 	

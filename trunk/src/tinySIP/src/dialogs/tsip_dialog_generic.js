@@ -143,7 +143,7 @@ tsip_dialog_generic.prototype.signal_ao = function (i_code, s_phrase, o_response
             }
     }
 
-    console.error("not implemented");
+    tsk_utils_log_error("not implemented");
     return -1;
 }
 
@@ -160,7 +160,7 @@ tsip_dialog_generic.prototype.signal_i = function (i_code, s_phrase, o_request) 
             }
     }
 
-    console.error("not implemented");
+    tsk_utils_log_error("not implemented");
     return -1;
 }
 
@@ -292,13 +292,13 @@ function tsip_dialog_generic_InProgress_2_Terminated_X_2xx(ao_args) {
 
 // InProgress -> (2xx) -> Connected
 function tsip_dialog_generic_InProgress_2_Connected_X_2xx(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
 // InProgress -> (401/407/421/494) -> InProgress
 function tsip_dialog_generic_InProgress_2_InProgress_X_401_407_421_494(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -312,7 +312,7 @@ function tsip_dialog_generic_InProgress_2_Terminated_X_300_to_699(ao_args) {
 
 // InProgress -> (cancel) -> Terminated
 function tsip_dialog_generic_InProgress_2_Terminated_X_cancel(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -322,7 +322,7 @@ function tsip_dialog_generic_Incoming_2_Terminated_X_accept(ao_args) {
     var o_action = ao_args[2];    
 	
 	if(!o_dialog.o_last_iMessage){
-		console.error("Invalid state");
+		tsk_utils_log_error("Invalid state");
 		/* Not an error ...but do not update current action */
 	}
 	else{
@@ -333,13 +333,13 @@ function tsip_dialog_generic_Incoming_2_Terminated_X_accept(ao_args) {
 		if ((o_response = o_dialog.response_new(200, "OK", o_dialog.o_last_iMessage))) {
 		    if ((i_ret = tsip_dialog.prototype.ApplyAction(o_response, o_action)) == 0) {
 		        if ((i_ret = o_dialog.response_send(o_response))) {
-		            console.error("Failed to send SIP response.");
+		            tsk_utils_log_error("Failed to send SIP response.");
 		            return i_ret;
 		        }
 		    }
 		}
 		else{
-			console.error("Failed to create SIP response.");
+			tsk_utils_log_error("Failed to create SIP response.");
 			return -1;
 		}
 	}
@@ -349,26 +349,26 @@ function tsip_dialog_generic_Incoming_2_Terminated_X_accept(ao_args) {
 
 // Incoming -> (accept) -> Connected
 function tsip_dialog_generic_Incoming_2_Connected_X_accept(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
 // Incoming -> (rejected) -> Terminated
 function tsip_dialog_generic_Incoming_2_Terminated_X_reject(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
 
 // Any -> (transport error) -> Terminated
 function tsip_dialog_generic_Any_2_Terminated_X_transportError(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
 // Any -> (transport error) -> Terminated
 function tsip_dialog_generic_Any_2_Terminated_X_Error(ao_args) {
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -379,7 +379,7 @@ function tsip_dialog_generic_Any_2_Terminated_X_Error(ao_args) {
 
 
 function __tsip_dialog_generic_onterm(o_self) {
-    console.debug("=== %s Dialog terminated ===", o_self.e_type.s_name);
+    tsk_utils_log_info("=== " + o_self.e_type.s_name + " Dialog terminated ===");
 
     //o_self.timer_cancel('Refresh');
     //o_self.timer_cancel('Shutdown');

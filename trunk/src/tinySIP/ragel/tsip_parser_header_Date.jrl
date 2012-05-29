@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Date.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_Date;
 
@@ -75,7 +76,7 @@
 %%write data;
 
 function tsip_header_Date(s_wkday, s_month, i_day, i_year, i_h, i_m, i_s){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Date);
+	tsip_header.call(this, tsip_header_type_e.Date);
     this.s_wkday = s_wkday;
     this.s_month = s_month;
     this.i_day = i_day;
@@ -85,13 +86,14 @@ function tsip_header_Date(s_wkday, s_month, i_day, i_year, i_h, i_m, i_s){
     this.time.i_m = i_m;
     this.time.i_s = i_s;
     // Date: Wed, 28 Apr 2010 23:42:50 GMT
-    this.toString = function(){
-        if(this.s_month){
-            return tsk_string_format("{0}, {1} {2} {3} {4}:{5}:{6} GMT",
-                this.s_wkday, this.i_day, this.s_month, this.i_year, this.time.i_h, this.time.i_m, this.time.i_s);
-        }
-        return null;
+}
+
+tsip_header_Date.prototype.toString = function(){
+    if(this.s_month){
+        return tsk_string_format("{0}, {1} {2} {3} {4}:{5}:{6} GMT",
+            this.s_wkday, this.i_day, this.s_month, this.i_year, this.time.i_h, this.time.i_m, this.time.i_s);
     }
+    return null;
 }
 
 tsip_header_Date.prototype.Parse = function(s_str){
@@ -107,7 +109,7 @@ tsip_header_Date.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'Date' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Date' header: " + s_str);
 		return null;
 	}
 	

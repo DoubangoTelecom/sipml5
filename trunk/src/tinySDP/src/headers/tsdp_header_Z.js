@@ -28,19 +28,19 @@ tsdp_header_Z.prototype = Object.create(tsdp_header.prototype);
 
 
 /* line 31 "./src/headers/tsdp_header_Z.js" */
-const _tsdp_machine_parser_header_Z_actions = [
+_tsdp_machine_parser_header_Z_actions = [
 	0, 1, 0, 1, 3, 1, 4, 2, 
 	1, 0, 2, 4, 2, 2, 5, 0, 
 	3, 4, 2, 1
 ];
 
-const _tsdp_machine_parser_header_Z_key_offsets = [
+_tsdp_machine_parser_header_Z_key_offsets = [
 	0, 0, 1, 3, 5, 8, 11, 13, 
 	14, 16, 19, 22, 24, 32, 32, 40, 
 	42
 ];
 
-const _tsdp_machine_parser_header_Z_trans_keys = [
+_tsdp_machine_parser_header_Z_trans_keys = [
 	122, 32, 61, 48, 57, 32, 48, 57, 
 	45, 48, 57, 48, 57, 10, 48, 57, 
 	32, 48, 57, 45, 48, 57, 48, 57, 
@@ -49,25 +49,25 @@ const _tsdp_machine_parser_header_Z_trans_keys = [
 	13, 32, 13, 32, 0
 ];
 
-const _tsdp_machine_parser_header_Z_single_lengths = [
+_tsdp_machine_parser_header_Z_single_lengths = [
 	0, 1, 2, 0, 1, 1, 0, 1, 
 	0, 1, 1, 0, 6, 0, 6, 2, 
 	2
 ];
 
-const _tsdp_machine_parser_header_Z_range_lengths = [
+_tsdp_machine_parser_header_Z_range_lengths = [
 	0, 0, 0, 1, 1, 1, 1, 0, 
 	1, 1, 1, 1, 1, 0, 1, 0, 
 	0
 ];
 
-const _tsdp_machine_parser_header_Z_index_offsets = [
+_tsdp_machine_parser_header_Z_index_offsets = [
 	0, 0, 2, 5, 7, 10, 13, 15, 
 	17, 19, 22, 25, 27, 35, 36, 44, 
 	47
 ];
 
-const _tsdp_machine_parser_header_Z_indicies = [
+_tsdp_machine_parser_header_Z_indicies = [
 	0, 1, 0, 2, 1, 3, 1, 4, 
 	5, 1, 6, 7, 1, 8, 1, 9, 
 	1, 10, 1, 11, 12, 1, 13, 14, 
@@ -77,29 +77,29 @@ const _tsdp_machine_parser_header_Z_indicies = [
 	17, 1, 0
 ];
 
-const _tsdp_machine_parser_header_Z_trans_targs = [
+_tsdp_machine_parser_header_Z_trans_targs = [
 	2, 0, 3, 4, 5, 4, 6, 12, 
 	12, 13, 9, 10, 9, 11, 14, 14, 
 	7, 8, 12, 16, 7, 8, 14, 15
 ];
 
-const _tsdp_machine_parser_header_Z_trans_actions = [
+_tsdp_machine_parser_header_Z_trans_actions = [
 	0, 0, 0, 7, 3, 0, 0, 1, 
 	13, 0, 1, 3, 0, 0, 1, 13, 
 	16, 16, 0, 0, 10, 5, 0, 0
 ];
 
-const _tsdp_machine_parser_header_Z_eof_actions = [
+_tsdp_machine_parser_header_Z_eof_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 16, 0, 10, 10, 
 	16
 ];
 
-const tsdp_machine_parser_header_Z_start = 1;
-const tsdp_machine_parser_header_Z_first_final = 12;
-const tsdp_machine_parser_header_Z_error = 0;
+tsdp_machine_parser_header_Z_start = 1;
+tsdp_machine_parser_header_Z_first_final = 12;
+tsdp_machine_parser_header_Z_error = 0;
 
-const tsdp_machine_parser_header_Z_en_main = 1;
+tsdp_machine_parser_header_Z_en_main = 1;
 
 
 /* line 78 "./ragel/tsdp_parser_header_Z.jrl" */
@@ -347,7 +347,7 @@ case 4:
 12
 /* line 121 "./ragel/tsdp_parser_header_Z.jrl" */
  ){
-		console.error("Failed to parse \"z=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"z=\" header: " + s_str);
 		return null;
 	}
 	

@@ -20,19 +20,20 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_P_Preferred_Identity.prototype = Object.create(tsip_header.prototype);
 
-/* line 63 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 64 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
 
 
 
 
-/* line 30 "./src/headers/tsip_header_P_Preferred_Identity.js" */
-const _tsip_machine_parser_header_P_Preferred_Identity_actions = [
+/* line 31 "./src/headers/tsip_header_P_Preferred_Identity.js" */
+_tsip_machine_parser_header_P_Preferred_Identity_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 2, 1, 2, 2, 2, 1
 ];
 
-const _tsip_machine_parser_header_P_Preferred_Identity_key_offsets = [
+_tsip_machine_parser_header_P_Preferred_Identity_key_offsets = [
 	0, 0, 2, 3, 5, 7, 9, 11, 
 	13, 15, 17, 19, 21, 22, 24, 26, 
 	28, 30, 32, 34, 36, 38, 41, 62, 
@@ -67,7 +68,7 @@ const _tsip_machine_parser_header_P_Preferred_Identity_key_offsets = [
 	3862, 3876, 3896, 3903, 3909
 ];
 
-const _tsip_machine_parser_header_P_Preferred_Identity_trans_keys = [
+_tsip_machine_parser_header_P_Preferred_Identity_trans_keys = [
 	80, 112, 45, 80, 112, 82, 114, 69, 
 	101, 70, 102, 69, 101, 82, 114, 82, 
 	114, 69, 101, 68, 100, 45, 73, 105, 
@@ -559,7 +560,7 @@ const _tsip_machine_parser_header_P_Preferred_Identity_trans_keys = [
 	13, 32, 44, 0, 65535, 0
 ];
 
-const _tsip_machine_parser_header_P_Preferred_Identity_single_lengths = [
+_tsip_machine_parser_header_P_Preferred_Identity_single_lengths = [
 	0, 2, 1, 2, 2, 2, 2, 2, 
 	2, 2, 2, 2, 1, 2, 2, 2, 
 	2, 2, 2, 2, 2, 3, 9, 1, 
@@ -594,7 +595,7 @@ const _tsip_machine_parser_header_P_Preferred_Identity_single_lengths = [
 	8, 6, 5, 4, 0
 ];
 
-const _tsip_machine_parser_header_P_Preferred_Identity_range_lengths = [
+_tsip_machine_parser_header_P_Preferred_Identity_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 6, 0, 
@@ -629,7 +630,7 @@ const _tsip_machine_parser_header_P_Preferred_Identity_range_lengths = [
 	3, 7, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_P_Preferred_Identity_index_offsets = [
+_tsip_machine_parser_header_P_Preferred_Identity_index_offsets = [
 	0, 0, 3, 5, 8, 11, 14, 17, 
 	20, 23, 26, 29, 32, 34, 37, 40, 
 	43, 46, 49, 52, 55, 58, 62, 78, 
@@ -664,7 +665,7 @@ const _tsip_machine_parser_header_P_Preferred_Identity_index_offsets = [
 	3079, 3091, 3105, 3112, 3118
 ];
 
-const _tsip_machine_parser_header_P_Preferred_Identity_indicies = [
+_tsip_machine_parser_header_P_Preferred_Identity_indicies = [
 	0, 0, 1, 2, 1, 3, 3, 1, 
 	4, 4, 1, 5, 5, 1, 6, 6, 
 	1, 7, 7, 1, 8, 8, 1, 9, 
@@ -1057,7 +1058,7 @@ const _tsip_machine_parser_header_P_Preferred_Identity_indicies = [
 	165, 64, 165, 343, 176, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_P_Preferred_Identity_trans_targs = [
+_tsip_machine_parser_header_P_Preferred_Identity_trans_targs = [
 	2, 0, 3, 4, 5, 6, 7, 8, 
 	9, 10, 11, 12, 13, 14, 15, 16, 
 	17, 18, 19, 20, 21, 22, 23, 40, 
@@ -1105,7 +1106,7 @@ const _tsip_machine_parser_header_P_Preferred_Identity_trans_targs = [
 	250, 249, 251
 ];
 
-const _tsip_machine_parser_header_P_Preferred_Identity_trans_actions = [
+_tsip_machine_parser_header_P_Preferred_Identity_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 1, 
@@ -1153,25 +1154,26 @@ const _tsip_machine_parser_header_P_Preferred_Identity_trans_actions = [
 	3, 0, 0
 ];
 
-const tsip_machine_parser_header_P_Preferred_Identity_start = 1;
-const tsip_machine_parser_header_P_Preferred_Identity_first_final = 252;
-const tsip_machine_parser_header_P_Preferred_Identity_error = 0;
+tsip_machine_parser_header_P_Preferred_Identity_start = 1;
+tsip_machine_parser_header_P_Preferred_Identity_first_final = 252;
+tsip_machine_parser_header_P_Preferred_Identity_error = 0;
 
-const tsip_machine_parser_header_P_Preferred_Identity_en_main = 1;
+tsip_machine_parser_header_P_Preferred_Identity_en_main = 1;
 
 
-/* line 67 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 68 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
 
 function tsip_header_P_Preferred_Identity(o_uri){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.P_Preferred_Identity);
+	tsip_header.call(this, tsip_header_type_e.P_Preferred_Identity);
     this.o_uri = o_uri;
     this.s_display_name = null;
-    this.toString = function(){
-        if(this.o_uri){
-            return tsip_uri_tostring(this.o_uri, true, true);
-        }
-        return null;
+}
+
+tsip_header_P_Preferred_Identity.prototype.toString = function(){
+    if(this.o_uri){
+        return tsip_uri_tostring(this.o_uri, true, true);
     }
+    return null;
 }
 
 tsip_header_P_Preferred_Identity.prototype.Parse = function(s_str){
@@ -1184,14 +1186,14 @@ tsip_header_P_Preferred_Identity.prototype.Parse = function(s_str){
 	var hdr_pi = new tsip_header_P_Preferred_Identity(null);
 	
 	
-/* line 1188 "./src/headers/tsip_header_P_Preferred_Identity.js" */
+/* line 1190 "./src/headers/tsip_header_P_Preferred_Identity.js" */
 {
 	 cs = tsip_machine_parser_header_P_Preferred_Identity_start;
 } /* JSCodeGen::writeInit */
 
-/* line 90 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 92 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
 	
-/* line 1195 "./src/headers/tsip_header_P_Preferred_Identity.js" */
+/* line 1197 "./src/headers/tsip_header_P_Preferred_Identity.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -1276,12 +1278,12 @@ tsip_header_P_Preferred_Identity.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_P_Preferred_Identity_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 28 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 32 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
 	
 		if(hdr_pi && !hdr_pi.o_uri) /* Only one URI */{
 			var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -1291,7 +1293,7 @@ case 1:
 		}
 			break;
 case 2:
-/* line 40 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 41 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
 
 		if(!hdr_pi.s_display_name){
 			hdr_pi.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -1300,10 +1302,10 @@ case 2:
 
 			break;
 case 3:
-/* line 48 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 49 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
 
 			break;
-/* line 1307 "./src/headers/tsip_header_P_Preferred_Identity.js" */
+/* line 1309 "./src/headers/tsip_header_P_Preferred_Identity.js" */
 			} /* action switch */
 		}
 	}
@@ -1330,14 +1332,14 @@ case 3:
 	}
 	}
 
-/* line 91 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 93 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
 	
 	if( cs < 
-/* line 1337 "./src/headers/tsip_header_P_Preferred_Identity.js" */
+/* line 1339 "./src/headers/tsip_header_P_Preferred_Identity.js" */
 252
-/* line 92 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
+/* line 94 "./ragel/tsip_parser_header_P_Preferred_Identity.jrl" */
  ){
-		console.error("Failed to parse 'P-Preferred-Identity' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'P-Preferred-Identity' header: " + s_str);
 		return null;
 	}
 	

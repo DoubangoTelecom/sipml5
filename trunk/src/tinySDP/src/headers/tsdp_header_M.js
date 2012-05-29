@@ -29,17 +29,17 @@ tsdp_header_M.prototype = Object.create(tsdp_header.prototype);
 
 
 /* line 32 "./src/headers/tsdp_header_M.js" */
-const _tsdp_machine_parser_header_M_actions = [
+_tsdp_machine_parser_header_M_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4
 ];
 
-const _tsdp_machine_parser_header_M_key_offsets = [
+_tsdp_machine_parser_header_M_key_offsets = [
 	0, 0, 1, 3, 18, 33, 35, 39, 
 	53, 54, 68, 82, 84, 87, 102, 102
 ];
 
-const _tsdp_machine_parser_header_M_trans_keys = [
+_tsdp_machine_parser_header_M_trans_keys = [
 	109, 32, 61, 32, 33, 37, 39, 126, 
 	42, 43, 45, 46, 48, 57, 65, 90, 
 	95, 122, 32, 33, 37, 39, 126, 42, 
@@ -57,22 +57,22 @@ const _tsdp_machine_parser_header_M_trans_keys = [
 	48, 57, 65, 90, 95, 122, 0
 ];
 
-const _tsdp_machine_parser_header_M_single_lengths = [
+_tsdp_machine_parser_header_M_single_lengths = [
 	0, 1, 2, 5, 5, 0, 2, 4, 
 	1, 4, 4, 0, 1, 7, 0, 6
 ];
 
-const _tsdp_machine_parser_header_M_range_lengths = [
+_tsdp_machine_parser_header_M_range_lengths = [
 	0, 0, 0, 5, 5, 1, 1, 5, 
 	0, 5, 5, 1, 1, 4, 0, 5
 ];
 
-const _tsdp_machine_parser_header_M_index_offsets = [
+_tsdp_machine_parser_header_M_index_offsets = [
 	0, 0, 2, 5, 16, 27, 29, 33, 
 	43, 45, 55, 65, 67, 70, 82, 83
 ];
 
-const _tsdp_machine_parser_header_M_indicies = [
+_tsdp_machine_parser_header_M_indicies = [
 	0, 1, 0, 2, 1, 2, 3, 3, 
 	3, 3, 3, 3, 3, 3, 3, 1, 
 	4, 5, 5, 5, 5, 5, 5, 5, 
@@ -87,28 +87,28 @@ const _tsdp_machine_parser_header_M_indicies = [
 	21, 21, 21, 21, 21, 21, 1, 0
 ];
 
-const _tsdp_machine_parser_header_M_trans_targs = [
+_tsdp_machine_parser_header_M_trans_targs = [
 	2, 0, 3, 4, 5, 4, 6, 7, 
 	11, 6, 13, 14, 15, 13, 12, 12, 
 	8, 9, 10, 8, 9, 15
 ];
 
-const _tsdp_machine_parser_header_M_trans_actions = [
+_tsdp_machine_parser_header_M_trans_actions = [
 	0, 0, 0, 1, 3, 0, 1, 5, 
 	5, 0, 1, 0, 1, 0, 1, 0, 
 	7, 7, 0, 9, 9, 0
 ];
 
-const _tsdp_machine_parser_header_M_eof_actions = [
+_tsdp_machine_parser_header_M_eof_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 7, 0, 9
 ];
 
-const tsdp_machine_parser_header_M_start = 1;
-const tsdp_machine_parser_header_M_first_final = 13;
-const tsdp_machine_parser_header_M_error = 0;
+tsdp_machine_parser_header_M_start = 1;
+tsdp_machine_parser_header_M_first_final = 13;
+tsdp_machine_parser_header_M_error = 0;
 
-const tsdp_machine_parser_header_M_en_main = 1;
+tsdp_machine_parser_header_M_en_main = 1;
 
 
 /* line 68 "./ragel/tsdp_parser_header_M.jrl" */
@@ -218,7 +218,7 @@ tsdp_header_M.prototype.remove_header = function(e_type){
 
 tsdp_header_M.prototype.add_header = function(o_header){
 	if(!o_header){
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return -1;
 	}
 
@@ -270,7 +270,7 @@ tsdp_header_M.prototype.add_headers = function(){
 
 tsdp_header_M.prototype.find_a_at = function(s_field, i_index) {
 	if(!s_field || i_index < 0){
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return null;
 	}
 
@@ -292,7 +292,7 @@ tsdp_header_M.prototype.find_a = function(s_field) {
 tsdp_header_M.prototype.get_rtpmap = function(s_fmt){
 	var i_fmt_len = s_fmt ? s_fmt.length : 0;
 	if(i_fmt_len <= 0 || i_fmt_len > 3/*'0-255' or '*'*/){
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return null;
 	}
 	var s_rtpmap = null; /* e.g. AMR-WB/16000 */
@@ -319,7 +319,7 @@ tsdp_header_M.prototype.get_rtpmap = function(s_fmt){
 tsdp_header_M.prototype.get_fmtp = function(s_fmt){
 	var i_fmt_len = s_fmt ? s_fmt.length : 0;
 	if(i_fmt_len <= 0 || i_fmt_len > 3/*'0-255' or '*'*/){
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return null;
 	}
 	var s_fmtp= null; /* e.g. octet-align=1 */
@@ -599,7 +599,7 @@ case 4:
 13
 /* line 382 "./ragel/tsdp_parser_header_M.jrl" */
  ){
-		console.error("Failed to parse \"m=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"m=\" header: " + s_str);
 		return null;
 	}
 	

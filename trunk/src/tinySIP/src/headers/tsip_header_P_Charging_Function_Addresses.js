@@ -20,19 +20,20 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_P_Charging_Function_Addresses.prototype = Object.create(tsip_header.prototype);
 
-/* line 74 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 75 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 
 
-/* line 29 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_actions = [
+/* line 30 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
+_tsip_machine_parser_header_P_Charging_Function_Addresses_actions = [
 	0, 1, 6, 2, 1, 0, 2, 4, 
 	5, 3, 2, 4, 5, 3, 3, 4, 
 	5
 ];
 
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_key_offsets = [
+_tsip_machine_parser_header_P_Charging_Function_Addresses_key_offsets = [
 	0, 0, 2, 3, 5, 7, 9, 11, 
 	13, 15, 17, 19, 20, 22, 24, 26, 
 	28, 30, 32, 34, 36, 37, 39, 41, 
@@ -61,7 +62,7 @@ const _tsip_machine_parser_header_P_Charging_Function_Addresses_key_offsets = [
 	1056, 1059, 1060, 1061
 ];
 
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_trans_keys = [
+_tsip_machine_parser_header_P_Charging_Function_Addresses_trans_keys = [
 	80, 112, 45, 67, 99, 72, 104, 65, 
 	97, 82, 114, 71, 103, 73, 105, 78, 
 	110, 71, 103, 45, 70, 102, 85, 117, 
@@ -197,7 +198,7 @@ const _tsip_machine_parser_header_P_Charging_Function_Addresses_trans_keys = [
 	46, 48, 57, 46, 58, 0
 ];
 
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_single_lengths = [
+_tsip_machine_parser_header_P_Charging_Function_Addresses_single_lengths = [
 	0, 2, 1, 2, 2, 2, 2, 2, 
 	2, 2, 2, 1, 2, 2, 2, 2, 
 	2, 2, 2, 2, 1, 2, 2, 2, 
@@ -226,7 +227,7 @@ const _tsip_machine_parser_header_P_Charging_Function_Addresses_single_lengths =
 	1, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_range_lengths = [
+_tsip_machine_parser_header_P_Charging_Function_Addresses_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
@@ -255,7 +256,7 @@ const _tsip_machine_parser_header_P_Charging_Function_Addresses_range_lengths = 
 	1, 0, 0, 0
 ];
 
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_index_offsets = [
+_tsip_machine_parser_header_P_Charging_Function_Addresses_index_offsets = [
 	0, 0, 3, 5, 8, 11, 14, 17, 
 	20, 23, 26, 29, 31, 34, 37, 40, 
 	43, 46, 49, 52, 55, 57, 60, 63, 
@@ -284,7 +285,7 @@ const _tsip_machine_parser_header_P_Charging_Function_Addresses_index_offsets = 
 	971, 974, 976, 978
 ];
 
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_indicies = [
+_tsip_machine_parser_header_P_Charging_Function_Addresses_indicies = [
 	0, 0, 1, 2, 1, 3, 3, 1, 
 	4, 4, 1, 5, 5, 1, 6, 6, 
 	1, 7, 7, 1, 8, 8, 1, 9, 
@@ -410,7 +411,7 @@ const _tsip_machine_parser_header_P_Charging_Function_Addresses_indicies = [
 	188, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_trans_targs = [
+_tsip_machine_parser_header_P_Charging_Function_Addresses_trans_targs = [
 	2, 0, 3, 4, 5, 6, 7, 8, 
 	9, 10, 11, 12, 13, 14, 15, 16, 
 	17, 18, 19, 20, 21, 22, 23, 24, 
@@ -440,7 +441,7 @@ const _tsip_machine_parser_header_P_Charging_Function_Addresses_trans_targs = [
 	193, 195, 196, 197, 199, 200, 201
 ];
 
-const _tsip_machine_parser_header_P_Charging_Function_Addresses_trans_actions = [
+_tsip_machine_parser_header_P_Charging_Function_Addresses_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
@@ -470,32 +471,33 @@ const _tsip_machine_parser_header_P_Charging_Function_Addresses_trans_actions = 
 	0, 0, 0, 0, 0, 0, 0
 ];
 
-const tsip_machine_parser_header_P_Charging_Function_Addresses_start = 1;
-const tsip_machine_parser_header_P_Charging_Function_Addresses_first_final = 203;
-const tsip_machine_parser_header_P_Charging_Function_Addresses_error = 0;
+tsip_machine_parser_header_P_Charging_Function_Addresses_start = 1;
+tsip_machine_parser_header_P_Charging_Function_Addresses_first_final = 203;
+tsip_machine_parser_header_P_Charging_Function_Addresses_error = 0;
 
-const tsip_machine_parser_header_P_Charging_Function_Addresses_en_main = 1;
+tsip_machine_parser_header_P_Charging_Function_Addresses_en_main = 1;
 
 
-/* line 77 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 78 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 function tsip_header_P_Charging_Function_Addresses(s_ccf, s_ecf){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.P_Charging_Function_Addresses);
+	tsip_header.call(this, tsip_header_type_e.P_Charging_Function_Addresses);
     this.s_ccf = s_ccf;
     this.s_ecf = s_ecf;
-    this.toString = function(){
-        return tsk_string_format("{0}{1}{2}{3}{4}", 
-			this.s_ecf ? "ecf=" : "",
-			this.s_ecf ? this.s_ecf : "",
-
-			(this.s_ecf && this.s_ccf) ? ";" : "",
-
-			this.s_ccf ? "ccf=" : "",
-			this.s_ccf ? this.s_ccf : ""
-			);
-    }
        
     return hdr_pcfa;
+}
+
+tsip_header_P_Charging_Function_Addresses.prototype.toString = function(){
+    return tsk_string_format("{0}{1}{2}{3}{4}", 
+		this.s_ecf ? "ecf=" : "",
+		this.s_ecf ? this.s_ecf : "",
+
+		(this.s_ecf && this.s_ccf) ? ";" : "",
+
+		this.s_ccf ? "ccf=" : "",
+		this.s_ccf ? this.s_ccf : ""
+		);
 }
 
 // returns an array of 'P-Charging-Function-Addresses' headers
@@ -510,14 +512,14 @@ tsip_header_P_Charging_Function_Addresses.prototype.Parse = function(s_str){
 	var curr_p_charging_function_addresses = null;
 	
 	
-/* line 514 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
+/* line 516 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
 {
 	 cs = tsip_machine_parser_header_P_Charging_Function_Addresses_start;
 } /* JSCodeGen::writeInit */
 
-/* line 109 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 111 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 	
-/* line 521 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
+/* line 523 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -602,40 +604,40 @@ tsip_header_P_Charging_Function_Addresses.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_P_Charging_Function_Addresses_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 28 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 32 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 		if(!curr_p_charging_function_addresses){
 			curr_p_charging_function_addresses = new tsip_header_P_Charging_Function_Addresses(null, null);
 		}
 			break;
 case 2:
-/* line 37 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 38 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 		if(!curr_p_charging_function_addresses.s_ccf){
 		    curr_p_charging_function_addresses.s_ccf = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
 case 3:
-/* line 43 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 44 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 		if(!curr_p_charging_function_addresses.s_ecf){
 		    curr_p_charging_function_addresses.s_ecf = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
 case 4:
-/* line 49 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 50 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 		if(curr_p_charging_function_addresses){
 			tsk_ragel_add_param(s_str, p, i_tag_start, curr_p_charging_function_addresses.ao_params);
 		}
 			break;
 case 5:
-/* line 55 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 56 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 		if(curr_p_charging_function_addresses){
 	        hdr_p_charging_function_addressess.push(curr_p_charging_function_addresses);
@@ -643,10 +645,10 @@ case 5:
 	    }
 			break;
 case 6:
-/* line 62 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 63 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 
 			break;
-/* line 650 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
+/* line 652 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
 			} /* action switch */
 		}
 	}
@@ -673,14 +675,14 @@ case 6:
 	}
 	}
 
-/* line 110 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 112 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
 	
 	if( cs < 
-/* line 680 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
+/* line 682 "./src/headers/tsip_header_P_Charging_Function_Addresses.js" */
 203
-/* line 111 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
+/* line 113 "./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl" */
  ){
-		console.error("Failed to parse 'P-Charging-Function-Addresses' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'P-Charging-Function-Addresses' header: " + s_str);
 		return null;
 	}
 	

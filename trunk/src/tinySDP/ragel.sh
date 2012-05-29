@@ -1,24 +1,33 @@
 # Ragel generator
 # For more information about Ragel: http://www.complang.org/ragel/
 
+# folder (./src/headers) jsname(tsdp_parser_message) jrlname (tsdp_parser_message)
+ProcessFile()
+{
+	ragel.exe $OPTIONS -o $1/$2.js ./ragel/$3.jrl
+	sed -i 's/const _tsdp_machine_/_tsdp_machine_/g' $1/$2.js
+	sed -i 's/const tsdp_machine_/tsdp_machine_/g' $1/$2.js
+}
+
 export OPTIONS="-E -L -T0"
 
 # SDP Message parser
-ragel.exe $OPTIONS -o ./src/tsdp_parser_message.js ./ragel/tsdp_parser_message.jrl
+ProcessFile "./src" "tsdp_parser_message" "tsdp_parser_message"
+
 # ==Str (E, I, K, P, S, U)
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_Str.js ./ragel/tsdp_parser_header_Str.jrl
+ProcessFile "./src/headers" "tsdp_header_Str" "tsdp_parser_header_Str"
 
 # ==A
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_A.js ./ragel/tsdp_parser_header_A.jrl
+ProcessFile "./src/headers" "tsdp_header_A" "tsdp_parser_header_A"
 
 # ==B
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_B.js ./ragel/tsdp_parser_header_B.jrl
+ProcessFile "./src/headers" "tsdp_header_B" "tsdp_parser_header_B"
 
 # ==C
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_C.js ./ragel/tsdp_parser_header_C.jrl
+ProcessFile "./src/headers" "tsdp_header_C" "tsdp_parser_header_C"
 
 # ==Dummy
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_Dummy.js ./ragel/tsdp_parser_header_Dummy.jrl
+ProcessFile "./src/headers" "tsdp_header_Dummy" "tsdp_parser_header_Dummy"
 
 # ==E
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_E.js ./ragel/tsdp_parser_header_E.jrl
@@ -30,29 +39,29 @@ ragel.exe $OPTIONS -o ./src/headers/tsdp_header_Dummy.js ./ragel/tsdp_parser_hea
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_K.js ./ragel/tsdp_parser_header_K.jrl
 
 # ==M
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_M.js ./ragel/tsdp_parser_header_M.jrl
+ProcessFile "./src/headers" "tsdp_header_M" "tsdp_parser_header_M"
 
 # ==O
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_O.js ./ragel/tsdp_parser_header_O.jrl
+ProcessFile "./src/headers" "tsdp_header_O" "tsdp_parser_header_O"
 
 # ==P
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_P.js ./ragel/tsdp_parser_header_P.jrl
 
 # ==R
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_R.js ./ragel/tsdp_parser_header_R.jrl
+ProcessFile "./src/headers" "tsdp_header_R" "tsdp_parser_header_R"
 
 # ==S
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_S.js ./ragel/tsdp_parser_header_S.jrl
 
 # ==T
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_T.js ./ragel/tsdp_parser_header_T.jrl
+ProcessFile "./src/headers" "tsdp_header_T" "tsdp_parser_header_T"
 
 # ==U
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_U.js ./ragel/tsdp_parser_header_U.jrl
 
 # ==V
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_V.js ./ragel/tsdp_parser_header_V.jrl
+ProcessFile "./src/headers" "tsdp_header_V" "tsdp_parser_header_V"
 
 # ==Z
-ragel.exe $OPTIONS -o ./src/headers/tsdp_header_Z.js ./ragel/tsdp_parser_header_Z.jrl
+ProcessFile "./src/headers" "tsdp_header_Z" "tsdp_parser_header_Z"
 

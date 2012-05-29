@@ -89,7 +89,7 @@ function tsip_message(e_type) {
 
 function tsip_response(i_status_code, s_reason_phrase, o_request) {
     if(!s_reason_phrase || !o_request){
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     tsip_message.call(this, tsip_message_type_e.RESPONSE);
@@ -148,7 +148,7 @@ function tsip_response(i_status_code, s_reason_phrase, o_request) {
 
 function tsip_request(s_method, o_uri_request, o_uri_from, o_uri_to, s_call_id, i_cseq){
     if(!s_method || !o_uri_request || !s_call_id){
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
 
@@ -181,7 +181,7 @@ function tsip_request(s_method, o_uri_request, o_uri_from, o_uri_to, s_call_id, 
 
 tsip_message.prototype.add_header = function (o_hdr) {
     if (!o_hdr) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
@@ -378,7 +378,7 @@ tsip_message.prototype.get_response_phrase = function () {
 
 tsip_message.prototype.is_allowed = function (s_method) {
     if (!s_method) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return false;
     }
 
@@ -395,7 +395,7 @@ tsip_message.prototype.is_allowed = function (s_method) {
 
 tsip_message.prototype.is_supported = function (s_option) {
     if (!s_option) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return false;
     }
 
@@ -412,7 +412,7 @@ tsip_message.prototype.is_supported = function (s_option) {
 
 tsip_message.prototype.is_required = function (s_option) {
     if (!s_option) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return false;
     }
 
@@ -458,7 +458,7 @@ tsip_message.prototype.get_content_as_string = function () {
         if (this.o_content instanceof String) {
             this.o_content;
         }
-        else if (this.o_content instanceof ArrayBuffer) {
+        else if (this.o_content instanceof Array) {
             return tsk_buff_u8b2utf8(this.o_content);
         }
     }
@@ -483,7 +483,7 @@ tsip_message.prototype.add_content = function (o_content, s_content_type, i_leng
             i_length = o_content.length;
         }
         else {
-            console.error("cannot stat content-length");
+            tsk_utils_log_error("cannot stat content-length");
             i_length = 0;
         }
     }

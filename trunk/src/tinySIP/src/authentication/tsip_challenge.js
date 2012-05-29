@@ -103,7 +103,7 @@ tsip_challenge.prototype.create_header_authorization = function(o_request){
 	var o_header = null;
 
     if(!(s_uristring = tsip_uri_tostring(o_request.line.request.o_uri, true, false))){
-        TSK_DEBUG_ERROR("Failed to parse URI: %s", o_request.line.request.o_uri);
+        TSK_DEBUG_ERROR("Failed to parse URI: " + o_request.line.request.o_uri);
         return null;
     }
 

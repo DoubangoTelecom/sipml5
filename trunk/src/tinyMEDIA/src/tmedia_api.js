@@ -23,7 +23,7 @@ function tmedia_api_add_js_scripts(s_elt) {
     for (var i = 1; i < arguments.length; ++i) {
         var tag_script = document.createElement('script');
         tag_script.setAttribute('type', 'text/javascript');
-        tag_script.setAttribute('src', arguments[i]);
+        tag_script.setAttribute('src', arguments[i] + "?svn=5");
         tag_hdr.appendChild(tag_script);
     }
 };
@@ -37,4 +37,5 @@ tmedia_api_add_js_scripts('head',
 //'src/tinyMEDIA/src/tmedia_session_jsep.js', #include_in<tmedia_session.js>
 //'src/tinyMEDIA/src/tmedia_session_roap.js', #include_in<tmedia_session.js>
 //'src/tinyMEDIA/src/tmedia_session_ghost.js' #include_in<tmedia_session.js>
+// 'src/tinyMEDIA/src/tmedia_webrtc4ie.js' // #include_in<tmedia_common.js>
 );

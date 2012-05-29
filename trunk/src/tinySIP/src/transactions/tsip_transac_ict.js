@@ -54,7 +54,7 @@ var tsip_transac_ict_states_e =
 function tsip_transac_ict(b_reliable, i_cseq_value, s_callid, o_dialog) {
     var o_stack;
     if (!o_dialog || !(o_stack = o_dialog.get_stack())) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     tsip_transac.call(this);
@@ -153,7 +153,7 @@ tsip_transac_ict.prototype.start = function (o_request) {
 
 tsip_transac_ict.prototype.send_ack = function(o_response){
 	if(!this.o_request || !o_response){
-        console.error("Invalid state");
+        tsk_utils_log_error("Invalid state");
 		return -1;
 	}
 
@@ -164,13 +164,13 @@ tsip_transac_ict.prototype.send_ack = function(o_response){
 		!this.o_request.o_hdr_Call_ID || 
 		!this.o_request.o_hdr_CSeq)
 	{
-		console.error("Invalid INVITE message");
+		tsk_utils_log_error("Invalid INVITE message");
 		return -2;
 	}
 
 	// check response
 	if(!o_response.o_hdr_To){
-		console.error("Invalid response message");
+		tsk_utils_log_error("Invalid response message");
 		return -3;
 	}
 
@@ -554,7 +554,7 @@ function __tsip_transac_ict_onterm(o_self) {
 
 function __tsip_transac_ict_event_callback(o_self, e_event_type, o_message) {
     if (!o_self) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
     var i_ret = 0;
@@ -573,7 +573,7 @@ function __tsip_transac_ict_event_callback(o_self, e_event_type, o_message) {
                         i_ret = o_self.fsm_act(tsip_transac_ict_actions_e.I_300_to_699, o_message);
                     }
                     else {
-                        console.warn("Not supported status code: %d", o_message.get_response_code());
+                        tsk_utils_log_warn("Not supported status code: " + o_message.get_response_code());
                     }
                 }
                 break;

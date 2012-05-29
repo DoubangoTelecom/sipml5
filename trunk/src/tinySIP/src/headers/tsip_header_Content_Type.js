@@ -20,19 +20,20 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Content_Type.prototype = Object.create(tsip_header.prototype);
 
-/* line 60 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 61 "./ragel/tsip_parser_header_Content_Type.jrl" */
 
 
 
 
-/* line 30 "./src/headers/tsip_header_Content_Type.js" */
-const _tsip_machine_parser_header_Content_Type_actions = [
+/* line 31 "./src/headers/tsip_header_Content_Type.js" */
+_tsip_machine_parser_header_Content_Type_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3
 ];
 
-const _tsip_machine_parser_header_Content_Type_key_offsets = [
+_tsip_machine_parser_header_Content_Type_key_offsets = [
 	0, 0, 2, 7, 10, 27, 28, 30, 
 	46, 62, 66, 67, 69, 72, 89, 90, 
 	92, 108, 126, 130, 131, 133, 136, 153, 
@@ -42,7 +43,7 @@ const _tsip_machine_parser_header_Content_Type_key_offsets = [
 	291, 293, 295, 296, 298, 300, 302, 304
 ];
 
-const _tsip_machine_parser_header_Content_Type_trans_keys = [
+_tsip_machine_parser_header_Content_Type_trans_keys = [
 	67, 99, 9, 32, 58, 79, 111, 9, 
 	32, 58, 9, 13, 32, 33, 37, 39, 
 	126, 42, 43, 45, 46, 48, 57, 65, 
@@ -84,7 +85,7 @@ const _tsip_machine_parser_header_Content_Type_trans_keys = [
 	0
 ];
 
-const _tsip_machine_parser_header_Content_Type_single_lengths = [
+_tsip_machine_parser_header_Content_Type_single_lengths = [
 	0, 2, 5, 3, 7, 1, 2, 6, 
 	8, 4, 1, 2, 3, 7, 1, 2, 
 	6, 8, 4, 1, 2, 3, 7, 1, 
@@ -94,7 +95,7 @@ const _tsip_machine_parser_header_Content_Type_single_lengths = [
 	2, 2, 1, 2, 2, 2, 2, 0
 ];
 
-const _tsip_machine_parser_header_Content_Type_range_lengths = [
+_tsip_machine_parser_header_Content_Type_range_lengths = [
 	0, 0, 0, 0, 5, 0, 0, 5, 
 	4, 0, 0, 0, 0, 5, 0, 0, 
 	5, 5, 0, 0, 0, 0, 5, 0, 
@@ -104,7 +105,7 @@ const _tsip_machine_parser_header_Content_Type_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_header_Content_Type_index_offsets = [
+_tsip_machine_parser_header_Content_Type_index_offsets = [
 	0, 0, 3, 9, 13, 26, 28, 31, 
 	43, 56, 61, 63, 66, 70, 83, 85, 
 	88, 100, 114, 119, 121, 124, 128, 141, 
@@ -114,7 +115,7 @@ const _tsip_machine_parser_header_Content_Type_index_offsets = [
 	274, 277, 280, 282, 285, 288, 291, 294
 ];
 
-const _tsip_machine_parser_header_Content_Type_indicies = [
+_tsip_machine_parser_header_Content_Type_indicies = [
 	0, 0, 1, 2, 2, 3, 4, 4, 
 	1, 2, 2, 3, 1, 3, 5, 3, 
 	6, 6, 6, 6, 6, 6, 6, 6, 
@@ -154,7 +155,7 @@ const _tsip_machine_parser_header_Content_Type_indicies = [
 	61, 61, 1, 2, 2, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_Content_Type_trans_targs = [
+_tsip_machine_parser_header_Content_Type_trans_targs = [
 	2, 0, 3, 4, 45, 5, 8, 6, 
 	7, 9, 10, 8, 13, 11, 12, 14, 
 	17, 15, 16, 18, 42, 22, 18, 19, 
@@ -165,7 +166,7 @@ const _tsip_machine_parser_header_Content_Type_trans_targs = [
 	49, 50, 51, 52, 53, 54
 ];
 
-const _tsip_machine_parser_header_Content_Type_trans_actions = [
+_tsip_machine_parser_header_Content_Type_trans_actions = [
 	0, 0, 0, 0, 0, 0, 1, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 3, 3, 3, 0, 0, 
@@ -176,21 +177,22 @@ const _tsip_machine_parser_header_Content_Type_trans_actions = [
 	0, 0, 0, 0, 0, 0
 ];
 
-const tsip_machine_parser_header_Content_Type_start = 1;
-const tsip_machine_parser_header_Content_Type_first_final = 55;
-const tsip_machine_parser_header_Content_Type_error = 0;
+tsip_machine_parser_header_Content_Type_start = 1;
+tsip_machine_parser_header_Content_Type_first_final = 55;
+tsip_machine_parser_header_Content_Type_error = 0;
 
-const tsip_machine_parser_header_Content_Type_en_main = 1;
+tsip_machine_parser_header_Content_Type_en_main = 1;
 
 
-/* line 64 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 65 "./ragel/tsip_parser_header_Content_Type.jrl" */
 
 function tsip_header_Content_Type(s_type){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Content_Type);
+	tsip_header.call(this, tsip_header_type_e.Content_Type);
     this.s_type = s_type;
-    this.toString = function(){
-        return this.s_type;
-    }
+}
+
+tsip_header_Content_Type.prototype.toString = function(){
+    return this.s_type;
 }
 
 tsip_header_Content_Type.prototype.Parse = function(s_str){
@@ -203,14 +205,14 @@ tsip_header_Content_Type.prototype.Parse = function(s_str){
 	var hdr_ctype = new tsip_header_Content_Type(null);
 	
 	
-/* line 207 "./src/headers/tsip_header_Content_Type.js" */
+/* line 209 "./src/headers/tsip_header_Content_Type.js" */
 {
 	 cs = tsip_machine_parser_header_Content_Type_start;
 } /* JSCodeGen::writeInit */
 
-/* line 83 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 85 "./ragel/tsip_parser_header_Content_Type.jrl" */
 	
-/* line 214 "./src/headers/tsip_header_Content_Type.js" */
+/* line 216 "./src/headers/tsip_header_Content_Type.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -295,25 +297,25 @@ tsip_header_Content_Type.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Content_Type_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 28 "./ragel/tsip_parser_header_Content_Type.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 32 "./ragel/tsip_parser_header_Content_Type.jrl" */
 
 	    hdr_ctype.s_type = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 36 "./ragel/tsip_parser_header_Content_Type.jrl" */
 
 	    tsk_ragel_add_param(s_str, p, i_tag_start, hdr_ctype.ao_params);
 			break;
 case 3:
-/* line 39 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 40 "./ragel/tsip_parser_header_Content_Type.jrl" */
 
 			break;
-/* line 317 "./src/headers/tsip_header_Content_Type.js" */
+/* line 319 "./src/headers/tsip_header_Content_Type.js" */
 			} /* action switch */
 		}
 	}
@@ -340,14 +342,14 @@ case 3:
 	}
 	}
 
-/* line 84 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 86 "./ragel/tsip_parser_header_Content_Type.jrl" */
 	
 	if( cs < 
-/* line 347 "./src/headers/tsip_header_Content_Type.js" */
+/* line 349 "./src/headers/tsip_header_Content_Type.js" */
 55
-/* line 85 "./ragel/tsip_parser_header_Content_Type.jrl" */
+/* line 87 "./ragel/tsip_parser_header_Content_Type.jrl" */
  ){
-		console.error("Failed to parse 'Content-Type' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Content-Type' header: " + s_str);
 		return null;
 	}
 	

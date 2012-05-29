@@ -20,17 +20,18 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Via.prototype = Object.create(tsip_header.prototype);
 tsip_header_Via.prototype.__s_proto_name_default = "SIP";
 tsip_header_Via.prototype.__s_proto_version_default = "2.0";
 
 
-/* line 127 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 128 "./ragel/tsip_parser_header_Via.jrl" */
 
 
 
 
-/* line 33 "./src/headers/tsip_header_Via.js" */
-const _tsip_machine_parser_header_Via_actions = [
+/* line 34 "./src/headers/tsip_header_Via.js" */
+_tsip_machine_parser_header_Via_actions = [
 	0, 1, 0, 1, 2, 1, 3, 1, 
 	4, 1, 5, 1, 6, 1, 7, 1, 
 	8, 1, 9, 1, 10, 1, 11, 1, 
@@ -42,7 +43,7 @@ const _tsip_machine_parser_header_Via_actions = [
 	13, 15
 ];
 
-const _tsip_machine_parser_header_Via_key_offsets = [
+_tsip_machine_parser_header_Via_key_offsets = [
 	0, 0, 2, 7, 10, 27, 28, 30, 
 	46, 62, 66, 67, 69, 72, 89, 90, 
 	92, 108, 124, 128, 129, 131, 134, 151, 
@@ -88,7 +89,7 @@ const _tsip_machine_parser_header_Via_key_offsets = [
 	2728, 2729, 2731
 ];
 
-const _tsip_machine_parser_header_Via_trans_keys = [
+_tsip_machine_parser_header_Via_trans_keys = [
 	86, 118, 9, 32, 58, 73, 105, 9, 
 	32, 58, 9, 13, 32, 33, 37, 39, 
 	126, 42, 43, 45, 46, 48, 57, 65, 
@@ -433,7 +434,7 @@ const _tsip_machine_parser_header_Via_trans_keys = [
 	58, 65, 97, 0
 ];
 
-const _tsip_machine_parser_header_Via_single_lengths = [
+_tsip_machine_parser_header_Via_single_lengths = [
 	0, 2, 5, 3, 7, 1, 2, 6, 
 	8, 4, 1, 2, 3, 7, 1, 2, 
 	6, 8, 4, 1, 2, 3, 7, 1, 
@@ -479,7 +480,7 @@ const _tsip_machine_parser_header_Via_single_lengths = [
 	1, 2, 0
 ];
 
-const _tsip_machine_parser_header_Via_range_lengths = [
+_tsip_machine_parser_header_Via_range_lengths = [
 	0, 0, 0, 0, 5, 0, 0, 5, 
 	4, 0, 0, 0, 0, 5, 0, 0, 
 	5, 4, 0, 0, 0, 0, 5, 0, 
@@ -525,7 +526,7 @@ const _tsip_machine_parser_header_Via_range_lengths = [
 	0, 0, 0
 ];
 
-const _tsip_machine_parser_header_Via_index_offsets = [
+_tsip_machine_parser_header_Via_index_offsets = [
 	0, 0, 3, 9, 13, 26, 28, 31, 
 	43, 56, 61, 63, 66, 70, 83, 85, 
 	88, 100, 113, 118, 120, 123, 127, 140, 
@@ -571,7 +572,7 @@ const _tsip_machine_parser_header_Via_index_offsets = [
 	2389, 2391, 2394
 ];
 
-const _tsip_machine_parser_header_Via_indicies = [
+_tsip_machine_parser_header_Via_indicies = [
 	0, 0, 1, 2, 2, 3, 4, 4, 
 	1, 2, 2, 3, 1, 3, 5, 3, 
 	6, 6, 6, 6, 6, 6, 6, 6, 
@@ -874,7 +875,7 @@ const _tsip_machine_parser_header_Via_indicies = [
 	2, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_Via_trans_targs = [
+_tsip_machine_parser_header_Via_trans_targs = [
 	2, 0, 3, 4, 337, 5, 8, 6, 
 	7, 9, 10, 8, 13, 9, 10, 13, 
 	11, 12, 14, 17, 15, 16, 18, 19, 
@@ -928,7 +929,7 @@ const _tsip_machine_parser_header_Via_trans_targs = [
 	331, 333, 334, 335
 ];
 
-const _tsip_machine_parser_header_Via_trans_actions = [
+_tsip_machine_parser_header_Via_trans_actions = [
 	0, 0, 0, 0, 0, 0, 29, 0, 
 	0, 3, 3, 0, 3, 0, 0, 0, 
 	0, 0, 0, 1, 0, 0, 5, 5, 
@@ -982,17 +983,17 @@ const _tsip_machine_parser_header_Via_trans_actions = [
 	0, 0, 0, 0
 ];
 
-const tsip_machine_parser_header_Via_start = 1;
-const tsip_machine_parser_header_Via_first_final = 338;
-const tsip_machine_parser_header_Via_error = 0;
+tsip_machine_parser_header_Via_start = 1;
+tsip_machine_parser_header_Via_first_final = 338;
+tsip_machine_parser_header_Via_error = 0;
 
-const tsip_machine_parser_header_Via_en_main = 1;
+tsip_machine_parser_header_Via_en_main = 1;
 
 
-/* line 131 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 132 "./ragel/tsip_parser_header_Via.jrl" */
 
 function tsip_header_Via(s_proto_name, s_proto_version, s_transport, s_host, i_port){
-	this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Via);
+	tsip_header.call(this, tsip_header_type_e.Via);
     this.s_branch = null;
 	this.s_host = s_host;
 	this.i_port = i_port;
@@ -1011,47 +1012,48 @@ function tsip_header_Via(s_proto_name, s_proto_version, s_transport, s_host, i_p
 	this.is_transport_unreliable = function(){
 		return !this.is_transport_reliable();
 	};
-	this.toString = function(){
-		var b_ipv6 = (this.s_host && tsk_string_contains(this.s_host, this.s_host.length, ":"));
+}
 
-		// SIP/2.0/UDP [::]:1988;test=1234;comp=sigcomp;rport=254;ttl=457;received=192.0.2.101;branch=z9hG4bK1245420841406\r\n"
-		return tsk_string_format("{0}/{1}/{2} {3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}",
+tsip_header_Via.prototype.toString = function(){
+	var b_ipv6 = (this.s_host && tsk_string_contains(this.s_host, this.s_host.length, ":"));
 
-				this.s_proto_name ? this.s_proto_name : "SIP",
+	// SIP/2.0/UDP [::]:1988;test=1234;comp=sigcomp;rport=254;ttl=457;received=192.0.2.101;branch=z9hG4bK1245420841406\r\n"
+	return tsk_string_format("{0}/{1}/{2} {3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}",
 
-				this.s_proto_version ? this.s_proto_version : "2.0",
+			this.s_proto_name ? this.s_proto_name : "SIP",
 
-				this.s_transport ? this.s_transport : "UDP",
+			this.s_proto_version ? this.s_proto_version : "2.0",
 
-				b_ipv6 ? "[" : "",
-				this.s_host ? this.s_host : "127.0.0.1",
-				b_ipv6 ? "]" : "",
+			this.s_transport ? this.s_transport : "UDP",
 
-				this.i_port > 0 ? ":" : "",
-				this.i_port > 0 ? this.i_port : "",
+			b_ipv6 ? "[" : "",
+			this.s_host ? this.s_host : "127.0.0.1",
+			b_ipv6 ? "]" : "",
 
-				this.s_maddr ? ";maddr=" : "",
-				this.s_maddr ? this.s_maddr : "",
+			this.i_port > 0 ? ":" : "",
+			this.i_port > 0 ? this.i_port : "",
 
-				this.s_sigcomp_id ? ";sigcomp-id=" : "",
-				this.s_sigcomp_id ? this.s_sigcomp_id : "",
+			this.s_maddr ? ";maddr=" : "",
+			this.s_maddr ? this.s_maddr : "",
 
-				this.s_comp ? ";comp=" : "",
-				this.s_comp ? this.s_comp : "",
+			this.s_sigcomp_id ? ";sigcomp-id=" : "",
+			this.s_sigcomp_id ? this.s_sigcomp_id : "",
 
-				this.i_rport>=0 ? (this.i_rport>0?";rport=":";rport") : "",
-				this.i_rport>0 ? this.i_rport : "",
+			this.s_comp ? ";comp=" : "",
+			this.s_comp ? this.s_comp : "",
 
-				this.i_ttl>=0 ? (this.i_ttl>0?";ttl=":";ttl") : "",
-				this.i_ttl>0 ? this.i_ttl : "",
+			this.i_rport>=0 ? (this.i_rport>0?";rport=":";rport") : "",
+			this.i_rport>0 ? this.i_rport : "",
 
-				this.s_received ? ";received=" : "",
-				this.s_received ? this.s_received : "",
+			this.i_ttl>=0 ? (this.i_ttl>0?";ttl=":";ttl") : "",
+			this.i_ttl>0 ? this.i_ttl : "",
 
-				this.s_branch ? ";branch=" : "",
-				this.s_branch ? this.s_branch : ""
-			);
-	};
+			this.s_received ? ";received=" : "",
+			this.s_received ? this.s_received : "",
+
+			this.s_branch ? ";branch=" : "",
+			this.s_branch ? this.s_branch : ""
+		);
 }
 
 // returns an array of 'Via' headers
@@ -1066,14 +1068,14 @@ tsip_header_Via.prototype.Parse = function(s_str){
 	var curr_via = null;
 	
 	
-/* line 1070 "./src/headers/tsip_header_Via.js" */
+/* line 1072 "./src/headers/tsip_header_Via.js" */
 {
 	 cs = tsip_machine_parser_header_Via_start;
 } /* JSCodeGen::writeInit */
 
-/* line 207 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 209 "./ragel/tsip_parser_header_Via.jrl" */
 	
-/* line 1077 "./src/headers/tsip_header_Via.js" */
+/* line 1079 "./src/headers/tsip_header_Via.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -1158,89 +1160,89 @@ tsip_header_Via.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Via_actions[_acts - 1]) {
 case 0:
-/* line 31 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 32 "./ragel/tsip_parser_header_Via.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 35 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 36 "./ragel/tsip_parser_header_Via.jrl" */
 
 		if(!curr_via){
 			curr_via = new tsip_header_Via(null, null, null, null, 0);
 		}
 			break;
 case 2:
-/* line 41 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 42 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.s_proto_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 45 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 46 "./ragel/tsip_parser_header_Via.jrl" */
 
 		curr_via.s_proto_version = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 49 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 50 "./ragel/tsip_parser_header_Via.jrl" */
 
 		curr_via.s_host = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		curr_via.s_host = tsk_string_unquote(curr_via.s_host, '[', ']');
 			break;
 case 5:
-/* line 54 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 55 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.i_port = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 6:
-/* line 58 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 59 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.s_transport = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 7:
-/* line 62 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 63 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.i_ttl = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 8:
-/* line 66 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 67 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.s_maddr = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 9:
-/* line 70 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 71 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.s_received = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 10:
-/* line 74 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 75 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.s_branch = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 11:
-/* line 78 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 79 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.s_comp = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 12:
-/* line 82 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 83 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    curr_via.i_rport = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 13:
-/* line 86 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 87 "./ragel/tsip_parser_header_Via.jrl" */
 
 		if(curr_via.i_rport < 0){
 			curr_via.i_rport = 0;
 		}
 			break;
 case 14:
-/* line 92 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 93 "./ragel/tsip_parser_header_Via.jrl" */
 
 	    if(curr_via){
 	        tsk_ragel_add_param(s_str, p, i_tag_start, curr_via.ao_params);
 	    }
 			break;
 case 15:
-/* line 98 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 99 "./ragel/tsip_parser_header_Via.jrl" */
 
 		if(curr_via){
 		    hdr_vias.push(curr_via);
@@ -1248,11 +1250,11 @@ case 15:
 		}
 			break;
 case 16:
-/* line 105 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 106 "./ragel/tsip_parser_header_Via.jrl" */
 
 		
 			break;
-/* line 1256 "./src/headers/tsip_header_Via.js" */
+/* line 1258 "./src/headers/tsip_header_Via.js" */
 			} /* action switch */
 		}
 	}
@@ -1279,14 +1281,14 @@ case 16:
 	}
 	}
 
-/* line 208 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 210 "./ragel/tsip_parser_header_Via.jrl" */
 	
 	if( cs < 
-/* line 1286 "./src/headers/tsip_header_Via.js" */
+/* line 1288 "./src/headers/tsip_header_Via.js" */
 338
-/* line 209 "./ragel/tsip_parser_header_Via.jrl" */
+/* line 211 "./ragel/tsip_parser_header_Via.jrl" */
  ){
-		console.error("Failed to parse 'Via' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Via' header: " + s_str);
 		return null;
 	}
 	

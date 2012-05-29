@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Contact.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_Contact;
 
@@ -91,18 +92,18 @@
 %%write data;
 
 function tsip_header_Contact(){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Contact);
+	tsip_header.call(this, tsip_header_type_e.Contact);
     this.s_display_name = null;
     this.o_uri = null;
     this.i_expires = -1;
+}
 
-    this.toString = function(){
-        var s_str = tsip_uri_tostring(this.o_uri, true, true);
-        if(s_str && this.i_expires >= 0){
-            s_str += tsk_string_format(";expires={0}", this.i_expires);
-        }
-        return s_str;
+tsip_header_Contact.prototype.toString = function(){
+    var s_str = tsip_uri_tostring(this.o_uri, true, true);
+    if(s_str && this.i_expires >= 0){
+        s_str += tsk_string_format(";expires={0}", this.i_expires);
     }
+    return s_str;
 }
 
 // returns an array of 'Contact' headers
@@ -120,7 +121,7 @@ tsip_header_Contact.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'Contact' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Contact' header: " + s_str);
 		return null;
 	}
 	

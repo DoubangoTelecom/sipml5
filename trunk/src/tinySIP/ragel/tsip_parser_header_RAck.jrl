@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_RAck.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_RAck;
 
@@ -53,15 +54,16 @@
 %%write data;
 
 function tsip_header_RAck(i_seq, i_cseq, s_method){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.RAck);
+	tsip_header.call(this, tsip_header_type_e.RAck);
     this.i_seq = i_seq;
     this.i_cseq = i_cseq;
     this.s_method = s_method;
-    this.toString = function(){
-        return tsk_string_format("{0} {1} {2}",
-            this.i_seq, this.i_cseq, this.s_method);
-    };
 }
+
+tsip_header_RAck.prototype.toString = function(){
+    return tsk_string_format("{0} {1} {2}",
+        this.i_seq, this.i_cseq, this.s_method);
+};
 
 tsip_header_RAck.prototype.Parse = function(s_str){
     var cs = 0;
@@ -76,7 +78,7 @@ tsip_header_RAck.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'RAck' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'RAck' header: " + s_str);
 		return null;
 	}
 	

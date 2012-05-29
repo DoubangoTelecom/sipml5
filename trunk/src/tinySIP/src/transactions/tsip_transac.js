@@ -99,7 +99,7 @@ tsip_transac.prototype.callback = function (e_event_type, o_message) {
     if (this.fn_callback) {
         return this.fn_callback(this, e_event_type, o_message);
     }
-    console.error("Invalid callback function");
+    tsk_utils_log_error("Invalid callback function");
     return -1;
 }
 
@@ -132,7 +132,7 @@ tsip_transac.prototype.get_stack = function () {
 
 tsip_transac.prototype.fsm_act = function (i_action, o_message) {
     if (!this.o_fsm) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
     return this.o_fsm.act(i_action, this, o_message, this, o_message);
@@ -141,7 +141,7 @@ tsip_transac.prototype.fsm_act = function (i_action, o_message) {
 tsip_transac.prototype.send = function (s_branch, o_message) {
     var o_stack = this.get_stack();
     if (!o_stack || !o_stack.o_layer_transport) {
-        console.error("Invalid state");
+        tsk_utils_log_error("Invalid state");
         return -1;
     }
     return o_stack.o_layer_transport.send(s_branch, o_message);
@@ -159,3 +159,11 @@ function tsip_transac_compare(o_transac1, o_transac2){
 	}
 	return -1;
 }
+
+tsip_api_add_js_scripts('head',
+ 'src/tinySIP/src/transactions/tsip_transac_ict.js',
+ 'src/tinySIP/src/transactions/tsip_transac_ist.js',
+ 'src/tinySIP/src/transactions/tsip_transac_layer.js',
+ 'src/tinySIP/src/transactions/tsip_transac_nict.js',
+ 'src/tinySIP/src/transactions/tsip_transac_nist.js'
+);

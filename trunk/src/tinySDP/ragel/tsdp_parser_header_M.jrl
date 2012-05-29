@@ -171,7 +171,7 @@ tsdp_header_M.prototype.remove_header = function(e_type){
 
 tsdp_header_M.prototype.add_header = function(o_header){
 	if(!o_header){
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return -1;
 	}
 
@@ -223,7 +223,7 @@ tsdp_header_M.prototype.add_headers = function(){
 
 tsdp_header_M.prototype.find_a_at = function(s_field, i_index) {
 	if(!s_field || i_index < 0){
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return null;
 	}
 
@@ -245,7 +245,7 @@ tsdp_header_M.prototype.find_a = function(s_field) {
 tsdp_header_M.prototype.get_rtpmap = function(s_fmt){
 	var i_fmt_len = s_fmt ? s_fmt.length : 0;
 	if(i_fmt_len <= 0 || i_fmt_len > 3/*'0-255' or '*'*/){
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return null;
 	}
 	var s_rtpmap = null; /* e.g. AMR-WB/16000 */
@@ -272,7 +272,7 @@ tsdp_header_M.prototype.get_rtpmap = function(s_fmt){
 tsdp_header_M.prototype.get_fmtp = function(s_fmt){
 	var i_fmt_len = s_fmt ? s_fmt.length : 0;
 	if(i_fmt_len <= 0 || i_fmt_len > 3/*'0-255' or '*'*/){
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 		return null;
 	}
 	var s_fmtp= null; /* e.g. octet-align=1 */
@@ -380,7 +380,7 @@ tsdp_header_M.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse \"m=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"m=\" header: " + s_str);
 		return null;
 	}
 	

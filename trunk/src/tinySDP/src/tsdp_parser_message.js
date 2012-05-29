@@ -27,7 +27,7 @@
 /* Ragel data */
 
 /* line 30 "./src/tsdp_parser_message.js" */
-const _tsdp_machine_message_actions = [
+_tsdp_machine_message_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8, 1, 9, 1, 10, 1, 
@@ -35,7 +35,7 @@ const _tsdp_machine_message_actions = [
 	15, 1, 16
 ];
 
-const _tsdp_machine_message_key_offsets = [
+_tsdp_machine_message_key_offsets = [
 	0, 0, 2, 5, 6, 8, 11, 13, 
 	16, 18, 21, 23, 26, 28, 31, 33, 
 	36, 38, 41, 43, 46, 48, 51, 53, 
@@ -43,7 +43,7 @@ const _tsdp_machine_message_key_offsets = [
 	76, 78, 81
 ];
 
-const _tsdp_machine_message_trans_keys = [
+_tsdp_machine_message_trans_keys = [
 	32, 61, 13, 0, 65535, 10, 32, 61, 
 	13, 0, 65535, 32, 61, 13, 0, 65535, 
 	32, 61, 13, 0, 65535, 32, 61, 13, 
@@ -61,7 +61,7 @@ const _tsdp_machine_message_trans_keys = [
 	89, 100, 121, 0
 ];
 
-const _tsdp_machine_message_single_lengths = [
+_tsdp_machine_message_single_lengths = [
 	0, 2, 1, 1, 2, 1, 2, 1, 
 	2, 1, 2, 1, 2, 1, 2, 1, 
 	2, 1, 2, 1, 2, 1, 2, 1, 
@@ -69,7 +69,7 @@ const _tsdp_machine_message_single_lengths = [
 	2, 1, 30
 ];
 
-const _tsdp_machine_message_range_lengths = [
+_tsdp_machine_message_range_lengths = [
 	0, 0, 1, 0, 0, 1, 0, 1, 
 	0, 1, 0, 1, 0, 1, 0, 1, 
 	0, 1, 0, 1, 0, 1, 0, 1, 
@@ -77,7 +77,7 @@ const _tsdp_machine_message_range_lengths = [
 	0, 1, 2
 ];
 
-const _tsdp_machine_message_index_offsets = [
+_tsdp_machine_message_index_offsets = [
 	0, 0, 3, 6, 8, 11, 14, 17, 
 	20, 23, 26, 29, 32, 35, 38, 41, 
 	44, 47, 50, 53, 56, 59, 62, 65, 
@@ -85,7 +85,7 @@ const _tsdp_machine_message_index_offsets = [
 	92, 95, 98
 ];
 
-const _tsdp_machine_message_trans_targs = [
+_tsdp_machine_message_trans_targs = [
 	1, 2, 0, 3, 2, 0, 34, 0, 
 	4, 5, 0, 3, 5, 0, 6, 7, 
 	0, 3, 7, 0, 8, 9, 0, 3, 
@@ -105,7 +105,7 @@ const _tsdp_machine_message_trans_targs = [
 	8, 8, 0, 0
 ];
 
-const _tsdp_machine_message_trans_actions = [
+_tsdp_machine_message_trans_actions = [
 	0, 0, 0, 3, 0, 0, 0, 0, 
 	0, 0, 0, 5, 0, 0, 0, 0, 
 	0, 7, 0, 0, 0, 0, 0, 9, 
@@ -125,11 +125,11 @@ const _tsdp_machine_message_trans_actions = [
 	1, 1, 0, 0
 ];
 
-const tsdp_machine_message_start = 34;
-const tsdp_machine_message_first_final = 34;
-const tsdp_machine_message_error = 0;
+tsdp_machine_message_start = 34;
+tsdp_machine_message_first_final = 34;
+tsdp_machine_message_error = 0;
 
-const tsdp_machine_message_en_main = 34;
+tsdp_machine_message_en_main = 34;
 
 
 /* line 195 "./ragel/tsdp_parser_message.jrl" */
@@ -413,7 +413,7 @@ case 16:
 34
 /* line 211 "./ragel/tsdp_parser_message.jrl" */
  ){
-		console.error("Failed to parse sdp message: %s", s_str);
+		tsk_utils_log_error("Failed to parse sdp message: " + s_str);
 		return null;
 	}
 	

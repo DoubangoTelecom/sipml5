@@ -193,7 +193,7 @@ o_session.call(tmedia_type_e.AUDIO_VIDEO,
 */
 tsip_session_invite.prototype.call = function(e_media_type){
     if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
-        console.error("Stack not started");
+        tsk_utils_log_error("Stack not started");
         return -2;
     }
     
@@ -233,7 +233,7 @@ o_session.hold(tmedia_type_e.AUDIO_VIDEO,
 */
 tsip_session_invite.prototype.hold = function(e_media_type){
     if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
-        console.error("Stack not started");
+        tsk_utils_log_error("Stack not started");
         return -2;
     }
 
@@ -263,7 +263,7 @@ o_session.resume(tmedia_type_e.AUDIO_VIDEO,
 */
 tsip_session_invite.prototype.resume = function(e_media_type){
     if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
-        console.error("Stack not started");
+        tsk_utils_log_error("Stack not started");
         return -2;
     }
 
@@ -290,7 +290,7 @@ o_session.info("Hello world!", "text/plain");
 */
 tsip_session_invite.prototype.info = function (o_content, s_content_type) {
     if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
-        console.error("Stack not started");
+        tsk_utils_log_error("Stack not started");
         return -2;
     }
 
@@ -320,7 +320,7 @@ o_session.dtmf('#');
 */
 tsip_session_invite.prototype.dtmf = function (c_digit) {
     if (!c_digit) {
-        console.error("Invalid parameter");
+        tsk_utils_log_error("Invalid parameter");
         return -1;
     }
     return this.info(
@@ -344,16 +344,16 @@ o_session.transfer('sip:alice@doubango.org');
 */
 tsip_session_invite.prototype.transfer = function (s_to) {
     if (!s_to) {
-        console.error('Invalid parameter');
+        tsk_utils_log_error('Invalid parameter');
         return -1;
     }
     if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
-        console.error("Stack not started");
+        tsk_utils_log_error("Stack not started");
         return -2;
     }
     var o_uri_to = tsip_uri_make_valid(s_to, this.o_stack.network.o_uri_realm.s_host);
     if (!o_uri_to) {
-        console.error("%s is not a valid SIP Uri", s_to);
+        tsk_utils_log_error("%s is not a valid SIP Uri", s_to);
         return -3;
     }
 

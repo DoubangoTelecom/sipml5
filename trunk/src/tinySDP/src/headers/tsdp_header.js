@@ -2,22 +2,22 @@
 {
     NONE: { i_rank: -1, c_name: null },
 
-    A: { i_rank: 11, c_name: 'a' },
+    A: { i_rank: 13, c_name: 'a' },
     B: { i_rank: 8, c_name: 'b' },
     C: { i_rank: 7, c_name: 'c' },
     DUMMY: { i_rank: 255, c_name: '*' },
     E: { i_rank: 5, c_name: 'e' },
     I: { i_rank: 3, c_name: 'i' },
-    K: { i_rank: 10, c_name: 'k' },
+    K: { i_rank: 12, c_name: 'k' },
     M: { i_rank: 14, c_name: 'm' },
     O: { i_rank: 1, c_name: 'o' },
     P: { i_rank: 6, c_name: 'p' },
-    R: { i_rank: 13, c_name: 'r' },
+    R: { i_rank: 10, c_name: 'r' },
     S: { i_rank: 2, c_name: 's' },
-    T: { i_rank: 12, c_name: 't' },
+    T: { i_rank: 9, c_name: 't' },
     U: { i_rank: 4, c_name: 'u' },
     V: { i_rank: 0, c_name: 'v' },
-    Z: { i_rank: 9, c_name: 'z' }
+    Z: { i_rank: 11, c_name: 'z' }
 };
 
 function tsdp_header(e_type) {

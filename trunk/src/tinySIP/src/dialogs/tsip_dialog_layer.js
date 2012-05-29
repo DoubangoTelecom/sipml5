@@ -20,7 +20,7 @@
 */
 function tsip_dialog_layer(o_stack) {
     if (!o_stack) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     
@@ -42,7 +42,7 @@ function tsip_dialog_layer_find_result(o_dialog, b_cid_matched){
 
 tsip_dialog_layer.prototype.find_by_ss = function (o_session) {
     if (!o_session) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     return this.find_by_ssid(o_session.i_id);
@@ -206,7 +206,7 @@ tsip_dialog_layer.prototype.handle_incoming_message = function (o_message) {
                         //if((ss = tsip_ssession_create_2(self->stack, message))){
                         //	newdialog = (tsip_dialog_t*)tsip_dialog_info_create(ss);
                         //}
-                        console.warn("Not implemented");
+                        tsk_utils_log_warn("Not implemented");
                         break;
                     }
                 case tsip_request_type_e.OPTIONS:
@@ -214,7 +214,7 @@ tsip_dialog_layer.prototype.handle_incoming_message = function (o_message) {
                         //if((ss = tsip_ssession_create_2(self->stack, message))){
                         //	newdialog = (tsip_dialog_t*)tsip_dialog_options_create(ss);
                         //}
-                        console.error("Not implemented");
+                        tsk_utils_log_error("Not implemented");
                         break;
                     }
 
@@ -223,7 +223,7 @@ tsip_dialog_layer.prototype.handle_incoming_message = function (o_message) {
                         //if((ss = tsip_ssession_create_2(self->stack, message))){
                         //	newdialog = (tsip_dialog_t*)tsip_dialog_register_create(ss, message->Call_ID ? message->Call_ID->value : tsk_null);
                         //}
-                        console.error("Not implemented");
+                        tsk_utils_log_error("Not implemented");
                         break;
                     }
 

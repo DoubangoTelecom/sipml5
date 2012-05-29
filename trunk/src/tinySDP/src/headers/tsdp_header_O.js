@@ -29,19 +29,19 @@ tsdp_header_O.prototype = Object.create(tsdp_header.prototype);
 
 
 /* line 32 "./src/headers/tsdp_header_O.js" */
-const _tsdp_machine_parser_header_O_actions = [
+_tsdp_machine_parser_header_O_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 2, 
 	0, 4, 2, 0, 5, 2, 0, 6
 ];
 
-const _tsdp_machine_parser_header_O_key_offsets = [
+_tsdp_machine_parser_header_O_key_offsets = [
 	0, 0, 1, 3, 6, 9, 11, 14, 
 	16, 19, 22, 25, 28, 31, 32, 35, 
 	38
 ];
 
-const _tsdp_machine_parser_header_O_trans_keys = [
+_tsdp_machine_parser_header_O_trans_keys = [
 	111, 32, 61, 32, 0, 65535, 32, 0, 
 	65535, 48, 57, 32, 48, 57, 48, 57, 
 	32, 48, 57, 32, 0, 65535, 32, 0, 
@@ -49,25 +49,25 @@ const _tsdp_machine_parser_header_O_trans_keys = [
 	13, 0, 65535, 13, 0, 65535, 0
 ];
 
-const _tsdp_machine_parser_header_O_single_lengths = [
+_tsdp_machine_parser_header_O_single_lengths = [
 	0, 1, 2, 1, 1, 0, 1, 0, 
 	1, 1, 1, 1, 1, 1, 1, 1, 
 	0
 ];
 
-const _tsdp_machine_parser_header_O_range_lengths = [
+_tsdp_machine_parser_header_O_range_lengths = [
 	0, 0, 0, 1, 1, 1, 1, 1, 
 	1, 1, 1, 1, 1, 0, 1, 1, 
 	0
 ];
 
-const _tsdp_machine_parser_header_O_index_offsets = [
+_tsdp_machine_parser_header_O_index_offsets = [
 	0, 0, 2, 5, 8, 11, 13, 16, 
 	18, 21, 24, 27, 30, 33, 35, 38, 
 	41
 ];
 
-const _tsdp_machine_parser_header_O_trans_targs = [
+_tsdp_machine_parser_header_O_trans_targs = [
 	2, 0, 2, 3, 0, 3, 4, 0, 
 	5, 4, 0, 6, 0, 7, 6, 0, 
 	8, 0, 9, 8, 0, 11, 10, 0, 
@@ -76,7 +76,7 @@ const _tsdp_machine_parser_header_O_trans_targs = [
 	0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_O_trans_actions = [
+_tsdp_machine_parser_header_O_trans_actions = [
 	0, 0, 0, 0, 0, 0, 1, 0, 
 	3, 0, 0, 1, 0, 5, 0, 0, 
 	1, 0, 7, 0, 0, 15, 1, 0, 
@@ -85,17 +85,17 @@ const _tsdp_machine_parser_header_O_trans_actions = [
 	0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_O_eof_actions = [
+_tsdp_machine_parser_header_O_eof_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 21, 13, 
 	0
 ];
 
-const tsdp_machine_parser_header_O_start = 1;
-const tsdp_machine_parser_header_O_first_final = 14;
-const tsdp_machine_parser_header_O_error = 0;
+tsdp_machine_parser_header_O_start = 1;
+tsdp_machine_parser_header_O_first_final = 14;
+tsdp_machine_parser_header_O_error = 0;
 
-const tsdp_machine_parser_header_O_en_main = 1;
+tsdp_machine_parser_header_O_en_main = 1;
 
 
 /* line 72 "./ragel/tsdp_parser_header_O.jrl" */
@@ -316,7 +316,7 @@ case 6:
 14
 /* line 107 "./ragel/tsdp_parser_header_O.jrl" */
  ){
-		console.error("Failed to parse \"o=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"o=\" header: " + s_str);
 		return null;
 	}
 	

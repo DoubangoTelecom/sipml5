@@ -163,7 +163,7 @@ tsip_event.prototype.signal = function () {
 
 tsip_event.prototype.Signal = function(e_type, o_session, i_code, s_phrase, o_message) {
     if (!o_session || !o_session.o_stack) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
     var o_event = new tsip_event(o_session, i_code, s_phrase, o_message, e_type);

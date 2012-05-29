@@ -39,12 +39,12 @@ function tsip_session_message(o_stack) {
 // send(o_content, s_content_type, ...)
 tsip_session_message.prototype.send = function (o_content, s_content_type) {
     if (!o_content) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
     if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
-        console.error("Stack not started");
+        tsk_utils_log_error("Stack not started");
         return -2;
     }
 

@@ -18,18 +18,24 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
-function tsk_api_add_js_script(s_src, s_elt) {
+
+function tsk_api_add_js_script(s_elt) {
     var tag_hdr = document.getElementsByTagName(s_elt)[0];
-    var tag_script = document.createElement('script');
-    tag_script.setAttribute('type', 'text/javascript');
-    tag_script.setAttribute('src', s_src);
-    tag_hdr.appendChild(tag_script);
+    for (var i = 1; i < arguments.length; ++i) {
+        var tag_script = document.createElement('script');
+        tag_script.setAttribute('type', 'text/javascript');
+        tag_script.setAttribute('src', arguments[i] + "?svn=5");
+        tag_hdr.appendChild(tag_script);
+    }
 };
 
-tsk_api_add_js_script('./src/tinySAK/src/tsk_base64.js', 'head');
-tsk_api_add_js_script('./src/tinySAK/src/tsk_buff.js', 'head');
-tsk_api_add_js_script('./src/tinySAK/src/tsk_fsm.js', 'head');
-tsk_api_add_js_script('./src/tinySAK/src/tsk_md5.js', 'head');
-tsk_api_add_js_script('./src/tinySAK/src/tsk_param.js', 'head');
-tsk_api_add_js_script('./src/tinySAK/src/tsk_ragel.js', 'head');
-tsk_api_add_js_script('./src/tinySAK/src/tsk_string.js', 'head');
+tsk_api_add_js_script('head',
+    './src/tinySAK/src/tsk_base64.js',
+    './src/tinySAK/src/tsk_buff.js',
+    './src/tinySAK/src/tsk_fsm.js',
+    './src/tinySAK/src/tsk_md5.js',
+    './src/tinySAK/src/tsk_param.js',
+    './src/tinySAK/src/tsk_ragel.js',
+    './src/tinySAK/src/tsk_string.js',
+    './src/tinySAK/src/tsk_utils.js'
+);

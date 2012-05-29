@@ -172,7 +172,7 @@ function __tsip_dialog_invite_cond_prack_matched(o_dialog, o_message){
 				return true;
 		}
 		else{
-			console.warn("Failed to match PRACK request");
+			tsk_utils_log_warn("Failed to match PRACK request");
 		}
 	}
 	
@@ -306,12 +306,12 @@ function s0000_InProgress_2_Ringing_X_iPRACK(ao_args){
 }
 
 function s0000_InProgress_2_InProgress_X_iUPDATE(ao_args){
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
 function s0000_Inprogress_2_Terminated_X_iCANCEL(ao_args){
-    console.error("Not implemented");
+    tsk_utils_log_error("Not implemented");
     return 0;
 }
 
@@ -376,11 +376,11 @@ function s0000_Ringing_2_Connected_X_Accept(ao_args) {
             Additional procedures for this refresh are described in Section 10.
             */
             // tsip_dialog_invite_stimers_schedule(self, (o_dialog.stimers.timer.timeout*1000)/2);
-            console.error("Not implemented");
+            tsk_utils_log_error("Not implemented");
         }
         else {
             // tsip_dialog_invite_stimers_schedule(self, (o_dialog.stimers.timer.timeout*1000));
-            console.error("Not implemented");
+            tsk_utils_log_error("Not implemented");
         }
     }
 
@@ -455,7 +455,7 @@ function s0000_Any_2_Any_X_timer100rel(ao_args) {
 
 	/* resync timer */
 	if((o_dialog.i_timer100Rel <<= 1) >= (o_dialog.get_stack().o_timers.getA() << 6)){
-		console.error("Sending reliable 1xx failed");
+		tsk_utils_log_error("Sending reliable 1xx failed");
 		return -2;
 	}
 
