@@ -27,6 +27,7 @@
 // SIP dialog INFO as per RFC 6086
 
 tsip_dialog_generic.prototype = Object.create(tsip_dialog.prototype);
+tsip_dialog_generic.prototype.__b_debug_state_machine = false;
 
 var tsip_dialog_generic_actions_e =
 {
@@ -77,6 +78,7 @@ function tsip_dialog_generic(e_type, o_session, s_call_id) {
 
     this.init(e_type, s_call_id, o_session, tsip_dialog_generic_states_e.STARTED, tsip_dialog_generic_states_e.TERMINATED);
     this.set_callback(__tsip_dialog_generic_event_callback);
+    this.o_fsm.set_debug_enabled(tsip_dialog_generic.prototype.__b_debug_state_machine);
     this.o_fsm.set_onterm_callback(__tsip_dialog_generic_onterm, this);
 
 
@@ -191,14 +193,14 @@ function __tsip_dialog_generic_event_callback(o_self, e_type, o_message) {
                         else if (o_message.is_2xx()) {
                             i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.I_2XX, o_message, null);
                         }
-                        else if (o_message.is_3456()) {
-                            i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.I_300_to_699, o_message, null);
-                        }
                         else if (o_message.is_response_xxx(401) || o_message.is_response_xxx(407) || o_message.is_response_xxx(421) || o_message.is_response_xxx(494)) {
                             i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.I_401_407_421_494, o_message, null);
                         }
                         else if (o_message.is_response_xxx(423)) {
                             i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.I_423, o_message, null);
+                        }
+                        else if (o_message.is_3456()) {
+                            i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.I_300_to_699, o_message, null);
                         }
                         else {
                             i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.ERROR, o_message, null);
@@ -292,13 +294,32 @@ function tsip_dialog_generic_InProgress_2_Terminated_X_2xx(ao_args) {
 
 // InProgress -> (2xx) -> Connected
 function tsip_dialog_generic_InProgress_2_Connected_X_2xx(ao_args) {
-    tsk_utils_log_error("Not implemented");
+    /* tsk_utils_log_error("Not implemented"); */
     return 0;
 }
 
 // InProgress -> (401/407/421/494) -> InProgress
 function tsip_dialog_generic_InProgress_2_InProgress_X_401_407_421_494(ao_args) {
-    tsk_utils_log_error("Not implemented");
+    var o_dialog = ao_args[0];
+    var o_response = ao_args[1];
+    var i_ret;
+
+    if ((i_ret = o_dialog.update_with_response(o_response))) {
+        // alert user
+        o_dialog.signal_ao(o_response.get_response_code(), o_response.get_response_phrase(), o_response);
+
+        // set last error
+        o_dialog.set_last_error(o_response.get_response_code(), o_response.get_response_phrase(), o_response);
+
+        return i_ret;
+    }
+
+    switch (o_dialog.e_type) {
+        case tsip_dialog_type_e.MESSAGE:
+            {
+                return o_dialog.send_message();
+            }
+    }
     return 0;
 }
 

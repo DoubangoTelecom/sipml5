@@ -699,7 +699,7 @@ function __tsip_stack_transport_callback(evt) {
         case tsip_transport_event_type_e.STOPPED:
             {
                 if (o_stack.e_state == tsip_transport_state_e.STARTING) {
-                    o_stack.signal(tsip_event_code_e.STACK_FAILED_TO_START, "Failed to start stack");
+                    o_stack.signal(tsip_event_code_e.STACK_FAILED_TO_START, "Failed to connet to the server");
                 }
                 else {
                     o_stack.signal(tsip_event_code_e.STACK_STOPPED, "Stack stopped");
