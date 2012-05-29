@@ -20,66 +20,70 @@
 */
 function tsip_transac_layer(o_stack) {
     if (!o_stack) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
 
     this.o_stack = o_stack;
-    this.b_reliable = true;
     this.ao_transacs = new Array();
 }
 
-tsip_transac_layer.prototype.transac_new = function(b_is_ct, o_message, o_dialog){
-    if(!o_message || !o_message.o_hdr_CSeq || !o_message.o_hdr_Call_ID){
-        console.error("Invalid argument");
+tsip_transac_layer.prototype.transac_new = function (b_is_ct, o_message, o_dialog) {
+    if (!o_message || !o_message.o_hdr_CSeq || !o_message.o_hdr_Call_ID) {
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
-    
-	var o_transac = null;
 
-    while(this.b_locked);
+    var o_transac = null;
 
-	this.b_locked = true;
+    while (this.b_locked);
 
-	if(o_message){
-		if(o_message.is_request()){
-			if(b_is_ct)/* Client transaction */
-			{
-				if(o_message.is_invite()){
-					// INVITE Client transaction (ICT)
-				    o_transac = new tsip_transac_ict(this.b_reliable, o_message.o_hdr_CSeq.i_seq, o_message.o_hdr_Call_ID.s_value, o_dialog);
-				}
-				else{
-					// NON-INVITE Client transaction (NICT)
-				    o_transac = new tsip_transac_nict(this.b_reliable, o_message.o_hdr_CSeq.i_seq, o_message.o_hdr_CSeq.s_method, o_message.o_hdr_Call_ID.s_value, o_dialog);
-				}
-			}
-			else	/* Server transaction */
-			{
-				if(o_message.is_invite()){
-				    // INVITE Server transaction (IST)
-				    o_transac = new tsip_transac_ist(this.b_reliable, o_message.o_hdr_CSeq.i_seq, o_message.o_hdr_Call_ID.s_value, o_dialog);
-				}
-				else{
-				    // NON-INVITE Server transaction (NIST)
-				    o_transac = new tsip_transac_nist(this.b_reliable, o_message.o_hdr_CSeq.i_seq, o_message.o_hdr_CSeq.s_method, o_message.o_hdr_Call_ID.s_value, o_dialog);
-				}
-				
-				if(o_transac){ /* Copy branch from the message */
-					o_transac.s_branch = o_message.o_hdr_firstVia.s_branch;
-				}
-			}
-			
-			/* Add new transaction */
-			if(o_transac){
+    this.b_locked = true;
+
+    var b_reliable = true; // WebSockets
+    if (this.o_stack.o_layer_transport.ao_transports.length > 0) {
+        b_reliable = this.o_stack.o_layer_transport.ao_transports[0].is_reliable();
+    }
+
+    if (o_message) {
+        if (o_message.is_request()) {
+            if (b_is_ct)/* Client transaction */
+            {
+                if (o_message.is_invite()) {
+                    // INVITE Client transaction (ICT)
+                    o_transac = new tsip_transac_ict(b_reliable, o_message.o_hdr_CSeq.i_seq, o_message.o_hdr_Call_ID.s_value, o_dialog);
+                }
+                else {
+                    // NON-INVITE Client transaction (NICT)
+                    o_transac = new tsip_transac_nict(b_reliable, o_message.o_hdr_CSeq.i_seq, o_message.o_hdr_CSeq.s_method, o_message.o_hdr_Call_ID.s_value, o_dialog);
+                }
+            }
+            else	/* Server transaction */
+            {
+                if (o_message.is_invite()) {
+                    // INVITE Server transaction (IST)
+                    o_transac = new tsip_transac_ist(b_reliable, o_message.o_hdr_CSeq.i_seq, o_message.o_hdr_Call_ID.s_value, o_dialog);
+                }
+                else {
+                    // NON-INVITE Server transaction (NIST)
+                    o_transac = new tsip_transac_nist(b_reliable, o_message.o_hdr_CSeq.i_seq, o_message.o_hdr_CSeq.s_method, o_message.o_hdr_Call_ID.s_value, o_dialog);
+                }
+
+                if (o_transac) { /* Copy branch from the message */
+                    o_transac.s_branch = o_message.o_hdr_firstVia.s_branch;
+                }
+            }
+
+            /* Add new transaction */
+            if (o_transac) {
                 this.ao_transacs.push(o_transac);
-			}
-		}
-	}
+            }
+        }
+    }
 
-	this.b_locked = false;
+    this.b_locked = false;
 
-	return o_transac;
+    return o_transac;
 }
 
 tsip_transac_layer.prototype.indexof = function (o_transac) {
@@ -116,7 +120,7 @@ tsip_transac_layer.prototype.remove = function (o_transac) {
 
 tsip_transac_layer.prototype.cancel_by_dialog = function (o_dialog) {
     if (!o_dialog) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
@@ -141,7 +145,7 @@ tsip_transac_layer.prototype.cancel_by_dialog = function (o_dialog) {
 
 tsip_transac_layer.prototype.find_client = function (o_response) {
     if (!o_response) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
 
@@ -260,7 +264,7 @@ tsip_transac_layer.prototype.find_server = function(o_message)
 
 tsip_transac_layer.prototype.handle_incoming_message = function (o_message) {
     if (!o_message) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
     var i_ret = -1;

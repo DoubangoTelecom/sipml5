@@ -28,54 +28,54 @@ tsdp_header_Dummy.prototype = Object.create(tsdp_header.prototype);
 
 
 /* line 31 "./src/headers/tsdp_header_Dummy.js" */
-const _tsdp_machine_parser_header_Dummy_actions = [
+_tsdp_machine_parser_header_Dummy_actions = [
 	0, 1, 0, 1, 1, 1, 2, 2, 
 	0, 2
 ];
 
-const _tsdp_machine_parser_header_Dummy_key_offsets = [
+_tsdp_machine_parser_header_Dummy_key_offsets = [
 	0, 0, 4, 6, 8, 9, 13, 16
 ];
 
-const _tsdp_machine_parser_header_Dummy_trans_keys = [
+_tsdp_machine_parser_header_Dummy_trans_keys = [
 	65, 90, 97, 122, 32, 61, 32, 61, 
 	10, 13, 32, 0, 65535, 13, 0, 65535, 
 	0
 ];
 
-const _tsdp_machine_parser_header_Dummy_single_lengths = [
+_tsdp_machine_parser_header_Dummy_single_lengths = [
 	0, 0, 2, 2, 1, 2, 1, 0
 ];
 
-const _tsdp_machine_parser_header_Dummy_range_lengths = [
+_tsdp_machine_parser_header_Dummy_range_lengths = [
 	0, 2, 0, 0, 0, 1, 1, 0
 ];
 
-const _tsdp_machine_parser_header_Dummy_index_offsets = [
+_tsdp_machine_parser_header_Dummy_index_offsets = [
 	0, 0, 3, 6, 9, 11, 15, 18
 ];
 
-const _tsdp_machine_parser_header_Dummy_trans_targs = [
+_tsdp_machine_parser_header_Dummy_trans_targs = [
 	2, 2, 0, 3, 5, 0, 3, 5, 
 	0, 7, 0, 4, 5, 6, 0, 4, 
 	6, 0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_Dummy_trans_actions = [
+_tsdp_machine_parser_header_Dummy_trans_actions = [
 	1, 1, 0, 3, 3, 0, 0, 0, 
 	0, 0, 0, 7, 0, 1, 0, 5, 
 	0, 0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_Dummy_eof_actions = [
+_tsdp_machine_parser_header_Dummy_eof_actions = [
 	0, 0, 0, 0, 0, 7, 5, 0
 ];
 
-const tsdp_machine_parser_header_Dummy_start = 1;
-const tsdp_machine_parser_header_Dummy_first_final = 5;
-const tsdp_machine_parser_header_Dummy_error = 0;
+tsdp_machine_parser_header_Dummy_start = 1;
+tsdp_machine_parser_header_Dummy_first_final = 5;
+tsdp_machine_parser_header_Dummy_error = 0;
 
-const tsdp_machine_parser_header_Dummy_en_main = 1;
+tsdp_machine_parser_header_Dummy_en_main = 1;
 
 
 /* line 49 "./ragel/tsdp_parser_header_Dummy.jrl" */
@@ -264,7 +264,7 @@ case 2:
 5
 /* line 72 "./ragel/tsdp_parser_header_Dummy.jrl" */
  ){
-		console.error("Failed to parse 'Dummy' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Dummy' header: " + s_str);
 		return null;
 	}
 	

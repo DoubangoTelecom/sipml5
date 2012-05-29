@@ -20,18 +20,19 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Subscription_State.prototype = Object.create(tsip_header.prototype);
 
-/* line 60 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 61 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 
 
-/* line 29 "./src/headers/tsip_header_Subscription_State.js" */
-const _tsip_machine_parser_header_Subscription_State_actions = [
+/* line 30 "./src/headers/tsip_header_Subscription_State.js" */
+_tsip_machine_parser_header_Subscription_State_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6
 ];
 
-const _tsip_machine_parser_header_Subscription_State_key_offsets = [
+_tsip_machine_parser_header_Subscription_State_key_offsets = [
 	0, 0, 2, 4, 6, 8, 10, 12, 
 	14, 16, 18, 20, 22, 24, 25, 27, 
 	29, 31, 33, 35, 38, 55, 56, 58, 
@@ -52,7 +53,7 @@ const _tsip_machine_parser_header_Subscription_State_key_offsets = [
 	1080
 ];
 
-const _tsip_machine_parser_header_Subscription_State_trans_keys = [
+_tsip_machine_parser_header_Subscription_State_trans_keys = [
 	83, 115, 85, 117, 66, 98, 83, 115, 
 	67, 99, 82, 114, 73, 105, 80, 112, 
 	84, 116, 73, 105, 79, 111, 78, 110, 
@@ -191,7 +192,7 @@ const _tsip_machine_parser_header_Subscription_State_trans_keys = [
 	0
 ];
 
-const _tsip_machine_parser_header_Subscription_State_single_lengths = [
+_tsip_machine_parser_header_Subscription_State_single_lengths = [
 	0, 2, 2, 2, 2, 2, 2, 2, 
 	2, 2, 2, 2, 2, 1, 2, 2, 
 	2, 2, 2, 3, 7, 1, 2, 6, 
@@ -212,7 +213,7 @@ const _tsip_machine_parser_header_Subscription_State_single_lengths = [
 	0
 ];
 
-const _tsip_machine_parser_header_Subscription_State_range_lengths = [
+_tsip_machine_parser_header_Subscription_State_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 5, 0, 0, 5, 
@@ -233,7 +234,7 @@ const _tsip_machine_parser_header_Subscription_State_range_lengths = [
 	0
 ];
 
-const _tsip_machine_parser_header_Subscription_State_index_offsets = [
+_tsip_machine_parser_header_Subscription_State_index_offsets = [
 	0, 0, 3, 6, 9, 12, 15, 18, 
 	21, 24, 27, 30, 33, 36, 38, 41, 
 	44, 47, 50, 53, 57, 70, 72, 75, 
@@ -254,7 +255,7 @@ const _tsip_machine_parser_header_Subscription_State_index_offsets = [
 	959
 ];
 
-const _tsip_machine_parser_header_Subscription_State_indicies = [
+_tsip_machine_parser_header_Subscription_State_indicies = [
 	0, 0, 1, 2, 2, 1, 3, 3, 
 	1, 4, 4, 1, 5, 5, 1, 6, 
 	6, 1, 7, 7, 1, 8, 8, 1, 
@@ -378,7 +379,7 @@ const _tsip_machine_parser_header_Subscription_State_indicies = [
 	0
 ];
 
-const _tsip_machine_parser_header_Subscription_State_trans_targs = [
+_tsip_machine_parser_header_Subscription_State_trans_targs = [
 	2, 0, 3, 4, 5, 6, 7, 8, 
 	9, 10, 11, 12, 13, 14, 15, 16, 
 	17, 18, 19, 20, 21, 24, 22, 23, 
@@ -401,7 +402,7 @@ const _tsip_machine_parser_header_Subscription_State_trans_targs = [
 	135, 133, 134, 25, 49, 135, 29
 ];
 
-const _tsip_machine_parser_header_Subscription_State_trans_actions = [
+_tsip_machine_parser_header_Subscription_State_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 1, 0, 0, 
@@ -424,36 +425,37 @@ const _tsip_machine_parser_header_Subscription_State_trans_actions = [
 	1, 0, 0, 9, 9, 0, 9
 ];
 
-const tsip_machine_parser_header_Subscription_State_start = 1;
-const tsip_machine_parser_header_Subscription_State_first_final = 136;
-const tsip_machine_parser_header_Subscription_State_error = 0;
+tsip_machine_parser_header_Subscription_State_start = 1;
+tsip_machine_parser_header_Subscription_State_first_final = 136;
+tsip_machine_parser_header_Subscription_State_error = 0;
 
-const tsip_machine_parser_header_Subscription_State_en_main = 1;
+tsip_machine_parser_header_Subscription_State_en_main = 1;
 
 
-/* line 63 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 64 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 function tsip_header_Subscription_State(s_state, s_reason, i_expires, i_retry_after){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Subscription_State);
+	tsip_header.call(this, tsip_header_type_e.Subscription_State);
     this.s_state = s_state;
     this.s_reason = s_reason;
     this.i_expires = i_expires;
     this.i_retry_after = i_retry_after;
-    this.toString = function(){
-        var s_str = tsk_string_format("{0}{1}{2}",
-                        this.s_state,
+}
+
+tsip_header_Subscription_State.prototype.toString = function(){
+    var s_str = tsk_string_format("{0}{1}{2}",
+                    this.s_state,
 			
-			            this.s_reason ? ";reason=" : "",
-			            this.s_reason ? this.s_reason : ""
-                    );
-        if(this.i_expires >= 0){
-            s_str += tsk_string_format(";expires={0}", this.i_expires);
-        }
-        if(this.i_retry_after >= 0){
-            s_str += tsk_string_format(";retry-after={0}", this.i_retry_after);
-        }
-        return s_str;
-    };
+			        this.s_reason ? ";reason=" : "",
+			        this.s_reason ? this.s_reason : ""
+                );
+    if(this.i_expires >= 0){
+        s_str += tsk_string_format(";expires={0}", this.i_expires);
+    }
+    if(this.i_retry_after >= 0){
+        s_str += tsk_string_format(";retry-after={0}", this.i_retry_after);
+    }
+    return s_str;
 }
 
 tsip_header_Subscription_State.prototype.Parse = function(s_str){
@@ -466,14 +468,14 @@ tsip_header_Subscription_State.prototype.Parse = function(s_str){
 	var hdr_Subscription_State = new tsip_header_Subscription_State(null, null, -1, -1);
 	
 	
-/* line 470 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 472 "./src/headers/tsip_header_Subscription_State.js" */
 {
 	 cs = tsip_machine_parser_header_Subscription_State_start;
 } /* JSCodeGen::writeInit */
 
-/* line 97 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 99 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 	
-/* line 477 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 479 "./src/headers/tsip_header_Subscription_State.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -558,40 +560,40 @@ tsip_header_Subscription_State.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Subscription_State_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 28 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 32 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 		hdr_Subscription_State.s_state = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 36 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 	    hdr_Subscription_State.s_reason = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 39 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 40 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 	    hdr_Subscription_State.i_expires = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 43 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 44 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 	    hdr_Subscription_State.i_retry_after = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 5:
-/* line 47 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 48 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 		tsk_ragel_add_param(s_str, p, i_tag_start, hdr_Subscription_State.ao_params);
 			break;
 case 6:
-/* line 51 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 52 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 			break;
-/* line 595 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 597 "./src/headers/tsip_header_Subscription_State.js" */
 			} /* action switch */
 		}
 	}
@@ -618,14 +620,14 @@ case 6:
 	}
 	}
 
-/* line 98 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 100 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 	
 	if( cs < 
-/* line 625 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 627 "./src/headers/tsip_header_Subscription_State.js" */
 136
-/* line 99 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 101 "./ragel/tsip_parser_header_Subscription_State.jrl" */
  ){
-		console.error("Failed to parse 'Subscription-State' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Subscription-State' header: " + s_str);
 		return null;
 	}
 	

@@ -209,7 +209,7 @@ tsdp_message.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse sdp message: %s", s_str);
+		tsk_utils_log_error("Failed to parse sdp message: " + s_str);
 		return null;
 	}
 	

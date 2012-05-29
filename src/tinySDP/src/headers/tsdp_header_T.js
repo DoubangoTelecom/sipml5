@@ -28,57 +28,57 @@ tsdp_header_T.prototype = Object.create(tsdp_header.prototype);
 
 
 /* line 31 "./src/headers/tsdp_header_T.js" */
-const _tsdp_machine_parser_header_T_actions = [
+_tsdp_machine_parser_header_T_actions = [
 	0, 1, 0, 1, 1, 1, 2
 ];
 
-const _tsdp_machine_parser_header_T_key_offsets = [
+_tsdp_machine_parser_header_T_key_offsets = [
 	0, 0, 1, 3, 6, 9, 11, 12, 
 	15
 ];
 
-const _tsdp_machine_parser_header_T_trans_keys = [
+_tsdp_machine_parser_header_T_trans_keys = [
 	116, 32, 61, 32, 48, 57, 32, 48, 
 	57, 48, 57, 10, 13, 48, 57, 0
 ];
 
-const _tsdp_machine_parser_header_T_single_lengths = [
+_tsdp_machine_parser_header_T_single_lengths = [
 	0, 1, 2, 1, 1, 0, 1, 1, 
 	0
 ];
 
-const _tsdp_machine_parser_header_T_range_lengths = [
+_tsdp_machine_parser_header_T_range_lengths = [
 	0, 0, 0, 1, 1, 1, 0, 1, 
 	0
 ];
 
-const _tsdp_machine_parser_header_T_index_offsets = [
+_tsdp_machine_parser_header_T_index_offsets = [
 	0, 0, 2, 5, 8, 11, 13, 15, 
 	18
 ];
 
-const _tsdp_machine_parser_header_T_trans_targs = [
+_tsdp_machine_parser_header_T_trans_targs = [
 	2, 0, 2, 3, 0, 3, 4, 0, 
 	5, 4, 0, 7, 0, 8, 0, 6, 
 	7, 0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_T_trans_actions = [
+_tsdp_machine_parser_header_T_trans_actions = [
 	0, 0, 0, 0, 0, 0, 1, 0, 
 	3, 0, 0, 1, 0, 0, 0, 5, 
 	0, 0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_T_eof_actions = [
+_tsdp_machine_parser_header_T_eof_actions = [
 	0, 0, 0, 0, 0, 0, 0, 5, 
 	0
 ];
 
-const tsdp_machine_parser_header_T_start = 1;
-const tsdp_machine_parser_header_T_first_final = 7;
-const tsdp_machine_parser_header_T_error = 0;
+tsdp_machine_parser_header_T_start = 1;
+tsdp_machine_parser_header_T_first_final = 7;
+tsdp_machine_parser_header_T_error = 0;
 
-const tsdp_machine_parser_header_T_en_main = 1;
+tsdp_machine_parser_header_T_en_main = 1;
 
 
 /* line 60 "./ragel/tsdp_parser_header_T.jrl" */
@@ -280,7 +280,7 @@ case 2:
 7
 /* line 101 "./ragel/tsdp_parser_header_T.jrl" */
  ){
-		console.error("Failed to parse \"t=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"t=\" header: " + s_str);
 		return null;
 	}
 	

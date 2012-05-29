@@ -20,13 +20,14 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_WWW_Authenticate.prototype = Object.create(tsip_header.prototype);
 
-/* line 106 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 107 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 
 
-/* line 29 "./src/headers/tsip_header_WWW_Authenticate.js" */
-const _tsip_machine_parser_header_WWW_Authenticate_actions = [
+/* line 30 "./src/headers/tsip_header_WWW_Authenticate.js" */
+_tsip_machine_parser_header_WWW_Authenticate_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8, 1, 9, 1, 10, 1, 
@@ -37,7 +38,7 @@ const _tsip_machine_parser_header_WWW_Authenticate_actions = [
 	2, 12, 0
 ];
 
-const _tsip_machine_parser_header_WWW_Authenticate_key_offsets = [
+_tsip_machine_parser_header_WWW_Authenticate_key_offsets = [
 	0, 0, 4, 6, 8, 10, 12, 13, 
 	15, 17, 19, 21, 23, 25, 27, 29, 
 	31, 33, 35, 37, 40, 49, 52, 56, 
@@ -302,7 +303,7 @@ const _tsip_machine_parser_header_WWW_Authenticate_key_offsets = [
 	37026
 ];
 
-const _tsip_machine_parser_header_WWW_Authenticate_trans_keys = [
+_tsip_machine_parser_header_WWW_Authenticate_trans_keys = [
 	80, 87, 112, 119, 82, 114, 79, 111, 
 	88, 120, 89, 121, 45, 65, 97, 85, 
 	117, 84, 116, 72, 104, 69, 101, 78, 
@@ -4938,7 +4939,7 @@ const _tsip_machine_parser_header_WWW_Authenticate_trans_keys = [
 	90, 91, 94, 95, 122, 123, 65535, 0
 ];
 
-const _tsip_machine_parser_header_WWW_Authenticate_single_lengths = [
+_tsip_machine_parser_header_WWW_Authenticate_single_lengths = [
 	0, 4, 2, 2, 2, 2, 1, 2, 
 	2, 2, 2, 2, 2, 2, 2, 2, 
 	2, 2, 2, 3, 7, 1, 2, 7, 
@@ -5203,7 +5204,7 @@ const _tsip_machine_parser_header_WWW_Authenticate_single_lengths = [
 	23
 ];
 
-const _tsip_machine_parser_header_WWW_Authenticate_range_lengths = [
+_tsip_machine_parser_header_WWW_Authenticate_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 1, 1, 1, 1, 
@@ -5468,7 +5469,7 @@ const _tsip_machine_parser_header_WWW_Authenticate_range_lengths = [
 	7
 ];
 
-const _tsip_machine_parser_header_WWW_Authenticate_index_offsets = [
+_tsip_machine_parser_header_WWW_Authenticate_index_offsets = [
 	0, 0, 5, 8, 11, 14, 17, 19, 
 	22, 25, 28, 31, 34, 37, 40, 43, 
 	46, 49, 52, 55, 59, 68, 71, 75, 
@@ -5733,7 +5734,7 @@ const _tsip_machine_parser_header_WWW_Authenticate_index_offsets = [
 	29329
 ];
 
-const _tsip_machine_parser_header_WWW_Authenticate_indicies = [
+_tsip_machine_parser_header_WWW_Authenticate_indicies = [
 	0, 2, 0, 2, 1, 3, 3, 1, 
 	4, 4, 1, 5, 5, 1, 6, 6, 
 	1, 7, 1, 8, 8, 1, 9, 9, 
@@ -9407,7 +9408,7 @@ const _tsip_machine_parser_header_WWW_Authenticate_indicies = [
 	0
 ];
 
-const _tsip_machine_parser_header_WWW_Authenticate_trans_targs = [
+_tsip_machine_parser_header_WWW_Authenticate_trans_targs = [
 	2, 0, 1736, 3, 4, 5, 6, 7, 
 	8, 9, 10, 11, 12, 13, 14, 15, 
 	16, 17, 18, 19, 20, 21, 23, 1734, 
@@ -9719,7 +9720,7 @@ const _tsip_machine_parser_header_WWW_Authenticate_trans_targs = [
 	1379, 1405, 1439, 1454, 1481, 1652, 1665, 1690
 ];
 
-const _tsip_machine_parser_header_WWW_Authenticate_trans_actions = [
+_tsip_machine_parser_header_WWW_Authenticate_trans_actions = [
 	9, 0, 7, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
@@ -10031,17 +10032,17 @@ const _tsip_machine_parser_header_WWW_Authenticate_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0
 ];
 
-const tsip_machine_parser_header_WWW_Authenticate_start = 1;
-const tsip_machine_parser_header_WWW_Authenticate_first_final = 1738;
-const tsip_machine_parser_header_WWW_Authenticate_error = 0;
+tsip_machine_parser_header_WWW_Authenticate_start = 1;
+tsip_machine_parser_header_WWW_Authenticate_first_final = 1738;
+tsip_machine_parser_header_WWW_Authenticate_error = 0;
 
-const tsip_machine_parser_header_WWW_Authenticate_en_main = 1;
+tsip_machine_parser_header_WWW_Authenticate_en_main = 1;
 
 
-/* line 109 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 110 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 function tsip_header_WWW_Authenticate(){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.WWW_Authenticate);
+	tsip_header.call(this, tsip_header_type_e.WWW_Authenticate);
 	this.s_scheme = null;
 	this.s_realm = null;
 	this.s_domain = null;
@@ -10050,36 +10051,36 @@ function tsip_header_WWW_Authenticate(){
 	this.b_stale = false;
 	this.s_algorithm = null;
 	this.s_qop = null;
-    
-    this.toString = function(){
-		return tsk_string_format("{0} realm=\"{1}\"{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13},stale={14}{15}{16}", 
-			this.s_scheme,
-			this.s_realm ? this.s_realm : "",
+}
+
+tsip_header_WWW_Authenticate.prototype.toString = function(){
+	return tsk_string_format("{0} realm=\"{1}\"{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13},stale={14}{15}{16}", 
+		this.s_scheme,
+		this.s_realm ? this.s_realm : "",
 				
-			this.s_domain ? ",domain=\"" : "",
-			this.s_domain ? this.s_domain : "",
-			this.s_domain ? "\"" : "",
+		this.s_domain ? ",domain=\"" : "",
+		this.s_domain ? this.s_domain : "",
+		this.s_domain ? "\"" : "",
 				
 				
-			this.s_qop ? ",qop=\"" : "",
-			this.s_qop ? this.s_qop : "",
-			this.s_qop ? "\"" : "",
+		this.s_qop ? ",qop=\"" : "",
+		this.s_qop ? this.s_qop : "",
+		this.s_qop ? "\"" : "",
 
 
-			this.s_nonce ? ",nonce=\"" : "",
-			this.s_nonce ? this.s_nonce : "",
-			this.s_nonce ? "\"" : "",
+		this.s_nonce ? ",nonce=\"" : "",
+		this.s_nonce ? this.s_nonce : "",
+		this.s_nonce ? "\"" : "",
 
-			this.s_opaque ? ",opaque=\"" : "",
-			this.s_opaque ? this.s_opaque : "",
-			this.s_opaque ? "\"" : "",
+		this.s_opaque ? ",opaque=\"" : "",
+		this.s_opaque ? this.s_opaque : "",
+		this.s_opaque ? "\"" : "",
 
-			this.b_stale ? "TRUE" : "FALSE",
+		this.b_stale ? "TRUE" : "FALSE",
 
-			this.s_algorithm ? ",algorithm=" : "",
-			this.s_algorithm ? this.s_algorithm : ""
-			);
-    }
+		this.s_algorithm ? ",algorithm=" : "",
+		this.s_algorithm ? this.s_algorithm : ""
+		);
 }
 
 tsip_header_WWW_Authenticate.prototype.Parse = function(s_str){
@@ -10092,14 +10093,14 @@ tsip_header_WWW_Authenticate.prototype.Parse = function(s_str){
 	var hdr_WWW_Authenticate = new tsip_header_WWW_Authenticate();
 	
 	
-/* line 10096 "./src/headers/tsip_header_WWW_Authenticate.js" */
+/* line 10097 "./src/headers/tsip_header_WWW_Authenticate.js" */
 {
 	 cs = tsip_machine_parser_header_WWW_Authenticate_start;
 } /* JSCodeGen::writeInit */
 
-/* line 162 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 163 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 	
-/* line 10103 "./src/headers/tsip_header_WWW_Authenticate.js" */
+/* line 10104 "./src/headers/tsip_header_WWW_Authenticate.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -10184,76 +10185,76 @@ tsip_header_WWW_Authenticate.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_WWW_Authenticate_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 28 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 32 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		hdr_WWW_Authenticate.s_scheme = "Digest";
 			break;
 case 2:
-/* line 35 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 36 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		hdr_WWW_Authenticate.s_scheme = "Basic";
 			break;
 case 3:
-/* line 39 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 40 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
-		hdr_WWW_Authenticate.__proto__.e_type= tsip_header_type_e.WWW_Authenticate;
+		tsip_header.call(hdr_WWW_Authenticate, tsip_header_type_e.WWW_Authenticate);
 			break;
 case 4:
-/* line 43 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 44 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
-		hdr_WWW_Authenticate.__proto__.e_type = tsip_header_type_e.Proxy_Authenticate;
+		tsip_header.call(hdr_WWW_Authenticate, tsip_header_type_e.Proxy_Authenticate);
 			break;
 case 5:
-/* line 47 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 48 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		hdr_WWW_Authenticate.s_realm = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 6:
-/* line 51 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 52 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		hdr_WWW_Authenticate.s_domain = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 7:
-/* line 55 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 56 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		hdr_WWW_Authenticate.s_nonce= tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 8:
-/* line 59 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 60 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		hdr_WWW_Authenticate.s_opaque= tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 9:
-/* line 63 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 64 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		var s_stale = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		hdr_WWW_Authenticate.b_stale = tsk_string_iequals(s_stale, "true");
 			break;
 case 10:
-/* line 68 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 69 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		hdr_WWW_Authenticate.s_algorithm = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 11:
-/* line 72 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 73 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		hdr_WWW_Authenticate.s_qop = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 12:
-/* line 76 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 77 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 		tsk_ragel_add_param(s_str, p, i_tag_start, hdr_WWW_Authenticate.ao_params);
 			break;
 case 13:
-/* line 84 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 85 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 
 			break;
-/* line 10257 "./src/headers/tsip_header_WWW_Authenticate.js" */
+/* line 10258 "./src/headers/tsip_header_WWW_Authenticate.js" */
 			} /* action switch */
 		}
 	}
@@ -10280,14 +10281,14 @@ case 13:
 	}
 	}
 
-/* line 163 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 164 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
 	
 	if( cs < 
-/* line 10287 "./src/headers/tsip_header_WWW_Authenticate.js" */
+/* line 10288 "./src/headers/tsip_header_WWW_Authenticate.js" */
 1738
-/* line 164 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
+/* line 165 "./ragel/tsip_parser_header_WWW_Authenticate.jrl" */
  ){
-		console.error("Failed to parse 'WWW-Authenticate' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'WWW-Authenticate' header: " + s_str);
 		return null;
 	}
 	

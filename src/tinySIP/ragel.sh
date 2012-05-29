@@ -1,20 +1,24 @@
 # Ragel generator
 # For more information about Ragel: http://www.complang.org/ragel/
 
+# folder (./src/headers) jsname(tsip_header_Authorization) jrlname (tsip_parser_header_Authorization)
+ProcessFile()
+{
+	ragel.exe $OPTIONS -o $1/$2.js ./ragel/$3.jrl
+	sed -i 's/const _tsip_machine_parser_/_tsip_machine_parser_/g' $1/$2.js
+	sed -i 's/const tsip_machine_parser_/tsip_machine_parser_/g' $1/$2.js
+}
+
 export OPTIONS="-E -L -T0"
 
 # SIP/SIPS/TEL URI parser
 #ragel.exe $OPTIONS -o ./src/parsers/tsip_parser_uri.js ./ragel/tsip_parser_uri.jrl
 
 # SIP Message
-ragel.exe $OPTIONS -o ./src/parsers/tsip_parser_message.js ./ragel/tsip_parser_message.jrl
-
-
-# SIP message (both requests an responses) parser.
-#ragel.exe $OPTIONS -o ./src/parsers/tsip_parser_message.js ./ragel/tsip_parser_message.jrl
+ProcessFile "./src/parsers" "tsip_parser_message" "tsip_parser_message"
 
 # SIP headers parser
-ragel.exe $OPTIONS -o ./src/parsers/tsip_parser_header.js ./ragel/tsip_parser_header.jrl
+ProcessFile "./src/parsers" "tsip_parser_header" "tsip_parser_header"
 
 # ==Allow see StrArray)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Allow.js ./ragel/tsip_parser_header_Allow.jrl
@@ -23,28 +27,28 @@ ragel.exe $OPTIONS -o ./src/parsers/tsip_parser_header.js ./ragel/tsip_parser_he
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Allow_Events.js ./ragel/tsip_parser_header_Allow_Events.jrl
 
 # ==Authorization
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Authorization.js ./ragel/tsip_parser_header_Authorization.jrl
+ProcessFile "./src/headers" "tsip_header_Authorization" "tsip_parser_header_Authorization"
 
 # ==Call-ID (see Str)
 # ragel.exe $OPTIONS -o ./src/headers/tsip_header_Call_ID.js ./ragel/tsip_parser_header_Call_ID.jrl
 
 # ==Contact
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Contact.js ./ragel/tsip_parser_header_Contact.jrl
+ProcessFile "./src/headers" "tsip_header_Contact" "tsip_parser_header_Contact"
 
 # ==Content-Length (see Int)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Content_Length.js ./ragel/tsip_parser_header_Content_Length.jrl
 
 # ==Content-Type
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Content_Type.js ./ragel/tsip_parser_header_Content_Type.jrl
+ProcessFile "./src/headers" "tsip_header_Content_Type" "tsip_parser_header_Content_Type"
 
 # ==CSeq
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_CSeq.js ./ragel/tsip_parser_header_CSeq.jrl
+ProcessFile "./src/headers" "tsip_header_CSeq" "tsip_parser_header_CSeq"
 
 # ==Date
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Date.js ./ragel/tsip_parser_header_Date.jrl
+ProcessFile "./src/headers" "tsip_header_Date" "tsip_parser_header_Date"
 
 # ==Dummy
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Dummy.js ./ragel/tsip_parser_header_Dummy.jrl
+ProcessFile "./src/headers" "tsip_header_Dummy" "tsip_parser_header_Dummy"
 
 # ==Event (see Str)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Event.js ./ragel/tsip_parser_header_Event.jrl
@@ -56,13 +60,13 @@ ragel.exe $OPTIONS -o ./src/headers/tsip_header_Dummy.js ./ragel/tsip_parser_hea
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_From.js ./ragel/tsip_parser_header_From.jrl
 
 # ==Int (Content-Length, Expires, Max-Forwards, Min-Expires, Min-SE, RSeq)
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Int.js ./ragel/tsip_parser_header_Int.jrl
+ProcessFile "./src/headers" "tsip_header_Int" "tsip_parser_header_Int"
 
 # ==NameAddr (From, To, Refer-To, Referred-By)
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_NameAddr.js ./ragel/tsip_parser_header_NameAddr.jrl
+ProcessFile "./src/headers" "tsip_header_NameAddr" "tsip_parser_header_NameAddr"
 
 # ==NameAddrArray ('P-Asserted-Identity', 'P-Associated-URI', 'Path', 'Record-Route', 'Route', 'Service-Route')
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_NameAddrArray.js ./ragel/tsip_parser_header_NameAddrArray.jrl
+ProcessFile "./src/headers" "tsip_header_NameAddrArray" "tsip_parser_header_NameAddrArray"
 
 # ==Max-Forwards (see Int)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Max_Forwards.js ./ragel/tsip_parser_header_Max_Forwards.jrl
@@ -83,10 +87,10 @@ ragel.exe $OPTIONS -o ./src/headers/tsip_header_NameAddrArray.js ./ragel/tsip_pa
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_P_Associated_URI.js ./ragel/tsip_parser_header_P_Associated_URI.jrl
 
 # ==P-Charging-Function-Addresses
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_P_Charging_Function_Addresses.js ./ragel/tsip_parser_header_P_Charging_Function_Addresses.jrl
+ProcessFile "./src/headers" "tsip_header_P_Charging_Function_Addresses" "tsip_parser_header_P_Charging_Function_Addresses"
 
 # ==P-Preferred-Identity
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_P_Preferred_Identity.js ./ragel/tsip_parser_header_P_Preferred_Identity.jrl
+ProcessFile "./src/headers" "tsip_header_P_Preferred_Identity" "tsip_parser_header_P_Preferred_Identity"
 
 # ==Path (see NameAddrArray)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Path.js ./ragel/tsip_parser_header_Path.jrl
@@ -95,10 +99,10 @@ ragel.exe $OPTIONS -o ./src/headers/tsip_header_P_Preferred_Identity.js ./ragel/
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Privacy.js ./ragel/tsip_parser_header_Privacy.jrl
 
 # ==RAck
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_RAck.js ./ragel/tsip_parser_header_RAck.jrl
+ProcessFile "./src/headers" "tsip_header_RAck" "tsip_parser_header_RAck"
 
 # ==Refer-Sub
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Refer_Sub.js ./ragel/tsip_parser_header_Refer_Sub.jrl
+ProcessFile "./src/headers" "tsip_header_Refer_Sub" "tsip_parser_header_Refer_Sub"
 
 # ==Refer-To (see NameAddr)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Refer_To.js ./ragel/tsip_parser_header_Refer_To.jrl
@@ -125,7 +129,7 @@ ragel.exe $OPTIONS -o ./src/headers/tsip_header_Refer_Sub.js ./ragel/tsip_parser
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Service_Route.js ./ragel/tsip_parser_header_Service_Route.jrl
 
 # ==Session-Expires
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Session_Expires.js ./ragel/tsip_parser_header_Session_Expires.jrl
+ProcessFile "./src/headers" "tsip_header_Session_Expires" "tsip_parser_header_Session_Expires"
 
 # ==SIP-ETag (see Str)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_SIP_ETag.js ./ragel/tsip_parser_header_SIP_ETag.jrl
@@ -134,13 +138,13 @@ ragel.exe $OPTIONS -o ./src/headers/tsip_header_Session_Expires.js ./ragel/tsip_
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_SIP_If_Match.js ./ragel/tsip_parser_header_SIP_If_Match.jrl
 
 # == Str (Call-ID, Event, P-Access-Network-Info, Server, SIP-ETag, SIP-If-Match, User-Agent)
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Str.js ./ragel/tsip_parser_header_Str.jrl
+ProcessFile "./src/headers" "tsip_header_Str" "tsip_parser_header_Str"
 
 # == StrArray (Allow, Allow-Events, Privacy, Require, Supported)
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_StrArray.js ./ragel/tsip_parser_header_StrArray.jrl
+ProcessFile "./src/headers" "tsip_header_StrArray" "tsip_parser_header_StrArray"
 
 # == Subscription-State
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Subscription_State.js ./ragel/tsip_parser_header_Subscription_State.jrl
+ProcessFile "./src/headers" "tsip_header_Subscription_State" "tsip_parser_header_Subscription_State"
 
 # ==Supported (see StrArray)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Supported.js ./ragel/tsip_parser_header_Supported.jrl
@@ -152,10 +156,10 @@ ragel.exe $OPTIONS -o ./src/headers/tsip_header_Subscription_State.js ./ragel/ts
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_User_Agent.js ./ragel/tsip_parser_header_User_Agent.jrl
 
 # ==Via
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Via.js ./ragel/tsip_parser_header_Via.jrl
+ProcessFile "./src/headers" "tsip_header_Via" "tsip_parser_header_Via"
 
 # == Warning
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_Warning.js ./ragel/tsip_parser_header_Warning.jrl
+ProcessFile "./src/headers" "tsip_header_Warning" "tsip_parser_header_Warning"
 
 # == WWW-Authenticate
-ragel.exe $OPTIONS -o ./src/headers/tsip_header_WWW_Authenticate.js ./ragel/tsip_parser_header_WWW_Authenticate.jrl
+ProcessFile "./src/headers" "tsip_header_WWW_Authenticate" "tsip_parser_header_WWW_Authenticate"

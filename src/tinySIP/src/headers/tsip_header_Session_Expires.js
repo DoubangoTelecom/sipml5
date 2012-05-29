@@ -20,21 +20,22 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Session_Expires.prototype = Object.create(tsip_header.prototype);
 var TSIP_SESSION_EXPIRES_DEFAULT_VALUE = 1800;
 
 
-/* line 58 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 59 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 
 
 
 
-/* line 32 "./src/headers/tsip_header_Session_Expires.js" */
-const _tsip_machine_parser_header_Session_Expires_actions = [
+/* line 33 "./src/headers/tsip_header_Session_Expires.js" */
+_tsip_machine_parser_header_Session_Expires_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5
 ];
 
-const _tsip_machine_parser_header_Session_Expires_key_offsets = [
+_tsip_machine_parser_header_Session_Expires_key_offsets = [
 	0, 0, 4, 6, 8, 10, 12, 14, 
 	16, 17, 19, 21, 23, 25, 27, 29, 
 	31, 34, 39, 40, 42, 46, 52, 56, 
@@ -51,7 +52,7 @@ const _tsip_machine_parser_header_Session_Expires_key_offsets = [
 	681, 685
 ];
 
-const _tsip_machine_parser_header_Session_Expires_trans_keys = [
+_tsip_machine_parser_header_Session_Expires_trans_keys = [
 	83, 88, 115, 120, 69, 101, 83, 115, 
 	83, 115, 73, 105, 79, 111, 78, 110, 
 	45, 69, 101, 88, 120, 80, 112, 73, 
@@ -140,7 +141,7 @@ const _tsip_machine_parser_header_Session_Expires_trans_keys = [
 	59, 9, 13, 32, 59, 0
 ];
 
-const _tsip_machine_parser_header_Session_Expires_single_lengths = [
+_tsip_machine_parser_header_Session_Expires_single_lengths = [
 	0, 4, 2, 2, 2, 2, 2, 2, 
 	1, 2, 2, 2, 2, 2, 2, 2, 
 	3, 3, 1, 2, 2, 4, 4, 1, 
@@ -157,7 +158,7 @@ const _tsip_machine_parser_header_Session_Expires_single_lengths = [
 	4, 0
 ];
 
-const _tsip_machine_parser_header_Session_Expires_range_lengths = [
+_tsip_machine_parser_header_Session_Expires_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 1, 0, 0, 1, 1, 0, 0, 
@@ -174,7 +175,7 @@ const _tsip_machine_parser_header_Session_Expires_range_lengths = [
 	0, 0
 ];
 
-const _tsip_machine_parser_header_Session_Expires_index_offsets = [
+_tsip_machine_parser_header_Session_Expires_index_offsets = [
 	0, 0, 5, 8, 11, 14, 17, 20, 
 	23, 25, 28, 31, 34, 37, 40, 43, 
 	46, 50, 55, 57, 60, 64, 70, 75, 
@@ -191,7 +192,7 @@ const _tsip_machine_parser_header_Session_Expires_index_offsets = [
 	621, 626
 ];
 
-const _tsip_machine_parser_header_Session_Expires_indicies = [
+_tsip_machine_parser_header_Session_Expires_indicies = [
 	0, 2, 0, 2, 1, 3, 3, 1, 
 	4, 4, 1, 5, 5, 1, 6, 6, 
 	1, 7, 7, 1, 8, 8, 1, 9, 
@@ -273,7 +274,7 @@ const _tsip_machine_parser_header_Session_Expires_indicies = [
 	119, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_Session_Expires_trans_targs = [
+_tsip_machine_parser_header_Session_Expires_trans_targs = [
 	2, 0, 16, 3, 4, 5, 6, 7, 
 	8, 9, 10, 11, 12, 13, 14, 15, 
 	17, 18, 21, 19, 20, 22, 46, 21, 
@@ -291,7 +292,7 @@ const _tsip_machine_parser_header_Session_Expires_trans_targs = [
 	103, 104, 22, 46, 26, 22, 46, 26
 ];
 
-const _tsip_machine_parser_header_Session_Expires_trans_actions = [
+_tsip_machine_parser_header_Session_Expires_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 1, 0, 0, 3, 3, 0, 
@@ -309,25 +310,26 @@ const _tsip_machine_parser_header_Session_Expires_trans_actions = [
 	0, 0, 7, 7, 7, 5, 5, 5
 ];
 
-const tsip_machine_parser_header_Session_Expires_start = 1;
-const tsip_machine_parser_header_Session_Expires_first_final = 105;
-const tsip_machine_parser_header_Session_Expires_error = 0;
+tsip_machine_parser_header_Session_Expires_start = 1;
+tsip_machine_parser_header_Session_Expires_first_final = 105;
+tsip_machine_parser_header_Session_Expires_error = 0;
 
-const tsip_machine_parser_header_Session_Expires_en_main = 1;
+tsip_machine_parser_header_Session_Expires_en_main = 1;
 
 
-/* line 62 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 63 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 
 function tsip_header_Session_Expires(i_delta_seconds, b_refresher_uas){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Session_Expires);
+	tsip_header.call(this, tsip_header_type_e.Session_Expires);
     this.i_delta_seconds = i_delta_seconds;
     this.b_refresher_uas = b_refresher_uas;
-    this.toString = function(){
-        if(this.i_delta_seconds >= 0){
-            return tsk_string_format("{0};refresher={1}", this.i_delta_seconds, this.b_refresher_uas ? "uas" : "uac");
-        }
-        return null;
-    };
+}
+
+tsip_header_Session_Expires.prototype.toString = function(){
+    if(this.i_delta_seconds >= 0){
+        return tsk_string_format("{0};refresher={1}", this.i_delta_seconds, this.b_refresher_uas ? "uas" : "uac");
+    }
+    return null;
 }
 
 tsip_header_Session_Expires.prototype.Parse = function(s_str){
@@ -340,14 +342,14 @@ tsip_header_Session_Expires.prototype.Parse = function(s_str){
 	var hdr_session_expires = new tsip_header_Session_Expires(TSIP_SESSION_EXPIRES_DEFAULT_VALUE, false);
 	
 	
-/* line 344 "./src/headers/tsip_header_Session_Expires.js" */
+/* line 346 "./src/headers/tsip_header_Session_Expires.js" */
 {
 	 cs = tsip_machine_parser_header_Session_Expires_start;
 } /* JSCodeGen::writeInit */
 
-/* line 85 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 87 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 	
-/* line 351 "./src/headers/tsip_header_Session_Expires.js" */
+/* line 353 "./src/headers/tsip_header_Session_Expires.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -432,35 +434,35 @@ tsip_header_Session_Expires.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Session_Expires_actions[_acts - 1]) {
 case 0:
-/* line 29 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 30 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 33 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 34 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 
 	    hdr_session_expires.i_delta_seconds = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 37 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 38 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 
 		hdr_session_expires.b_refresher_uas = true;
 			break;
 case 3:
-/* line 40 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 41 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 
 		hdr_session_expires.b_refresher_uas = false;
 			break;
 case 4:
-/* line 44 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 45 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 
 	    tsk_ragel_add_param(s_str, p, i_tag_start, hdr_session_expires.ao_params);
 			break;
 case 5:
-/* line 48 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 49 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 
 			break;
-/* line 464 "./src/headers/tsip_header_Session_Expires.js" */
+/* line 466 "./src/headers/tsip_header_Session_Expires.js" */
 			} /* action switch */
 		}
 	}
@@ -487,14 +489,14 @@ case 5:
 	}
 	}
 
-/* line 86 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 88 "./ragel/tsip_parser_header_Session_Expires.jrl" */
 	
 	if( cs < 
-/* line 494 "./src/headers/tsip_header_Session_Expires.js" */
+/* line 496 "./src/headers/tsip_header_Session_Expires.js" */
 105
-/* line 87 "./ragel/tsip_parser_header_Session_Expires.jrl" */
+/* line 89 "./ragel/tsip_parser_header_Session_Expires.jrl" */
  ){
-		console.error("Failed to parse 'Session-Expires' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Session-Expires' header: " + s_str);
 		return null;
 	}
 	

@@ -751,7 +751,7 @@ function tsip_header_parse(o_ragel_state, o_msg){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-	    console.error("Failed to parse header: %s", s_str);
+	    tsk_utils_log_error("Failed to parse header: " + s_str);
 	    return -2;
 	}
 	return 0;

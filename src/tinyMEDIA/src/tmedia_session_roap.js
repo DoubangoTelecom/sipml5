@@ -135,14 +135,14 @@ tmedia_session_roap.prototype.__hold = function () {
     "\"tieBreaker\": {4}\n" +
     "}\n", this.o_pc_json.answererSessionId, this.o_pc_json.offererSessionId, this.o_sdp_ro.toString("\\r\\n"), (this.o_pc_json.seq + 1), Math.floor((Math.random() * 0x0000FFFF)));
 
-    console.debug("RO_FORCE_LO=%s", s_sdp_json_ro);
+    tsk_utils_log_info("RO_FORCE_LO=" + s_sdp_json_ro);
 
     this.o_sdp_json_ro = JSON.parse(s_sdp_json_ro);
     this.o_pc.processSignalingMessage("SDP\n" + s_sdp_json_ro);
     return 0;
     }*/
 
-    console.error("Invalid state");
+    tsk_utils_log_error("Invalid state");
     return -1;
 }
 
@@ -205,14 +205,14 @@ tmedia_session_roap.prototype.__set_ro = function (o_sdp, b_is_offer) {
     }
 
     try {
-        console.debug("RO=%s", s_sdp_json_ro);
+        tsk_utils_log_info("RO=" + s_sdp_json_ro);
         this.o_sdp_json_ro = JSON.parse(s_sdp_json_ro);
         this.o_pc.processSignalingMessage("SDP\n" + s_sdp_json_ro);
         return 0;
     }
     catch (e) {
         __o_session_roap.o_mgr.callback(tmedia_session_events_e.SET_RO_FAILED, this.e_type);
-        console.error(e);
+        tsk_utils_log_error(e);
         return -2;
     }
 
@@ -230,12 +230,12 @@ tmedia_session_roap.prototype.__acked = function () {
                 "\"seq\" : {2}\n" +
                 "}\n", this.o_sdp_json_lo.offererSessionId, this.o_sdp_json_lo.answererSessionId, this.o_sdp_json_lo.seq);
 
-            console.debug("ACK=%s", s_sdp_json_ack);
+            tsk_utils_log_info("ACK=" + s_sdp_json_ack);
             try {
                 this.o_pc.processSignalingMessage(s_sdp_json_ack);
             }
             catch (e) {
-                console.error(e);
+                tsk_utils_log_error(e);
                 return -2;
             }
         }
@@ -244,7 +244,7 @@ tmedia_session_roap.prototype.__acked = function () {
 }
 
 tmedia_session_roap.prototype.__on_signaling_message = function (message) {
-    console.debug("LO=%s", message);
+    tsk_utils_log_info("LO=" + message);
 
     if (tsk_string_index_of(message, 3, "SDP") == 0) {
         message = message.substring(3);
@@ -321,7 +321,7 @@ tmedia_session_roap.prototype.__on_signaling_message = function (message) {
     }
     catch (e) {
         __o_session_roap.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, this.e_type);
-        console.error(e);
+        tsk_utils_log_error(e);
         return;
     }
     /* Hold/Resume */
@@ -331,19 +331,19 @@ tmedia_session_roap.prototype.__on_signaling_message = function (message) {
 }
 
 tmedia_session_roap.prototype.__on_state_change = function (evt) {
-    console.debug("__on_state_change");
+    tsk_utils_log_info("__on_state_change");
 }
 
 tmedia_session_roap.prototype.__on_connecting = function (evt) {
-    console.debug("__on_connecting");
+    tsk_utils_log_info("__on_connecting");
 }
 
 tmedia_session_roap.prototype.__on_open = function (evt) {
-    console.debug("__on_open");
+    tsk_utils_log_info("__on_open");
 }
 
 tmedia_session_roap.prototype.__on_add_stream = function (evt) {
-    console.debug("__on_add_stream");
+    tsk_utils_log_info("__on_add_stream");
 
     // alert user
     if (__o_session_roap) {
@@ -355,7 +355,7 @@ tmedia_session_roap.prototype.__on_add_stream = function (evt) {
 }
 
 tmedia_session_roap.prototype.__on_remove_stream = function (evt) {
-    console.debug("__on_remove_stream");
+    tsk_utils_log_info("__on_remove_stream");
 
     // alert user
     if (__o_session_roap) {

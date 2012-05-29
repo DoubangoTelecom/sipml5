@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_P_Charging_Function_Addresses.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_P_Charging_Function_Addresses;
 
@@ -76,22 +77,23 @@
 %%write data;
 
 function tsip_header_P_Charging_Function_Addresses(s_ccf, s_ecf){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.P_Charging_Function_Addresses);
+	tsip_header.call(this, tsip_header_type_e.P_Charging_Function_Addresses);
     this.s_ccf = s_ccf;
     this.s_ecf = s_ecf;
-    this.toString = function(){
-        return tsk_string_format("{0}{1}{2}{3}{4}", 
-			this.s_ecf ? "ecf=" : "",
-			this.s_ecf ? this.s_ecf : "",
-
-			(this.s_ecf && this.s_ccf) ? ";" : "",
-
-			this.s_ccf ? "ccf=" : "",
-			this.s_ccf ? this.s_ccf : ""
-			);
-    }
        
     return hdr_pcfa;
+}
+
+tsip_header_P_Charging_Function_Addresses.prototype.toString = function(){
+    return tsk_string_format("{0}{1}{2}{3}{4}", 
+		this.s_ecf ? "ecf=" : "",
+		this.s_ecf ? this.s_ecf : "",
+
+		(this.s_ecf && this.s_ccf) ? ";" : "",
+
+		this.s_ccf ? "ccf=" : "",
+		this.s_ccf ? this.s_ccf : ""
+		);
 }
 
 // returns an array of 'P-Charging-Function-Addresses' headers
@@ -109,7 +111,7 @@ tsip_header_P_Charging_Function_Addresses.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'P-Charging-Function-Addresses' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'P-Charging-Function-Addresses' header: " + s_str);
 		return null;
 	}
 	

@@ -20,7 +20,7 @@
 */
 function tsip_transport_layer(o_stack) {
     if (!o_stack) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
 
@@ -66,7 +66,7 @@ tsip_transport_layer.prototype.stop = function () {
 tsip_transport_layer.prototype.send = function (s_branch, o_message) {
     var o_result = this.transport_find(o_message);
     if (!o_result || !o_result.o_transport) {
-        console.error("Failed to find transport");
+        tsk_utils_log_error("Failed to find transport");
         return 0;
     }
 
@@ -103,7 +103,7 @@ tsip_transport_layer.prototype.transport_remove = function (o_transport) {
 
 tsip_transport_layer.prototype.transport_find = function (o_message) {
     if(!o_message){
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     var o_ret = new tsip_transport_layer_find_result();
@@ -230,7 +230,7 @@ tsip_transport_layer.prototype.handle_incoming_message = function (o_message) {
     if (o_message) {
         var o_layer_transac = this.get_layer_transac();
         if (!o_layer_transac) {
-            console.error("Invalid transaction layer");
+            tsk_utils_log_error("Invalid transaction layer");
             return -1;
         }
         var i_ret;
@@ -238,7 +238,7 @@ tsip_transport_layer.prototype.handle_incoming_message = function (o_message) {
         if ((i_ret = o_layer_transac.handle_incoming_message(o_message)) != 0) {
             o_layer_dialog = this.get_layer_dialog();
             if (!o_layer_dialog) {
-                console.error("Invalid dialog layer");
+                tsk_utils_log_error("Invalid dialog layer");
                 return -1;
             }
 

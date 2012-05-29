@@ -149,7 +149,7 @@ tsdp_message.prototype.remove_media = function (s_media) {
 
 tsdp_message.prototype.get_header_m_by_name = function(s_media){
     if(!s_media){
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     for (var i = 0; i < this.ao_headers.length; ++i) {
@@ -169,7 +169,7 @@ tsdp_message.prototype.has_media = function (s_media) {
 /* ================= 3GPP TS 34.610 :: Communication HOLD (HOLD) using IP Multimedia (IM) Core ================*/
 tsdp_message.prototype.hold = function(s_media){
 	if(!s_media){
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
@@ -184,7 +184,7 @@ tsdp_message.prototype.hold = function(s_media){
 
 tsdp_message.prototype.resume = function(s_media){
 	if(!s_media){
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 	

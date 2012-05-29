@@ -38,13 +38,14 @@ var tsip_transport_event_type_e =
 
 function tsip_transport(e_type, o_stack, s_host, i_port, s_description, fn_callback) {
     if(!o_stack){
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
 
     switch(e_type){
         case tsip_transport_type_e.WS:
             {
+                this.b_reliable = true;
                 this.s_scheme = "sip";
                 this.s_protocol = "ws";
                 this.s_via_protocol = "WS";
@@ -58,6 +59,7 @@ function tsip_transport(e_type, o_stack, s_host, i_port, s_description, fn_callb
             }
         case tsip_transport_type_e.WSS:
             {
+                this.b_reliable = true;
                 this.s_scheme = "sips";
                 this.s_protocol = "wss";
                 this.s_via_protocol = "WSS";
@@ -70,14 +72,33 @@ function tsip_transport(e_type, o_stack, s_host, i_port, s_description, fn_callb
                 break;
             }
 
+        case tsip_transport_type_e.UDP:
+            {
+                if(!tsk_utils_have_webrtc4ie()){
+                    tsk_utils_log_error("Transport not supported");
+                    return null;
+                }
+
+                this.b_reliable = false;
+                this.s_scheme = "sip";
+                this.s_protocol = "udp";
+                this.s_via_protocol = "UDP";
+                this.s_service = "SIP+D2U";
+                this.o_transport = null;
+                this.__start = function () { return __tsip_transport_webrtc4ie_start(this); };
+                this.__stop = function () { return __tsip_transport_webrtc4ie_stop(this); };
+                this.__have_socket = function (o_socket) { return __tsip_transport_webrtc4ie_have_socket(this, o_socket); }
+                this.__send = function (o_data, i_length) { return __tsip_transport_webrtc4ie_send(this, o_data, i_length); }
+                break;
+            }
+
         case tsip_transport_type_e.TCP:
         case tsip_transport_type_e.TLS:
-        case tsip_transport_type_e.UDP:
         case tsip_transport_type_e.SCTP:
         case tsip_transport_type_e.DTLS:
         default:
             {
-                console.error("%d not supported as a valid SIP transport");
+                tsk_utils_log_error(e_type + " not supported as a valid SIP transport");
                 return null;
             }
     }
@@ -97,9 +118,13 @@ tsip_transport.prototype.get_layer = function () {
     return this.o_stack.o_layer_transport;
 }
 
+tsip_transport.prototype.is_reliable = function(){
+    return this.b_reliable;
+}
+
 tsip_transport.prototype.start = function() {
     if (this.b_started) {
-        console.warn("Already started");
+        tsk_utils_log_warn("Already started");
         return 0;
     }
 
@@ -108,7 +133,7 @@ tsip_transport.prototype.start = function() {
 
 tsip_transport.prototype.stop = function () {
     if (!this.b_started) {
-        console.warn("Not started");
+        tsk_utils_log_warn("Not started");
         return 0;
     }
 
@@ -119,7 +144,10 @@ tsip_transport.prototype.get_local_ip = function(){
     if(this.e_type == tsip_transport_type_e.WS || this.e_type == tsip_transport_type_e.WSS){
         return "df7jal23ls0d.invalid";
     }
-    console.error("Not implemented");
+    else if(this.o_transport && this.o_transport.localIP){
+        return this.o_transport.localIP;
+    }
+    tsk_utils_log_error("Not implemented");
     return "127.0.0.1";
 }
 
@@ -127,7 +155,10 @@ tsip_transport.prototype.get_local_port = function(){
     if(this.e_type == tsip_transport_type_e.WS || this.e_type == tsip_transport_type_e.WSS){
         return -1;
     }
-    console.error("Not implemented");
+    else if(this.o_transport && this.o_transport.localPort){
+        return this.o_transport.localPort;
+    }
+    tsk_utils_log_error("Not implemented");
     return 5060;
 }
 
@@ -186,7 +217,7 @@ tsip_transport.prototype.send = function (s_branch, o_message, s_dest_ip, i_dest
 
     o_data = o_message.toString();
 
-    //--console.debug("SEND: %s", o_data);
+    //--tsk_utils_log_info("SEND: " + o_data);
 
     if (o_data.length > 1300) {
         /*	RFC 3261 - 18.1.1 Sending Requests (FIXME)
@@ -312,18 +343,33 @@ tsip_transport.prototype.message_update = function(o_message){
 	return 0;
 }
 
-function __tsip_transport_ws_have_socket(o_self, o_socket) {
-    return o_self.o_ws == o_socket;
-}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/******************** WebSocket *******************/
 function __tsip_transport_ws_start(o_self) {
     if (!o_self) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
     var s_url = tsk_string_format("{0}://{1}:{2}",o_self.s_protocol, o_self.s_host, o_self.i_port);
-    console.debug("Connecting to '%s'", s_url);
+    tsk_utils_log_info("Connecting to '"+s_url+"'");
     o_self.o_ws = new WebSocket(s_url, 'sip');
     o_self.o_ws.binaryType = "arraybuffer";
     o_self.o_ws.o_transport = o_self;
@@ -337,7 +383,7 @@ function __tsip_transport_ws_start(o_self) {
 
 function __tsip_transport_ws_stop(o_self) {
     if (!o_self) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
@@ -348,10 +394,14 @@ function __tsip_transport_ws_stop(o_self) {
     return 0;
 }
 
+function __tsip_transport_ws_have_socket(o_self, o_socket) {
+    return o_self.o_ws == o_socket;
+}
+
 function __tsip_transport_ws_send(o_self, o_data, i_length) {
 
     if (!o_self.o_ws) {
-        console.error("Invalid state");
+        tsk_utils_log_error("Invalid state");
         return 0;
     }
 
@@ -360,19 +410,19 @@ function __tsip_transport_ws_send(o_self, o_data, i_length) {
 }
 
 function __tsip_transport_ws_onopen(evt) {
-    console.debug("__tsip_transport_ws_onopen");
+    tsk_utils_log_info("__tsip_transport_ws_onopen");
     this.o_transport.b_started = true;
     this.o_transport.signal(tsip_transport_event_type_e.STARTED, evt.reason, null);
 }
 
 function __tsip_transport_ws_onclose(evt) {
-    console.debug("__tsip_transport_ws_onclose");
+    tsk_utils_log_info("__tsip_transport_ws_onclose");
     this.o_transport.b_started = false;
     this.o_transport.signal(tsip_transport_event_type_e.STOPPED, evt.reason, null);
 }
 
 function __tsip_transport_ws_onmessage(evt) {
-    console.debug("__tsip_transport_ws_onmessage");
+    tsk_utils_log_info("__tsip_transport_ws_onmessage");
 
     var o_ragel_state = tsk_ragel_state_create();
     if(typeof(evt.data) == 'string'){
@@ -384,17 +434,96 @@ function __tsip_transport_ws_onmessage(evt) {
     var o_message = tsip_message.prototype.Parse(o_ragel_state, true);
 
     if (o_message) {
-        //--console.debug("recv=%s", o_message.toString());
+        //--tsk_utils_log_info("recv=" + o_message);
         o_message.o_socket = this;
         return this.o_transport.get_layer().handle_incoming_message(o_message);
     }
     else {
-        console.error("Failed to parse message: %s", evt.data);
+        tsk_utils_log_error("Failed to parse message: " + evt.data);
         return -1;
     }
 }
 
 function __tsip_transport_ws_onerror(evt) {
-    console.debug("__tsip_transport_ws_onerror");
+    tsk_utils_log_info("__tsip_transport_ws_onerror");
     this.o_transport.signal(tsip_transport_event_type_e.ERROR, evt.reason, null);
+}
+
+
+/******************** webrtc4ie *******************/
+function __tsip_transport_webrtc4ie_start(o_self) {
+    if (!o_self) {
+        tsk_utils_log_error("Invalid argument");
+        return -1;
+    }
+
+    var s_url = tsk_string_format("{0}://{1}:{2}",o_self.s_protocol, o_self.s_host, o_self.i_port);
+    tsk_utils_log_info("Connecting to '"+s_url+"'");
+    o_self.o_transport = new ActiveXObject("webrtc4ie.NetTransport");
+    eval("function o_self.o_transport::OnEvent(i_type, s_data) { return __tsip_transport_webrtc4ie_onevent (o_self, i_type, s_data); }");
+    try{
+        o_self.o_transport.SetDomain(o_self.o_stack.network.o_uri_realm.s_host); // DNS NAPTR+SRV ("SIP+D2U")
+        //--o_self.o_transport.StartDebug(); // To debug ATL/COM objects (C/C++)
+        o_self.o_transport.Start(tsk_utils_get_looper());
+        if(o_self.o_transport.defaultDestAddr && o_self.o_transport.defaultDestPort){
+            o_self.s_host = o_self.o_transport.defaultDestAddr;
+            o_self.i_port = o_self.o_transport.defaultDestPort;
+            tsk_utils_log_info("Transport default destination=" + o_self.s_host + ":" + o_self.i_port);
+        }
+        o_self.b_started = true;
+        o_self.signal(tsip_transport_event_type_e.STARTED, "Network transport started", null);
+    }
+    catch(e){
+        tsk_utils_log_error(e);
+        return -1;
+    }
+
+    return 0;
+}
+
+function __tsip_transport_webrtc4ie_stop(o_self) {
+    if (!o_self) {
+        tsk_utils_log_error("Invalid argument");
+        return -1;
+    }
+
+    if (o_self.o_transport) {
+        o_self.o_transport.Stop();
+    }
+
+    return 0;
+}
+
+function __tsip_transport_webrtc4ie_have_socket(o_self, o_socket) {
+    return o_self.o_transport == o_socket;
+}
+
+function __tsip_transport_webrtc4ie_send(o_self, o_data, i_length) {
+
+    if (!o_self.o_transport) {
+        tsk_utils_log_error("Invalid state");
+        return 0;
+    }
+    
+    o_self.o_transport.SendTo(o_data, o_self.s_host, o_self.i_port);
+    return i_length;
+}
+
+function __tsip_transport_webrtc4ie_onevent(o_self, i_type, s_data) {
+    tsk_utils_log_info("__tsip_transport_webrtc4ie_onevent");
+    if(s_data){
+        var o_ragel_state = tsk_ragel_state_create();
+        tsk_ragel_state_init_str(o_ragel_state, s_data);
+
+        var o_message = tsip_message.prototype.Parse(o_ragel_state, true);
+        if (o_message) {
+            //--tsk_utils_log_info("recv=" + o_message.toString());
+            o_message.o_socket = o_self.o_transport;
+            return o_self.get_layer().handle_incoming_message(o_message);
+        }
+        else {
+            tsk_utils_log_error("Failed to parse message: " + evt.data);
+            return -1;
+        }
+    }
 }

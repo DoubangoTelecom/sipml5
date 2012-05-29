@@ -105,7 +105,7 @@ tsdp_header_O.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse \"o=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"o=\" header: " + s_str);
 		return null;
 	}
 	

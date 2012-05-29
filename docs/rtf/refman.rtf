@@ -348,7 +348,7 @@ Before sending or receiving SMS messages (SIP {\b MESSAGE} ) you have to create 
         case tsip_event_message_type_e.I_MESSAGE:\par
             \{\par
                 evt.get_session().accept();\par
-                console.debug("Incoming message. content=%s from=%s", evt.get_message().get_content_as_string(), evt.get_session().o_uri_from);\par
+                console.debug("Incoming message. content=%s from=" + evt.get_message().get_content_as_string(), evt.get_session().o_uri_from);\par
                 break;\par
             \}\par
         case tsip_event_message_type_e.AO_MESSAGE:\par
@@ -1166,7 +1166,7 @@ Callback function called to report dialog events. This event is common to all se
 {
 \par
 \pard\plain \s41\li360\widctlpar\adjustright \shading1000\cbpat8 \f2\fs16\cgrid o_stack.on_event_dialog = function (evt: tsip_event) \{\par
-    console.debug("phrase=%s", evt.s_phrase);\par
+    console.debug("phrase=" + evt.s_phrase);\par
     console.debug("sesssion id=%d", evt.get_session().get_id());\par
     switch (evt.i_code) \{\par
         case tsip_event_code_e.DIALOG_TRANSPORT_ERROR:\par
@@ -1208,7 +1208,7 @@ Callback function used to report audio/video call (SIP INVITE) session events. N
 {
 \par
 \pard\plain \s41\li360\widctlpar\adjustright \shading1000\cbpat8 \f2\fs16\cgrid o_stack.on_event_invite = function (evt: tsip_event_invite) \{\par
-    console.debug("phrase=%s", evt.s_phrase);\par
+    console.debug("phrase=" + evt.s_phrase);\par
     console.debug("sesssion id=%d", evt.get_session().get_id());\par
     switch (evt.e_invite_type) \{\par
         case tsip_event_invite_type_e.I_NEW_CALL:\par
@@ -1265,7 +1265,7 @@ Callback function used to report messaging (SIP MESSAGE) session events.\par
 {
 \par
 \pard\plain \s41\li360\widctlpar\adjustright \shading1000\cbpat8 \f2\fs16\cgrid o_stack.on_event_message = function (evt: tsip_event_message) \{\par
-    console.debug("phrase=%s", evt.s_phrase);\par
+    console.debug("phrase=" + evt.s_phrase);\par
     console.debug("sesssion id=%d", evt.get_session().get_id());\par
     switch (evt.e_message_type) \{\par
         case tsip_event_message_type_e.I_MESSAGE:\par

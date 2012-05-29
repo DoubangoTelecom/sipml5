@@ -28,50 +28,50 @@ tsdp_header_V.prototype = Object.create(tsdp_header.prototype);
 
 
 /* line 31 "./src/headers/tsdp_header_V.js" */
-const _tsdp_machine_parser_header_V_actions = [
+_tsdp_machine_parser_header_V_actions = [
 	0, 1, 0, 1, 1
 ];
 
-const _tsdp_machine_parser_header_V_key_offsets = [
+_tsdp_machine_parser_header_V_key_offsets = [
 	0, 0, 1, 3, 6, 7, 10
 ];
 
-const _tsdp_machine_parser_header_V_trans_keys = [
+_tsdp_machine_parser_header_V_trans_keys = [
 	118, 32, 61, 32, 48, 57, 10, 13, 
 	48, 57, 0
 ];
 
-const _tsdp_machine_parser_header_V_single_lengths = [
+_tsdp_machine_parser_header_V_single_lengths = [
 	0, 1, 2, 1, 1, 1, 0
 ];
 
-const _tsdp_machine_parser_header_V_range_lengths = [
+_tsdp_machine_parser_header_V_range_lengths = [
 	0, 0, 0, 1, 0, 1, 0
 ];
 
-const _tsdp_machine_parser_header_V_index_offsets = [
+_tsdp_machine_parser_header_V_index_offsets = [
 	0, 0, 2, 5, 8, 10, 13
 ];
 
-const _tsdp_machine_parser_header_V_trans_targs = [
+_tsdp_machine_parser_header_V_trans_targs = [
 	2, 0, 2, 3, 0, 3, 5, 0, 
 	6, 0, 4, 5, 0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_V_trans_actions = [
+_tsdp_machine_parser_header_V_trans_actions = [
 	0, 0, 0, 0, 0, 0, 1, 0, 
 	0, 0, 3, 0, 0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_V_eof_actions = [
+_tsdp_machine_parser_header_V_eof_actions = [
 	0, 0, 0, 0, 0, 3, 0
 ];
 
-const tsdp_machine_parser_header_V_start = 1;
-const tsdp_machine_parser_header_V_first_final = 5;
-const tsdp_machine_parser_header_V_error = 0;
+tsdp_machine_parser_header_V_start = 1;
+tsdp_machine_parser_header_V_first_final = 5;
+tsdp_machine_parser_header_V_error = 0;
 
-const tsdp_machine_parser_header_V_en_main = 1;
+tsdp_machine_parser_header_V_en_main = 1;
 
 
 /* line 45 "./ragel/tsdp_parser_header_V.jrl" */
@@ -248,7 +248,7 @@ case 1:
 5
 /* line 66 "./ragel/tsdp_parser_header_V.jrl" */
  ){
-		console.error("Failed to parse \"v=\" header: %s", s_str);
+		tsk_utils_log_error("Failed to parse \"v=\" header: " + s_str);
 		return null;
 	}
 	

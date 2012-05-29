@@ -30,13 +30,13 @@ function prev_not_comma(o_ragel_state, i_p){
 
 
 /* line 33 "./src/parsers/tsip_parser_message.js" */
-const _tsip_machine_parser_message_actions = [
+_tsip_machine_parser_message_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 2, 0, 5, 2, 6, 0
 ];
 
-const _tsip_machine_parser_message_key_offsets = [
+_tsip_machine_parser_message_key_offsets = [
 	0, 0, 16, 31, 35, 47, 50, 52, 
 	55, 57, 59, 61, 62, 64, 67, 69, 
 	72, 73, 88, 89, 106, 109, 114, 117, 
@@ -45,7 +45,7 @@ const _tsip_machine_parser_message_key_offsets = [
 	230, 246, 252, 258, 260, 281, 284, 288
 ];
 
-const _tsip_machine_parser_message_trans_keys = [
+_tsip_machine_parser_message_trans_keys = [
 	33, 37, 39, 83, 115, 126, 42, 43, 
 	45, 46, 48, 57, 65, 90, 95, 122, 
 	32, 33, 37, 39, 126, 42, 43, 45, 
@@ -85,7 +85,7 @@ const _tsip_machine_parser_message_trans_keys = [
 	10, 13, 0, 65535, 0
 ];
 
-const _tsip_machine_parser_message_single_lengths = [
+_tsip_machine_parser_message_single_lengths = [
 	0, 6, 5, 0, 4, 3, 0, 1, 
 	2, 2, 2, 1, 0, 1, 0, 1, 
 	1, 5, 1, 7, 3, 3, 1, 2, 
@@ -94,7 +94,7 @@ const _tsip_machine_parser_message_single_lengths = [
 	6, 0, 0, 0, 7, 1, 2, 2
 ];
 
-const _tsip_machine_parser_message_range_lengths = [
+_tsip_machine_parser_message_range_lengths = [
 	0, 5, 5, 2, 4, 0, 1, 1, 
 	0, 0, 0, 0, 1, 1, 1, 1, 
 	0, 5, 0, 5, 0, 1, 1, 1, 
@@ -103,7 +103,7 @@ const _tsip_machine_parser_message_range_lengths = [
 	5, 3, 3, 1, 7, 1, 1, 1
 ];
 
-const _tsip_machine_parser_message_index_offsets = [
+_tsip_machine_parser_message_index_offsets = [
 	0, 0, 12, 23, 26, 35, 39, 41, 
 	44, 47, 50, 53, 55, 57, 60, 62, 
 	65, 67, 78, 80, 93, 97, 102, 105, 
@@ -112,7 +112,7 @@ const _tsip_machine_parser_message_index_offsets = [
 	200, 212, 216, 220, 222, 237, 240, 244
 ];
 
-const _tsip_machine_parser_message_indicies = [
+_tsip_machine_parser_message_indicies = [
 	0, 0, 0, 2, 2, 0, 0, 0, 
 	0, 0, 0, 1, 3, 4, 4, 4, 
 	4, 4, 4, 4, 4, 4, 1, 5, 
@@ -147,7 +147,7 @@ const _tsip_machine_parser_message_indicies = [
 	0
 ];
 
-const _tsip_machine_parser_message_trans_targs = [
+_tsip_machine_parser_message_trans_targs = [
 	2, 0, 28, 3, 2, 4, 5, 4, 
 	6, 7, 8, 9, 10, 11, 12, 13, 
 	14, 15, 16, 17, 18, 19, 43, 20, 
@@ -158,7 +158,7 @@ const _tsip_machine_parser_message_trans_targs = [
 	46, 44
 ];
 
-const _tsip_machine_parser_message_trans_actions = [
+_tsip_machine_parser_message_trans_actions = [
 	1, 0, 1, 3, 0, 1, 0, 0, 
 	0, 0, 5, 1, 0, 0, 0, 0, 
 	0, 0, 7, 0, 0, 1, 15, 0, 
@@ -169,11 +169,11 @@ const _tsip_machine_parser_message_trans_actions = [
 	0, 0
 ];
 
-const tsip_machine_parser_message_start = 1;
-const tsip_machine_parser_message_first_final = 43;
-const tsip_machine_parser_message_error = 0;
+tsip_machine_parser_message_start = 1;
+tsip_machine_parser_message_first_final = 43;
+tsip_machine_parser_message_error = 0;
 
-const tsip_machine_parser_message_en_main = 1;
+tsip_machine_parser_message_en_main = 1;
 
 
 /* line 114 "./ragel/tsip_parser_message.jrl" */
@@ -403,7 +403,7 @@ function tsip_message_parser_eoh(o_ragel_state, o_msg, b_extract_content){
         if((o_ragel_state.i_p + i_clen) < o_ragel_state.i_pe && !o_msg.o_content){
             var i_start = o_ragel_state.i_p + 1;
             var i_end = (i_start + i_clen);
-			o_msg.o_content = new ArrayBuffer((i_end - i_start));
+			o_msg.o_content = new Array((i_end - i_start));
             for(var i = i_start, j = 0; i < i_end; ++i, ++j){
                 o_msg.o_content[j] = o_ragel_state.o_data[i];
             }
@@ -434,7 +434,7 @@ tsip_message.prototype.Parse = function(o_ragel_state, b_extract_content){
 43
 /* line 171 "./ragel/tsip_parser_message.jrl" */
  ){
-		console.error("Failed to parse message: %s", o_ragel_state.s_data);
+		tsk_utils_log_error("Failed to parse message: " + o_ragel_state.s_data);
 		return null;
 	}
     

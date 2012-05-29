@@ -18,6 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Dummy.prototype = Object.create(tsip_header.prototype);
 %%{
 	machine tsip_machine_parser_header_Dummy;
 
@@ -50,12 +51,13 @@
 %%write data;
 
 function tsip_header_Dummy(s_name, s_value){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Dummy);
+	tsip_header.call(this, tsip_header_type_e.Dummy);
     this.s_name = s_name;
 	this.s_value = s_value;
-    this.toString = function(){
-        return this.s_value;
-    }
+}
+
+tsip_header_Dummy.prototype.toString = function(){
+    return this.s_value;
 }
 
 tsip_header_Dummy.prototype.Parse = function(s_str){
@@ -71,7 +73,7 @@ tsip_header_Dummy.prototype.Parse = function(s_str){
 	%%write exec;
 	
 	if( cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse 'Dummy' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Dummy' header: " + s_str);
 		return null;
 	}
 	

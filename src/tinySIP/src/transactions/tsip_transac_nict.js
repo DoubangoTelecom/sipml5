@@ -50,7 +50,7 @@ var tsip_transac_nict_states_e =
 function tsip_transac_nict(b_reliable, i_cseq_value, s_cseq_method, s_callid, o_dialog) {
     var o_stack;
     if(!o_dialog || !(o_stack = o_dialog.get_stack())){
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     tsip_transac.call(this);
@@ -403,7 +403,7 @@ function __tsip_transac_nict_onterm(o_self) {
 
 function __tsip_transac_nict_event_callback(o_self, e_event_type, o_message) {
     if (!o_self) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 	var i_ret = 0;
@@ -419,7 +419,7 @@ function __tsip_transac_nict_event_callback(o_self, e_event_type, o_message) {
 					    i_ret = o_self.fsm_act(tsip_transac_nict_actions_e.I_200_to_699, o_message);
 				    }
 				    else{
-				        console.warn("Not supported status code: %d", o_message.get_response_code());
+				        tsk_utils_log_warn("Not supported status code: " + o_message.get_response_code());
 				    }
 			    }
 			    break;

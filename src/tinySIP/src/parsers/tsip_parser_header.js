@@ -34,7 +34,7 @@ function prev_not_comma(o_ragel_state, i_p){
 
 
 /* line 37 "./src/parsers/tsip_parser_header.js" */
-const _tsip_machine_parser_headers_actions = [
+_tsip_machine_parser_headers_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8, 1, 9, 1, 10, 1, 
@@ -61,7 +61,7 @@ const _tsip_machine_parser_headers_actions = [
 	91, 1, 92
 ];
 
-const _tsip_machine_parser_headers_key_offsets = [
+_tsip_machine_parser_headers_key_offsets = [
 	0, 0, 54, 71, 74, 79, 82, 83, 
 	84, 86, 109, 128, 147, 166, 185, 202, 
 	205, 210, 213, 214, 215, 217, 242, 261, 
@@ -239,7 +239,7 @@ const _tsip_machine_parser_headers_key_offsets = [
 	17146, 17167, 17186, 17203, 17203, 17206
 ];
 
-const _tsip_machine_parser_headers_trans_keys = [
+_tsip_machine_parser_headers_trans_keys = [
 	33, 37, 39, 65, 67, 68, 69, 70, 
 	72, 73, 74, 77, 79, 80, 82, 83, 
 	84, 85, 86, 87, 97, 98, 99, 100, 
@@ -2394,7 +2394,7 @@ const _tsip_machine_parser_headers_trans_keys = [
 	65535, 0
 ];
 
-const _tsip_machine_parser_headers_single_lengths = [
+_tsip_machine_parser_headers_single_lengths = [
 	0, 44, 7, 3, 3, 1, 1, 1, 
 	2, 13, 9, 9, 9, 9, 9, 3, 
 	3, 1, 1, 1, 2, 15, 9, 9, 
@@ -2572,7 +2572,7 @@ const _tsip_machine_parser_headers_single_lengths = [
 	11, 9, 7, 0, 1, 1
 ];
 
-const _tsip_machine_parser_headers_range_lengths = [
+_tsip_machine_parser_headers_range_lengths = [
 	0, 5, 5, 0, 1, 1, 0, 0, 
 	0, 5, 5, 5, 5, 5, 4, 0, 
 	1, 1, 0, 0, 0, 5, 5, 5, 
@@ -2750,7 +2750,7 @@ const _tsip_machine_parser_headers_range_lengths = [
 	5, 5, 5, 0, 1, 1
 ];
 
-const _tsip_machine_parser_headers_index_offsets = [
+_tsip_machine_parser_headers_index_offsets = [
 	0, 0, 50, 63, 67, 72, 75, 77, 
 	79, 82, 101, 116, 131, 146, 161, 175, 
 	179, 184, 187, 189, 191, 194, 215, 230, 
@@ -2928,7 +2928,7 @@ const _tsip_machine_parser_headers_index_offsets = [
 	14237, 14254, 14269, 14282, 14283, 14286
 ];
 
-const _tsip_machine_parser_headers_indicies = [
+_tsip_machine_parser_headers_indicies = [
 	0, 0, 0, 2, 3, 4, 5, 6, 
 	7, 8, 9, 10, 11, 12, 13, 14, 
 	15, 16, 17, 18, 19, 20, 21, 22, 
@@ -4718,7 +4718,7 @@ const _tsip_machine_parser_headers_indicies = [
 	1, 0
 ];
 
-const _tsip_machine_parser_headers_trans_targs = [
+_tsip_machine_parser_headers_trans_targs = [
 	2, 0, 9, 162, 275, 285, 323, 333, 
 	351, 392, 402, 460, 478, 908, 1105, 1267, 
 	1307, 1339, 1348, 1382, 971, 1383, 1384, 1385, 
@@ -4907,7 +4907,7 @@ const _tsip_machine_parser_headers_trans_targs = [
 	1376, 1377, 1378, 1380, 1379, 1397, 1381
 ];
 
-const _tsip_machine_parser_headers_trans_actions = [
+_tsip_machine_parser_headers_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
@@ -5096,11 +5096,11 @@ const _tsip_machine_parser_headers_trans_actions = [
 	0, 0, 0, 0, 0, 183, 0
 ];
 
-const tsip_machine_parser_headers_start = 1;
-const tsip_machine_parser_headers_first_final = 1395;
-const tsip_machine_parser_headers_error = 0;
+tsip_machine_parser_headers_start = 1;
+tsip_machine_parser_headers_first_final = 1395;
+tsip_machine_parser_headers_error = 0;
 
-const tsip_machine_parser_headers_en_main = 1;
+tsip_machine_parser_headers_en_main = 1;
 
 
 /* line 741 "./ragel/tsip_parser_header.jrl" */
@@ -5841,7 +5841,7 @@ case 92:
 1395
 /* line 753 "./ragel/tsip_parser_header.jrl" */
  ){
-	    console.error("Failed to parse header: %s", s_str);
+	    tsk_utils_log_error("Failed to parse header: " + s_str);
 	    return -2;
 	}
 	return 0;

@@ -22,11 +22,11 @@
 // each char will be converted to it's conresponding utf-16 value
 function tsk_buff_str2ib(s_str) {
     if (!s_str) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
     var len = s_str.length;
-    var ib = new ArrayBuffer(len);
+    var ib = new Array(len);
     for (var i = 0; i < len; ++i) {
         ib[i] = s_str.charCodeAt(i);
     }
@@ -40,7 +40,8 @@ function tsk_buff_ab2str(buff) {
 function tsk_buff_u8b2ascii(au8_buff) {
     // return Array.prototype.slice.call(au8_buff).join("");
     var str = new String();
-    for (var i = 0; i < au8_buff.byteLength; ++i) {
+    var i_length = au8_buff.byteLength == undefined ? au8_buff.length : au8_buff.byteLength;
+    for (var i = 0; i < i_length; ++i) {
         str += String.fromCharCode(au8_buff[i] & 0xff);
     }
     return str;
@@ -50,7 +51,8 @@ function tsk_buff_u8b2utf8(au8_buff) {
     try {
         var str = new String();
         var c_char;
-        for (var i = 0; i < au8_buff.byteLength; ) {
+        var i_length = au8_buff.byteLength == undefined ? au8_buff.length : au8_buff.byteLength;
+        for (var i = 0; i < i_length; ) {
             c_char = au8_buff[i];
             if (c_char < 0x80) {
                 str += String.fromCharCode(c_char); ++i;
@@ -65,7 +67,7 @@ function tsk_buff_u8b2utf8(au8_buff) {
         return str;
     }
     catch (e) {
-        console.error(e);
+        tsk_utils_log_error(e);
         return tsk_buff_u8b2ascii(au8_buff);
     }
 }

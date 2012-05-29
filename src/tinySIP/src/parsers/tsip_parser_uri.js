@@ -25,7 +25,7 @@
 
 
 /* line 9 "./src/parsers/tsip_parser_uri.js" */
-const _tsip_machine_parser_uri_actions = [
+_tsip_machine_parser_uri_actions = [
 	0, 1, 0, 1, 5, 1, 7, 1, 
 	9, 1, 11, 1, 12, 1, 13, 1, 
 	14, 1, 17, 1, 18, 1, 20, 1, 
@@ -37,7 +37,7 @@ const _tsip_machine_parser_uri_actions = [
 	13, 0, 6, 3, 13, 3, 0
 ];
 
-const _tsip_machine_parser_uri_key_offsets = [
+_tsip_machine_parser_uri_key_offsets = [
 	0, 0, 7, 15, 22, 28, 34, 40, 
 	53, 66, 72, 78, 80, 93, 99, 105, 
 	118, 124, 130, 143, 156, 162, 168, 182, 
@@ -53,7 +53,7 @@ const _tsip_machine_parser_uri_key_offsets = [
 	1001, 1018, 1024, 1031, 1038, 1041, 1044
 ];
 
-const _tsip_machine_parser_uri_trans_keys = [
+_tsip_machine_parser_uri_trans_keys = [
 	45, 48, 57, 65, 90, 97, 122, 45, 
 	46, 48, 57, 65, 90, 97, 122, 45, 
 	48, 57, 65, 90, 97, 122, 48, 57, 
@@ -187,7 +187,7 @@ const _tsip_machine_parser_uri_trans_keys = [
 	65535, 58, 0, 65535, 0
 ];
 
-const _tsip_machine_parser_uri_single_lengths = [
+_tsip_machine_parser_uri_single_lengths = [
 	0, 1, 2, 1, 0, 0, 0, 5, 
 	5, 0, 0, 0, 5, 0, 0, 5, 
 	0, 0, 7, 7, 0, 0, 6, 6, 
@@ -203,7 +203,7 @@ const _tsip_machine_parser_uri_single_lengths = [
 	3, 0, 1, 1, 1, 1, 0
 ];
 
-const _tsip_machine_parser_uri_range_lengths = [
+_tsip_machine_parser_uri_range_lengths = [
 	0, 3, 3, 3, 3, 3, 3, 4, 
 	4, 3, 3, 1, 4, 3, 3, 4, 
 	3, 3, 3, 3, 3, 3, 4, 4, 
@@ -219,7 +219,7 @@ const _tsip_machine_parser_uri_range_lengths = [
 	7, 3, 3, 3, 1, 1, 0
 ];
 
-const _tsip_machine_parser_uri_index_offsets = [
+_tsip_machine_parser_uri_index_offsets = [
 	0, 0, 5, 11, 16, 20, 24, 28, 
 	38, 48, 52, 56, 58, 68, 72, 76, 
 	86, 90, 94, 105, 116, 120, 124, 135, 
@@ -235,7 +235,7 @@ const _tsip_machine_parser_uri_index_offsets = [
 	691, 702, 706, 711, 716, 719, 722
 ];
 
-const _tsip_machine_parser_uri_indicies = [
+_tsip_machine_parser_uri_indicies = [
 	1, 2, 2, 2, 0, 3, 4, 5, 
 	5, 5, 0, 3, 5, 5, 5, 0, 
 	5, 2, 2, 0, 7, 7, 7, 6, 
@@ -329,7 +329,7 @@ const _tsip_machine_parser_uri_indicies = [
 	38, 46, 24, 0
 ];
 
-const _tsip_machine_parser_uri_trans_targs = [
+_tsip_machine_parser_uri_trans_targs = [
 	26, 1, 32, 3, 4, 2, 26, 6, 
 	51, 51, 5, 52, 9, 10, 64, 26, 
 	65, 13, 14, 65, 66, 16, 17, 19, 
@@ -348,7 +348,7 @@ const _tsip_machine_parser_uri_trans_targs = [
 	94, 95, 96, 98, 99, 100
 ];
 
-const _tsip_machine_parser_uri_trans_actions = [
+_tsip_machine_parser_uri_trans_actions = [
 	25, 0, 13, 0, 0, 0, 27, 0, 
 	13, 53, 1, 13, 0, 0, 67, 23, 
 	53, 1, 0, 13, 13, 0, 0, 1, 
@@ -367,7 +367,7 @@ const _tsip_machine_parser_uri_trans_actions = [
 	0, 0, 0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_uri_to_state_actions = [
+_tsip_machine_parser_uri_to_state_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 9, 0, 0, 0, 0, 0, 
@@ -383,7 +383,7 @@ const _tsip_machine_parser_uri_to_state_actions = [
 	0, 0, 0, 0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_uri_from_state_actions = [
+_tsip_machine_parser_uri_from_state_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
@@ -399,7 +399,7 @@ const _tsip_machine_parser_uri_from_state_actions = [
 	0, 0, 0, 0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_uri_eof_trans = [
+_tsip_machine_parser_uri_eof_trans = [
 	0, 1, 1, 1, 1, 7, 7, 7, 
 	7, 7, 7, 1, 16, 16, 16, 16, 
 	16, 16, 0, 0, 0, 0, 0, 0, 
@@ -415,12 +415,12 @@ const _tsip_machine_parser_uri_eof_trans = [
 	47, 47, 47, 47, 47, 47, 0
 ];
 
-const tsip_machine_parser_uri_start = 26;
-const tsip_machine_parser_uri_first_final = 26;
-const tsip_machine_parser_uri_error = 0;
+tsip_machine_parser_uri_start = 26;
+tsip_machine_parser_uri_first_final = 26;
+tsip_machine_parser_uri_error = 0;
 
-const tsip_machine_parser_uri_en_sip_usrinfo = 18;
-const tsip_machine_parser_uri_en_main = 26;
+tsip_machine_parser_uri_en_sip_usrinfo = 18;
+tsip_machine_parser_uri_en_main = 26;
 
 
 /* line 108 "./ragel/tsip_parser_uri.jrl" */
@@ -752,7 +752,7 @@ ts = null;		break;
 26
 /* line 122 "./ragel/tsip_parser_uri.jrl" */
  ){
-		console.error("Failed to parse SIP/SIPS/TEL URI: %s", s_str);
+		tsk_utils_log_error("Failed to parse SIP/SIPS/TEL URI: " + s_str);
 		return null;
 	}
 	

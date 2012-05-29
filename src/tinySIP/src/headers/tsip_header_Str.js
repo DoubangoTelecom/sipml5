@@ -37,14 +37,14 @@ tsip_header_User_Agent.prototype = Object.create(tsip_header_Str.prototype);
 
 
 /* line 40 "./src/headers/tsip_header_Str.js" */
-const _tsip_machine_parser_header_Str_actions = [
+_tsip_machine_parser_header_Str_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8, 1, 9, 1, 10, 2, 
 	0, 8
 ];
 
-const _tsip_machine_parser_header_Str_key_offsets = [
+_tsip_machine_parser_header_Str_key_offsets = [
 	0, 0, 14, 16, 18, 20, 21, 23, 
 	25, 28, 31, 38, 45, 46, 63, 64, 
 	66, 82, 100, 106, 107, 109, 114, 133, 
@@ -64,7 +64,7 @@ const _tsip_machine_parser_header_Str_key_offsets = [
 	494, 496, 498, 501
 ];
 
-const _tsip_machine_parser_header_Str_trans_keys = [
+_tsip_machine_parser_header_Str_trans_keys = [
 	67, 69, 73, 79, 80, 83, 85, 99, 
 	101, 105, 111, 112, 115, 117, 65, 97, 
 	76, 108, 76, 108, 45, 73, 105, 68, 
@@ -130,7 +130,7 @@ const _tsip_machine_parser_header_Str_trans_keys = [
 	84, 116, 9, 32, 58, 0
 ];
 
-const _tsip_machine_parser_header_Str_single_lengths = [
+_tsip_machine_parser_header_Str_single_lengths = [
 	0, 14, 2, 2, 2, 1, 2, 2, 
 	3, 3, 5, 5, 1, 7, 1, 2, 
 	6, 10, 6, 1, 2, 5, 9, 1, 
@@ -150,7 +150,7 @@ const _tsip_machine_parser_header_Str_single_lengths = [
 	2, 2, 3, 0
 ];
 
-const _tsip_machine_parser_header_Str_range_lengths = [
+_tsip_machine_parser_header_Str_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 1, 1, 0, 5, 0, 0, 
 	5, 4, 0, 0, 0, 0, 5, 0, 
@@ -170,7 +170,7 @@ const _tsip_machine_parser_header_Str_range_lengths = [
 	0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_header_Str_index_offsets = [
+_tsip_machine_parser_header_Str_index_offsets = [
 	0, 0, 15, 18, 21, 24, 26, 29, 
 	32, 36, 40, 47, 54, 56, 69, 71, 
 	74, 86, 101, 108, 110, 113, 119, 134, 
@@ -190,7 +190,7 @@ const _tsip_machine_parser_header_Str_index_offsets = [
 	526, 529, 532, 536
 ];
 
-const _tsip_machine_parser_header_Str_indicies = [
+_tsip_machine_parser_header_Str_indicies = [
 	0, 2, 3, 4, 5, 6, 7, 0, 
 	2, 3, 4, 5, 6, 7, 1, 8, 
 	8, 1, 9, 9, 1, 10, 10, 1, 
@@ -261,7 +261,7 @@ const _tsip_machine_parser_header_Str_indicies = [
 	1, 0
 ];
 
-const _tsip_machine_parser_header_Str_trans_targs = [
+_tsip_machine_parser_header_Str_trans_targs = [
 	2, 0, 74, 8, 78, 79, 100, 121, 
 	3, 4, 5, 6, 7, 9, 10, 9, 
 	10, 11, 10, 12, 13, 11, 11, 12, 
@@ -284,7 +284,7 @@ const _tsip_machine_parser_header_Str_trans_targs = [
 	129, 130, 9, 10
 ];
 
-const _tsip_machine_parser_header_Str_trans_actions = [
+_tsip_machine_parser_header_Str_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 3, 3, 0, 
 	0, 1, 23, 23, 23, 0, 17, 17, 
@@ -307,11 +307,11 @@ const _tsip_machine_parser_header_Str_trans_actions = [
 	0, 0, 15, 15
 ];
 
-const tsip_machine_parser_header_Str_start = 1;
-const tsip_machine_parser_header_Str_first_final = 131;
-const tsip_machine_parser_header_Str_error = 0;
+tsip_machine_parser_header_Str_start = 1;
+tsip_machine_parser_header_Str_first_final = 131;
+tsip_machine_parser_header_Str_error = 0;
 
-const tsip_machine_parser_header_Str_en_main = 1;
+tsip_machine_parser_header_Str_en_main = 1;
 
 
 /* line 81 "./ragel/tsip_parser_header_Str.jrl" */
@@ -503,7 +503,7 @@ case 10:
 131
 /* line 103 "./ragel/tsip_parser_header_Str.jrl" */
  ){
-		console.error("Failed to parse header: %s", s_str);
+		tsk_utils_log_error("Failed to parse header: " + s_str);
 		return null;
 	}
 	

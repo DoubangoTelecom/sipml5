@@ -38,40 +38,40 @@ tsdp_header_Str.prototype.s_value = null;
 
 
 /* line 41 "./src/headers/tsdp_header_Str.js" */
-const _tsdp_machine_parser_header_Str_actions = [
+_tsdp_machine_parser_header_Str_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 2, 0, 7
 ];
 
-const _tsdp_machine_parser_header_Str_key_offsets = [
+_tsdp_machine_parser_header_Str_key_offsets = [
 	0, 0, 6, 8, 10, 11, 13, 15, 
 	17, 19, 21, 25, 28
 ];
 
-const _tsdp_machine_parser_header_Str_trans_keys = [
+_tsdp_machine_parser_header_Str_trans_keys = [
 	101, 105, 107, 112, 115, 117, 32, 61, 
 	32, 61, 10, 32, 61, 32, 61, 32, 
 	61, 32, 61, 32, 61, 13, 32, 0, 
 	65535, 13, 0, 65535, 0
 ];
 
-const _tsdp_machine_parser_header_Str_single_lengths = [
+_tsdp_machine_parser_header_Str_single_lengths = [
 	0, 6, 2, 2, 1, 2, 2, 2, 
 	2, 2, 2, 1, 0
 ];
 
-const _tsdp_machine_parser_header_Str_range_lengths = [
+_tsdp_machine_parser_header_Str_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 1, 1, 0
 ];
 
-const _tsdp_machine_parser_header_Str_index_offsets = [
+_tsdp_machine_parser_header_Str_index_offsets = [
 	0, 0, 7, 10, 13, 15, 18, 21, 
 	24, 27, 30, 34, 37
 ];
 
-const _tsdp_machine_parser_header_Str_trans_targs = [
+_tsdp_machine_parser_header_Str_trans_targs = [
 	2, 5, 6, 7, 8, 9, 0, 3, 
 	10, 0, 3, 10, 0, 12, 0, 3, 
 	10, 0, 3, 10, 0, 3, 10, 0, 
@@ -79,7 +79,7 @@ const _tsdp_machine_parser_header_Str_trans_targs = [
 	11, 0, 4, 11, 0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_Str_trans_actions = [
+_tsdp_machine_parser_header_Str_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 3, 
 	3, 0, 0, 0, 0, 0, 0, 5, 
 	5, 0, 7, 7, 0, 9, 9, 0, 
@@ -87,16 +87,16 @@ const _tsdp_machine_parser_header_Str_trans_actions = [
 	1, 0, 15, 0, 0, 0, 0
 ];
 
-const _tsdp_machine_parser_header_Str_eof_actions = [
+_tsdp_machine_parser_header_Str_eof_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 17, 15, 0
 ];
 
-const tsdp_machine_parser_header_Str_start = 1;
-const tsdp_machine_parser_header_Str_first_final = 10;
-const tsdp_machine_parser_header_Str_error = 0;
+tsdp_machine_parser_header_Str_start = 1;
+tsdp_machine_parser_header_Str_first_final = 10;
+tsdp_machine_parser_header_Str_error = 0;
 
-const tsdp_machine_parser_header_Str_en_main = 1;
+tsdp_machine_parser_header_Str_en_main = 1;
 
 
 /* line 64 "./ragel/tsdp_parser_header_Str.jrl" */
@@ -301,7 +301,7 @@ case 7:
 10
 /* line 86 "./ragel/tsdp_parser_header_Str.jrl" */
  ){
-		console.error("Failed to parse header: %s", s_str);
+		tsk_utils_log_error("Failed to parse header: " + s_str);
 		return null;
 	}
 	

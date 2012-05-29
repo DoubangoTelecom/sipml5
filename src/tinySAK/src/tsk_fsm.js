@@ -74,12 +74,12 @@ tsk_fsm.prototype.act = function (i_action, o_cond_obj1, o_cond_obj2) {
     var o_entry;
 
     if (this.is_terminated()) {
-        console.warn("The FSM is in the final state");
+        tsk_utils_log_warn("The FSM is in the final state");
         return -2;
     }
 
-
-    while (this.b_locked) console.debug("locked");
+    // FIXME: deadlock
+    // while (this.b_locked) tsk_utils_log_info("locked");
     this.b_locked = true;
 
     for (var i = 0; i < this.ao_entries.length; ++i) {
@@ -96,7 +96,7 @@ tsk_fsm.prototype.act = function (i_action, o_cond_obj1, o_cond_obj2) {
         // check condition
         if (!o_entry.fn_condition || o_entry.fn_condition(o_cond_obj1, o_cond_obj2)) {
             if (this.is_debug_enabled()) {
-                console.debug("State machine: %s", o_entry.s_description);
+                tsk_utils_log_info("State machine: " + o_entry.s_description);
             }
             if (o_entry.i_state_to != tsk_fsm.prototype.__i_state_any) {
                 this.i_state_curr = o_entry.i_state_to;
@@ -104,11 +104,11 @@ tsk_fsm.prototype.act = function (i_action, o_cond_obj1, o_cond_obj2) {
             if (o_entry.fn_execute) {
                 try {
                     if ((i_ret_exec = o_entry.fn_execute(Array.prototype.slice.call(arguments, 3)))) {
-                        console.info("State machine: Exec function failed. Moving to the termnial state");
+                        tsk_utils_log_info("State machine: Exec function failed. Moving to the termnial state");
                     }
                 }
                 catch (e) {
-                    console.error(e);
+                    tsk_utils_log_error(e);
                     i_ret_exec = -3;
                 }
             }

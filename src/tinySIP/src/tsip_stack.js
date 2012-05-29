@@ -59,7 +59,7 @@ var o_stack = new tsip_stack(....
 *
 @code
 o_stack.on_event_stack = function (evt: tsip_event) {
-console.debug(evt.s_phrase);
+tsk_utils_log_info(evt.s_phrase);
     switch (evt.i_code) {
         case tsip_event_code_e.STACK_STARTED:
         case tsip_event_code_e.STACK_STOPPING:
@@ -79,8 +79,8 @@ and errors.
 *
 @code
 o_stack.on_event_dialog = function (evt: tsip_event) {
-    console.debug("phrase=%s", evt.s_phrase);
-    console.debug("sesssion id=%d", evt.get_session().get_id());
+    tsk_utils_log_info("phrase=" + evt.s_phrase);
+    tsk_utils_log_info("sesssion id=%d", evt.get_session().get_id());
     switch (evt.i_code) {
         case tsip_event_code_e.DIALOG_TRANSPORT_ERROR:
         case tsip_event_code_e.DIALOG_GLOBAL_ERROR:
@@ -111,8 +111,8 @@ tsip_stack.prototype.on_event_dialog = null;
 *
 @code
 o_stack.on_event_invite = function (evt: tsip_event_invite) {
-    console.debug("phrase=%s", evt.s_phrase);
-    console.debug("sesssion id=%d", evt.get_session().get_id());
+    tsk_utils_log_info("phrase=" + evt.s_phrase);
+    tsk_utils_log_info("sesssion id=%d", evt.get_session().get_id());
     switch (evt.e_invite_type) {
         case tsip_event_invite_type_e.I_NEW_CALL:
 	
@@ -158,8 +158,8 @@ tsip_stack.prototype.on_event_invite = null;
 *
 @code
 o_stack.on_event_message = function (evt: tsip_event_message) {
-    console.debug("phrase=%s", evt.s_phrase);
-    console.debug("sesssion id=%d", evt.get_session().get_id());
+    tsk_utils_log_info("phrase=" + evt.s_phrase);
+    tsk_utils_log_info("sesssion id=%d", evt.get_session().get_id());
     switch (evt.e_message_type) {
         case tsip_event_message_type_e.I_MESSAGE:
         case tsip_event_message_type_e.AO_MESSAGE:
@@ -249,13 +249,13 @@ var tsip_transport_state_e =
 */
 function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf_port) {
     if (!s_realm || !s_impi || !s_impu_uri) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
 
     var o_uri_impu = tsip_uri.prototype.Parse(s_impu_uri);
     if (!o_uri_impu) {
-        console.error("'%s' is not a valid IMPU Uri", s_impu_uri);
+        tsk_utils_log_error("'" + s_impu_uri + "' is not a valid IMPU Uri");
         return null;
     }
 
@@ -264,7 +264,7 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
     }
     var o_uri_realm = tsip_uri.prototype.Parse(s_realm);
     if(!o_uri_realm){
-        console.error("'%s' is not a valid realm", s_realm);
+        tsk_utils_log_error("'" + s_realm + "' is not a valid realm");
         return null;
     }
 
@@ -286,7 +286,7 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
     this.network.i_local_port = 0;
     this.network.s_proxy_cscf_host = s_proxy_cscf_host;
     this.network.i_proxy_cscf_port = i_proxy_cscf_port;
-    this.network.e_proxy_cscf_type = tsip_transport_type_e.WS;
+    this.network.e_proxy_cscf_type = tsk_utils_have_websocket() ? tsip_transport_type_e.WS : tsip_transport_type_e.UDP;
     this.network.o_uri_realm = o_uri_realm;
     this.network.s_proxy_outbound_host = null;
     this.network.i_proxy_outbound_port = 5060;
@@ -337,8 +337,9 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
 * @treturn int 0 if succeed and non-zero value otherwise
 */
 tsip_stack.prototype.start = function () {
+    
     if (this.e_state == tsip_transport_state_e.STARTED) {
-        console.warn("Already started");
+        tsk_utils_log_warn("Already started");
         return 0;
     }
     else if (this.e_state == tsip_transport_state_e.STARTING) {
@@ -346,19 +347,15 @@ tsip_stack.prototype.start = function () {
     }
 
     if (!this.network.s_proxy_cscf_host) {
-        console.error("'%s' not valid as proxy host", this.network.s_proxy_cscf_host);
+        tsk_utils_log_error("'" + this.network.s_proxy_cscf_host + "' not valid as proxy host");
         return -2;
     }
 
-    console.debug("SIP stack start: proxy='%s:%d', realm='%s', impi='%s', impu='%s'",
-        this.network.s_proxy_cscf_host, this.network.i_proxy_cscf_port,
-        this.network.o_uri_realm.toString(),
-        this.identity.s_impi,
-        this.identity.o_uri_impu.toString());
+    tsk_utils_log_info("SIP stack start: proxy='" + this.network.s_proxy_cscf_host + ":" + this.network.i_proxy_cscf_port + "', realm='" + this.network.o_uri_realm + "', impi='" + this.identity.s_impi + "', impu='" + this.identity.o_uri_impu + "'");
 
     this.network.o_transport = this.o_layer_transport.transport_new(this.network.e_proxy_cscf_type, this.network.s_proxy_cscf_host, this.network.i_proxy_cscf_port, "SIP Transport", __tsip_stack_transport_callback);
     if (!this.network.o_transport) {
-        console.error("Failed to create transport with type=%d", this.network.e_proxy_cscf_type);
+        tsk_utils_log_error("Failed to create transport with type= " + this.network.e_proxy_cscf_type);
         return -2;
     }
 

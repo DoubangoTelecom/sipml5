@@ -20,27 +20,29 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_CSeq.prototype = Object.create(tsip_header.prototype);
+
 var TSIP_HEADER_CSEQ_NONE = 0;
 var TSIP_HEADER_CSEQ_DEFAULT = 1;
 
 
-/* line 51 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 53 "./ragel/tsip_parser_header_CSeq.jrl" */
 
 
 
-/* line 32 "./src/headers/tsip_header_CSeq.js" */
-const _tsip_machine_parser_header_CSeq_actions = [
+/* line 34 "./src/headers/tsip_header_CSeq.js" */
+_tsip_machine_parser_header_CSeq_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3
 ];
 
-const _tsip_machine_parser_header_CSeq_key_offsets = [
+_tsip_machine_parser_header_CSeq_key_offsets = [
 	0, 0, 2, 4, 6, 8, 11, 16, 
 	17, 19, 23, 28, 45, 46, 48, 64, 
 	79, 80
 ];
 
-const _tsip_machine_parser_header_CSeq_trans_keys = [
+_tsip_machine_parser_header_CSeq_trans_keys = [
 	67, 99, 83, 115, 69, 101, 81, 113, 
 	9, 32, 58, 9, 13, 32, 48, 57, 
 	10, 9, 32, 9, 32, 48, 57, 9, 
@@ -54,25 +56,25 @@ const _tsip_machine_parser_header_CSeq_trans_keys = [
 	0
 ];
 
-const _tsip_machine_parser_header_CSeq_single_lengths = [
+_tsip_machine_parser_header_CSeq_single_lengths = [
 	0, 2, 2, 2, 2, 3, 3, 1, 
 	2, 2, 3, 7, 1, 2, 6, 5, 
 	1, 0
 ];
 
-const _tsip_machine_parser_header_CSeq_range_lengths = [
+_tsip_machine_parser_header_CSeq_range_lengths = [
 	0, 0, 0, 0, 0, 0, 1, 0, 
 	0, 1, 1, 5, 0, 0, 5, 5, 
 	0, 0
 ];
 
-const _tsip_machine_parser_header_CSeq_index_offsets = [
+_tsip_machine_parser_header_CSeq_index_offsets = [
 	0, 0, 3, 6, 9, 12, 16, 21, 
 	23, 26, 30, 35, 48, 50, 53, 65, 
 	76, 78
 ];
 
-const _tsip_machine_parser_header_CSeq_indicies = [
+_tsip_machine_parser_header_CSeq_indicies = [
 	0, 0, 1, 2, 2, 1, 3, 3, 
 	1, 4, 4, 1, 4, 4, 5, 1, 
 	5, 6, 5, 7, 1, 8, 1, 9, 
@@ -85,29 +87,29 @@ const _tsip_machine_parser_header_CSeq_indicies = [
 	19, 19, 19, 1, 20, 1, 1, 0
 ];
 
-const _tsip_machine_parser_header_CSeq_trans_targs = [
+_tsip_machine_parser_header_CSeq_trans_targs = [
 	2, 0, 3, 4, 5, 6, 7, 10, 
 	8, 9, 11, 12, 10, 11, 12, 15, 
 	13, 14, 16, 15, 17
 ];
 
-const _tsip_machine_parser_header_CSeq_trans_actions = [
+_tsip_machine_parser_header_CSeq_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 1, 
 	0, 0, 5, 5, 0, 0, 0, 1, 
 	0, 0, 3, 0, 7
 ];
 
-const tsip_machine_parser_header_CSeq_start = 1;
-const tsip_machine_parser_header_CSeq_first_final = 17;
-const tsip_machine_parser_header_CSeq_error = 0;
+tsip_machine_parser_header_CSeq_start = 1;
+tsip_machine_parser_header_CSeq_first_final = 17;
+tsip_machine_parser_header_CSeq_error = 0;
 
-const tsip_machine_parser_header_CSeq_en_main = 1;
+tsip_machine_parser_header_CSeq_en_main = 1;
 
 
-/* line 54 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 56 "./ragel/tsip_parser_header_CSeq.jrl" */
 
 function tsip_header_CSeq(i_seq, s_method){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.CSeq);
+	tsip_header.call(this, tsip_header_type_e.CSeq);
     this.i_seq = i_seq;
     this.s_method = s_method;
 	if(s_method){
@@ -116,9 +118,10 @@ function tsip_header_CSeq(i_seq, s_method){
 	else{
 		this.e_req_type = tsip_request_type_e.UNKNOWN;
 	}
-    this.toString = function(){
-        return tsk_string_format("{0} {1}", this.i_seq, this.s_method);
-    }
+}
+
+tsip_header_CSeq.prototype.toString = function(){
+    return tsk_string_format("{0} {1}", this.i_seq, this.s_method);
 }
 
 tsip_header_CSeq.prototype.Parse = function(s_str){
@@ -131,14 +134,14 @@ tsip_header_CSeq.prototype.Parse = function(s_str){
 	var hdr_cseq = new tsip_header_CSeq(TSIP_HEADER_CSEQ_NONE);
 	
 	
-/* line 135 "./src/headers/tsip_header_CSeq.js" */
+/* line 138 "./src/headers/tsip_header_CSeq.js" */
 {
 	 cs = tsip_machine_parser_header_CSeq_start;
 } /* JSCodeGen::writeInit */
 
-/* line 80 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 83 "./ragel/tsip_parser_header_CSeq.jrl" */
 	
-/* line 142 "./src/headers/tsip_header_CSeq.js" */
+/* line 145 "./src/headers/tsip_header_CSeq.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -223,26 +226,26 @@ tsip_header_CSeq.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_CSeq_actions[_acts - 1]) {
 case 0:
-/* line 30 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 32 "./ragel/tsip_parser_header_CSeq.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 34 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 36 "./ragel/tsip_parser_header_CSeq.jrl" */
 
 		hdr_cseq.s_method = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		hdr_cseq.e_req_type = tsip_message.prototype.GetRequestType(hdr_cseq.s_method);
 			break;
 case 2:
-/* line 39 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 41 "./ragel/tsip_parser_header_CSeq.jrl" */
 
 	    hdr_cseq.i_seq = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 43 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 45 "./ragel/tsip_parser_header_CSeq.jrl" */
 
 			break;
-/* line 246 "./src/headers/tsip_header_CSeq.js" */
+/* line 249 "./src/headers/tsip_header_CSeq.js" */
 			} /* action switch */
 		}
 	}
@@ -269,14 +272,14 @@ case 3:
 	}
 	}
 
-/* line 81 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 84 "./ragel/tsip_parser_header_CSeq.jrl" */
 	
 	if( cs < 
-/* line 276 "./src/headers/tsip_header_CSeq.js" */
+/* line 279 "./src/headers/tsip_header_CSeq.js" */
 17
-/* line 82 "./ragel/tsip_parser_header_CSeq.jrl" */
+/* line 85 "./ragel/tsip_parser_header_CSeq.jrl" */
  ){
-		console.error("Failed to parse 'CSeq' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'CSeq' header: " + s_str);
 		return null;
 	}
 	

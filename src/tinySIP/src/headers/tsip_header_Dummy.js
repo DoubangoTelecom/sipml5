@@ -20,23 +20,24 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Dummy.prototype = Object.create(tsip_header.prototype);
 
-/* line 48 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 49 "./ragel/tsip_parser_header_Dummy.jrl" */
 
 
 
-/* line 29 "./src/headers/tsip_header_Dummy.js" */
-const _tsip_machine_parser_header_Dummy_actions = [
+/* line 30 "./src/headers/tsip_header_Dummy.js" */
+_tsip_machine_parser_header_Dummy_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 2, 0, 2
 ];
 
-const _tsip_machine_parser_header_Dummy_key_offsets = [
+_tsip_machine_parser_header_Dummy_key_offsets = [
 	0, 0, 14, 31, 34, 39, 42, 43, 
 	44, 46, 51
 ];
 
-const _tsip_machine_parser_header_Dummy_trans_keys = [
+_tsip_machine_parser_header_Dummy_trans_keys = [
 	33, 37, 39, 126, 42, 43, 45, 46, 
 	48, 57, 65, 90, 95, 122, 9, 32, 
 	33, 37, 39, 58, 126, 42, 43, 45, 
@@ -46,22 +47,22 @@ const _tsip_machine_parser_header_Dummy_trans_keys = [
 	32, 0, 65535, 0
 ];
 
-const _tsip_machine_parser_header_Dummy_single_lengths = [
+_tsip_machine_parser_header_Dummy_single_lengths = [
 	0, 4, 7, 3, 3, 1, 1, 1, 
 	2, 3, 0
 ];
 
-const _tsip_machine_parser_header_Dummy_range_lengths = [
+_tsip_machine_parser_header_Dummy_range_lengths = [
 	0, 5, 5, 0, 1, 1, 0, 0, 
 	0, 1, 0
 ];
 
-const _tsip_machine_parser_header_Dummy_index_offsets = [
+_tsip_machine_parser_header_Dummy_index_offsets = [
 	0, 0, 10, 23, 27, 32, 35, 37, 
 	39, 42, 47
 ];
 
-const _tsip_machine_parser_header_Dummy_indicies = [
+_tsip_machine_parser_header_Dummy_indicies = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 1, 2, 2, 3, 3, 3, 4, 
 	3, 3, 3, 3, 3, 3, 1, 5, 
@@ -71,32 +72,33 @@ const _tsip_machine_parser_header_Dummy_indicies = [
 	0
 ];
 
-const _tsip_machine_parser_header_Dummy_trans_targs = [
+_tsip_machine_parser_header_Dummy_trans_targs = [
 	2, 0, 3, 2, 4, 3, 4, 5, 
 	7, 5, 6, 10, 8, 9, 6
 ];
 
-const _tsip_machine_parser_header_Dummy_trans_actions = [
+_tsip_machine_parser_header_Dummy_trans_actions = [
 	1, 0, 3, 0, 3, 0, 0, 1, 
 	0, 0, 5, 7, 0, 0, 9
 ];
 
-const tsip_machine_parser_header_Dummy_start = 1;
-const tsip_machine_parser_header_Dummy_first_final = 10;
-const tsip_machine_parser_header_Dummy_error = 0;
+tsip_machine_parser_header_Dummy_start = 1;
+tsip_machine_parser_header_Dummy_first_final = 10;
+tsip_machine_parser_header_Dummy_error = 0;
 
-const tsip_machine_parser_header_Dummy_en_main = 1;
+tsip_machine_parser_header_Dummy_en_main = 1;
 
 
-/* line 51 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 52 "./ragel/tsip_parser_header_Dummy.jrl" */
 
 function tsip_header_Dummy(s_name, s_value){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Dummy);
+	tsip_header.call(this, tsip_header_type_e.Dummy);
     this.s_name = s_name;
 	this.s_value = s_value;
-    this.toString = function(){
-        return this.s_value;
-    }
+}
+
+tsip_header_Dummy.prototype.toString = function(){
+    return this.s_value;
 }
 
 tsip_header_Dummy.prototype.Parse = function(s_str){
@@ -109,14 +111,14 @@ tsip_header_Dummy.prototype.Parse = function(s_str){
 	var hdr_Dummy = new tsip_header_Dummy(null);
 	
 	
-/* line 113 "./src/headers/tsip_header_Dummy.js" */
+/* line 115 "./src/headers/tsip_header_Dummy.js" */
 {
 	 cs = tsip_machine_parser_header_Dummy_start;
 } /* JSCodeGen::writeInit */
 
-/* line 71 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 73 "./ragel/tsip_parser_header_Dummy.jrl" */
 	
-/* line 120 "./src/headers/tsip_header_Dummy.js" */
+/* line 122 "./src/headers/tsip_header_Dummy.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -201,26 +203,26 @@ tsip_header_Dummy.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Dummy_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 28 "./ragel/tsip_parser_header_Dummy.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 32 "./ragel/tsip_parser_header_Dummy.jrl" */
 
 		hdr_Dummy.s_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 36 "./ragel/tsip_parser_header_Dummy.jrl" */
 
 		hdr_Dummy.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 39 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 40 "./ragel/tsip_parser_header_Dummy.jrl" */
 
 	    
 			break;
-/* line 224 "./src/headers/tsip_header_Dummy.js" */
+/* line 226 "./src/headers/tsip_header_Dummy.js" */
 			} /* action switch */
 		}
 	}
@@ -247,14 +249,14 @@ case 3:
 	}
 	}
 
-/* line 72 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 74 "./ragel/tsip_parser_header_Dummy.jrl" */
 	
 	if( cs < 
-/* line 254 "./src/headers/tsip_header_Dummy.js" */
+/* line 256 "./src/headers/tsip_header_Dummy.js" */
 10
-/* line 73 "./ragel/tsip_parser_header_Dummy.jrl" */
+/* line 75 "./ragel/tsip_parser_header_Dummy.jrl" */
  ){
-		console.error("Failed to parse 'Dummy' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Dummy' header: " + s_str);
 		return null;
 	}
 	

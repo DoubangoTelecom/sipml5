@@ -75,7 +75,7 @@ tsip_dialog_invite.prototype.ect_send_notify = function(i_code, s_phrase){
 		}
 	}
 	else{
-		console.error("Failed to create request");
+		tsk_utils_log_error("Failed to create request");
 	}
 	return i_ret;
 }
@@ -86,12 +86,12 @@ tsip_dialog_invite.prototype.ect_send_refer = function(s_to){
 	var o_toUri;
 
 	if(!s_to){
-		console.error("Invalid parameter");
+		tsk_utils_log_error("Invalid parameter");
 		return -1;
 	}
 
 	if(!(o_toUri = tsip_uri.prototype.Parse(s_to))){
-		console.error("Failed to parse %s", s_to);
+		tsk_utils_log_error("Failed to parse " + s_to);
 		return -1;
 	}
 
@@ -261,7 +261,7 @@ function __tsip_dialog_invite_get_sip_frag_respcode(o_notify) {
 // returns 'tsip_response_t' contained in the NOTIFY body
 function __tsip_dialog_invite_get_sip_frag_msg(o_notify){
     if(!o_notify){
-        console.error('Invalid parameter');
+        tsk_utils_log_error('Invalid parameter');
         return null;
     }
 	var o_sipfrag;
@@ -278,7 +278,7 @@ function __tsip_dialog_invite_get_sip_frag_msg(o_notify){
             tsk_ragel_state_init_str(o_ragel_state, s_content);
             o_sipfrag = tsip_message.prototype.Parse(o_ragel_state, false);
             if (o_sipfrag && !o_sipfrag.is_response()) {
-                console.error("SipFrag doesn't contain response");
+                tsk_utils_log_error("SipFrag doesn't contain response");
                 return null;
             }
         }

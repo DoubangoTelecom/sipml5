@@ -20,18 +20,19 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Refer_Sub.prototype = Object.create(tsip_header.prototype);
 
-/* line 51 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 52 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 
 
 
-/* line 29 "./src/headers/tsip_header_Refer_Sub.js" */
-const _tsip_machine_parser_header_Refer_Sub_actions = [
+/* line 30 "./src/headers/tsip_header_Refer_Sub.js" */
+_tsip_machine_parser_header_Refer_Sub_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4
 ];
 
-const _tsip_machine_parser_header_Refer_Sub_key_offsets = [
+_tsip_machine_parser_header_Refer_Sub_key_offsets = [
 	0, 0, 2, 4, 6, 8, 10, 11, 
 	13, 15, 17, 20, 27, 28, 30, 36, 
 	38, 40, 42, 44, 48, 52, 53, 55, 
@@ -45,7 +46,7 @@ const _tsip_machine_parser_header_Refer_Sub_key_offsets = [
 	381, 382, 383, 385, 387, 389, 393
 ];
 
-const _tsip_machine_parser_header_Refer_Sub_trans_keys = [
+_tsip_machine_parser_header_Refer_Sub_trans_keys = [
 	82, 114, 69, 101, 70, 102, 69, 101, 
 	82, 114, 45, 83, 115, 85, 117, 66, 
 	98, 9, 32, 58, 9, 13, 32, 70, 
@@ -98,7 +99,7 @@ const _tsip_machine_parser_header_Refer_Sub_trans_keys = [
 	59, 0
 ];
 
-const _tsip_machine_parser_header_Refer_Sub_single_lengths = [
+_tsip_machine_parser_header_Refer_Sub_single_lengths = [
 	0, 2, 2, 2, 2, 2, 1, 2, 
 	2, 2, 3, 7, 1, 2, 6, 2, 
 	2, 2, 2, 4, 4, 1, 2, 3, 
@@ -112,7 +113,7 @@ const _tsip_machine_parser_header_Refer_Sub_single_lengths = [
 	1, 1, 2, 2, 2, 4, 0
 ];
 
-const _tsip_machine_parser_header_Refer_Sub_range_lengths = [
+_tsip_machine_parser_header_Refer_Sub_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 0, 0, 
@@ -126,7 +127,7 @@ const _tsip_machine_parser_header_Refer_Sub_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_header_Refer_Sub_index_offsets = [
+_tsip_machine_parser_header_Refer_Sub_index_offsets = [
 	0, 0, 3, 6, 9, 12, 15, 17, 
 	20, 23, 26, 30, 38, 40, 43, 50, 
 	53, 56, 59, 62, 67, 72, 74, 77, 
@@ -140,7 +141,7 @@ const _tsip_machine_parser_header_Refer_Sub_index_offsets = [
 	365, 367, 369, 372, 375, 378, 383
 ];
 
-const _tsip_machine_parser_header_Refer_Sub_indicies = [
+_tsip_machine_parser_header_Refer_Sub_indicies = [
 	0, 0, 1, 2, 2, 1, 3, 3, 
 	1, 4, 4, 1, 5, 5, 1, 6, 
 	1, 7, 7, 1, 8, 8, 1, 9, 
@@ -192,7 +193,7 @@ const _tsip_machine_parser_header_Refer_Sub_indicies = [
 	0
 ];
 
-const _tsip_machine_parser_header_Refer_Sub_trans_targs = [
+_tsip_machine_parser_header_Refer_Sub_trans_targs = [
 	2, 0, 3, 4, 5, 6, 7, 8, 
 	9, 10, 11, 12, 15, 82, 13, 14, 
 	16, 17, 18, 19, 20, 44, 24, 20, 
@@ -207,7 +208,7 @@ const _tsip_machine_parser_header_Refer_Sub_trans_targs = [
 	79, 80, 83, 84, 85, 20, 44, 24
 ];
 
-const _tsip_machine_parser_header_Refer_Sub_trans_actions = [
+_tsip_machine_parser_header_Refer_Sub_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 1, 1, 0, 0, 
 	0, 0, 0, 0, 5, 5, 5, 0, 
@@ -222,21 +223,22 @@ const _tsip_machine_parser_header_Refer_Sub_trans_actions = [
 	0, 0, 0, 0, 0, 3, 3, 3
 ];
 
-const tsip_machine_parser_header_Refer_Sub_start = 1;
-const tsip_machine_parser_header_Refer_Sub_first_final = 86;
-const tsip_machine_parser_header_Refer_Sub_error = 0;
+tsip_machine_parser_header_Refer_Sub_start = 1;
+tsip_machine_parser_header_Refer_Sub_first_final = 86;
+tsip_machine_parser_header_Refer_Sub_error = 0;
 
-const tsip_machine_parser_header_Refer_Sub_en_main = 1;
+tsip_machine_parser_header_Refer_Sub_en_main = 1;
 
 
-/* line 54 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 55 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 
 function tsip_header_Refer_Sub(b_sub){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Refer_Sub);
+	tsip_header.call(this, tsip_header_type_e.Refer_Sub);
     this.b_sub = b_sub;
-    this.toString = function(){
-        return this.b_sub ? "true" : "false";
-    }
+}
+
+tsip_header_Refer_Sub.prototype.toString = function(){
+    return this.b_sub ? "true" : "false";
 }
 
 tsip_header_Refer_Sub.prototype.Parse = function(s_str){
@@ -249,14 +251,14 @@ tsip_header_Refer_Sub.prototype.Parse = function(s_str){
 	var hdr_rsub = new tsip_header_Refer_Sub(true);
 	
 	
-/* line 253 "./src/headers/tsip_header_Refer_Sub.js" */
+/* line 255 "./src/headers/tsip_header_Refer_Sub.js" */
 {
 	 cs = tsip_machine_parser_header_Refer_Sub_start;
 } /* JSCodeGen::writeInit */
 
-/* line 73 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 75 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 	
-/* line 260 "./src/headers/tsip_header_Refer_Sub.js" */
+/* line 262 "./src/headers/tsip_header_Refer_Sub.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -341,30 +343,30 @@ tsip_header_Refer_Sub.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Refer_Sub_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 28 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 32 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 
 		hdr_rsub.b_sub = true;
 			break;
 case 2:
-/* line 34 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 35 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 
 		hdr_rsub.b_sub = false;
 			break;
 case 3:
-/* line 37 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 38 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 
 		tsk_ragel_add_param(s_str, p, i_tag_start, hdr_rsub.ao_params);
 			break;
 case 4:
-/* line 41 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 42 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 
 			break;
-/* line 368 "./src/headers/tsip_header_Refer_Sub.js" */
+/* line 370 "./src/headers/tsip_header_Refer_Sub.js" */
 			} /* action switch */
 		}
 	}
@@ -391,14 +393,14 @@ case 4:
 	}
 	}
 
-/* line 74 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 76 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
 	
 	if( cs < 
-/* line 398 "./src/headers/tsip_header_Refer_Sub.js" */
+/* line 400 "./src/headers/tsip_header_Refer_Sub.js" */
 86
-/* line 75 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
+/* line 77 "./ragel/tsip_parser_header_Refer_Sub.jrl" */
  ){
-		console.error("Failed to parse 'Refer-Sub' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Refer-Sub' header: " + s_str);
 		return null;
 	}
 	

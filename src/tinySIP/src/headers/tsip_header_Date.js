@@ -20,19 +20,20 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+tsip_header_Date.prototype = Object.create(tsip_header.prototype);
 
-/* line 73 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 74 "./ragel/tsip_parser_header_Date.jrl" */
 
 
 
-/* line 29 "./src/headers/tsip_header_Date.js" */
-const _tsip_machine_parser_header_Date_actions = [
+/* line 30 "./src/headers/tsip_header_Date.js" */
+_tsip_machine_parser_header_Date_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8
 ];
 
-const _tsip_machine_parser_header_Date_key_offsets = [
+_tsip_machine_parser_header_Date_key_offsets = [
 	0, 0, 2, 4, 6, 8, 11, 24, 
 	25, 27, 39, 41, 43, 44, 45, 47, 
 	49, 50, 66, 70, 72, 73, 75, 77, 
@@ -44,7 +45,7 @@ const _tsip_machine_parser_header_Date_key_offsets = [
 	163, 165
 ];
 
-const _tsip_machine_parser_header_Date_trans_keys = [
+_tsip_machine_parser_header_Date_trans_keys = [
 	68, 100, 65, 97, 84, 116, 69, 101, 
 	9, 32, 58, 9, 13, 32, 70, 77, 
 	83, 84, 87, 102, 109, 115, 116, 119, 
@@ -68,7 +69,7 @@ const _tsip_machine_parser_header_Date_trans_keys = [
 	101, 69, 101, 68, 100, 0
 ];
 
-const _tsip_machine_parser_header_Date_single_lengths = [
+_tsip_machine_parser_header_Date_single_lengths = [
 	0, 2, 2, 2, 2, 3, 13, 1, 
 	2, 12, 2, 2, 1, 1, 0, 0, 
 	1, 16, 4, 2, 1, 0, 0, 0, 
@@ -80,7 +81,7 @@ const _tsip_machine_parser_header_Date_single_lengths = [
 	2, 0
 ];
 
-const _tsip_machine_parser_header_Date_range_lengths = [
+_tsip_machine_parser_header_Date_range_lengths = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
 	0, 0, 0, 0, 0, 0, 1, 1, 
 	0, 0, 0, 0, 0, 1, 1, 1, 
@@ -92,7 +93,7 @@ const _tsip_machine_parser_header_Date_range_lengths = [
 	0, 0
 ];
 
-const _tsip_machine_parser_header_Date_index_offsets = [
+_tsip_machine_parser_header_Date_index_offsets = [
 	0, 0, 3, 6, 9, 12, 16, 30, 
 	32, 35, 48, 51, 54, 56, 58, 60, 
 	62, 64, 81, 86, 89, 91, 93, 95, 
@@ -104,7 +105,7 @@ const _tsip_machine_parser_header_Date_index_offsets = [
 	214, 217
 ];
 
-const _tsip_machine_parser_header_Date_indicies = [
+_tsip_machine_parser_header_Date_indicies = [
 	0, 0, 1, 2, 2, 1, 3, 3, 
 	1, 4, 4, 1, 4, 4, 5, 1, 
 	5, 6, 5, 7, 8, 9, 10, 11, 
@@ -135,7 +136,7 @@ const _tsip_machine_parser_header_Date_indicies = [
 	1, 1, 0
 ];
 
-const _tsip_machine_parser_header_Date_trans_targs = [
+_tsip_machine_parser_header_Date_trans_targs = [
 	2, 0, 3, 4, 5, 6, 7, 10, 
 	56, 58, 60, 63, 8, 9, 11, 12, 
 	13, 14, 15, 16, 17, 18, 41, 43, 
@@ -147,7 +148,7 @@ const _tsip_machine_parser_header_Date_trans_targs = [
 	64
 ];
 
-const _tsip_machine_parser_header_Date_trans_actions = [
+_tsip_machine_parser_header_Date_trans_actions = [
 	0, 0, 0, 0, 0, 0, 0, 1, 
 	1, 1, 1, 1, 0, 0, 0, 0, 
 	3, 0, 1, 0, 5, 1, 1, 1, 
@@ -159,17 +160,17 @@ const _tsip_machine_parser_header_Date_trans_actions = [
 	0
 ];
 
-const tsip_machine_parser_header_Date_start = 1;
-const tsip_machine_parser_header_Date_first_final = 65;
-const tsip_machine_parser_header_Date_error = 0;
+tsip_machine_parser_header_Date_start = 1;
+tsip_machine_parser_header_Date_first_final = 65;
+tsip_machine_parser_header_Date_error = 0;
 
-const tsip_machine_parser_header_Date_en_main = 1;
+tsip_machine_parser_header_Date_en_main = 1;
 
 
-/* line 76 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 77 "./ragel/tsip_parser_header_Date.jrl" */
 
 function tsip_header_Date(s_wkday, s_month, i_day, i_year, i_h, i_m, i_s){
-    this.__proto__.__proto__ = new tsip_header(tsip_header_type_e.Date);
+	tsip_header.call(this, tsip_header_type_e.Date);
     this.s_wkday = s_wkday;
     this.s_month = s_month;
     this.i_day = i_day;
@@ -179,13 +180,14 @@ function tsip_header_Date(s_wkday, s_month, i_day, i_year, i_h, i_m, i_s){
     this.time.i_m = i_m;
     this.time.i_s = i_s;
     // Date: Wed, 28 Apr 2010 23:42:50 GMT
-    this.toString = function(){
-        if(this.s_month){
-            return tsk_string_format("{0}, {1} {2} {3} {4}:{5}:{6} GMT",
-                this.s_wkday, this.i_day, this.s_month, this.i_year, this.time.i_h, this.time.i_m, this.time.i_s);
-        }
-        return null;
+}
+
+tsip_header_Date.prototype.toString = function(){
+    if(this.s_month){
+        return tsk_string_format("{0}, {1} {2} {3} {4}:{5}:{6} GMT",
+            this.s_wkday, this.i_day, this.s_month, this.i_year, this.time.i_h, this.time.i_m, this.time.i_s);
     }
+    return null;
 }
 
 tsip_header_Date.prototype.Parse = function(s_str){
@@ -198,14 +200,14 @@ tsip_header_Date.prototype.Parse = function(s_str){
 	var hdr_date = new tsip_header_Date(null, null, -1, -1, -1, -1, -1);
 	
 	
-/* line 202 "./src/headers/tsip_header_Date.js" */
+/* line 204 "./src/headers/tsip_header_Date.js" */
 {
 	 cs = tsip_machine_parser_header_Date_start;
 } /* JSCodeGen::writeInit */
 
-/* line 107 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 109 "./ragel/tsip_parser_header_Date.jrl" */
 	
-/* line 209 "./src/headers/tsip_header_Date.js" */
+/* line 211 "./src/headers/tsip_header_Date.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -290,50 +292,50 @@ tsip_header_Date.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Date_actions[_acts - 1]) {
 case 0:
-/* line 27 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 28 "./ragel/tsip_parser_header_Date.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 31 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 32 "./ragel/tsip_parser_header_Date.jrl" */
 
 	    hdr_date.s_wkday = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 35 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 36 "./ragel/tsip_parser_header_Date.jrl" */
 
 	    hdr_date.i_day = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 39 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 40 "./ragel/tsip_parser_header_Date.jrl" */
 
 	    hdr_date.s_month= tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 43 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 44 "./ragel/tsip_parser_header_Date.jrl" */
 
 	    hdr_date.i_year = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 5:
-/* line 47 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 48 "./ragel/tsip_parser_header_Date.jrl" */
 
 	    hdr_date.time.i_h = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 6:
-/* line 51 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 52 "./ragel/tsip_parser_header_Date.jrl" */
 
 	    hdr_date.time.i_m = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 7:
-/* line 55 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 56 "./ragel/tsip_parser_header_Date.jrl" */
 
 		hdr_date.time.i_s = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 8:
-/* line 59 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 60 "./ragel/tsip_parser_header_Date.jrl" */
 
 			break;
-/* line 337 "./src/headers/tsip_header_Date.js" */
+/* line 339 "./src/headers/tsip_header_Date.js" */
 			} /* action switch */
 		}
 	}
@@ -360,14 +362,14 @@ case 8:
 	}
 	}
 
-/* line 108 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 110 "./ragel/tsip_parser_header_Date.jrl" */
 	
 	if( cs < 
-/* line 367 "./src/headers/tsip_header_Date.js" */
+/* line 369 "./src/headers/tsip_header_Date.js" */
 65
-/* line 109 "./ragel/tsip_parser_header_Date.jrl" */
+/* line 111 "./ragel/tsip_parser_header_Date.jrl" */
  ){
-		console.error("Failed to parse 'Date' header: %s", s_str);
+		tsk_utils_log_error("Failed to parse 'Date' header: " + s_str);
 		return null;
 	}
 	

@@ -88,15 +88,15 @@
 
     function test_msg_parse() {
         //var hdr = tsip_header_Content_Type.prototype.Parse("c: text/plain; charset=utf-8\r\n");
-        //console.info(hdr.tostring_full());
+        //tsk_utils_log_info(hdr.tostring_full());
 
         //var hdr = tsip_header_WWW_Authenticate.prototype.Parse("WWW-Authenticate: Digest realm=\"ims.cingularme.com\",\r\n   nonce=\"b7c9036dbf3054aea9404c7286aee9703dc8f84c2008\",\r\n   opaque=\"Lss:scsf-stdn.imsgroup0-001.ims1.wtcdca1.mobility.att.net:5060\",\r\n   algorithm=MD5,\r\n   qop=\"auth\"\r\n");
-        //console.info(hdr.tostring_full());
+        //tsk_utils_log_info(hdr.tostring_full());
 
         var o_ragel_state = tsk_ragel_state_create();
         tsk_ragel_state_init_str(o_ragel_state, __msg2);
         var msg = tsip_message.prototype.Parse(o_ragel_state, true);
-        console.info(msg.toString());
+        tsk_utils_log_info(msg.toString());
     }
 </script>
 

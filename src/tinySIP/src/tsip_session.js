@@ -53,7 +53,7 @@ var tsip_session_param_type_e =
 */
 function tsip_session(o_stack) {
     if (!o_stack) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
 

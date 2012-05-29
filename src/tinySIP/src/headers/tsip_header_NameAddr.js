@@ -39,13 +39,13 @@ tsip_header_Referred_By.prototype = Object.create(tsip_header_NameAddr.prototype
 
 
 /* line 42 "./src/headers/tsip_header_NameAddr.js" */
-const _tsip_machine_parser_header_NameAddr_actions = [
+_tsip_machine_parser_header_NameAddr_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
 	7, 1, 8, 1, 9
 ];
 
-const _tsip_machine_parser_header_NameAddr_key_offsets = [
+_tsip_machine_parser_header_NameAddr_key_offsets = [
 	0, 0, 8, 11, 14, 35, 36, 38, 
 	59, 60, 62, 65, 69, 81, 84, 86, 
 	89, 93, 97, 98, 100, 103, 122, 123, 
@@ -64,7 +64,7 @@ const _tsip_machine_parser_header_NameAddr_key_offsets = [
 	716, 717, 719, 721, 726, 729
 ];
 
-const _tsip_machine_parser_header_NameAddr_trans_keys = [
+_tsip_machine_parser_header_NameAddr_trans_keys = [
 	66, 70, 82, 84, 98, 102, 114, 116, 
 	9, 32, 58, 9, 32, 58, 9, 13, 
 	32, 33, 34, 37, 39, 60, 126, 42, 
@@ -159,7 +159,7 @@ const _tsip_machine_parser_header_NameAddr_trans_keys = [
 	58, 0
 ];
 
-const _tsip_machine_parser_header_NameAddr_single_lengths = [
+_tsip_machine_parser_header_NameAddr_single_lengths = [
 	0, 8, 3, 3, 9, 1, 2, 9, 
 	1, 2, 3, 0, 4, 3, 0, 1, 
 	4, 4, 1, 2, 3, 9, 1, 2, 
@@ -178,7 +178,7 @@ const _tsip_machine_parser_header_NameAddr_single_lengths = [
 	1, 2, 2, 5, 3, 0
 ];
 
-const _tsip_machine_parser_header_NameAddr_range_lengths = [
+_tsip_machine_parser_header_NameAddr_range_lengths = [
 	0, 0, 0, 0, 6, 0, 0, 6, 
 	0, 0, 0, 2, 4, 0, 1, 1, 
 	0, 0, 0, 0, 0, 5, 0, 0, 
@@ -197,7 +197,7 @@ const _tsip_machine_parser_header_NameAddr_range_lengths = [
 	0, 0, 0, 0, 0, 0
 ];
 
-const _tsip_machine_parser_header_NameAddr_index_offsets = [
+_tsip_machine_parser_header_NameAddr_index_offsets = [
 	0, 0, 9, 13, 17, 33, 35, 38, 
 	54, 56, 59, 63, 66, 75, 79, 81, 
 	84, 89, 94, 96, 99, 103, 118, 120, 
@@ -216,7 +216,7 @@ const _tsip_machine_parser_header_NameAddr_index_offsets = [
 	663, 665, 668, 671, 677, 681
 ];
 
-const _tsip_machine_parser_header_NameAddr_indicies = [
+_tsip_machine_parser_header_NameAddr_indicies = [
 	0, 2, 3, 4, 0, 2, 3, 4, 
 	1, 5, 5, 6, 1, 7, 7, 8, 
 	1, 8, 9, 8, 10, 11, 10, 10, 
@@ -305,7 +305,7 @@ const _tsip_machine_parser_header_NameAddr_indicies = [
 	1, 1, 0
 ];
 
-const _tsip_machine_parser_header_NameAddr_trans_targs = [
+_tsip_machine_parser_header_NameAddr_trans_targs = [
 	2, 0, 106, 110, 123, 3, 4, 3, 
 	4, 5, 91, 96, 11, 101, 6, 7, 
 	8, 9, 10, 12, 13, 12, 14, 15, 
@@ -328,7 +328,7 @@ const _tsip_machine_parser_header_NameAddr_trans_targs = [
 	4, 124
 ];
 
-const _tsip_machine_parser_header_NameAddr_trans_actions = [
+_tsip_machine_parser_header_NameAddr_trans_actions = [
 	0, 0, 0, 0, 0, 17, 17, 0, 
 	0, 0, 1, 1, 0, 1, 0, 0, 
 	0, 0, 0, 1, 0, 0, 0, 0, 
@@ -351,11 +351,11 @@ const _tsip_machine_parser_header_NameAddr_trans_actions = [
 	13, 0
 ];
 
-const tsip_machine_parser_header_NameAddr_start = 1;
-const tsip_machine_parser_header_NameAddr_first_final = 125;
-const tsip_machine_parser_header_NameAddr_error = 0;
+tsip_machine_parser_header_NameAddr_start = 1;
+tsip_machine_parser_header_NameAddr_first_final = 125;
+tsip_machine_parser_header_NameAddr_error = 0;
 
-const tsip_machine_parser_header_NameAddr_en_main = 1;
+tsip_machine_parser_header_NameAddr_en_main = 1;
 
 
 /* line 97 "./ragel/tsip_parser_header_NameAddr.jrl" */
@@ -560,7 +560,7 @@ case 9:
 125
 /* line 125 "./ragel/tsip_parser_header_NameAddr.jrl" */
  ){
-		console.error("Failed to parse header: %s", s_str);
+		tsk_utils_log_error("Failed to parse header: " + s_str);
 		return null;
 	}
 	
@@ -571,4 +571,8 @@ function tsip_header_From(o_uri, s_tag){ tsip_header_NameAddr.call(this, tsip_he
 function tsip_header_To(o_uri, s_tag){ tsip_header_NameAddr.call(this, tsip_header_type_e.To, o_uri, s_tag); }
 function tsip_header_Refer_To(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Refer_To, o_uri); }
 function tsip_header_Referred_By(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Referred_By, o_uri); }
+
+tsip_api_add_js_scripts('head',
+    'src/tinySIP/src/headers/tsip_header_NameAddrArray.js' // 'P-Asserted-Identity', 'P-Associated-URI', 'Path', 'Record-Route', 'Route', 'Service-Route'
+);
 

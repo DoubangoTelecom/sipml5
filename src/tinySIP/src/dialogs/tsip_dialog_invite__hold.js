@@ -53,7 +53,7 @@ tsip_dialog_invite.prototype.init_hold = function(){
 /* handle requests/responses (MUST be called after set_ro()) */
 tsip_dialog_invite.prototype.hold_handle = function(o_request){
     if (!o_request || !this.o_msession_mgr || (!o_request.is_invite() && !o_request.is_update())) {
-		console.error("Invalid parameter");
+		tsk_utils_log_error("Invalid parameter");
 		return -1;
 	}
 
@@ -92,7 +92,7 @@ function x0100_Connected_2_Holding_X_oHold(ao_args){
     var o_action = ao_args[2];
 
 	if(!o_dialog.o_msession_mgr){
-		console.warn("Media Session manager is Null");
+		tsk_utils_log_warn("Media Session manager is Null");
 		return 0;
 	}
 
@@ -147,12 +147,12 @@ function x0102_Connected_2_Resuming_X_oResume(ao_args){
     var o_action = ao_args[2];
 
     if(!o_dialog.hold.b_local){
-        console.warn("Not on hold state");
+        tsk_utils_log_warn("Not on hold state");
 		return 0;
     }
 
 	if(!o_dialog.o_msession_mgr){
-		console.warn("Media Session manager is Null");
+		tsk_utils_log_warn("Media Session manager is Null");
 		return 0;
 	}
 

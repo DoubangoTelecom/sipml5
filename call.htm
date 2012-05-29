@@ -1,4 +1,4 @@
-﻿<!-- head -->
+﻿<!DOCTYPE html>
 <html>
 <!-- head -->
 <head>
@@ -10,7 +10,7 @@
     <meta name="author" content="Doubango Telecom">
 
     <!-- SIP API and utility functions -->
-    <script src="src/tinySIP/src/tsip_api.js" type="text/javascript"> </script>
+    <script src="src/tinySIP/src/tsip_api.js?svn=5" type="text/javascript"> </script>
     <!-- Styles -->
     <link href="./assets/css/bootstrap.css" rel="stylesheet">
     <style type="text/css">
@@ -47,6 +47,7 @@
           -moz-transition-duration: 2s;
           -o-transition-duration: 2s;
         }
+        .tab-video,
         .div-video{
             width: 100%; 
             height: 0px; 
@@ -85,6 +86,11 @@
 <!-- Javascript code -->
 <script type="text/javascript">
 
+    // to avoid caching
+    if (window.location.href.indexOf("svn=") == -1) {
+        window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=5" : "&svn=5"); 
+    }
+
     var sTransferNumber;
     var oRingTone, oRingbackTone;
     var oSipStack, oSipSessionRegister, oSipSessionCall, oSipSessionTransferCall;
@@ -96,17 +102,12 @@
     var btnFullScreen, btnHoldResume, btnTransfer, btnKeyPad;
     var videoRemote, videoLocal;
     var divVideo, divCallOptions;
+    var tdVideo;
     var bFullScreen = false;
     var oNotifICall;
+    var oReadyStateTimer;
 
     window.onload = function () {
-        if (!haveWebSocket()) {
-            alert('Your browser don\'t support WebSockets.');
-            // window.location = "error.htm?msg=NoWebSocket";
-            window.location = "index.htm";
-            return;
-        }
-
         txtDisplayName = document.getElementById("txtDisplayName");
         txtPrivateIdentity = document.getElementById("txtPrivateIdentity");
         txtPublicIdentity = document.getElementById("txtPublicIdentity");
@@ -129,53 +130,94 @@
         btnTransfer = document.getElementById("btnTransfer");
         btnKeyPad = document.getElementById("btnKeyPad");
 
-        videoLocal = document.getElementById("video_local"); ;
+        videoLocal = document.getElementById("video_local");
         videoRemote = document.getElementById("video_remote");
 
         divVideo = document.getElementById("divVideo");
         divCallOptions = document.getElementById("divCallOptions");
         //divVideo.style.height = '0px';
 
-        loadCredentials();
-        loadCallOptions();
-
-        if (!haveWebRTC()) {
-            alert('Your browser don\'t support WebRTC. audio/video calls will be disabled.');
-        }
+        tdVideo = document.getElementById("tdVideo");
 
         document.onkeyup = onKeyUp;
         document.body.onkeyup = onKeyUp;
         document.getElementById("divCallCtrl").onmousemove = onDivCallCtrlMouseMove;
 
-        btnRegister.disabled = false;
-        document.body.style.cursor = 'default';
+        loadCredentials();
+        loadCallOptions();
+
+        oReadyStateTimer = setInterval(function () {
+            if (document.readyState === "complete") {
+                postInit();
+                clearInterval(oReadyStateTimer);
+            }
+        },
+        500);
     };
 
-    // checks whether the browser supports WebRTC
-    function haveWebRTC() {
-        // 'webkitDeprecatedPeerConnection' is not used
-        try {
-            return (navigator.webkitGetUserMedia && (webkitPeerConnection00));
+    function postInit() {
+        if (navigator.appName == 'Microsoft Internet Explorer') {
+
+           // Check for IE version 
+            var rv = -1;
+            var ua = navigator.userAgent;
+            var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+            if (re.exec(ua) != null) {
+                rv = parseFloat(RegExp.$1);
+            }
+            if (rv < 9.0) {
+                if (confirm("You are using an old IE version. You need at least version 9. Would you like to update IE?")) {
+                    window.location = 'http://windows.microsoft.com/en-us/internet-explorer/products/ie/home';
+                }
+                else {
+                    window.location = "index.htm";
+                }
+            }
+
+            // check for webrtc4ie extension
+            if (!tsk_utils_have_webrtc4ie()) {
+                if (confirm("webrtc4ie extension is not installed. Do you want to install it?")) {
+                    window.location = 'http://code.google.com/p/webrtc4ie/downloads/list';
+                }
+                else {
+                    // Must do nothing: give the user the chance to accept the extension
+                    // window.location = "index.htm";
+                }
+            }
+            // break page loading ('window.location' won't stop JS execution)
+            if (!tsk_utils_have_webrtc4ie()) {
+                return;
+            }
+            // attachs video displays
+            tsk_utils_webrtc4ie_set_displays(document.getElementById("divVideoLocal"), document.getElementById("divVideoRemote"));
         }
-        catch (e) {
-            // console.error(e);
-            return false;
+
+        if (!tsk_utils_have_websocket() && !tsk_utils_have_webrtc4ie()) {
+            if (confirm('Your browser don\'t support WebSockets. Do you want to download a WebSocket-capable browser?')) {
+                window.location = 'https://tools.google.com/dlpage/chromesxs';
+            }
+            else {
+                // window.location = "error.htm?msg=NoTransport";
+                window.location = "index.htm";
+            }
+            return;
         }
+
+        if (!tsk_utils_have_webrtc()) {
+            if (confirm('Your browser don\'t support WebRTC. audio/video calls will be disabled. Do you want to download a WebRTC-capable browser?')) {
+                window.location = 'https://tools.google.com/dlpage/chromesxs';
+            }
+        }
+
+        btnRegister.disabled = false;
+        document.body.style.cursor = 'default';
     }
 
-    // checks whether the browser supports WebSockets
-    function haveWebSocket() {
-        return (WebSocket != null);
-    }
-
-    // checks whether the user accepted access to the webcam/soundcard
-    function gotMediaStream() {
-        return (__o_stream != null);
-    }
 
     function loadCallOptions() {
         if (localStorage) {
-            txtPhoneNumber.value = localStorage.getItem('org.doubango.identity.phone_number');
+            var s_value;
+            if ((s_value = localStorage.getItem('org.doubango.identity.phone_number'))) txtPhoneNumber.value = s_value;
         }
     }
 
@@ -186,13 +228,23 @@
     }
 
     function loadCredentials() {
-        if (localStorage) {
-            txtDisplayName.value = localStorage.getItem('org.doubango.identity.display_name');
-            txtPrivateIdentity.value = localStorage.getItem('org.doubango.identity.impi');
-            txtPublicIdentity.value = localStorage.getItem('org.doubango.identity.impu');
-            txtPassword.value = localStorage.getItem('org.doubango.identity.password');
-            txtRealm.value = localStorage.getItem('org.doubango.identity.realm');
+        if (window.localStorage) {
+            // IE retuns 'null' if not defined
+            var s_value;
+            if ((s_value = window.localStorage.getItem('org.doubango.identity.display_name'))) txtDisplayName.value = s_value;
+            if ((s_value = window.localStorage.getItem('org.doubango.identity.impi'))) txtPrivateIdentity.value = s_value;
+            if ((s_value = window.localStorage.getItem('org.doubango.identity.impu'))) txtPublicIdentity.value = s_value;
+            if ((s_value = window.localStorage.getItem('org.doubango.identity.password'))) txtPassword.value = s_value;
+            if ((s_value = window.localStorage.getItem('org.doubango.identity.realm'))) txtRealm.value = s_value;
         }
+        //else {
+        //    txtDisplayName.value = "2233392625";
+        //    txtPrivateIdentity.value = "2233392625";
+        //    txtPublicIdentity.value = "sip:2233392625@sip2sip.info";
+         //   txtPassword.value = "d3sb7j4fb8";
+        //    txtRealm.value = "sip2sip.info";
+        //    txtPhoneNumber.value = "2233422677";
+        //}
     };
 
     function saveCredentials() {
@@ -207,49 +259,65 @@
 
     // sends SIP REGISTER request to login
     function sipRegister() {
-        btnRegister.disabled = true;
-        if (!txtRealm.value || !txtPrivateIdentity.value || !txtPublicIdentity.value) {
-            txtRegStatus.innerHTML = '<b>Please fill madatory fields (*)</b>';
-            btnRegister.disabled = false;
-            return;
-        }
-        var o_impu = tsip_uri.prototype.Parse(txtPublicIdentity.value);
-        if (!o_impu || !o_impu.s_user_name || !o_impu.s_host) {
-            txtRegStatus.innerHTML = "<b>[" + txtPublicIdentity.value + "] is not a valid Public identity</b>";
-            btnRegister.disabled = false;
-            return;
-        }
-
-        // enable notifications if not already done
-        if (window.webkitNotifications && window.webkitNotifications.checkPermission() != 0) {
-            window.webkitNotifications.requestPermission();
-        }
-        
-        // save credentials
-        saveCredentials();
-
-        // there are at least 5 servers running on the cloud on ports: 4062, 5062, 6062, 7062 and 8062
-        // we will connect to one of them and let the balancer to choose the right one (less connected sockets)
-        // each port can accept up to 65K connections which means that the cloud can manage 325K active connections
-        // the number of port will be increased or decreased based on the current trafic
-        var i_port = 4062 + (((new Date().getTime()) % 5) * 1000);
-
-        // create a new SIP stack. Not mandatory as it's possible to reuse the same satck
-        oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, "sipml5.org", i_port,
-                            tsip_stack.prototype.SetPassword(txtPassword.value),
-                            tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
-                            //tsip_stack.prototype.SetProxyOutBound('192.168.0.10', 5060, tsip_transport_type_e.UDP), // uncommend to use SIP outbound proxy
-                            tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5/v0.0.0000.0'),
-                            tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
-        if (oSipStack) {
-            oSipStack.on_event_stack = onSipEventStack;
-            oSipStack.on_event_dialog = onSipEventDialog;
-            oSipStack.on_event_invite = onSipEventInvite;
-
-            if (oSipStack.start() != 0) {
-                txtRegStatus.innerHTML = '<b>Failed to start the SIP stack</b>';
+        // catch exception for IE (DOM not ready)
+        try {
+            btnRegister.disabled = true;
+            if (!txtRealm.value || !txtPrivateIdentity.value || !txtPublicIdentity.value) {
+                txtRegStatus.innerHTML = '<b>Please fill madatory fields (*)</b>';
+                btnRegister.disabled = false;
+                return;
             }
-            else return;
+            var o_impu = tsip_uri.prototype.Parse(txtPublicIdentity.value);
+            if (!o_impu || !o_impu.s_user_name || !o_impu.s_host) {
+                txtRegStatus.innerHTML = "<b>[" + txtPublicIdentity.value + "] is not a valid Public identity</b>";
+                btnRegister.disabled = false;
+                return;
+            }
+
+            // enable notifications if not already done
+            if (window.webkitNotifications && window.webkitNotifications.checkPermission() != 0) {
+                window.webkitNotifications.requestPermission();
+            }
+
+            // save credentials
+            saveCredentials();
+
+            // create SIP stack
+            var i_port;
+            var s_proxy;
+            if (tsk_utils_have_webrtc4ie()) {
+                // port and host will be updated using the result from DNS SRV(NAPTR(realm))
+                i_port = 5060;
+                s_proxy = txtRealm.value;
+            }
+            else {
+                // there are at least 5 servers running on the cloud on ports: 4062, 5062, 6062, 7062 and 8062
+                // we will connect to one of them and let the balancer to choose the right one (less connected sockets)
+                // each port can accept up to 65K connections which means that the cloud can manage 325K active connections
+                // the number of port will be increased or decreased based on the current trafic
+                i_port = 4062 + (((new Date().getTime()) % 5) * 1000);
+                s_proxy = "sipml5.org";
+            }
+            // create a new SIP stack. Not mandatory as it's possible to reuse the same satck
+            oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, s_proxy, i_port,
+                                    tsip_stack.prototype.SetPassword(txtPassword.value),
+                                    tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
+            //tsip_stack.prototype.SetProxyOutBound('192.168.0.10', 5060, tsip_transport_type_e.UDP), // uncommend to use SIP outbound proxy
+                                    tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5/v0.0.0000.0'),
+                                    tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
+            if (oSipStack) {
+                oSipStack.on_event_stack = onSipEventStack;
+                oSipStack.on_event_dialog = onSipEventDialog;
+                oSipStack.on_event_invite = onSipEventInvite;
+
+                if (oSipStack.start() != 0) {
+                    txtRegStatus.innerHTML = '<b>Failed to start the SIP stack</b>';
+                }
+                else return;
+            }
+        }
+        catch (e) {
+            txtRegStatus.innerHTML = "<b>2:" + e + "</b>";
         }
         btnRegister.disabled = false;
     }
@@ -278,6 +346,7 @@
                 btnHangUp.disabled = true;
                 return;
             }
+            saveCallOptions();
         }
         else if (oSipSessionCall) {
             txtCallStatus.innerHTML = '<i>Connecting...</i>';
@@ -325,37 +394,23 @@
     }
 
     function startRingTone() {
-        if (Audio) {
-            if (!oRingTone && (oRingTone = new Audio("sounds/ringtone.wav"))) {
-                oRingTone.loop = true;
-            }
-            if (oRingTone) {
-                oRingTone.play();
-            }
-        }
+        try { ringtone.play(); }
+        catch (e) { }
     }
 
     function stopRingTone() {
-        if (oRingTone) {
-            oRingTone.pause();
-        }
+        try { ringtone.pause(); }
+        catch (e) { }
     }
 
     function startRingbackTone() {
-        if (Audio) {
-            if (!oRingbackTone && (oRingbackTone = new Audio("sounds/ringbacktone.wav"))) {
-                oRingbackTone.loop = true;
-            }
-            if (oRingbackTone) {
-                oRingbackTone.play();
-            }
-        }
+        try { ringbacktone.play(); }
+        catch (e) { }
     }
 
     function stopRingbackTone() {
-        if (oRingbackTone) {
-            oRingbackTone.pause();
-        }
+        try { ringbacktone.pause(); }
+        catch (e) { }
     }
 
     function toggleFullScreen() {
@@ -378,7 +433,7 @@
             }
         }
         else {
-            document.getElementById("divVideo").setAttribute("class", b_fs ? "div-video full-screen" : "div-video normal-screen");
+            divVideo.setAttribute("class", b_fs ? "full-screen" : "normal-screen");
         }
     }
 
@@ -402,34 +457,82 @@
     }
 
     function onDivCallCtrlMouseMove(evt) {
-        if (gotMediaStream()) {
-            btnCall.disabled = (!gotMediaStream() || !oSipSessionRegister || !oSipSessionRegister.is_connected());
-            document.getElementById("divCallCtrl").onmousemove = null; // unsubscribe
+        try { // IE: DOM not ready
+            if (tsk_utils_have_stream()) {
+                btnCall.disabled = (!tsk_utils_have_stream() || !oSipSessionRegister || !oSipSessionRegister.is_connected());
+                document.getElementById("divCallCtrl").onmousemove = null; // unsubscribe
+            }
         }
+        catch (e) { }
     }
 
     function uiOnConnectionEvent(b_connected, b_connecting) { // should be enum: connecting, connected, terminating, terminated
         btnRegister.disabled = b_connected || b_connecting;
         btnUnRegister.disabled = !b_connected && !b_connecting;
-        btnCall.disabled = !(b_connected && haveWebRTC() && gotMediaStream());
+        btnCall.disabled = !(b_connected && tsk_utils_have_webrtc() && tsk_utils_have_stream());
         btnHangUp.disabled = !oSipSessionCall;
+    }
+
+    function uiVideoDisplayEvent(b_local, b_added, o_src_video) {
+        var o_elt_video = b_local ? videoLocal : videoRemote;
+
+        if (b_added) {
+            if (tsk_utils_have_webrtc4ie()) {
+                if (b_local) __o_display_local.style.visibility = "visible";
+                else __o_display_remote.style.visibility = "visible";
+            }
+            else {
+                o_elt_video.src = o_src_video;
+                o_elt_video.style.opacity = 1;
+            }
+            uiVideoDisplayShowHide(true);
+        }
+        else {
+            if (tsk_utils_have_webrtc4ie()) {
+                if (b_local) __o_display_local.style.visibility = "hidden";
+                else __o_display_remote.style.visibility = "hidden";
+            }
+            else{
+                o_elt_video.style.opacity = 0;
+                if (o_elt_video.src && b_local) videoLocal.src = undefined;  // already revoked: must be done for remote video
+            }
+            fullScreen(false);
+        }
+    }
+
+    function uiVideoDisplayShowHide(b_show) {
+        if (b_show) {
+            tdVideo.style.height = '340px';
+            divVideo.style.height = navigator.appName == 'Microsoft Internet Explorer' ? '100%' : '340px';
+        }
+        else {
+            tdVideo.style.height = '0px';
+            divVideo.style.height = '0px';
+        }
     }
 
     // Callback function for SIP Stacks
     function onSipEventStack(evt) {
         // this is a special event shared by all sessions and there is no "e_stack_type"
         // check the 'sip/stack' code
-        console.debug(evt.s_phrase);
+        tsk_utils_log_info(evt.s_phrase);
         switch (evt.i_code) {
             case tsip_event_code_e.STACK_STARTED:
                 {
-                    // LogIn (REGISTER) as soon as the stack finish starting
-                    oSipSessionRegister = new tsip_session_register(oSipStack,
-                                            tsip_session.prototype.SetExpires(200),
-                                            tsip_session.prototype.SetCaps("+g.oma.sip-im"),
-                                            tsip_session.prototype.SetCaps("+audio"),
-                                            tsip_session.prototype.SetCaps("language", "\"en,fr\""));
-                    oSipSessionRegister.register();
+                    // catch exception for IE (DOM not ready)
+                    try {
+                        // LogIn (REGISTER) as soon as the stack finish starting
+                        oSipSessionRegister = new tsip_session_register(oSipStack,
+                                                    tsip_session.prototype.SetExpires(200),
+                                                    tsip_session.prototype.SetCaps("+g.oma.sip-im"),
+                                                    tsip_session.prototype.SetCaps("+audio"),
+                                                    tsip_session.prototype.SetCaps("language", "\"en,fr\""));
+                        oSipSessionRegister.register();
+                    }
+                    catch (e) {
+                        txtRegStatus.value = txtRegStatus.innerHTML = "<b>1:" + e + "</b>";
+                        btnRegister.disabled = false;
+                    }
                     break;
                 }
             case tsip_event_code_e.STACK_STOPPING:
@@ -444,10 +547,10 @@
                     stopRingbackTone();
                     stopRingTone();
 
-                    divVideo.style.height = '0px';
+                    uiVideoDisplayShowHide(false);
                     divCallOptions.style.opacity = 0;
 
-                    txtCallStatus.innerHTML = null;
+                    txtCallStatus.innerHTML = '';
                     txtRegStatus.innerHTML = '<i>Disconnected</i>';
                     break;
                 }
@@ -466,7 +569,7 @@
     function onSipEventDialog(evt) {
         // this is special event shared by all sessions and there is no "e_dialog_type"
         // check the 'sip/dialog' code
-        console.debug(evt.s_phrase);
+        tsk_utils_log_info(evt.s_phrase);
         switch (evt.i_code) {
             case tsip_event_code_e.DIALOG_TRANSPORT_ERROR:
             case tsip_event_code_e.DIALOG_GLOBAL_ERROR:
@@ -510,6 +613,11 @@
 
                         txtCallStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
                         divCallOptions.style.opacity = b_connected ? 1 : 0;
+
+                        if (tsk_utils_have_webrtc4ie()) { // IE don't provide stream callback
+                            uiVideoDisplayEvent(true, true);
+                            uiVideoDisplayEvent(false, true);
+                        }
                     }
                     break;
                 }
@@ -537,12 +645,17 @@
                         stopRingTone();
 
                         txtCallStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
-                        divVideo.style.height = '0px';
+                        uiVideoDisplayShowHide(false);
                         divCallOptions.style.opacity = 0;
 
                         if (oNotifICall) {
                             oNotifICall.cancel();
                             oNotifICall = null;
+                        }
+
+                        if (tsk_utils_have_webrtc4ie()) { // IE don't provide stream callback
+                            uiVideoDisplayEvent(true, false);
+                            uiVideoDisplayEvent(false, false);
                         }
 
                         setTimeout(function () { if (!oSipSessionCall) txtCallStatus.innerHTML = ''; }, 2500);
@@ -554,7 +667,7 @@
 
     // Call back function for SIP INVITE Dialog
     function onSipEventInvite(evt) {
-        console.debug(evt.s_phrase);
+        tsk_utils_log_info(evt.s_phrase);
         
         switch (evt.e_invite_type) {
             case tsip_event_invite_type_e.I_NEW_CALL:
@@ -605,30 +718,22 @@
 
             case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
                 {
-                    videoLocal.src = evt.get_session().get_url_video_local();
-                    divVideo.style.height = '340px';
-                    videoLocal.style.opacity = 1;
+                    uiVideoDisplayEvent(true, true, evt.get_session().get_url_video_local());
                     break;
                 }
             case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED:
                 {
-                    if (videoLocal.src) videoLocal.src = undefined; // already revoked
-                    videoLocal.style.opacity = 0;
-                    fullScreen(false);
+                    uiVideoDisplayEvent(true, false);
                     break;
                 }
             case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
                 {
-                    videoRemote.src = evt.get_session().get_url_video_remote();
-                    divVideo.style.height = '340px';
-                    videoRemote.style.opacity = 1;
+                    uiVideoDisplayEvent(false, true, evt.get_session().get_url_video_remote());
                     break;
                 }
             case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED:
                 {
-                    // if (videoRemote.src) videoRemote.src = undefined;  // already revoked: must not uncomment (lock when remote cancel)
-                    videoRemote.style.opacity = 0;
-                    fullScreen(false);
+                    uiVideoDisplayEvent(false, false);
                     break;
                 }
 
@@ -659,6 +764,11 @@
                     btnHoldResume.disabled = false;
                     txtCallStatus.innerHTML = '<i>Call taken off hold</i>';
                     oSipSessionCall.bHeld = false;
+
+                    if (tsk_utils_have_webrtc4ie()) { // IE don't provide stream callback yet
+                        uiVideoDisplayEvent(true, true);
+                        uiVideoDisplayEvent(false, true);
+                    }
                     break;
                 }
             case tsip_event_invite_type_e.M_LOCAL_RESUME_NOK:
@@ -734,10 +844,6 @@
 	                oSipSessionCall.transfer_reject();
 	                break;
 	            }
-	        case tsip_event_invite_type_e.I_ECT_NEW_CALL:
-	            {
-	                break;
-	            }
 
             default: break;
         }
@@ -754,7 +860,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="#">Home</a></li>
+                        <li class="active"><a href="index.htm?svn=5">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->
@@ -855,14 +961,14 @@
                         </td>
                     </tr>
                     <tr>
-                        <td style="width: 100%; padding-top: 5px;">
+                        <td id="tdVideo" class='tab-video'>
                             <div id="divVideo" class='div-video'>
                                 <div id="divVideoRemote" style='border:1px solid #000; height:100%; width:100%';>
-                                    <video class="video" width="100%" height="100%" id="video_remote" autoplay="autoplay" style="opacity: 0;
+                                    <video class="video" width="100%" height="100%" id="video_remote" autoplay="autoplay" style="opacity: 0; 
                                         background-color: #000000; -webkit-transition-property: opacity; -webkit-transition-duration: 2s;">
                                     </video>
                                 </div>
-                                <div id="divVideoLocal" style='border:1px solid #000'>
+                                <div id="divVideoLocal" style='border:0px solid #000'>
                                     <video class="video" width="88px" height="72px" id="video_local" autoplay="autoplay" style="opacity: 0;
                                         margin-top: -80px; margin-left: 5px; background-color: #000000; -webkit-transition-property: opacity;
                                         -webkit-transition-duration: 2s;">
@@ -908,6 +1014,24 @@
     <script type="text/javascript" src="./assets/js/bootstrap-carousel.js"></script>
     <script type="text/javascript" src="./assets/js/bootstrap-typeahead.js"></script>
 
+    <!-- Audios -->
+    <audio id="ringtone" loop src="sounds/ringtone.wav" />
+    <audio id="ringbacktone" loop src="sounds/ringbacktone.wav" />
+
+    <!-- Creates all ATL/COM objects right now 
+        Will open confirmation dialogs if not already done
+    -->
+    <object id="fakeVideoDisplay" classid="clsid:5C2C407B-09D9-449B-BB83-C39B7802A684" style="visibility:hidden;"> </object>
+    <object id="fakeLooper" classid="clsid:7082C446-54A8-4280-A18D-54143846211A" style="visibility:hidden;"> </object>
+    <object id="fakeSessionDescription" classid="clsid:DBA9F8E2-F9FB-47CF-8797-986A69A1CA9C" style="visibility:hidden;"> </object>
+    <object id="fakeNetTransport" classid="clsid:5A7D84EC-382C-4844-AB3A-9825DBE30DAE" style="visibility:hidden;"> </object>
+    <object id="fakePeerConnection" classid="clsid:56D10AD3-8F52-4AA4-854B-41F4D6F9CEA3" style="visibility:hidden;"> </object>
+    
+    <!-- 
+        Microsoft Internet Explorer extension
+        For now we use msi installer as we don't have trusted certificate yet :(
+    -->
+    <!--object id="webrtc4ieLooper" classid="clsid:7082C446-54A8-4280-A18D-54143846211A" CODEBASE="http://sipml5.org/deploy/webrtc4ie.CAB"> </object-->
 
     <!-- GOOGLE ANALYTICS -->
     <script type="text/javascript">

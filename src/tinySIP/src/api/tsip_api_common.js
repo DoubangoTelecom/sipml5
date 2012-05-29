@@ -38,11 +38,11 @@ tsip_session.prototype.__action_handle = function(o_action){
 			}
 		}
 		else{
-			console.error("Failed to find dialog with this opid [%d]", this.i_id);
+		    tsk_utils_log_error("Failed to find dialog with this opid [" + this.i_id + "]");
 		}
 	}
 	else{
-		console.error("Invalid argument");
+		tsk_utils_log_error("Invalid argument");
 	}
 
 	return i_ret;
@@ -52,13 +52,13 @@ tsip_session.prototype.__action_handle = function(o_action){
 tsip_session.prototype.__action_any = function(e_action_type){
 	/* Checks for validity */
 	if(!this.o_stack){
-		console.error("Invalid stack");
+		tsk_utils_log_error("Invalid stack");
 		return -1;
 	}
 	
 	/* Checks if the stack has been started */
 	if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
-        console.error("Stack not started");
+        tsk_utils_log_error("Stack not started");
         return -2;
     }
 

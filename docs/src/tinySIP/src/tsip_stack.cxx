@@ -118,7 +118,7 @@ o_stack.set(tsip_stack.prototype.SetPassword('mysecret'));
 *
 @code
 o_stack.on_event_invite = function (evt: tsip_event_invite) {
-    console.debug("phrase=%s", evt.s_phrase);
+    console.debug("phrase=" + evt.s_phrase);
     console.debug("sesssion id=%d", evt.get_session().get_id());
     switch (evt.e_invite_type) {
         case tsip_event_invite_type_e.I_NEW_CALL:
@@ -212,7 +212,7 @@ and errors.
 *
 @code
 o_stack.on_event_dialog = function (evt: tsip_event) {
-    console.debug("phrase=%s", evt.s_phrase);
+    console.debug("phrase=" + evt.s_phrase);
     console.debug("sesssion id=%d", evt.get_session().get_id());
     switch (evt.i_code) {
         case tsip_event_code_e.DIALOG_TRANSPORT_ERROR:
@@ -280,7 +280,7 @@ o_stack.set(tsip_stack.prototype.SetDisplayName('alice'));
 *
 @code
 o_stack.on_event_message = function (evt: tsip_event_message) {
-    console.debug("phrase=%s", evt.s_phrase);
+    console.debug("phrase=" + evt.s_phrase);
     console.debug("sesssion id=%d", evt.get_session().get_id());
     switch (evt.e_message_type) {
         case tsip_event_message_type_e.I_MESSAGE:

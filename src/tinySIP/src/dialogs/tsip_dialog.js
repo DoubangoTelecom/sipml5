@@ -90,7 +90,7 @@ function tsip_dialog() {
 
 tsip_dialog.prototype.init = function (e_type, s_callid, o_session, i_fsm_state_curr, i_fsm_state_term) {
     if (this.b_initialized) {
-        console.error("Dialog already initialized");
+        tsk_utils_log_error("Dialog already initialized");
         return -2;
     }
 
@@ -150,7 +150,7 @@ tsip_dialog.prototype.compare = function (o_dialog) {
 
 tsip_dialog.prototype.request_new = function (s_method) {
     if (!this.o_session || !this.o_session.o_stack || !s_method) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return null;
     }
     var o_request = null;
@@ -522,12 +522,12 @@ tsip_dialog.prototype.response_send = function (o_response) {
             i_ret = 0;
         }
         else {
-            console.error("Failed to find associated server transaction.");
+            tsk_utils_log_error("Failed to find associated server transaction.");
             // Send "408 Request Timeout" (should be done by the transaction layer)?
         }
     }
     else {
-        console.error("Invalid parameter");
+        tsk_utils_log_error("Invalid parameter");
     }
     return i_ret;
 }
@@ -569,7 +569,7 @@ tsip_dialog.prototype.get_layer_transport = function () {
 
 tsip_dialog.prototype.request_send = function (o_request) {
     if (!o_request) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
@@ -592,7 +592,7 @@ tsip_dialog.prototype.request_send = function (o_request) {
 
     var o_layer_transac = this.get_layer_transac();
     if (!o_layer_transac) {
-        console.error("Invalid transac layer");
+        tsk_utils_log_error("Invalid transac layer");
         return -1;
     }
 
@@ -628,7 +628,7 @@ tsip_dialog.prototype.add_common_headers = function (o_request) {
     var o_stack = this.get_stack();
 
     if (!o_request || !o_stack) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
@@ -723,7 +723,7 @@ tsip_dialog.prototype.callback = function (e_event_type, o_message) {
     if (this.fn_callback) {
         return this.fn_callback(this, e_event_type, o_message);
     }
-    console.error("Invalid callback function");
+    tsk_utils_log_error("Invalid callback function");
     return -1;
 }
 
@@ -733,7 +733,7 @@ tsip_dialog.prototype.set_callback = function (fn_callback) {
 
 tsip_dialog.prototype.fsm_act = function (i_action, o_message, o_action) {
     if (!this.o_fsm) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
     return this.o_fsm.act(i_action, this.o_fsm.get_usr_data(), o_message, this.o_fsm.get_usr_data(), o_message, o_action);
@@ -755,7 +755,7 @@ tsip_dialog.prototype.shutdown = function (o_action) {
 
 tsip_dialog.prototype.update_with_response = function (o_response) {
     if (!o_response || !o_response.is_response() || !o_response.o_hdr_To) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
@@ -779,7 +779,7 @@ tsip_dialog.prototype.update_with_response = function (o_response) {
         /* 1xx */
         if (i_code <= 199) {
             if (tsk_string_is_null_or_empty(o_response.o_hdr_To.s_tag)) {
-                console.error("Invalid tag  parameter");
+                tsk_utils_log_error("Invalid tag  parameter");
                 return -1;
             }
             e_state = tsip_dialog_state_e.EARLY;
@@ -841,7 +841,7 @@ tsip_dialog.prototype.update_with_response = function (o_response) {
 
 tsip_dialog.prototype.update_with_invite = function (o_invite) {
     if (!o_invite) {
-        console.error("Invalid parameter");
+        tsk_utils_log_error("Invalid parameter");
         return -1;
     }
 
@@ -921,7 +921,7 @@ tsip_dialog.prototype.update_challenges = function (o_response, b_acceptNewVecto
                 }
             }
             else {
-                console.error("Failed to handle new challenge");
+                tsk_utils_log_error("Failed to handle new challenge");
                 return -1;
             }
         }
@@ -938,7 +938,7 @@ tsip_dialog.prototype.update_challenges = function (o_response, b_acceptNewVecto
                 this.ao_challenges.push(o_challenge);
             }
             else {
-                console.error("Failed to handle new challenge");
+                tsk_utils_log_error("Failed to handle new challenge");
                 return -1;
             }
         }
@@ -968,7 +968,7 @@ tsip_dialog.prototype.update_challenges = function (o_response, b_acceptNewVecto
                 }
             }
             else {
-                console.error("Failed to handle new challenge");
+                tsk_utils_log_error("Failed to handle new challenge");
                 return -1;
             }
         }
@@ -985,7 +985,7 @@ tsip_dialog.prototype.update_challenges = function (o_response, b_acceptNewVecto
                 this.ao_challenges.push(o_challenge);
             }
             else {
-                console.error("Failed to handle new challenge");
+                tsk_utils_log_error("Failed to handle new challenge");
                 return -1;
             }
         }
@@ -1051,7 +1051,7 @@ tsip_dialog.prototype.get_newdelay = function (o_response) {
 
 tsip_dialog.prototype.ApplyAction = function (o_message, o_action) {
     if (!o_message || !o_action) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 

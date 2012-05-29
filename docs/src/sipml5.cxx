@@ -177,7 +177,7 @@ o_stack.on_event_message = function (evt) {
         case tsip_event_message_type_e.I_MESSAGE:
             {
                 evt.get_session().accept();
-                console.debug("Incoming message. content=%s from=%s", evt.get_message().get_content_as_string(), evt.get_session().o_uri_from);
+                console.debug("Incoming message. content=%s from=" + evt.get_message().get_content_as_string(), evt.get_session().o_uri_from);
                 break;
             }
         case tsip_event_message_type_e.AO_MESSAGE:

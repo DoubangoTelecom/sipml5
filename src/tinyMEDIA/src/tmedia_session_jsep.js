@@ -69,7 +69,7 @@ tmedia_session_jsep.prototype.__pause = function () {
 tmedia_session_jsep.prototype.__stop = function () {
     this.close();
     this.o_sdp_lo = null;
-    console.debug("PeerConnection::stop()");
+    tsk_utils_log_info("PeerConnection::stop()");
 
     return 0;
 }
@@ -80,9 +80,11 @@ tmedia_session_jsep.prototype.__get_lo = function () {
 
         this.o_local_stream = __o_stream;
         var This = this;
-        this.o_pc = new webkitPeerConnection00("STUN stun.l.google.com:19302",
+
+        // "__o_peerconnection_class" is equal to "webkitPeerConnection00" on chrome and "msPeerConnection" on IE
+        this.o_pc = new __o_peerconnection_class("STUN stun.l.google.com:19302",
                 function (o_candidate, b_moreToFollow) {
-                    console.debug("__on_ice_candidate: %d", This.o_pc.iceState);
+                    tsk_utils_log_info("__on_ice_candidate: " + This.o_pc.iceState);
                     if (o_candidate) {
                         This.o_sdp_jsep_lo.addCandidate(o_candidate);
                     }
@@ -100,20 +102,20 @@ tmedia_session_jsep.prototype.__get_lo = function () {
         );
         this.o_pc.o_session = this;
         this.o_pc.onstatechange = function (evt) {
-            console.debug("__on_state_change");
+            tsk_utils_log_info("__on_state_change");
         }
         this.o_pc.onopen = function (evt) {
-            console.debug("__on_open");
+            tsk_utils_log_info("__on_open");
         }
         this.o_pc.onaddstream = function (evt) {
-            console.debug("__on_add_stream");
+            tsk_utils_log_info("__on_add_stream");
             this.o_session.o_remote_stream = evt.stream;
             if (this.o_session.o_mgr) {
                 this.o_session.o_mgr.set_stream_video_remote(evt.stream);
             }
         }
         this.o_pc.onremovestream = function (evt) {
-            console.debug("__on_remove_stream");
+            tsk_utils_log_info("__on_remove_stream");
             this.o_pc.o_session.o_remote_stream = null;
             if (this.o_session.o_mgr) {
                 this.o_session.o_mgr.set_stream_video_remote(null);
@@ -129,9 +131,9 @@ tmedia_session_jsep.prototype.__get_lo = function () {
 
         if (this.o_pc.localDescription) {
             switch (this.o_pc.iceState) { // chrome won't restart ICE
-                case webkitPeerConnection00.ICE_COMPLETED:
-                case webkitPeerConnection00.FAILED:
-                case webkitPeerConnection00.ICE_CLOSED:
+                case __o_peerconnection_class.ICE_COMPLETED:
+                case __o_peerconnection_class.ICE_FAILED:
+                case __o_peerconnection_class.ICE_CLOSED:
                     b_start_ice = false;
                     break;
             }
@@ -142,19 +144,19 @@ tmedia_session_jsep.prototype.__get_lo = function () {
         }
 
         this.o_sdp_jsep_lo = b_answer ?
-            this.o_pc.createAnswer(this.o_pc.remoteDescription.toSdp(), { has_audio: (this.e_type & tmedia_type_e.AUDIO), has_video: (this.e_type & tmedia_type_e.VIDEO) }) :
-            this.o_pc.createOffer({ has_audio: (this.e_type & tmedia_type_e.AUDIO), has_video: (this.e_type & tmedia_type_e.VIDEO) });
+            this.o_pc.createAnswer(this.o_pc.remoteDescription.toSdp(), { has_audio: (this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: (this.e_type.i_id & tmedia_type_e.VIDEO.i_id) }) :
+            this.o_pc.createOffer({ has_audio: (this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: (this.e_type.i_id & tmedia_type_e.VIDEO.i_id) });
 
         if (!b_start_ice) {
             this.o_sdp_lo = tsdp_message.prototype.Parse(this.o_sdp_jsep_lo.toSdp());
             if (this.o_sdp_lo) {
                 this.decorate_lo();
-                this.o_sdp_jsep_lo = new SessionDescription(this.o_sdp_lo);
+                this.o_sdp_jsep_lo = new __o_sessiondescription_class(this.o_sdp_lo);
             }
         }
 
-        if (b_answer) this.o_pc.setLocalDescription(webkitPeerConnection00.SDP_ANSWER, this.o_sdp_jsep_lo);
-        else this.o_pc.setLocalDescription(webkitPeerConnection00.SDP_OFFER, this.o_sdp_jsep_lo);
+        this.o_pc.setLocalDescription(b_answer ? __o_peerconnection_class.SDP_ANSWER : __o_peerconnection_class.SDP_OFFER,
+                this.o_sdp_jsep_lo);
 
         if (b_start_ice) {
             this.b_sdp_lo_pending = true;
@@ -182,7 +184,7 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
         var o_hdr_M;
         while ((o_hdr_M = this.o_sdp_lo.get_header_at(tsdp_header_type_e.M, i_index++))) {
             o_hdr_M.set_holdresume_att(this.b_lo_held, this.b_ro_held);
-        }          
+        }
     }
     return 0;
 }
@@ -193,12 +195,12 @@ tmedia_session_jsep.prototype.close = function () {
         this.o_mgr.set_stream_video_local(null);
     }
     if (this.o_pc) {
-        if (this.o_local_stream) {
+        /*if (this.o_local_stream) {
             this.o_pc.removeStream(this.o_local_stream);
         }
         if (this.o_remote_stream) {
             this.o_pc.removeStream(this.o_remote_stream);
-        }
+        }*/
         this.o_pc.close();
         this.o_pc = null;
         this.b_sdp_lo_pending = false;
@@ -208,29 +210,30 @@ tmedia_session_jsep.prototype.close = function () {
 
 tmedia_session_jsep.prototype.__set_ro = function (o_sdp, b_is_offer) {
     if (!o_sdp) {
-        console.error("Invalid argument");
+        tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
     /* update remote offer */
     this.o_sdp_ro = o_sdp;
     this.b_sdp_ro_offer = b_is_offer;
-    
+
     if (this.o_pc) {
+        // tsk_utils_log_info("SDP_RO=" + this.o_sdp_ro.toString());
         try {
             // console.debug("SDP_RO=%s", this.o_sdp_ro.toString());
             // FIXME: Chrome fails to parse SDP with global SDP "a=" attributes
-            // Chrome 21.0.1151.0+ generate "a=group:BUNDLE audio video" but cannot parse it: Amazing!!
+            // Chrome 21.0.1154.0+ generate "a=group:BUNDLE audio video" but cannot parse it (looks like SDP attributes order issue)
             this.o_sdp_ro.remove_header(tsdp_header_type_e.A); 
-            this.o_pc.setRemoteDescription(b_is_offer ? webkitPeerConnection00.SDP_OFFER : webkitPeerConnection00.SDP_ANSWER,
-                            new SessionDescription(this.o_sdp_ro.toString()));
+            this.o_pc.setRemoteDescription(b_is_offer ? __o_peerconnection_class.SDP_OFFER : __o_peerconnection_class.SDP_ANSWER,
+                            new __o_sessiondescription_class(this.o_sdp_ro.toString()));
             if (!this.b_sdp_ro_pending && b_is_offer) {
                 this.o_sdp_lo = null; // to force new SDP when get_lo() is called
             }
         }
         catch (e) {
             this.o_mgr.callback(tmedia_session_events_e.SET_RO_FAILED, this.e_type);
-            console.error(e);
+            tsk_utils_log_error(e);
             return -2;
         }
         finally {
@@ -250,7 +253,7 @@ tmedia_session_jsep.prototype.__acked = function () {
 
 tmedia_session_jsep.prototype.__hold = function () {
     if (this.b_lo_held) {
-        // console.warn('already on hold');
+        // tsk_utils_log_warn('already on hold');
         return;
     }
     this.b_lo_held = true;
@@ -266,7 +269,7 @@ tmedia_session_jsep.prototype.__hold = function () {
 
 tmedia_session_jsep.prototype.__resume = function () {
     if (!this.b_lo_held) {
-        // console.warn('not on hold');
+        // tsk_utils_log_warn('not on hold');
         return;
     }
     this.b_lo_held = false;

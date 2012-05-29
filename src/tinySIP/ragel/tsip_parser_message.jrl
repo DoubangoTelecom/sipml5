@@ -142,7 +142,7 @@ function tsip_message_parser_eoh(o_ragel_state, o_msg, b_extract_content){
         if((o_ragel_state.i_p + i_clen) < o_ragel_state.i_pe && !o_msg.o_content){
             var i_start = o_ragel_state.i_p + 1;
             var i_end = (i_start + i_clen);
-			o_msg.o_content = new ArrayBuffer((i_end - i_start));
+			o_msg.o_content = new Array((i_end - i_start));
             for(var i = i_start, j = 0; i < i_end; ++i, ++j){
                 o_msg.o_content[j] = o_ragel_state.o_data[i];
             }
@@ -169,7 +169,7 @@ tsip_message.prototype.Parse = function(o_ragel_state, b_extract_content){
     tsip_message_parser_execute(o_ragel_state, o_msg, b_extract_content);
     
     if( o_ragel_state.i_cs < %%{ write first_final; }%% ){
-		console.error("Failed to parse message: %s", o_ragel_state.s_data);
+		tsk_utils_log_error("Failed to parse message: " + o_ragel_state.s_data);
 		return null;
 	}
     
