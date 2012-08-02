@@ -87,9 +87,9 @@
 <script type="text/javascript">
 
     // to avoid caching
-    if (window.location.href.indexOf("svn=") == -1) {
-        window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=5" : "&svn=5"); 
-    }
+    //if (window.location.href.indexOf("svn=") == -1) {
+    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=5" : "&svn=5"); 
+    //}
 
     var sTransferNumber;
     var oRingTone, oRingbackTone;
@@ -156,55 +156,95 @@
     };
 
     function postInit() {
-        if (navigator.appName == 'Microsoft Internet Explorer') {
+        // Init WebRtc engine
+        tsk_utils_init_webrtc();
 
-           // Check for IE version 
-            var rv = -1;
-            var ua = navigator.userAgent;
-            var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
-            if (re.exec(ua) != null) {
-                rv = parseFloat(RegExp.$1);
+        // checks for WebRTC support
+        if (!tsk_utils_have_webrtc()) {
+            // for now the plugins (WebRTC4all only works on Windows)
+            if (navigator.appVersion.indexOf("Win") != -1) {
+                // Internet explorer
+                if (navigator.appName == 'Microsoft Internet Explorer') {
+                    // Check for IE version 
+                    var rv = -1;
+                    var ua = navigator.userAgent;
+                    var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+                    if (re.exec(ua) != null) {
+                        rv = parseFloat(RegExp.$1);
+                    }
+                    if (rv < 9.0) {
+                        if (confirm("You are using an old IE version. You need at least version 9. Would you like to update IE?")) {
+                            window.location = 'http://windows.microsoft.com/en-us/internet-explorer/products/ie/home';
+                        }
+                        else {
+                            window.location = "index.htm";
+                        }
+                    }
+
+                    // check for WebRTC4all extension
+                    if (!tsk_utils_have_webrtc4all()) {
+                        if (confirm("webrtc4all extension is not installed. Do you want to install it?\nIMPORTANT: You must restart your browser after the installation.")) {
+                            window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
+                        }
+                        else {
+                            // Must do nothing: give the user the chance to accept the extension
+                            // window.location = "index.htm";
+                        }
+                    }
+                    // break page loading ('window.location' won't stop JS execution)
+                    if (!tsk_utils_have_webrtc4all()) {
+                        return;
+                    }
+                }
+                else if (navigator.userAgent.indexOf("Safari") || navigator.userAgent.indexOf("Firefox") || navigator.userAgent.indexOf("Opera")) {
+                    if (confirm("Your browser don't support WebRTC.\nDo you want to install WebRTC4all extension to enjoy audio/video calls?\nIMPORTANT: You must restart your browser after the installation.")) {
+                        window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
+                    }
+                    else {
+                        window.location = "index.htm";
+                    }
+                    return;
+                }
+                else if (navigator.userAgent.indexOf("Chrome")) {
+                    if (confirm("You're using an old Chrome version or WebRTC is not enabled.\nDo you want to see how to enable WebRTC?")) {
+                        window.location = 'http://www.webrtc.org/running-the-demos';
+                    }
+                    else {
+                        window.location = "index.htm";
+                    }
+                    return;
+                }
             }
-            if (rv < 9.0) {
-                if (confirm("You are using an old IE version. You need at least version 9. Would you like to update IE?")) {
-                    window.location = 'http://windows.microsoft.com/en-us/internet-explorer/products/ie/home';
+            // OSX, Unix, Android, iOS...
+            else {
+                if (confirm('Your browser don\'t support WebSockets.\nDo you want to download a WebSocket-capable browser?')) {
+                    window.location = 'https://tools.google.com/dlpage/chromesxs';
                 }
                 else {
                     window.location = "index.htm";
                 }
-            }
-
-            // check for webrtc4ie extension
-            if (!tsk_utils_have_webrtc4ie()) {
-                if (confirm("webrtc4ie extension is not installed. Do you want to install it?")) {
-                    window.location = 'http://code.google.com/p/webrtc4ie/downloads/list';
-                }
-                else {
-                    // Must do nothing: give the user the chance to accept the extension
-                    // window.location = "index.htm";
-                }
-            }
-            // break page loading ('window.location' won't stop JS execution)
-            if (!tsk_utils_have_webrtc4ie()) {
                 return;
             }
-            // attachs video displays
-            tsk_utils_webrtc4ie_set_displays(document.getElementById("divVideoLocal"), document.getElementById("divVideoRemote"));
         }
 
-        if (!tsk_utils_have_websocket() && !tsk_utils_have_webrtc4ie()) {
-            if (confirm('Your browser don\'t support WebSockets. Do you want to download a WebSocket-capable browser?')) {
+        // checks for WebSocket support
+        if (!tsk_utils_have_websocket() && !tsk_utils_have_webrtc4all()) {
+            if (confirm('Your browser don\'t support WebSockets.\nDo you want to download a WebSocket-capable browser?')) {
                 window.location = 'https://tools.google.com/dlpage/chromesxs';
             }
             else {
-                // window.location = "error.htm?msg=NoTransport";
                 window.location = "index.htm";
             }
             return;
         }
 
+        // attachs video displays
+        if (tsk_utils_have_webrtc4all()) {
+            WebRtc4all_SetDisplays(document.getElementById("divVideoLocal"), document.getElementById("divVideoRemote"));
+        }
+
         if (!tsk_utils_have_webrtc()) {
-            if (confirm('Your browser don\'t support WebRTC. audio/video calls will be disabled. Do you want to download a WebRTC-capable browser?')) {
+            if (confirm('Your browser don\'t support WebRTC.\naudio/video calls will be disabled.\nDo you want to download a WebRTC-capable browser?')) {
                 window.location = 'https://tools.google.com/dlpage/chromesxs';
             }
         }
@@ -237,14 +277,14 @@
             if ((s_value = window.localStorage.getItem('org.doubango.identity.password'))) txtPassword.value = s_value;
             if ((s_value = window.localStorage.getItem('org.doubango.identity.realm'))) txtRealm.value = s_value;
         }
-        //else {
-        //    txtDisplayName.value = "2233392625";
-        //    txtPrivateIdentity.value = "2233392625";
-        //    txtPublicIdentity.value = "sip:2233392625@sip2sip.info";
-         //   txtPassword.value = "d3sb7j4fb8";
-        //    txtRealm.value = "sip2sip.info";
-        //    txtPhoneNumber.value = "2233422677";
-        //}
+        else {
+            //txtDisplayName.value = "004";
+            //txtPrivateIdentity.value = "004";
+            //txtPublicIdentity.value = "sip:004@192.168.0.10";
+            //txtPassword.value = "d3sb7j4fb8";
+            //txtRealm.value = "192.168.0.10";
+            //txtPhoneNumber.value = "78";
+        }
     };
 
     function saveCredentials() {
@@ -285,7 +325,8 @@
             // create SIP stack
             var i_port;
             var s_proxy;
-            if (tsk_utils_have_webrtc4ie()) {
+
+            if (tsk_utils_have_webrtc4all()) {
                 // port and host will be updated using the result from DNS SRV(NAPTR(realm))
                 i_port = 5060;
                 s_proxy = txtRealm.value;
@@ -298,11 +339,12 @@
                 i_port = 4062 + (((new Date().getTime()) % 5) * 1000);
                 s_proxy = "sipml5.org";
             }
+            
             // create a new SIP stack. Not mandatory as it's possible to reuse the same satck
             oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, s_proxy, i_port,
                                     tsip_stack.prototype.SetPassword(txtPassword.value),
                                     tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
-                                    //tsip_stack.prototype.SetProxyOutBound('192.168.0.10', 5060, tsip_transport_type_e.UDP), // uncomment to use SIP outbound proxy
+                                    //tsip_stack.prototype.SetProxyOutBound('192.168.0.9', 5060, tsip_transport_type_e.UDP), // uncomment to use SIP outbound proxy
                                     tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5/v0.0.0000.0'),
                                     tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
             if (oSipStack) {
@@ -424,7 +466,7 @@
 
     function fullScreen(b_fs) {
         bFullScreen = b_fs;
-        if (bFullScreen && videoRemote.webkitSupportsFullscreen) {
+        if (tsk_utils_have_webrtc4native() && bFullScreen && videoRemote.webkitSupportsFullscreen) {
             if (bFullScreen) {
                 videoRemote.webkitEnterFullScreen();
             }
@@ -433,7 +475,13 @@
             }
         }
         else {
-            divVideo.setAttribute("class", b_fs ? "full-screen" : "normal-screen");
+            if (tsk_utils_have_webrtc4npapi()) {
+                try { __o_display_remote.setFullScreen(b_fs); }
+                catch (e) { divVideo.setAttribute("class", b_fs ? "full-screen" : "normal-screen"); }
+            }
+            else {
+                divVideo.setAttribute("class", b_fs ? "full-screen" : "normal-screen");
+            }
         }
     }
 
@@ -477,7 +525,7 @@
         var o_elt_video = b_local ? videoLocal : videoRemote;
 
         if (b_added) {
-            if (tsk_utils_have_webrtc4ie()) {
+            if (tsk_utils_have_webrtc4all()) {
                 if (b_local) __o_display_local.style.visibility = "visible";
                 else __o_display_remote.style.visibility = "visible";
             }
@@ -488,7 +536,7 @@
             uiVideoDisplayShowHide(true);
         }
         else {
-            if (tsk_utils_have_webrtc4ie()) {
+            if (tsk_utils_have_webrtc4all()) {
                 if (b_local) __o_display_local.style.visibility = "hidden";
                 else __o_display_remote.style.visibility = "hidden";
             }
@@ -615,7 +663,7 @@
                         txtCallStatus.innerHTML = "<i>" + evt.s_phrase + "</i>";
                         divCallOptions.style.opacity = b_connected ? 1 : 0;
 
-                        if (tsk_utils_have_webrtc4ie()) { // IE don't provide stream callback
+                        if (tsk_utils_have_webrtc4all()) { // IE don't provide stream callback
                             uiVideoDisplayEvent(true, true);
                             uiVideoDisplayEvent(false, true);
                         }
@@ -654,7 +702,7 @@
                             oNotifICall = null;
                         }
 
-                        if (tsk_utils_have_webrtc4ie()) { // IE don't provide stream callback
+                        if (tsk_utils_have_webrtc4all()) { // IE don't provide stream callback
                             uiVideoDisplayEvent(true, false);
                             uiVideoDisplayEvent(false, false);
                         }
@@ -766,7 +814,7 @@
                     txtCallStatus.innerHTML = '<i>Call taken off hold</i>';
                     oSipSessionCall.bHeld = false;
 
-                    if (tsk_utils_have_webrtc4ie()) { // IE don't provide stream callback yet
+                    if (tsk_utils_have_webrtc4all()) { // IE don't provide stream callback yet
                         uiVideoDisplayEvent(true, true);
                         uiVideoDisplayEvent(false, true);
                     }
@@ -992,9 +1040,20 @@
             </div>
         </div>
         <footer>
-            <p>
-                &copy; Doubango Telecom 2012</p>
+            <p>&copy; Doubango Telecom 2012</p>
             <i>Inspiring the future</i>
+            <!-- Creates all ATL/COM objects right now 
+                Will open confirmation dialogs if not already done
+            -->
+            <object id="fakeVideoDisplay" classid="clsid:5C2C407B-09D9-449B-BB83-C39B7802A684" style="visibility:hidden;"> </object>
+            <object id="fakeLooper" classid="clsid:7082C446-54A8-4280-A18D-54143846211A" style="visibility:hidden;"> </object>
+            <object id="fakeSessionDescription" classid="clsid:DBA9F8E2-F9FB-47CF-8797-986A69A1CA9C" style="visibility:hidden;"> </object>
+            <object id="fakeNetTransport" classid="clsid:5A7D84EC-382C-4844-AB3A-9825DBE30DAE" style="visibility:hidden;"> </object>
+            <object id="fakePeerConnection" classid="clsid:56D10AD3-8F52-4AA4-854B-41F4D6F9CEA3" style="visibility:hidden;"> </object>
+            <!-- 
+                NPAPI  browsers: Safari, Opera and Firefox
+            -->
+            <!--embed id="WebRtc4npapi" type="application/w4a" width='1' height='1' style='visibility:hidden;' /-->
         </footer>
     </div>
     <!-- /container -->
@@ -1017,22 +1076,13 @@
 
     <!-- Audios -->
     <audio id="ringtone" loop src="sounds/ringtone.wav" />
-    <audio id="ringbacktone" loop src="sounds/ringbacktone.wav" />
+    <audio id="ringbacktone" loop src="sounds/ringbacktone.wav" />    
 
-    <!-- Creates all ATL/COM objects right now 
-        Will open confirmation dialogs if not already done
-    -->
-    <object id="fakeVideoDisplay" classid="clsid:5C2C407B-09D9-449B-BB83-C39B7802A684" style="visibility:hidden;"> </object>
-    <object id="fakeLooper" classid="clsid:7082C446-54A8-4280-A18D-54143846211A" style="visibility:hidden;"> </object>
-    <object id="fakeSessionDescription" classid="clsid:DBA9F8E2-F9FB-47CF-8797-986A69A1CA9C" style="visibility:hidden;"> </object>
-    <object id="fakeNetTransport" classid="clsid:5A7D84EC-382C-4844-AB3A-9825DBE30DAE" style="visibility:hidden;"> </object>
-    <object id="fakePeerConnection" classid="clsid:56D10AD3-8F52-4AA4-854B-41F4D6F9CEA3" style="visibility:hidden;"> </object>
-    
     <!-- 
         Microsoft Internet Explorer extension
         For now we use msi installer as we don't have trusted certificate yet :(
     -->
-    <!--object id="webrtc4ieLooper" classid="clsid:7082C446-54A8-4280-A18D-54143846211A" CODEBASE="http://sipml5.org/deploy/webrtc4ie.CAB"> </object-->
+    <!--object id="webrtc4ieLooper" classid="clsid:7082C446-54A8-4280-A18D-54143846211A" CODEBASE="http://sipml5.org/deploy/webrtc4all.CAB"> </object-->
 
     <!-- GOOGLE ANALYTICS -->
     <script type="text/javascript">

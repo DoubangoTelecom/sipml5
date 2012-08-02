@@ -37,5 +37,5 @@ tmedia_api_add_js_scripts('head',
 //'src/tinyMEDIA/src/tmedia_session_jsep.js', #include_in<tmedia_session.js>
 //'src/tinyMEDIA/src/tmedia_session_roap.js', #include_in<tmedia_session.js>
 //'src/tinyMEDIA/src/tmedia_session_ghost.js' #include_in<tmedia_session.js>
-// 'src/tinyMEDIA/src/tmedia_webrtc4ie.js' // #include_in<tmedia_common.js>
+// 'src/tinyMEDIA/src/tmedia_webrtc4all.js' // #include_in<tmedia_common.js>
 );

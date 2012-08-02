@@ -38,8 +38,9 @@ var tsip_transac_ist_actions_e =
 	TIMER_I: 10008,
 	TIMER_G: 10009,
 	TIMER_L: 10010,
-    TRANSPORT_ERROR: 10011,
-	ERROR: 10012
+    TIMER_X: 10011,
+    TRANSPORT_ERROR: 10012,
+	ERROR: 10013
 };
 
 var tsip_transac_ist_states_e =
@@ -73,11 +74,13 @@ function tsip_transac_ist(b_reliable, i_cseq_value, s_callid, o_dialog) {
     this.o_timerI = null;
     this.o_timerG = null;
     this.o_timerL = null;
+    this.o_timerX = null;
 
     this.i_timerH = o_stack.o_timers.getH();
     this.i_timerI = b_reliable ? 0 : o_stack.o_timers.getI();
     this.i_timerG = o_stack.o_timers.getG();
     this.i_timerL = o_stack.o_timers.getL();
+    this.i_timerX = o_stack.o_timers.getG();
 
     // initialize the state machine
     this.o_fsm.set(
@@ -121,7 +124,9 @@ function tsip_transac_ist(b_reliable, i_cseq_value, s_callid, o_dialog) {
 		tsk_fsm_entry.prototype.CreateAlways(tsip_transac_ist_states_e.ACCEPTED, tsip_transac_ist_actions_e.RECV_INVITE, tsip_transac_ist_states_e.ACCEPTED, __tsip_transac_ist_Accepted_2_Accepted_INVITE, "tsip_transac_ist_Accepted_2_Accepted_INVITE"),
 		// Accepted -> (send 2xx) -> Accepted
 		tsk_fsm_entry.prototype.Create(tsip_transac_ist_states_e.ACCEPTED, tsip_transac_ist_actions_e.SEND_2XX, __tsip_transac_ist_cond_is_resp2invite, tsip_transac_ist_states_e.ACCEPTED, __tsip_transac_ist_Accepted_2_Accepted_2xx, "tsip_transac_ist_Accepted_2_Accepted_2xx"),
-		// Accepted -> (recv ACK) -> Accepted
+        // Accepted -> (timer X) -> Accepted
+		tsk_fsm_entry.prototype.CreateAlways(tsip_transac_ist_states_e.ACCEPTED, tsip_transac_ist_actions_e.TIMER_X, tsip_transac_ist_states_e.ACCEPTED, __tsip_transac_ist_Accepted_2_Accepted_timerX, "tsip_transac_ist_Accepted_2_Accepted_timerX"),
+        // Accepted -> (recv ACK) -> Accepted
 		tsk_fsm_entry.prototype.CreateAlways(tsip_transac_ist_states_e.ACCEPTED, tsip_transac_ist_actions_e.RECV_ACK, tsip_transac_ist_states_e.ACCEPTED, __tsip_transac_ist_Accepted_2_Accepted_iACK, "tsip_transac_ist_Accepted_2_Accepted_iACK"),
 		// Accepted -> (timerL) -> Terminated
 		tsk_fsm_entry.prototype.CreateAlways(tsip_transac_ist_states_e.ACCEPTED, tsip_transac_ist_actions_e.TIMER_L, tsip_transac_ist_states_e.TERMINATED, __tsip_transac_ist_Accepted_2_Terminated_timerL, "tsip_transac_ist_Accepted_2_Terminated_timerL"),
@@ -274,6 +279,15 @@ function __tsip_transac_ist_Proceeding_2_Accepted_X_2xx(ao_args) {
 	/* Update last response */
 	o_transac.set_last_response(o_response);
 
+    /* RFC 3261 - 13.3.1.4 The INVITE is Accepted
+		Since 2xx is retransmitted end-to-end, there may be hops between
+		UAS and UAC that are UDP.  To ensure reliable delivery across
+		these hops, the response is retransmitted periodically even if the
+		transport at the UAS is reliable.
+	*/
+    o_transac.timer_schedule('ist', 'X');
+    o_transac.i_timerX <<= 1;
+
 	/*	draft-sparks-sip-invfix-03 - 8.7. Page 137
 		When the INVITE server transaction enters the "Accepted" state,
 		Timer L MUST be set to fire in 64*T1 for all transports.  This
@@ -397,6 +411,22 @@ function __tsip_transac_ist_Accepted_2_Accepted_2xx(ao_args) {
 	return i_ret;
 }
 
+/*	Accepted --> (timer X) --> Accepted
+* Doubango specific
+*/
+function __tsip_transac_ist_Accepted_2_Accepted_timerX(ao_args){
+	var o_transac = ao_args[0];
+	if(o_transac.o_lastResponse){
+		var i_ret = (o_transac.send(o_transac.s_branch, o_transac.o_lastResponse) > 0 ? 0 : -1);
+		if (i_ret == 0) {
+		    o_transac.i_timerX <<= 1;
+		    o_transac.timer_schedule('ist', 'X');
+		}
+		return i_ret;
+	}
+	return 0;
+}
+
   /* doubango-specific */
 function __tsip_transac_ist_Accepted_2_Accepted_iACK(ao_args) {
     var o_transac = ao_args[0];
@@ -455,6 +485,7 @@ function __tsip_transac_ist_onterm(o_self) {
     o_self.timer_cancel('I');
     o_self.timer_cancel('G');
     o_self.timer_cancel('L');
+    o_self.timer_cancel('X');
 
     return o_self.deinit();
 }
@@ -530,6 +561,9 @@ function __tsip_transac_ist_timer_callback(o_self, o_timer) {
         }
         else if (o_timer == o_self.o_timerL) {
             o_self.fsm_act(tsip_transac_ist_actions_e.TIMER_L, null);
+        }
+        else if (o_timer == o_self.o_timerX) {
+            o_self.fsm_act(tsip_transac_ist_actions_e.TIMER_X, null);
         }
     }
 }

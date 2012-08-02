@@ -286,7 +286,7 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
     this.network.i_local_port = 0;
     this.network.s_proxy_cscf_host = s_proxy_cscf_host;
     this.network.i_proxy_cscf_port = i_proxy_cscf_port;
-    this.network.e_proxy_cscf_type = tsk_utils_have_websocket() ? tsip_transport_type_e.WS : tsip_transport_type_e.UDP;
+    this.network.e_proxy_cscf_type = tsk_utils_have_webrtc4all() ? tsip_transport_type_e.UDP : tsip_transport_type_e.WS;
     this.network.o_uri_realm = o_uri_realm;
     this.network.s_proxy_outbound_host = null;
     this.network.i_proxy_outbound_port = 5060;
