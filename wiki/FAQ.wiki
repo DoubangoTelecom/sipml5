@@ -5,7 +5,7 @@
 
 ==Which operating systems are supported?==
 Any System supporting a web browser (Chrome, firefox, Safari or IE) built with <a href="http://en.wikipedia.org/wiki/WebRTC">WebRTC</a> features.
-We highly recommend using <a href="https://tools.google.com/dlpage/chromesxs">Google Chrome</a>
+We highly recommend using <a href="https://www.google.com/intl/en/chrome/browser/">Google Chrome</a>
 
 ==Is it possible to call another HTML5 SIP client==
 Yes
