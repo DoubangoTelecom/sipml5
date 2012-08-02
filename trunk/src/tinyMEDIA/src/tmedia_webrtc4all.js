@@ -18,7 +18,7 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
-// "http://tools.ietf.org/html/draft-uberti-rtcweb-jsep-02" implementation for Microsoft Internet Explorer
+// "http://tools.ietf.org/html/draft-uberti-rtcweb-jsep-02" implementation for Safari, Opera, Firefox and IE
 
 w4aPeerConnection.prototype.s_configuration = null;
 w4aPeerConnection.prototype.f_IceCallback = null;
@@ -259,7 +259,7 @@ w4aPeerConnection.prototype.addStream = function (o_stream, o_hints) {
 }
 
 // void removeStream (MediaStream stream);
-w4aPeerConnection.prototype.addStream = function (o_stream) {
+w4aPeerConnection.prototype.removeStream = function (o_stream) {
 }
 
 // void close()
