@@ -85,12 +85,12 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
 
     // initialize media classes
     if (__o_peerconnection_class == undefined) {
-        if (tsk_utils_have_webrtc4ie()) {
-            __o_peerconnection_class = msPeerConnection;
-            __o_sessiondescription_class = msSessionDescription;
+        if (tsk_utils_have_webrtc4all()) {
+            __o_peerconnection_class = w4aPeerConnection;
+            __o_sessiondescription_class = w4aSessionDescription;
         }
         else if (tsk_utils_have_webrtc()) {
-            __o_peerconnection_class = webkitPeerConnection00;
+            __o_peerconnection_class = window.webkitPeerConnection || window.webkitPeerConnection00;
             __o_sessiondescription_class = SessionDescription;
         }
         else { // force die
@@ -102,7 +102,7 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
 
 tmedia_session_mgr.prototype.is_roap = function () {
     try {
-        return tsk_utils_have_webrtc4ie() ? false : (webkitPeerConnection00 ? false : true);
+        return tsk_utils_have_webrtc4all() ? false : ((window.webkitPeerConnection || window.webkitPeerConnection00) ? false : true);
     }
     catch (e) { }
     return false;

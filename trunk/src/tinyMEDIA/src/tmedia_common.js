@@ -37,7 +37,7 @@ var tmedia_type_e =
 
 
 tmedia_api_add_js_scripts('head',
-'src/tinyMEDIA/src/tmedia_webrtc4ie.js', // must be first
+'src/tinyMEDIA/src/tmedia_webrtc4all.js', // must be first
 'src/tinyMEDIA/src/tmedia_defaults.js',
 'src/tinyMEDIA/src/tmedia_session.js'
 );

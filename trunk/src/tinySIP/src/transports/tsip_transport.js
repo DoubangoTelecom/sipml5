@@ -74,7 +74,7 @@ function tsip_transport(e_type, o_stack, s_host, i_port, s_description, fn_callb
 
         case tsip_transport_type_e.UDP:
             {
-                if(!tsk_utils_have_webrtc4ie()){
+                if(!tsk_utils_have_webrtc4all()){
                     tsk_utils_log_error("Transport not supported");
                     return null;
                 }
@@ -85,10 +85,10 @@ function tsip_transport(e_type, o_stack, s_host, i_port, s_description, fn_callb
                 this.s_via_protocol = "UDP";
                 this.s_service = "SIP+D2U";
                 this.o_transport = null;
-                this.__start = function () { return __tsip_transport_webrtc4ie_start(this); };
-                this.__stop = function () { return __tsip_transport_webrtc4ie_stop(this); };
-                this.__have_socket = function (o_socket) { return __tsip_transport_webrtc4ie_have_socket(this, o_socket); }
-                this.__send = function (o_data, i_length) { return __tsip_transport_webrtc4ie_send(this, o_data, i_length); }
+                this.__start = function () { return __tsip_transport_webrtc4all_start(this); };
+                this.__stop = function () { return __tsip_transport_webrtc4all_stop(this); };
+                this.__have_socket = function (o_socket) { return __tsip_transport_webrtc4all_have_socket(this, o_socket); }
+                this.__send = function (o_data, i_length) { return __tsip_transport_webrtc4all_send(this, o_data, i_length); }
                 break;
             }
 
@@ -217,7 +217,7 @@ tsip_transport.prototype.send = function (s_branch, o_message, s_dest_ip, i_dest
 
     o_data = o_message.toString();
 
-    //--tsk_utils_log_info("SEND: " + o_data);
+    tsk_utils_log_info("SEND: " + o_data);
 
     if (o_data.length > 1300) {
         /*	RFC 3261 - 18.1.1 Sending Requests (FIXME)
@@ -451,20 +451,29 @@ function __tsip_transport_ws_onerror(evt) {
 
 
 /******************** webrtc4ie *******************/
-function __tsip_transport_webrtc4ie_start(o_self) {
+function __tsip_transport_webrtc4all_start(o_self) {
     if (!o_self) {
         tsk_utils_log_error("Invalid argument");
         return -1;
     }
 
+    var b_isInternetExplorer = (WebRtc4all_GetType() == WebRtcType_e.IE);
     var s_url = tsk_string_format("{0}://{1}:{2}",o_self.s_protocol, o_self.s_host, o_self.i_port);
     tsk_utils_log_info("Connecting to '"+s_url+"'");
-    o_self.o_transport = new ActiveXObject("webrtc4ie.NetTransport");
-    eval("function o_self.o_transport::OnEvent(i_type, s_data) { return __tsip_transport_webrtc4ie_onevent (o_self, i_type, s_data); }");
+    if(b_isInternetExplorer){
+        o_self.o_transport = new ActiveXObject("webrtc4ie.NetTransport");
+        eval("function o_self.o_transport::OnEvent(i_type, s_data) { return __tsip_transport_webrtc4all_onevent (o_self, i_type, s_data); }");
+    }
+    else{
+        o_self.o_transport = WebRtc4npapi.createNetTransport();
+        o_self.o_transport.opaque = o_self;
+        o_self.o_transport.setCallbackFuncName("__tsip_transport_webrtc4all_onevent");
+    }
+    
     try{
         o_self.o_transport.SetDomain(o_self.o_stack.network.o_uri_realm.s_host); // DNS NAPTR+SRV ("SIP+D2U")
         //--o_self.o_transport.StartDebug(); // To debug ATL/COM objects (C/C++)
-        o_self.o_transport.Start(tsk_utils_get_looper());
+        o_self.o_transport.Start(b_isInternetExplorer ? WebRtc4all_GetLooper() : 0);
         if(o_self.o_transport.defaultDestAddr && o_self.o_transport.defaultDestPort){
             o_self.s_host = o_self.o_transport.defaultDestAddr;
             o_self.i_port = o_self.o_transport.defaultDestPort;
@@ -481,7 +490,7 @@ function __tsip_transport_webrtc4ie_start(o_self) {
     return 0;
 }
 
-function __tsip_transport_webrtc4ie_stop(o_self) {
+function __tsip_transport_webrtc4all_stop(o_self) {
     if (!o_self) {
         tsk_utils_log_error("Invalid argument");
         return -1;
@@ -494,11 +503,11 @@ function __tsip_transport_webrtc4ie_stop(o_self) {
     return 0;
 }
 
-function __tsip_transport_webrtc4ie_have_socket(o_self, o_socket) {
+function __tsip_transport_webrtc4all_have_socket(o_self, o_socket) {
     return o_self.o_transport == o_socket;
 }
 
-function __tsip_transport_webrtc4ie_send(o_self, o_data, i_length) {
+function __tsip_transport_webrtc4all_send(o_self, o_data, i_length) {
 
     if (!o_self.o_transport) {
         tsk_utils_log_error("Invalid state");
@@ -509,8 +518,8 @@ function __tsip_transport_webrtc4ie_send(o_self, o_data, i_length) {
     return i_length;
 }
 
-function __tsip_transport_webrtc4ie_onevent(o_self, i_type, s_data) {
-    tsk_utils_log_info("__tsip_transport_webrtc4ie_onevent");
+function __tsip_transport_webrtc4all_onevent(o_self, i_type, s_data) {
+    tsk_utils_log_info("__tsip_transport_webrtc4all_onevent");
     if(s_data){
         var o_ragel_state = tsk_ragel_state_create();
         tsk_ragel_state_init_str(o_ragel_state, s_data);

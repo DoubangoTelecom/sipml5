@@ -18,6 +18,12 @@
 * You should have received a copy of the GNU General Public License
 * along with sipML5.
 */
+
+function tsk_utils_init_webrtc() {
+    // WebRtc plugins
+    WebRtc4all_Init();
+}
+
 function tsk_utils_have_websocket() {
     try {
         return (WebSocket != null);
@@ -28,68 +34,31 @@ function tsk_utils_have_websocket() {
 }
 
 function tsk_utils_have_webrtc() {
-    try {
-        if ((navigator.webkitGetUserMedia && (webkitPeerConnection00))) {
-            return true;
-        }
-    }
-    catch (e) { }
-    return tsk_utils_have_webrtc4ie();
+    return (WebRtc4all_GetType() != WebRtcType_e.NONE);
 }
 
-var __have_webrtc4ie = undefined;
+function tsk_utils_have_webrtc4all() {
+    return (tsk_utils_have_webrtc4npapi() || tsk_utils_have_webrtc4ie());
+}
+
+function tsk_utils_have_webrtc4npapi() {
+    return (WebRtc4all_GetType() == WebRtcType_e.NPAPI);
+}
+
 function tsk_utils_have_webrtc4ie() {
-    if (__have_webrtc4ie == undefined) {
-        try {
-            __have_webrtc4ie = (new ActiveXObject("webrtc4ie.PeerConnection") != null);
-        }
-        catch (e) {
-            __have_webrtc4ie = false;
-        }
-    }
-    return __have_webrtc4ie;
+    return (WebRtc4all_GetType() == WebRtcType_e.IE);
 }
 
-var __looper = undefined;
-function tsk_utils_get_looper() {
-    if (__looper == undefined){
-        try {
-            var oLooper = document.createElement('object');
-            oLooper.classid = "clsid:7082C446-54A8-4280-A18D-54143846211A";
-            oLooper.width = oLooper.height = '1px';
-		    document.body.appendChild(oLooper);
-            if(!(__looper = oLooper.hWnd)){
-                tsk_utils_log_error("Failed to create looper");
-            }
-        }
-        catch (e) {
-            tsk_utils_log_error(e);
-            __looper = null;
-        }
-    }
-    return __looper;
+function tsk_utils_have_webrtc4native() {
+    return (WebRtc4all_GetType() == WebRtcType_e.NATIVE);
 }
 
 function tsk_utils_have_stream() {
     try {
-        return (tsk_utils_have_webrtc4ie() || (__o_stream != null));
+        return (tsk_utils_have_webrtc4all() || (__o_stream != null));
     }
     catch (e) { }
     return false;
-}
-
-function tsk_utils_webrtc4ie_set_displays(o_local_elt, o_remote_elt) {
-    // visiblity must be "visible"  for the first time to force handle creation
-    if (o_local_elt) {
-        o_local_elt.innerHTML = "<object id=\"__o_display_local\" classid=\"clsid:5C2C407B-09D9-449B-BB83-C39B7802A684\"" +
-                                " class=\"video\" width=\"88px\" height=\"72px\" style=\"margin-top: -80px; margin-left: 5px; background-color: #000000; visibility:visible\"> </object>";
-        __o_display_local.style.visibility = "hidden"
-    }
-    if (o_remote_elt) {
-        o_remote_elt.innerHTML = "<object id=\"__o_display_remote\" classid=\"clsid:5C2C407B-09D9-449B-BB83-C39B7802A684\"" +
-                                 " width=\"100%\" height=\"100%\" style=\"visibility:visible;\"> </object>";
-        __o_display_remote.style.visibility = "hidden"
-    }
 }
 
 function tsk_utils_log_info(s_msg) {

@@ -22,24 +22,25 @@
 
 tmedia_session_jsep.prototype = Object.create(tmedia_session.prototype);
 
+tmedia_session_jsep.prototype.o_pc = null;
+tmedia_session_jsep.prototype.o_local_stream = null;
+tmedia_session_jsep.prototype.o_sdp_jsep_lo = null;
+tmedia_session_jsep.prototype.o_sdp_lo = null;
+tmedia_session_jsep.prototype.b_sdp_lo_pending = false;
+tmedia_session_jsep.prototype.i_sdp_lo_version = 1;
+tmedia_session_jsep.prototype.o_sdp_json_ro = null;
+tmedia_session_jsep.prototype.o_sdp_ro = null;
+tmedia_session_jsep.prototype.b_sdp_ro_pending = false;
+tmedia_session_jsep.prototype.b_sdp_ro_offer = false;
+tmedia_session_jsep.prototype.s_answererSessionId = null;
+tmedia_session_jsep.prototype.s_offererSessionId = null;
+
+tmedia_session_jsep.prototype.b_ro_changed = false;
+tmedia_session_jsep.prototype.b_lo_held = false;
+tmedia_session_jsep.prototype.b_ro_held = false;
+
 function tmedia_session_jsep(o_mgr) {
     tmedia_session.call(this, tmedia_type_e.AUDIO_VIDEO, o_mgr);
-    this.o_pc = null;
-    this.o_local_stream = null;
-    this.o_sdp_jsep_lo = null;
-    this.o_sdp_lo = null;
-    this.b_sdp_lo_pending = false;
-    this.i_sdp_lo_version = 1;
-    this.o_sdp_json_ro = null;
-    this.o_sdp_ro = null;
-    this.b_sdp_ro_pending = false;
-    this.b_sdp_ro_offer = false;
-    this.s_answererSessionId = null;
-    this.s_offererSessionId = null;
-
-    this.b_ro_changed = false;
-    this.b_lo_held = false;
-    this.b_ro_held = false;
 }
 
 tmedia_session_jsep.prototype.__set = function (o_param) {
@@ -52,9 +53,7 @@ tmedia_session_jsep.prototype.__prepare = function () {
 
 tmedia_session_jsep.prototype.__start = function () {
     if (this.o_local_stream) {
-        
     }
-
     return 0;
 }
 
@@ -81,10 +80,10 @@ tmedia_session_jsep.prototype.__get_lo = function () {
         this.o_local_stream = __o_stream;
         var This = this;
 
-        // "__o_peerconnection_class" is equal to "webkitPeerConnection00" on chrome and "msPeerConnection" on IE
+        // "__o_peerconnection_class" is equal to "webkitPeerConnection00 || webkitPeerConnection" on chrome and "w4aPeerConnection" on IE
         this.o_pc = new __o_peerconnection_class("STUN stun.l.google.com:19302",
                 function (o_candidate, b_moreToFollow) {
-                    tsk_utils_log_info("__on_ice_candidate: " + This.o_pc.iceState);
+                    tsk_utils_log_info("__on_ice_candidate: " + (o_candidate ? o_candidate.toSdp() : "null"));
                     if (o_candidate) {
                         This.o_sdp_jsep_lo.addCandidate(o_candidate);
                     }
@@ -144,8 +143,8 @@ tmedia_session_jsep.prototype.__get_lo = function () {
         }
 
         this.o_sdp_jsep_lo = b_answer ?
-            this.o_pc.createAnswer(this.o_pc.remoteDescription.toSdp(), { has_audio: (this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: (this.e_type.i_id & tmedia_type_e.VIDEO.i_id) }) :
-            this.o_pc.createOffer({ has_audio: (this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: (this.e_type.i_id & tmedia_type_e.VIDEO.i_id) });
+            this.o_pc.createAnswer(this.o_pc.remoteDescription.toSdp(), { has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) }) :
+            this.o_pc.createOffer({ has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) });
 
         if (!b_start_ice) {
             this.o_sdp_lo = tsdp_message.prototype.Parse(this.o_sdp_jsep_lo.toSdp());
@@ -172,7 +171,7 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
         /* Session name for debugging */
         var o_hdr_S;
         if ((o_hdr_S = this.o_sdp_lo.get_header(tsdp_header_type_e.S))) {
-            o_hdr_S.s_value = "webrtc (chrome 20.0.1127.0) - Doubango Telecom (sipML5 r000)";
+            o_hdr_S.s_value = "webrtc (chrome 22.0.1189.0) - Doubango Telecom (sipML5 r000)";
         }
         /* Session version */
         var o_hdr_O;
@@ -219,9 +218,8 @@ tmedia_session_jsep.prototype.__set_ro = function (o_sdp, b_is_offer) {
     this.b_sdp_ro_offer = b_is_offer;
 
     if (this.o_pc) {
-        // tsk_utils_log_info("SDP_RO=" + this.o_sdp_ro.toString());
         try {
-            // console.debug("SDP_RO=%s", this.o_sdp_ro.toString());
+            //console.debug("SDP_RO=%s", this.o_sdp_ro.toString());
             // FIXME: Chrome fails to parse SDP with global SDP "a=" attributes
             // Chrome 21.0.1154.0+ generate "a=group:BUNDLE audio video" but cannot parse it (looks like SDP attributes order issue)
             this.o_sdp_ro.remove_header(tsdp_header_type_e.A); 
