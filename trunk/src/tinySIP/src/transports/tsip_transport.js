@@ -472,7 +472,10 @@ function __tsip_transport_webrtc4all_start(o_self) {
     
     try{
         o_self.o_transport.SetDomain(o_self.o_stack.network.o_uri_realm.s_host); // DNS NAPTR+SRV ("SIP+D2U")
-        //--o_self.o_transport.StartDebug(); // To debug ATL/COM objects (C/C++)
+        // IMPORTANT: StartDebug is not implemented in all functions
+        if(o_self.o_transport.StartDebug){
+            //o_self.o_transport.StartDebug(); // To debug ATL/COM objects (C/C++)
+        }
         o_self.o_transport.Start(b_isInternetExplorer ? WebRtc4all_GetLooper() : 0);
         if(o_self.o_transport.defaultDestAddr && o_self.o_transport.defaultDestPort){
             o_self.s_host = o_self.o_transport.defaultDestAddr;

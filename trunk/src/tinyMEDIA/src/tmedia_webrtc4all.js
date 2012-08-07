@@ -43,6 +43,7 @@ var WebRtcType_e =
 
 var __webrtc_type = WebRtcType_e.NONE;
 var __b_webrtc4all_initialized = false;
+var __b_webrtc4ie_peerconn = undefined;
 function WebRtc4all_Init() {
     if (!__b_webrtc4all_initialized) {
         try {
@@ -65,8 +66,9 @@ function WebRtc4all_Init() {
         catch (e) { }
         if (__webrtc_type == WebRtcType_e.NONE) {
             try {
-                new ActiveXObject("webrtc4ie.PeerConnection");
-                __webrtc_type = WebRtcType_e.IE; // Internet Explorer
+                if ((__b_webrtc4ie_peerconn = new ActiveXObject("webrtc4ie.PeerConnection"))) {
+                    __webrtc_type = WebRtcType_e.IE; // Internet Explorer
+                }
             }
             catch (e) {
                 if (WebRtc4npapi.supportsPeerConnection) {
@@ -77,6 +79,19 @@ function WebRtc4all_Init() {
 
         __b_webrtc4all_initialized = true;
     }
+}
+
+function WebRtc4all_GetVersion() {
+    try {
+        if (__webrtc_type == WebRtcType_e.IE) {
+            return __b_webrtc4ie_peerconn.version;
+        }
+        else if (__webrtc_type == WebRtcType_e.NPAPI) {
+            return WebRtc4npapi.version;
+        }
+    }
+     catch (e) { }
+     return "0.0.0.0";
 }
 
 function WebRtc4all_GetType() {

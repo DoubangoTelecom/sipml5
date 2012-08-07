@@ -53,6 +53,10 @@ function tsk_utils_have_webrtc4native() {
     return (WebRtc4all_GetType() == WebRtcType_e.NATIVE);
 }
 
+function tsk_utils_webrtc4all_get_version() {
+    return WebRtc4all_GetVersion();
+}
+
 function tsk_utils_have_stream() {
     try {
         return (tsk_utils_have_webrtc4all() || (__o_stream != null));

@@ -10,7 +10,7 @@
     <meta name="author" content="Doubango Telecom">
 
     <!-- SIP API and utility functions -->
-    <script src="src/tinySIP/src/tsip_api.js?svn=5" type="text/javascript"> </script>
+    <script src="src/tinySIP/src/tsip_api.js?svn=7" type="text/javascript"> </script>
     <!-- Styles -->
     <link href="./assets/css/bootstrap.css" rel="stylesheet">
     <style type="text/css">
@@ -88,7 +88,7 @@
 
     // to avoid caching
     //if (window.location.href.indexOf("svn=") == -1) {
-    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=5" : "&svn=5"); 
+    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=7" : "&svn=7"); 
     //}
 
     var sTransferNumber;
@@ -159,8 +159,30 @@
         // Init WebRtc engine
         tsk_utils_init_webrtc();
 
+        // check webrtc4all version
+        if (tsk_utils_have_webrtc4all()) {
+            tsk_utils_log_info("WebRTC type = " + WebRtc4all_GetType());
+            if (tsk_utils_webrtc4all_get_version() != "1.9.731") {
+                if (confirm("Your WebRtc4all extension is outdated. A new version with critical bug fix is available. Do you want to install it?\nIMPORTANT: You must restart your browser after the installation.")) {
+                    window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
+                    return;
+                }
+            }
+        }
+
         // checks for WebRTC support
         if (!tsk_utils_have_webrtc()) {
+            // is it chrome?
+            if (navigator.userAgent.toLowerCase().indexOf("Chrome") > -1) {
+                    if (confirm("You're using an old Chrome version or WebRTC is not enabled.\nDo you want to see how to enable WebRTC?")) {
+                        window.location = 'http://www.webrtc.org/running-the-demos';
+                    }
+                    else {
+                        window.location = "index.htm";
+                    }
+                    return;
+            }
+                
             // for now the plugins (WebRTC4all only works on Windows)
             if (navigator.appVersion.indexOf("Win") != -1) {
                 // Internet explorer
@@ -196,29 +218,22 @@
                         return;
                     }
                 }
-                else if (navigator.userAgent.indexOf("Safari") || navigator.userAgent.indexOf("Firefox") || navigator.userAgent.indexOf("Opera")) {
-                    if (confirm("Your browser don't support WebRTC.\nDo you want to install WebRTC4all extension to enjoy audio/video calls?\nIMPORTANT: You must restart your browser after the installation.")) {
-                        window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
+                else if (navigator.userAgent) {
+                    if (navigator.userAgent.toLowerCase().indexOf("Safari") > -1 || navigator.userAgent.toLowerCase().indexOf("Firefox") > -1 || navigator.userAgent.toLowerCase().indexOf("Opera") > -1) {
+                        if (confirm("Your browser don't support WebRTC.\nDo you want to install WebRTC4all extension to enjoy audio/video calls?\nIMPORTANT: You must restart your browser after the installation.")) {
+                            window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
+                        }
+                        else {
+                            window.location = "index.htm";
+                        }
+                        return;
                     }
-                    else {
-                        window.location = "index.htm";
-                    }
-                    return;
-                }
-                else if (navigator.userAgent.indexOf("Chrome")) {
-                    if (confirm("You're using an old Chrome version or WebRTC is not enabled.\nDo you want to see how to enable WebRTC?")) {
-                        window.location = 'http://www.webrtc.org/running-the-demos';
-                    }
-                    else {
-                        window.location = "index.htm";
-                    }
-                    return;
                 }
             }
             // OSX, Unix, Android, iOS...
             else {
-                if (confirm('Your browser don\'t support WebSockets.\nDo you want to download a WebSocket-capable browser?')) {
-                    window.location = 'https://tools.google.com/dlpage/chromesxs';
+                if (confirm('WebRTC not supported on your browser.\nDo you want to download a WebSocket-capable browser?')) {
+                    window.location = 'https://www.google.com/intl/en/chrome/browser/';
                 }
                 else {
                     window.location = "index.htm";
@@ -230,7 +245,7 @@
         // checks for WebSocket support
         if (!tsk_utils_have_websocket() && !tsk_utils_have_webrtc4all()) {
             if (confirm('Your browser don\'t support WebSockets.\nDo you want to download a WebSocket-capable browser?')) {
-                window.location = 'https://tools.google.com/dlpage/chromesxs';
+                window.location = 'https://www.google.com/intl/en/chrome/browser/';
             }
             else {
                 window.location = "index.htm";
@@ -245,7 +260,7 @@
 
         if (!tsk_utils_have_webrtc()) {
             if (confirm('Your browser don\'t support WebRTC.\naudio/video calls will be disabled.\nDo you want to download a WebRTC-capable browser?')) {
-                window.location = 'https://tools.google.com/dlpage/chromesxs';
+                window.location = 'https://www.google.com/intl/en/chrome/browser/';
             }
         }
 
@@ -909,7 +924,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="index.htm?svn=5">Home</a></li>
+                        <li class="active"><a href="index.htm?svn=7">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->
