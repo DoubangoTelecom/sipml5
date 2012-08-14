@@ -22,3 +22,5 @@ The iOS (4.0+) rich client is named [http://code.google.com/p/idoubs/ iDoubs] an
 To enable RTCWeb features: Settings -> idoubs -> Media -> Profile -> RTCWeb
 
 [http://sipml5.googlecode.com/svn/trunk/docs/images/idoubs_rtcweb.png]
+
+For any technical issue, please connect to our developer group: [https://groups.google.com/group/doubango https://groups.google.com/group/doubango]
