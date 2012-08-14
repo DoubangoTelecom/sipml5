@@ -3,6 +3,9 @@
 
 <wiki:toc max_depth="2" />
 
+==Where to get help?==
+For any technical issue, please connect to our developer group: [https://groups.google.com/group/doubango https://groups.google.com/group/doubango].
+
 ==Which operating systems are supported?==
 Any System supporting a web browser (Chrome, firefox, Safari or IE) built with <a href="http://en.wikipedia.org/wiki/WebRTC">WebRTC</a> features.
 We highly recommend using <a href="https://www.google.com/intl/en/chrome/browser/">Google Chrome</a>
