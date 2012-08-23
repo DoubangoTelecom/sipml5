@@ -88,9 +88,29 @@
     "a=ssrc:3678808980 mslabel:fd6ca735-ce47-4095-bcc8-659b86a16638\r\n" +
     "a=ssrc:1197373411 label:Priphrique vido US\r\n";
 
+    var __msg3 = "v=0\r\n" +
+    "o=root 1506997520 1506997520 IN IP4 50.18.1.1\r\n" +
+    "s=Asterisk PBX SVN-branch-11-r371571\r\n" +
+    "c=IN IP4 50.18.1.1\r\n" +
+    "t=0 0\r\n" +
+    "m=audio 14150 RTP/SAVPF 8 0 101\r\n" +
+    "a=rtpmap:8 PCMA/8000\r\n" +
+    "a=rtpmap:0 PCMU/8000\r\n" +
+    "a=rtpmap:101 telephone-event/8000\r\n" +
+    "a=fmtp:101 0-16\r\n" +
+    "a=silenceSupp:off - - - -\r\n" +
+    "a=ptime:20\r\n" +
+    "a=ice-ufrag:05a48c8d362c4daa6b7b53f84a57379c\r\n" +
+    "a=ice-pwd:6715133d684e4e6936805c3371309d71\r\n" +
+    "a=candidate:Haa89741 1 UDP 2130706431 10.165.1.1 14150 typ host\r\n" +
+    "a=candidate:Haa89741 2 UDP 2130706430 10.165.1.1 14151 typ host\r\n" +
+    "a=sendrecv\r\n" +
+    "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:BYgghgOrRI2kCAGtMZpuwUCwtqW4Cyp9VOP7HpD/\r\n" +
+    "m=video 0 RTP/SAVPF 100 101 102\r\n";
+
     function test_msg_parse() {
         var i_length = __msg2.length;
-        var o_message = tsdp_message.prototype.Parse(__msg2);
+        var o_message = tsdp_message.prototype.Parse(__msg3);
         tsk_utils_log_info(o_message.toString());
     }
 </script>

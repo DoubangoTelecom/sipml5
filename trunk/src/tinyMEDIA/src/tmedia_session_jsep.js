@@ -40,7 +40,7 @@ tmedia_session_jsep.prototype.b_lo_held = false;
 tmedia_session_jsep.prototype.b_ro_held = false;
 
 function tmedia_session_jsep(o_mgr) {
-    tmedia_session.call(this, tmedia_type_e.AUDIO_VIDEO, o_mgr);
+    tmedia_session.call(this, o_mgr.e_type, o_mgr);
 }
 
 tmedia_session_jsep.prototype.__set = function (o_param) {
@@ -177,6 +177,10 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
         var o_hdr_O;
         if ((o_hdr_O = this.o_sdp_lo.get_header(tsdp_header_type_e.O))) {
             o_hdr_O.i_sess_version = this.i_sdp_lo_version++;
+        }
+        /* Remove 'video' media if not enabled (bug in chrome: doesn't honor 'has_video' parameter) */
+        if (!this.o_sdp_ro && !(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) { // initial offer and no video
+            this.o_sdp_lo.remove_media("video");
         }
         /* hold / resume */
         var i_index = 0;
