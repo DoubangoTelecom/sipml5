@@ -2,17 +2,17 @@
 <html>
 <!-- head -->
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>sipML5 live demo</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="Keywords" content="doubango, sipML5, VoIP, HTML5, WebRTC, RTCWeb, SIP, IMS, Video chat, VP8, live demo " />
     <meta name="Description" content="HTML5 SIP client using WebRTC framework" />
-    <meta name="author" content="Doubango Telecom">
+    <meta name="author" content="Doubango Telecom" />
 
     <!-- SIP API and utility functions -->
-    <script src="src/tinySIP/src/tsip_api.js?svn=7" type="text/javascript"> </script>
+    <script src="src/tinySIP/src/tsip_api.js?svn=8" type="text/javascript"> </script>
     <!-- Styles -->
-    <link href="./assets/css/bootstrap.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap.css" rel="stylesheet" />
     <style type="text/css">
         body{
             padding-top: 80px;
@@ -76,19 +76,19 @@
 
         
     </style>
-    <link href="./assets/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap-responsive.css" rel="stylesheet" />
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="./assets/ico/favicon.ico">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="./assets/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="./assets/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="./assets/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="./assets/ico/favicon.ico" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="./assets/ico/apple-touch-icon-114-precomposed.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="./assets/ico/apple-touch-icon-72-precomposed.png" />
+    <link rel="apple-touch-icon-precomposed" href="./assets/ico/apple-touch-icon-57-precomposed.png" />
 </head>
 <!-- Javascript code -->
 <script type="text/javascript">
 
     // to avoid caching
     //if (window.location.href.indexOf("svn=") == -1) {
-    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=7" : "&svn=7"); 
+    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=8" : "&svn=8"); 
     //}
 
     var sTransferNumber;
@@ -106,6 +106,7 @@
     var bFullScreen = false;
     var oNotifICall;
     var oReadyStateTimer;
+    var bDisableVideo = false;
 
     window.onload = function () {
         txtDisplayName = document.getElementById("txtDisplayName");
@@ -178,7 +179,7 @@
                         window.location = 'http://www.webrtc.org/running-the-demos';
                     }
                     else {
-                        window.location = "index.htm";
+                        window.location = "index.html";
                     }
                     return;
             }
@@ -199,7 +200,7 @@
                             window.location = 'http://windows.microsoft.com/en-us/internet-explorer/products/ie/home';
                         }
                         else {
-                            window.location = "index.htm";
+                            window.location = "index.html";
                         }
                     }
 
@@ -210,7 +211,7 @@
                         }
                         else {
                             // Must do nothing: give the user the chance to accept the extension
-                            // window.location = "index.htm";
+                            // window.location = "index.html";
                         }
                     }
                     // break page loading ('window.location' won't stop JS execution)
@@ -224,7 +225,7 @@
                             window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
                         }
                         else {
-                            window.location = "index.htm";
+                            window.location = "index.html";
                         }
                         return;
                     }
@@ -236,7 +237,7 @@
                     window.location = 'https://www.google.com/intl/en/chrome/browser/';
                 }
                 else {
-                    window.location = "index.htm";
+                    window.location = "index.html";
                 }
                 return;
             }
@@ -248,7 +249,7 @@
                 window.location = 'https://www.google.com/intl/en/chrome/browser/';
             }
             else {
-                window.location = "index.htm";
+                window.location = "index.html";
             }
             return;
         }
@@ -396,7 +397,7 @@
                                 tsip_session.prototype.SetCaps("+sip.ice")
                             );
 
-            if (oSipSessionCall.call(tmedia_type_e.AUDIO_VIDEO) != 0) {
+            if (oSipSessionCall.call(bDisableVideo ? tmedia_type_e.AUDIO : tmedia_type_e.AUDIO_VIDEO) != 0) {
                 oSipSessionCall = null;
                 txtCallStatus.value = 'Failed to make call';
                 btnCall.disabled = false;
@@ -517,6 +518,16 @@
         if (evt.keyCode == 27) {
             fullScreen(false);
         }
+        else if (evt.ctrlKey && evt.shiftKey) { // CTRL + SHIFT
+            if (evt.keyCode == 65) { // A
+                bDisableVideo = true;
+                txtCallStatus.innerHTML = '<i>Video disabled</i>';
+            }
+            else if (evt.keyCode == 86) { // V
+                bDisableVideo = false;
+                txtCallStatus.innerHTML = '<i>Video enabled</i>';
+            }
+        }
     }
 
     function onDivCallCtrlMouseMove(evt) {
@@ -537,29 +548,31 @@
     }
 
     function uiVideoDisplayEvent(b_local, b_added, o_src_video) {
-        var o_elt_video = b_local ? videoLocal : videoRemote;
+        if (!bDisableVideo) {
+            var o_elt_video = b_local ? videoLocal : videoRemote;
 
-        if (b_added) {
-            if (tsk_utils_have_webrtc4all()) {
-                if (b_local) __o_display_local.style.visibility = "visible";
-                else __o_display_remote.style.visibility = "visible";
+            if (b_added) {
+                if (tsk_utils_have_webrtc4all()) {
+                    if (b_local) __o_display_local.style.visibility = "visible";
+                    else __o_display_remote.style.visibility = "visible";
+                }
+                else {
+                    o_elt_video.src = o_src_video;
+                    o_elt_video.style.opacity = 1;
+                }
+                uiVideoDisplayShowHide(true);
             }
             else {
-                o_elt_video.src = o_src_video;
-                o_elt_video.style.opacity = 1;
+                if (tsk_utils_have_webrtc4all()) {
+                    if (b_local) __o_display_local.style.visibility = "hidden";
+                    else __o_display_remote.style.visibility = "hidden";
+                }
+                else {
+                    o_elt_video.style.opacity = 0;
+                    if (o_elt_video.src && b_local) videoLocal.src = undefined;  // already revoked: must be done for remote video
+                }
+                fullScreen(false);
             }
-            uiVideoDisplayShowHide(true);
-        }
-        else {
-            if (tsk_utils_have_webrtc4all()) {
-                if (b_local) __o_display_local.style.visibility = "hidden";
-                else __o_display_remote.style.visibility = "hidden";
-            }
-            else{
-                o_elt_video.style.opacity = 0;
-                if (o_elt_video.src && b_local) videoLocal.src = undefined;  // already revoked: must be done for remote video
-            }
-            fullScreen(false);
         }
     }
 
@@ -924,7 +937,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="index.htm?svn=7">Home</a></li>
+                        <li class="active"><a href="index.html?svn=8">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->

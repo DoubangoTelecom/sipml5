@@ -450,7 +450,7 @@ function __tsip_transport_ws_onerror(evt) {
 }
 
 
-/******************** webrtc4ie *******************/
+/******************** webrtc4all *******************/
 function __tsip_transport_webrtc4all_start(o_self) {
     if (!o_self) {
         tsk_utils_log_error("Invalid argument");
