@@ -26,4 +26,4 @@ For more information on how to configure these clients, please [Calling_SIP_clie
 We recommend checking the non-exhaustive list of [Public_SIP_Servers Public SIP Servers] known to work with sipML5.
 
 ==Is it possible to use Asterisk 11 to make/receive calls?==
-More info at [https://wiki.asterisk.org/wiki/display/~jcolp/Asterisk+WebRTC+Support https://wiki.asterisk.org/wiki/display/~jcolp/Asterisk+WebRTC+Support]
+More info at [https://wiki.asterisk.org/wiki/display/AST/Asterisk+WebRTC+Support https://wiki.asterisk.org/wiki/display/AST/Asterisk+WebRTC+Support]
