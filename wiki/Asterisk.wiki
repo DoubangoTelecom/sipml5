@@ -8,7 +8,7 @@ This example talk about [http://code.google.com/p/sipml5/ sipml5] client but any
 I assume that you already know how Asterisk works.
 
 [http://sipml5.googlecode.com/svn/trunk/docs/images/architecture_asterisk.png]<br />
-_sipML5 solution architecture using Asterisk_
+_sipML5 solution using Asterisk_
 <hr />
 
 ==Building source code==
