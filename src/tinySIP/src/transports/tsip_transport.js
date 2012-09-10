@@ -1,22 +1,7 @@
 ﻿/*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
-*
-* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
-*	
+* License: GPLv3
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
-*
-* sipML5 is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as publishd by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*	
-* sipML5 is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*	
-* You should have received a copy of the GNU General Public License
-* along with sipML5.
 */
 var tsip_transport_type_e = 
 {
@@ -368,7 +353,8 @@ function __tsip_transport_ws_start(o_self) {
         return -1;
     }
 
-    var s_url = tsk_string_format("{0}://{1}:{2}",o_self.s_protocol, o_self.s_host, o_self.i_port);
+    var s_url = tsk_string_is_null_or_empty(o_self.o_stack.network.s_websocket_server_url) ?
+             tsk_string_format("{0}://{1}:{2}",o_self.s_protocol, o_self.s_host, o_self.i_port) : o_self.o_stack.network.s_websocket_server_url;
     tsk_utils_log_info("Connecting to '"+s_url+"'");
     o_self.o_ws = new WebSocket(s_url, 'sip');
     o_self.o_ws.binaryType = "arraybuffer";
@@ -434,7 +420,7 @@ function __tsip_transport_ws_onmessage(evt) {
     var o_message = tsip_message.prototype.Parse(o_ragel_state, true);
 
     if (o_message) {
-        //--tsk_utils_log_info("recv=" + o_message);
+        tsk_utils_log_info("recv=" + o_message);
         o_message.o_socket = this;
         return this.o_transport.get_layer().handle_incoming_message(o_message);
     }
@@ -459,7 +445,7 @@ function __tsip_transport_webrtc4all_start(o_self) {
 
     var b_isInternetExplorer = (WebRtc4all_GetType() == WebRtcType_e.IE);
     var s_url = tsk_string_format("{0}://{1}:{2}",o_self.s_protocol, o_self.s_host, o_self.i_port);
-    tsk_utils_log_info("Connecting to '"+s_url+"'");
+    tsk_utils_log_info("Connecting to '" + s_url+"'");
     if(b_isInternetExplorer){
         o_self.o_transport = new ActiveXObject("webrtc4ie.NetTransport");
         eval("function o_self.o_transport::OnEvent(i_type, s_data) { return __tsip_transport_webrtc4all_onevent (o_self, i_type, s_data); }");

@@ -1,22 +1,7 @@
 ﻿/*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
-*
-* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
-*	
+* License: GPLv3
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
-*
-* sipML5 is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as publishd by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*	
-* sipML5 is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*	
-* You should have received a copy of the GNU General Public License
-* along with sipML5.
 */
 /**@page page_tsip_stack SIP Stack
 The SIP stack is the base object used to create all sessions (registration, publication, call...). You must create a stack before starting to make or receive calls.
@@ -195,7 +180,8 @@ var tsip_stack_param_type_e =
 	PROXY_CSCF : 26,
 	DNSSERVER : 27,
 	MODE_SERVER: 28,
-    PROXY_OUTBOUND: 30,
+	PROXY_OUTBOUND: 30,
+    WEBSOCKET_SERVER_URL: 31,
 	
 	/* === Security === */
 	EARLY_IMS : 40,
@@ -291,6 +277,7 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
     this.network.s_proxy_outbound_host = null;
     this.network.i_proxy_outbound_port = 5060;
     this.network.e_proxy_outbound_type = this.network.e_proxy_cscf_type;
+    this.network.s_websocket_server_url = null;
 
     this.network.aor = {};
     this.network.aor.s_ip = null;
@@ -546,6 +533,10 @@ tsip_stack.prototype.SetProxyOutBound = function (s_proxy_host, i_proxy_port, e_
     return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.PROXY_OUTBOUND, s_proxy_host, i_proxy_port, e_proxy_type);
 }
 
+tsip_stack.prototype.SetWebsocketServerUrl = function (s_websocket_server_url) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.WEBSOCKET_SERVER_URL, s_websocket_server_url);
+}
+
 /**
 * Adds SIP header to all sessions created using this stack
 * @tparam String s_name SIP header name
@@ -602,6 +593,11 @@ tsip_stack.prototype.__set = function (ao_params) {
                     this.network.s_proxy_outbound_host = o_curr.ao_values[0];
                     this.network.i_proxy_outbound_port = o_curr.ao_values[1];
                     this.network.e_proxy_outbound_type = o_curr.ao_values[2];
+                    break;
+                }
+            case tsip_stack_param_type_e.WEBSOCKET_SERVER_URL:
+                {
+                    this.network.s_websocket_server_url = o_curr.ao_values[0];
                     break;
                 }
 

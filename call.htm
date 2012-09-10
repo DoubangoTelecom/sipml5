@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿<!--
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* License: GPLv3
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+-->
+<!DOCTYPE html>
 <html>
 <!-- head -->
 <head>
@@ -10,7 +15,7 @@
     <meta name="author" content="Doubango Telecom" />
 
     <!-- SIP API and utility functions -->
-    <script src="src/tinySIP/src/tsip_api.js?svn=8" type="text/javascript"> </script>
+    <script src="src/tinySIP/src/tsip_api.js?svn=9" type="text/javascript"> </script>
     <!-- Styles -->
     <link href="./assets/css/bootstrap.css" rel="stylesheet" />
     <style type="text/css">
@@ -88,7 +93,7 @@
 
     // to avoid caching
     //if (window.location.href.indexOf("svn=") == -1) {
-    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=8" : "&svn=8"); 
+    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=9" : "&svn=9"); 
     //}
 
     var sTransferNumber;
@@ -271,15 +276,19 @@
 
 
     function loadCallOptions() {
-        if (localStorage) {
+        if (window.localStorage) {
             var s_value;
-            if ((s_value = localStorage.getItem('org.doubango.identity.phone_number'))) txtPhoneNumber.value = s_value;
+            if ((s_value = window.localStorage.getItem('org.doubango.call.phone_number'))) txtPhoneNumber.value = s_value;
+            bDisableVideo = (window.localStorage.getItem('org.doubango.expert.disable_video') == "true");
+
+            txtCallStatus.innerHTML = '<i>Video ' + (bDisableVideo ? 'disabled' : 'enabled') + '</i>';
         }
     }
 
     function saveCallOptions() {
-        if (localStorage) {
-            localStorage.setItem('org.doubango.identity.phone_number', txtPhoneNumber.value);
+        if (window.localStorage) {
+            window.localStorage.setItem('org.doubango.call.phone_number', txtPhoneNumber.value);
+            window.localStorage.setItem('org.doubango.expert.disable_video', bDisableVideo ? "true" : "false");
         }
     }
 
@@ -304,12 +313,12 @@
     };
 
     function saveCredentials() {
-        if (localStorage) {
-            localStorage.setItem('org.doubango.identity.display_name', txtDisplayName.value);
-            localStorage.setItem('org.doubango.identity.impi', txtPrivateIdentity.value);
-            localStorage.setItem('org.doubango.identity.impu', txtPublicIdentity.value);
-            localStorage.setItem('org.doubango.identity.password', txtPassword.value);
-            localStorage.setItem('org.doubango.identity.realm', txtRealm.value);
+        if (window.localStorage) {
+            window.localStorage.setItem('org.doubango.identity.display_name', txtDisplayName.value);
+            window.localStorage.setItem('org.doubango.identity.impi', txtPrivateIdentity.value);
+            window.localStorage.setItem('org.doubango.identity.impu', txtPublicIdentity.value);
+            window.localStorage.setItem('org.doubango.identity.password', txtPassword.value);
+            window.localStorage.setItem('org.doubango.identity.realm', txtRealm.value);
         }
     };
 
@@ -341,6 +350,10 @@
             // create SIP stack
             var i_port;
             var s_proxy;
+            // @NotUsed
+            // var b_disable_avpf = (window.localStorage.getItem('org.doubango.expert.disable_avpf') == "true");
+            var s_websocket_server_url = window.localStorage.getItem('org.doubango.expert.websocket_server_url');
+            tsk_utils_log_info("s_websocket_server_url=" + (s_websocket_server_url || "(null)"));
 
             if (tsk_utils_have_webrtc4all()) {
                 // port and host will be updated using the result from DNS SRV(NAPTR(realm))
@@ -360,8 +373,11 @@
             oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, s_proxy, i_port,
                                     tsip_stack.prototype.SetPassword(txtPassword.value),
                                     tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
+                                    tsip_stack.prototype.SetWebsocketServerUrl(s_websocket_server_url),
                                     //tsip_stack.prototype.SetProxyOutBound('192.168.0.9', 5060, tsip_transport_type_e.UDP), // uncomment to use SIP outbound proxy
-                                    tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5/v0.0.0000.0'),
+                                    // not valid? "IM-client/OMA1.0 sipML5-v0.0.0000.0/mozilla/5.0 (windows nt 6.0) applewebkit/537.9 (khtml, like gecko) chrome/23.0.1261.1 safari/537.9"
+                                    // tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v0.0.0000.0/' + (navigator.userAgent || "unknown").toLowerCase()),
+                                    tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v0.0.0000.0/'),
                                     tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
             if (oSipStack) {
                 oSipStack.on_event_stack = onSipEventStack;
@@ -396,7 +412,7 @@
                                 tsip_session.prototype.SetToStr(txtPhoneNumber.value),
                                 tsip_session.prototype.SetCaps("+sip.ice")
                             );
-
+            bDisableVideo = (window.localStorage.getItem('org.doubango.expert.disable_video') == "true");
             if (oSipSessionCall.call(bDisableVideo ? tmedia_type_e.AUDIO : tmedia_type_e.AUDIO_VIDEO) != 0) {
                 oSipSessionCall = null;
                 txtCallStatus.value = 'Failed to make call';
@@ -514,18 +530,15 @@
     }
 
     function onKeyUp(evt) {
-        evt = evt || window.event;
+        evt = (evt || window.event);
         if (evt.keyCode == 27) {
             fullScreen(false);
         }
         else if (evt.ctrlKey && evt.shiftKey) { // CTRL + SHIFT
-            if (evt.keyCode == 65) { // A
-                bDisableVideo = true;
-                txtCallStatus.innerHTML = '<i>Video disabled</i>';
-            }
-            else if (evt.keyCode == 86) { // V
-                bDisableVideo = false;
-                txtCallStatus.innerHTML = '<i>Video enabled</i>';
+            if (evt.keyCode == 65 || evt.keyCode == 86) { // A (65) or V (86)
+                bDisableVideo = (evt.keyCode == 65);
+                txtCallStatus.innerHTML = '<i>Video ' + (bDisableVideo ? 'disabled' : 'enabled') + '</i>';
+                window.localStorage.setItem('org.doubango.expert.disable_video', bDisableVideo);
             }
         }
     }
@@ -937,7 +950,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="index.html?svn=8">Home</a></li>
+                        <li class="active"><a href="index.html?svn=9">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->
@@ -1013,7 +1026,12 @@
                     </tr>
                     <tr>
                         <td colspan="3">
-                            <a class="btn" href="http://code.google.com/p/sipml5/wiki/Public_SIP_Servers" target="_blank">Need SIP account?</a></p>
+                            <a class="btn" href="http://code.google.com/p/sipml5/wiki/Public_SIP_Servers" target="_blank">Need SIP account?</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <a class="btn" href="./expert.htm" target="_blank">Expert mode?</a>
                         </td>
                     </tr>
                 </table>
@@ -1067,9 +1085,12 @@
                 </table>
             </div>
         </div>
+        
+        <br />
         <footer>
-            <p>&copy; Doubango Telecom 2012</p>
+            <p>&copy; Doubango Telecom 2012 <br />
             <i>Inspiring the future</i>
+            </p>
             <!-- Creates all ATL/COM objects right now 
                 Will open confirmation dialogs if not already done
             -->
@@ -1085,6 +1106,7 @@
         </footer>
     </div>
     <!-- /container -->
+
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

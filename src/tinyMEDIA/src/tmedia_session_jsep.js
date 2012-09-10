@@ -1,22 +1,7 @@
 ﻿/*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
-*
-* Contact: Mamadou Diop <diopmamadou(at)doubango[dot]org>
-*	
+* License: GPLv3
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
-*
-* sipML5 is free software: you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as publishd by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.
-*	
-* sipML5 is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*	
-* You should have received a copy of the GNU General Public License
-* along with sipML5.
 */
 // http://tools.ietf.org/html/draft-uberti-rtcweb-jsep-02
 
@@ -83,7 +68,7 @@ tmedia_session_jsep.prototype.__get_lo = function () {
         // "__o_peerconnection_class" is equal to "webkitPeerConnection00 || webkitPeerConnection" on chrome and "w4aPeerConnection" on IE
         this.o_pc = new __o_peerconnection_class("STUN stun.l.google.com:19302",
                 function (o_candidate, b_moreToFollow) {
-                    tsk_utils_log_info("__on_ice_candidate: " + (o_candidate ? o_candidate.toSdp() : "null"));
+                    // tsk_utils_log_info("__on_ice_candidate: " + (o_candidate ? o_candidate.toSdp() : "null"));
                     if (o_candidate) {
                         This.o_sdp_jsep_lo.addCandidate(o_candidate);
                     }
@@ -186,6 +171,7 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
         var i_index = 0;
         var o_hdr_M;
         while ((o_hdr_M = this.o_sdp_lo.get_header_at(tsdp_header_type_e.M, i_index++))) {
+            // o_hdr_M.s_proto = "RTP/SAVP";
             o_hdr_M.set_holdresume_att(this.b_lo_held, this.b_ro_held);
         }
     }
