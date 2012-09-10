@@ -1,0 +1,136 @@
+#summary Asterisk
+#labels Featured,Phase-Support
+
+<wiki:toc max_depth="2" />
+
+This is a short guide explaining how to configure any HTML5 SIP client to work with Asterisk.
+This example talk about [http://code.google.com/p/sipml5/ sipml5] client but any client using WebRTC should work. We also use [http://www.counterpath.com/x-lite.html xlite5] but off course any SIP client could be used.
+I assume that you already know how Asterisk works.
+
+[http://sipml5.googlecode.com/svn/trunk/docs/images/architecture_asterisk.png]<br />
+_sipML5 solution architecture using Asterisk_
+<hr />
+
+==Building source code==
+The current Asterisk version (revision 372699) allows to register and make calls from Chrome but no audio will flow.
+The problem comes from ICE implementation in Chrome which is not fully compliant with RFC 5245. To fix this problem you'll need to apply the provided patch and rebuild Asterisk as explained in this section.
+
+ # checkout Asterisk source code *revision 372699*
+{{{
+svn checkout -r 372699 http://svn.digium.com/svn/asterisk/trunk asterisk
+}}}
+ # copy the [http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_372699.patch patch] into *asterisk* folder
+{{{
+cd asterisk
+wget http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_372699.patch
+}}}
+ # apply the patch
+ {{{
+ patch -p0 -i ./asterisk_372699.patch
+ }}}
+ # configure for build
+{{{
+export PREFIX=/opt/asterisk
+./configure --with-crypto --with-ssl --with-srtp --prefix=$PREFIX
+}}}
+ # build and install
+{{{
+make 
+make install
+make samples
+}}}
+
+==Configure *sip.conf*==
+Open *$PREFIX/etc/asterisk/sip.conf* and change the default values as follow
+{{{
+udpbindaddr=0.0.0.0:5060
+realm=doubango.org
+domainsasrealm=doubango.org
+directmedia=no
+avpf=yes 
+encryption=yes
+transport=udp,ws,wss
+}}}
+
+==Configure *res_http_websocket.conf*==
+Open *$PREFIX/etc/asterisk/res_http_websocket.conf* and change the default values as follow
+{{{
+enabled=yes
+bindaddr=0.0.0.0
+bindport=8088
+}}}
+
+==Create two users for testing==
+Open *$PREFIX/etc/asterisk/users.conf* and add two users (*1060* for chrome and *1061* for xlite5)
+{{{
+[1060]
+type=peer
+username=1060
+host=dynamic
+secret=1060
+context=default
+hasiax = no
+hassip = yes
+encryption = yes
+avpf = yes
+
+[1061]
+type=peer
+username=1061
+host=dynamic
+secret=1061
+context=default
+hasiax = no
+hassip = yes
+}}}
+
+==Setting extensions==
+Open *$PREFIX/etc/asterisk/extensions.conf* and add two extensions to the *[default]* section
+{{{
+exten => 100,1,Dial(SIP/1060)
+exten => 101,1,Dial(SIP/1061)
+}}}
+
+==Start Asterisk=
+To start Asterisk
+{{{
+$PREFIX/sbin/safe_asterisk
+}}}
+
+==Configure sipml5==
+ * Checkout sipml5 source code
+{{{
+svn checkout http://sipml5.googlecode.com/svn/trunk/ sipml5-read-only
+}}}
+ * Open *sipml5-read-only/trunk/call.htm* file using chrome
+ * Click on *Expert mode?* and set the fields as follow
+[http://sipml5.googlecode.com/svn/trunk/asterisk/screenhot_chrome_expert.png]<br />
+_Expert mode fields settings_<br />
+*192.168.0.12* = Asterisk Server IP address. You have to change this value with yours.<br />
+*8088* = Websocket listening port (defined in *$PREFIX/etc/asterisk/res_http_websocket.conf*)
+ * Go back to the home screen and set the fields as follow
+[http://sipml5.googlecode.com/svn/trunk/asterisk/screenshot_chrome_credentials.png]<br />
+_Credentials fields settings_<br />
+The password value is *1060* as defined in *$PREFIX/etc/asterisk/users.conf*
+
+ * Press *LogIn* to connect to the server
+
+==Configure Xlite5==
+ * Download xlite5 from [http://www.counterpath.com/x-lite.html http://www.counterpath.com/x-lite.html] and Install it
+ * Add new Account (Preferences -> Accounts -> Add) and configure the credentials as follow
+[http://sipml5.googlecode.com/svn/trunk/asterisk/screenshot_xlite5_credentials.png]<br />
+_xlite5 account configuration_<br />
+*192.168.0.12* = Asterisk Server IP address. You have to change this value with yours.<br />
+*5060* is the default port defined in *$PREFIX/etc/asterisk/sip.conf*
+ * Enable Firewall Traversal (*Topology* tab) as follow
+[http://sipml5.googlecode.com/svn/trunk/asterisk/screenshot_xlite5_natt.png]<br />
+_Firewall traversal_<br />
+
+==Testing==
+From *sipml5* home page, enter *xlite5* in the call control box and press *call*.
+
+==Known issues==
+ # For outgoing calls (chrome -> any SIP client/PSTN) all works as expected but for incoming calls sometimes we only have one-way audio. *To be fixed.*
+
+==Technical help==
+Please check our [http://code.google.com/p/sipml5/issues/list issue tracker] or [https://groups.google.com/group/doubango developer group] if you have any problem.
