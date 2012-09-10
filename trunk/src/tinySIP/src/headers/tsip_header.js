@@ -1,4 +1,9 @@
-﻿var tsip_header_type_e =
+﻿/*
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* License: GPLv3
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+*/
+var tsip_header_type_e =
 {
     Accept: { i_id: 0, s_name: "Accept" },
     Accept_Contact: { i_id: 1, s_name: "Accept-Contact" },
