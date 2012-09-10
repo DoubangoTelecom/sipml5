@@ -52,8 +52,8 @@ encryption=yes
 transport=udp,ws,wss
 }}}
 
-==Configure *res_http_websocket.conf*==
-Open *$PREFIX/etc/asterisk/res_http_websocket.conf* and change the default values as follow
+==Configure *http.conf*==
+Open *$PREFIX/etc/asterisk/http.conf* and change the default values as follow
 {{{
 enabled=yes
 bindaddr=0.0.0.0
@@ -107,7 +107,7 @@ svn checkout http://sipml5.googlecode.com/svn/trunk/ sipml5-read-only
 [http://sipml5.googlecode.com/svn/trunk/asterisk/screenhot_chrome_expert.png]<br />
 _Expert mode fields settings_<br />
 *192.168.0.12* = Asterisk Server IP address. You have to change this value with yours.<br />
-*8088* = Websocket listening port (defined in *$PREFIX/etc/asterisk/res_http_websocket.conf*)
+*8088* = Websocket listening port (defined in *$PREFIX/etc/asterisk/http.conf*)
  * Go back to the home screen and set the fields as follow
 [http://sipml5.googlecode.com/svn/trunk/asterisk/screenshot_chrome_credentials.png]<br />
 _Credentials fields settings_<br />
