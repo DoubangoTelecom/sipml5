@@ -4,7 +4,7 @@
 || *SIP server* || *Private Identity* || *Public identity* || *Realm* ||
 || [https://www.ekiga.net/index.php?page=register ekiga.net] || bob || sip:bob@ekiga.net || ekiga.net ||
 || [https://serweb.iptel.org/user/reg iptel.org] || bob || sip:bob@iptel.org || iptel.org ||
-|| [https://mdns.sipthor.net/register_sip_account.phtml *sip2sip.info*] || bob || sip:bob@sip2sip.info || sip2sip.info||
+|| [https://mdns.sipthor.net/register_sip_account.phtml sip2sip.info] || bob || sip:bob@sip2sip.info || sip2sip.info||
 
 Off course you can use any other SIP public server.
 For any technical issue, please connect to our developer group: [https://groups.google.com/group/doubango https://groups.google.com/group/doubango]
