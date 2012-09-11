@@ -29,7 +29,7 @@ Index: channels/chan_sip.c
  
  		ast_sockaddr_parse(&candidate.address, address, PARSE_PORT_FORBID);
  		ast_sockaddr_set_port(&candidate.address, port);
-@@ -11990,7 +11994,7 @@
+@@ -11990,13 +11994,14 @@
  }
  
  /*! \brief Add ICE attributes to SDP */
@@ -38,7 +38,14 @@ Index: channels/chan_sip.c
  {
  	struct ast_rtp_engine_ice *ice = ast_rtp_instance_get_ice(instance);
  	const char *username, *password;
-@@ -12013,6 +12017,13 @@
+ 	struct ao2_container *candidates;
+ 	struct ao2_iterator i;
+ 	struct ast_rtp_engine_ice_candidate *candidate;
++	static const int generation = 0;
+ 
+ 	/* If no ICE support is present we can't very well add the attributes */
+ 	if (!ice || !(candidates = ice->get_local_candidates(instance))) {
+@@ -12013,6 +12018,13 @@
  	i = ao2_iterator_init(candidates, 0);
  
  	while ((candidate = ao2_iterator_next(&i))) {
@@ -52,7 +59,19 @@ Index: channels/chan_sip.c
  		ast_str_append(a_buf, 0, "a=candidate:%s %d %s %d ", candidate->foundation, candidate->id, candidate->transport, candidate->priority);
  		ast_str_append(a_buf, 0, "%s ", ast_sockaddr_stringify_host(&candidate->address));
  		ast_str_append(a_buf, 0, "%s typ ", ast_sockaddr_stringify_port(&candidate->address));
-@@ -12517,7 +12528,7 @@
+@@ -12030,6 +12042,11 @@
+ 			ast_str_append(a_buf, 0, "rport %s", ast_sockaddr_stringify_port(&candidate->relay_address));
+ 		}
+ 
++		if(is_webrtc){
++			// add generation attribute in ICE candidate
++			ast_str_append(a_buf, 0, " generation %d", generation);
++		}
++
+ 		ast_str_append(a_buf, 0, "\r\n");
+ 	}
+ 
+@@ -12517,7 +12534,7 @@
  			}
  
  			if (!doing_directmedia && ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -61,7 +80,7 @@ Index: channels/chan_sip.c
  			}
  		}
  
-@@ -12534,7 +12545,7 @@
+@@ -12534,7 +12551,7 @@
  			}
  
  			if (!doing_directmedia && ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -70,7 +89,7 @@ Index: channels/chan_sip.c
  			}
  		}
  
-@@ -12633,7 +12644,7 @@
+@@ -12633,7 +12650,7 @@
  			ast_str_append(&a_text, 0, "a=ptime:%d\r\n", min_text_packet_size);
  
  		if (!doing_directmedia && ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -79,7 +98,7 @@ Index: channels/chan_sip.c
  		}
  
  		if (m_audio->len - m_audio->used < 2 || m_video->len - m_video->used < 2 ||
-@@ -15416,6 +15427,9 @@
+@@ -15416,6 +15433,9 @@
  		ast_string_field_set(peer, useragent, useragent);
  		ast_verb(4, "Saved useragent \"%s\" for peer %s\n", peer->useragent, peer->name);
  	}
@@ -89,7 +108,7 @@ Index: channels/chan_sip.c
  	return PARSE_REGISTER_UPDATE;
  }
  
-@@ -32882,6 +32896,14 @@
+@@ -32882,6 +32902,14 @@
  	return 0;
  }
  
@@ -129,25 +148,6 @@ Index: include/asterisk/rtp_engine.h
  };
  
  /*! \brief Structure that represents the optional ICE support within an RTP engine */
-Index: res/pjproject/pjnath/include/pjnath/ice_strans.h
-===================================================================
---- res/pjproject/pjnath/include/pjnath/ice_strans.h	(revision 372708)
-+++ res/pjproject/pjnath/include/pjnath/ice_strans.h	(working copy)
-@@ -269,14 +269,6 @@
- 	 */
- 	pj_uint16_t	     port;
- 
--	/**
--	 * Ignore STUN resolution error and proceed with just local
--	 * addresses.
--	 *
--	 * The default is PJ_FALSE
--	 */
--	pj_bool_t	     ignore_stun_error;
--
-     } stun;
- 
-     /**
 Index: res/pjproject/pjnath/include/pjnath/stun_auth.h
 ===================================================================
 --- res/pjproject/pjnath/include/pjnath/stun_auth.h	(revision 372708)
@@ -219,6 +219,32 @@ Index: res/pjproject/pjnath/include/pjnath/stun_session.h
  /**
   * @}
   */
+Index: res/pjproject/pjnath/include/pjnath/stun_config.h
+===================================================================
+--- res/pjproject/pjnath/include/pjnath/stun_config.h	(revision 372708)
++++ res/pjproject/pjnath/include/pjnath/stun_config.h	(working copy)
+@@ -81,6 +81,13 @@
+      */
+     unsigned		 res_cache_msec;
+ 
++    /**
++     * Software name to be included in all STUN requests and responses.
++     *
++     * Default: PJNATH_STUN_SOFTWARE_NAME.
++     */
++    pj_str_t		 software_name;
++
+ } pj_stun_config;
+ 
+ 
+@@ -102,6 +109,7 @@
+     cfg->timer_heap = timer_heap;
+     cfg->rto_msec = PJ_STUN_RTO_VALUE;
+     cfg->res_cache_msec = PJ_STUN_RES_CACHE_DURATION;
++    cfg->software_name = pj_str((char*)PJNATH_STUN_SOFTWARE_NAME);
+ }
+ 
+ 
 Index: res/pjproject/pjnath/include/pjnath/ice_session.h
 ===================================================================
 --- res/pjproject/pjnath/include/pjnath/ice_session.h	(revision 372708)
@@ -235,27 +261,61 @@ Index: res/pjproject/pjnath/include/pjnath/ice_session.h
  } pj_ice_sess_options;
  
  
-@@ -619,7 +624,6 @@
-     pj_uint8_t		*prefs;			    /**< Type preference.   */
-     pj_bool_t		 is_nominating;		    /**< Nominating stage   */
-     pj_bool_t		 is_complete;		    /**< Complete?	    */
--    pj_bool_t		 is_destroying;		    /**< Destroy is called  */
-     pj_status_t		 ice_status;		    /**< Error status.	    */
-     pj_timer_entry	 timer;			    /**< ICE timer.	    */
-     pj_ice_sess_cb	 cb;			    /**< Callback.	    */
 Index: res/pjproject/pjnath/include/pjnath/config.h
 ===================================================================
 --- res/pjproject/pjnath/include/pjnath/config.h	(revision 372708)
 +++ res/pjproject/pjnath/include/pjnath/config.h	(working copy)
-@@ -378,7 +378,7 @@
-  * @see PJ_ICE_SESS_KEEP_ALIVE_MAX_RAND
-  */
- #ifndef PJ_ICE_SESS_KEEP_ALIVE_MIN
--#   define PJ_ICE_SESS_KEEP_ALIVE_MIN		    20
-+#   define PJ_ICE_SESS_KEEP_ALIVE_MIN		    5//FIXME: was 20
+@@ -487,6 +487,17 @@
+ #   define PJNATH_POOL_INC_TURN_SOCK		    1000
  #endif
  
- /* Warn about deprecated macro */
++/** Default STUN software name */
++#ifndef PJNATH_STUN_SOFTWARE_NAME
++#   define PJNATH_MAKE_SW_NAME(a,b,c,d)     "pjnath-" #a "." #b "." #c d
++#   define PJNATH_MAKE_SW_NAME2(a,b,c,d)    PJNATH_MAKE_SW_NAME(a,b,c,d)
++#   define PJNATH_STUN_SOFTWARE_NAME        PJNATH_MAKE_SW_NAME2( \
++						    PJ_VERSION_NUM_MAJOR, \
++						    PJ_VERSION_NUM_MINOR, \
++						    PJ_VERSION_NUM_REV, \
++						    PJ_VERSION_NUM_EXTRA)
++#endif
++
+ /**
+  * @}
+  */
+Index: res/pjproject/pjnath/include/pjnath/turn_sock.h
+===================================================================
+--- res/pjproject/pjnath/include/pjnath/turn_sock.h	(revision 372708)
++++ res/pjproject/pjnath/include/pjnath/turn_sock.h	(working copy)
+@@ -109,6 +109,13 @@
+ typedef struct pj_turn_sock_cfg
+ {
+     /**
++     * Packet buffer size.
++     *
++     * Default value is PJ_TURN_MAX_PKT_LEN.
++     */
++    unsigned max_pkt_size;
++
++    /**
+      * QoS traffic type to be set on this transport. When application wants
+      * to apply QoS tagging to the transport, it's preferable to set this
+      * field rather than \a qos_param fields since this is more portable.
+Index: res/pjproject/pjnath/include/pjnath/stun_sock.h
+===================================================================
+--- res/pjproject/pjnath/include/pjnath/stun_sock.h	(revision 372708)
++++ res/pjproject/pjnath/include/pjnath/stun_sock.h	(working copy)
+@@ -218,7 +218,9 @@
+ typedef struct pj_stun_sock_cfg
+ {
+     /**
+-     * Packet buffer size. Default value is PJ_STUN_SOCK_PKT_LEN.
++     * Packet buffer size.
++     *
++     * Default value is PJ_STUN_SOCK_PKT_LEN.
+      */
+     unsigned max_pkt_size;
+ 
 Index: res/pjproject/pjnath/src/pjnath/ice_session.c
 ===================================================================
 --- res/pjproject/pjnath/src/pjnath/ice_session.c	(revision 372708)
@@ -286,15 +346,18 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
      opt->nominated_check_delay = PJ_ICE_NOMINATED_CHECK_DELAY;
      opt->controlled_agent_want_nom_timeout = 
  	ICE_CONTROLLED_AGENT_WAIT_NOMINATION_TIMEOUT;
-+	opt->is_webrtc = PJ_FALSE;
++	opt->is_webrtc = PJ_TRUE;
  }
  
  /*
-@@ -436,6 +440,16 @@
+@@ -436,7 +440,18 @@
  					    const pj_ice_sess_options *opt)
  {
      PJ_ASSERT_RETURN(ice && opt, PJ_EINVAL);
-+	if(opt->is_webrtc && (ice->opt.is_webrtc != opt->is_webrtc)){
+-    pj_memcpy(&ice->opt, opt, sizeof(*opt));
++	pj_bool_t update = (ice->opt.is_webrtc != opt->is_webrtc);
++	pj_memcpy(&ice->opt, opt, sizeof(*opt));
++	if(update){
 +		unsigned int i;
 +		 for (i=0; i<ice->comp_cnt; ++i) {
 +			pj_ice_sess_comp *comp;
@@ -304,19 +367,10 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
 +			}
 +		}
 +	}
-     pj_memcpy(&ice->opt, opt, sizeof(*opt));
      LOG5((ice->obj_name, "ICE nomination type set to %s",
  	  (ice->opt.aggressive ? "aggressive" : "regular")));
-@@ -455,8 +469,6 @@
- 	LOG4((ice->obj_name, "Destroying ICE session"));
-     }
- 
--    ice->is_destroying = PJ_TRUE;
--
-     /* Let other callbacks finish */
-     if (ice->mutex) {
- 	pj_mutex_lock(ice->mutex);
-@@ -929,6 +941,10 @@
+     return PJ_SUCCESS;
+@@ -929,6 +944,10 @@
  			    pj_ice_sess_check_state st, 
  			    pj_status_t err_code)
  {
@@ -327,7 +381,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
      pj_assert(check->state < PJ_ICE_SESS_CHECK_STATE_SUCCEEDED);
  
      LOG5((ice->obj_name, "Check %s: state changed from %s to %s",
-@@ -1150,6 +1166,7 @@
+@@ -1150,6 +1169,7 @@
  	     * Need to do it here just in case app destroy the session
  	     * in the callback.
  	     */
@@ -335,7 +389,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
  	    if (ice->ice_status == PJ_SUCCESS)
  		ice_keep_alive(ice, PJ_FALSE);
  
-@@ -1621,9 +1638,11 @@
+@@ -1621,9 +1641,11 @@
  
      /* Save credentials */
      username.ptr = buf;
@@ -349,7 +403,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
      pj_strcat(&username, &ice->rx_ufrag);
  
      pj_strdup(ice->pool, &ice->tx_uname, &username);
-@@ -1631,7 +1650,9 @@
+@@ -1631,7 +1653,9 @@
      pj_strdup(ice->pool, &ice->tx_pass, rem_passwd);
  
      pj_strcpy(&username, &ice->rx_ufrag);
@@ -360,7 +414,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
      pj_strcat(&username, rem_ufrag);
  
      pj_strdup(ice->pool, &ice->rx_uname, &username);
-@@ -1709,6 +1730,21 @@
+@@ -1709,6 +1733,21 @@
      }
      ice->comp_cnt = highest_comp;
  
@@ -382,24 +436,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
      /* Init timer entry in the checklist. Initially the timer ID is FALSE
       * because timer is not running.
       */
-@@ -1842,16 +1878,8 @@
-     ice = td->ice;
-     clist = td->clist;
- 
--    if (ice->is_destroying)
--	return PJ_SUCCESS;
--
-     pj_mutex_lock(ice->mutex);
- 
--    if (ice->is_destroying) {
--	pj_mutex_unlock(ice->mutex);
--	return PJ_SUCCESS;
--    }
--
-     /* Set timer ID to FALSE first */
-     te->id = PJ_FALSE;
- 
-@@ -2156,6 +2184,7 @@
+@@ -2156,6 +2195,7 @@
      pj_ice_sess_cand *lcand;
      pj_ice_sess_checklist *clist;
      pj_stun_xor_mapped_addr_attr *xaddr;
@@ -407,7 +444,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
      unsigned i;
  
      PJ_UNUSED_ARG(stun_sess);
-@@ -2167,6 +2196,10 @@
+@@ -2167,6 +2207,10 @@
      clist = msg_data->data.req.clist;
      check = &clist->checks[msg_data->data.req.ckid];
      
@@ -418,7 +455,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
  
      /* Mark STUN transaction as complete */
      pj_assert(tdata == check->tdata);
-@@ -2291,18 +2324,23 @@
+@@ -2291,18 +2335,23 @@
      /* Get the STUN XOR-MAPPED-ADDRESS attribute. */
      xaddr = (pj_stun_xor_mapped_addr_attr*)
  	    pj_stun_msg_find_attr(response, PJ_STUN_ATTR_XOR_MAPPED_ADDR,0);
@@ -449,7 +486,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
  	    /* Match */
  	    lcand = &ice->lcand[i];
  	    break;
-@@ -2335,7 +2373,7 @@
+@@ -2335,7 +2384,7 @@
  				      msg_data->transport_id,
  				      PJ_ICE_CAND_TYPE_PRFLX,
  				      65535, &foundation,
@@ -458,7 +495,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
  				      &check->lcand->base_addr, 
  				      &check->lcand->base_addr,
  				      sizeof(pj_sockaddr_in), &cand_id);
-@@ -2461,7 +2499,7 @@
+@@ -2461,7 +2510,7 @@
      /* Get PRIORITY attribute */
      prio_attr = (pj_stun_priority_attr*)
  	        pj_stun_msg_find_attr(msg, PJ_STUN_ATTR_PRIORITY, 0);
@@ -467,7 +504,19 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
  	LOG5((ice->obj_name, "Received Binding request with no PRIORITY"));
  	pj_mutex_unlock(ice->mutex);
  	return PJ_SUCCESS;
-@@ -2574,7 +2612,9 @@
+@@ -2544,6 +2593,11 @@
+ 					   PJ_STUN_ATTR_XOR_MAPPED_ADDR,
+ 					   PJ_TRUE, src_addr, src_addr_len);
+ 
++	/* Add MAPPED-ADDRESS attribute */
++    status = pj_stun_msg_add_sockaddr_attr(tdata->pool, tdata->msg, 
++					   PJ_STUN_ATTR_MAPPED_ADDR,
++					   PJ_FALSE, src_addr, src_addr_len);
++
+     /* Create a msg_data to be associated with this response */
+     msg_data = PJ_POOL_ZALLOC_T(tdata->pool, pj_ice_msg_data);
+     msg_data->transport_id = ((pj_ice_msg_data*)token)->transport_id;
+@@ -2574,7 +2628,9 @@
      rcheck->src_addr_len = src_addr_len;
      pj_memcpy(&rcheck->src_addr, src_addr, src_addr_len);
      rcheck->use_candidate = (uc_attr != NULL);
@@ -478,7 +527,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
      rcheck->role_attr = role_attr;
  
      if (ice->rcand_cnt == 0) {
-@@ -2752,6 +2792,29 @@
+@@ -2752,6 +2808,29 @@
  	    pj_bool_t complete;
  	    unsigned j;
  
@@ -508,7 +557,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
  	    /* If this check is nominated, scan the valid_list for the
  	     * same check and update the nominated flag. A controlled 
  	     * agent might have finished the check earlier.
-@@ -2785,7 +2848,7 @@
+@@ -2785,7 +2864,7 @@
  	    }
  	}
  
@@ -517,116 +566,81 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
      /* If the pair is not already on the check list:
       * - The pair is inserted into the check list based on its priority.
       * - Its state is set to In-Progress
-@@ -2864,8 +2927,6 @@
-     pj_status_t status = PJ_SUCCESS;
-     pj_ice_sess_comp *comp;
-     pj_ice_sess_cand *cand;
--    pj_uint8_t transport_id;
--    pj_sockaddr addr;
- 
-     PJ_ASSERT_RETURN(ice && comp_id, PJ_EINVAL);
-     
-@@ -2881,29 +2942,22 @@
-     comp = find_comp(ice, comp_id);
-     if (comp == NULL) {
- 	status = PJNATH_EICEINCOMPID;
--	pj_mutex_unlock(ice->mutex);
- 	goto on_return;
-     }
- 
-     if (comp->valid_check == NULL) {
- 	status = PJNATH_EICEINPROGRESS;
--	pj_mutex_unlock(ice->mutex);
- 	goto on_return;
-     }
- 
-     cand = comp->valid_check->lcand;
--    transport_id = cand->transport_id;
--    pj_sockaddr_cp(&addr, &comp->valid_check->rcand->addr);
--
--    /* Release the mutex now to avoid deadlock (see ticket #1451). */
--    pj_mutex_unlock(ice->mutex);
--
--    status = (*ice->cb.on_tx_pkt)(ice, comp_id, transport_id, 
-+    status = (*ice->cb.on_tx_pkt)(ice, comp_id, cand->transport_id, 
- 				  data, data_len, 
--				  &addr, 
-+				  &comp->valid_check->rcand->addr, 
- 				  sizeof(pj_sockaddr_in));
- 
- on_return:
-+    pj_mutex_unlock(ice->mutex);
-     return status;
- }
- 
-Index: res/pjproject/pjnath/src/pjnath/stun_sock.c
+Index: res/pjproject/pjnath/src/pjnath/turn_sock.c
 ===================================================================
---- res/pjproject/pjnath/src/pjnath/stun_sock.c	(revision 372708)
-+++ res/pjproject/pjnath/src/pjnath/stun_sock.c	(working copy)
-@@ -504,7 +504,7 @@
- 				    PJ_FALSE, PJ_TRUE, &stun_sock->srv_addr,
- 				    pj_sockaddr_get_len(&stun_sock->srv_addr),
- 				    tdata);
--    if (status != PJ_SUCCESS && status != PJ_EPENDING)
-+    if (status != PJ_SUCCESS)
- 	goto on_error;
+--- res/pjproject/pjnath/src/pjnath/turn_sock.c	(revision 372708)
++++ res/pjproject/pjnath/src/pjnath/turn_sock.c	(working copy)
+@@ -97,6 +97,7 @@
+ PJ_DEF(void) pj_turn_sock_cfg_default(pj_turn_sock_cfg *cfg)
+ {
+     pj_bzero(cfg, sizeof(*cfg));
++    cfg->max_pkt_size = PJ_TURN_MAX_PKT_LEN;
+     cfg->qos_type = PJ_QOS_TYPE_BEST_EFFORT;
+     cfg->qos_ignore_error = PJ_TRUE;
+ }
+@@ -210,6 +211,7 @@
+     }
  
-     return PJ_SUCCESS;
+     if (turn_sock->active_sock) {
++        pj_activesock_set_user_data(turn_sock->active_sock, NULL);
+ 	pj_activesock_close(turn_sock->active_sock);
+ 	turn_sock->active_sock = NULL;
+     }
+@@ -462,7 +464,17 @@
+     pj_turn_sock *turn_sock;
+ 
+     turn_sock = (pj_turn_sock*) pj_activesock_get_user_data(asock);
++    if (!turn_sock)
++        return PJ_FALSE;
+ 
++    /* TURN session may have already been destroyed here.
++     * See ticket #1557 (http://trac.pjsip.org/repos/ticket/1557).
++     */
++    if (!turn_sock->sess) {
++	sess_fail(turn_sock, "TURN session already destroyed", status);
++	return PJ_FALSE;
++    }
++
+     if (status != PJ_SUCCESS) {
+ 	sess_fail(turn_sock, "TCP connect() error", status);
+ 	return PJ_FALSE;
+@@ -474,7 +486,7 @@
+ 
+     /* Kick start pending read operation */
+     status = pj_activesock_start_read(asock, turn_sock->pool, 
+-				      PJ_TURN_MAX_PKT_LEN, 0);
++				      turn_sock->setting.max_pkt_size, 0);
+ 
+     /* Init send_key */
+     pj_ioqueue_op_key_init(&turn_sock->send_key, sizeof(turn_sock->send_key));
 Index: res/pjproject/pjnath/src/pjnath/ice_strans.c
 ===================================================================
 --- res/pjproject/pjnath/src/pjnath/ice_strans.c	(revision 372708)
 +++ res/pjproject/pjnath/src/pjnath/ice_strans.c	(working copy)
-@@ -221,7 +221,6 @@
-     cfg->turn.conn_type = PJ_TURN_TP_UDP;
+@@ -503,6 +503,13 @@
+ 	add_update_turn(ice_st, comp);
+     }
  
-     cfg->stun.max_host_cands = 64;
--    cfg->stun.ignore_stun_error = PJ_FALSE;
++    /* It's possible that we end up without any candidates */
++    if (comp->cand_cnt == 0) {
++	PJ_LOG(4,(ice_st->obj_name,
++		  "Error: no candidate is created due to settings"));
++	return PJ_EINVAL;
++    }
++
+     return PJ_SUCCESS;
  }
  
- 
-@@ -1181,11 +1180,8 @@
- 
-     /* If ICE is available, send data with ICE, otherwise send with the
-      * default candidate selected during initialization.
--     *
--     * https://trac.pjsip.org/repos/ticket/1416:
--     * Once ICE has failed, also send data with the default candidate.
-      */
--    if (ice_st->ice && ice_st->state < PJ_ICE_STRANS_STATE_FAILED) {
-+    if (ice_st->ice) {
- 	if (comp->turn_sock) {
- 	    pj_turn_sock_lock(comp->turn_sock);
- 	}
-@@ -1410,11 +1406,6 @@
-     pj_status_t status;
- 
-     comp = (pj_ice_strans_comp*) pj_stun_sock_get_user_data(stun_sock);
--    if (comp == NULL) {
--	/* We have disassociated ourselves from the STUN socket */
--	return PJ_FALSE;
--    }
--
-     ice_st = comp->ice_st;
- 
-     sess_add_ref(ice_st);
-@@ -1502,14 +1493,8 @@
- 	    /* May not have cand, e.g. when error during init */
- 	    if (cand)
- 		cand->status = status;
--	    if (!ice_st->cfg.stun.ignore_stun_error) {
--		sess_fail(ice_st, PJ_ICE_STRANS_OP_INIT,
--		          "DNS resolution failed", status);
--	    } else {
--		PJ_LOG(4,(ice_st->obj_name,
--			  "STUN error is ignored for comp %d",
--			  comp->comp_id));
--	    }
-+	    sess_fail(ice_st, PJ_ICE_STRANS_OP_INIT, "DNS resolution failed", 
-+		      status);
- 	}
- 	break;
-     case PJ_STUN_SOCK_BINDING_OP:
-@@ -1546,7 +1531,7 @@
+@@ -1145,6 +1152,8 @@
+  */
+ PJ_DEF(pj_status_t) pj_ice_strans_stop_ice(pj_ice_strans *ice_st)
+ {
++    PJ_ASSERT_RETURN(ice_st, PJ_EINVAL);
++
+     if (ice_st->ice) {
+ 	pj_ice_sess_destroy(ice_st->ice);
+ 	ice_st->ice = NULL;
+@@ -1546,7 +1555,7 @@
  		    if (comp->default_cand > idx) {
  			--comp->default_cand;
  		    } else if (comp->default_cand == idx) {
@@ -635,48 +649,15 @@ Index: res/pjproject/pjnath/src/pjnath/ice_strans.c
  		    }
  
  		    /* Remove srflx candidate */
-@@ -1574,37 +1559,16 @@
+@@ -1574,7 +1583,7 @@
  	    /* May not have cand, e.g. when error during init */
  	    if (cand)
  		cand->status = status;
 -	    if (!ice_st->cfg.stun.ignore_stun_error) {
--		sess_fail(ice_st, PJ_ICE_STRANS_OP_INIT,
--			  "STUN binding request failed", status);
--	    } else {
--		PJ_LOG(4,(ice_st->obj_name,
--			  "STUN error is ignored for comp %d",
--			  comp->comp_id));
--
--		if (cand) {
--		    unsigned idx = cand - comp->cand_list;
--
--		    /* Update default candidate index */
--		    if (comp->default_cand == idx) {
--			comp->default_cand = !idx;
--		    }
--		}
--
--		sess_init_update(ice_st);
--	    }
-+	    sess_fail(ice_st, PJ_ICE_STRANS_OP_INIT, 
-+		      "STUN binding request failed", status);
- 	}
- 	break;
-     case PJ_STUN_SOCK_KEEP_ALIVE_OP:
- 	if (status != PJ_SUCCESS) {
- 	    pj_assert(cand != NULL);
- 	    cand->status = status;
--	    if (!ice_st->cfg.stun.ignore_stun_error) {
--		sess_fail(ice_st, PJ_ICE_STRANS_OP_INIT,
--			  "STUN keep-alive failed", status);
--	    } else {
--		PJ_LOG(4,(ice_st->obj_name, "STUN error is ignored"));
--	    }
-+	    sess_fail(ice_st, PJ_ICE_STRANS_OP_INIT, 
-+		      "STUN keep-alive failed", status);
- 	}
- 	break;
-     }
++	    if (!ice_st->cfg.stun.ignore_stun_error || comp->cand_cnt==1) {
+ 		sess_fail(ice_st, PJ_ICE_STRANS_OP_INIT,
+ 			  "STUN binding request failed", status);
+ 	    } else {
 Index: res/pjproject/pjnath/src/pjnath/stun_auth.c
 ===================================================================
 --- res/pjproject/pjnath/src/pjnath/stun_auth.c	(revision 372708)
@@ -731,6 +712,15 @@ Index: res/pjproject/pjnath/src/pjnath/stun_auth.c
  }
  
  
+@@ -231,7 +237,7 @@
+     pj_uint8_t digest[PJ_SHA1_DIGEST_SIZE];
+     pj_stun_status err_code;
+     const char *err_text = NULL;
+-    pj_status_t status;
++    pj_status_t status;	
+ 
+     /* msg and credential MUST be specified */
+     PJ_ASSERT_RETURN(pkt && pkt_len && msg && cred, PJ_EINVAL);
 @@ -252,7 +258,10 @@
  
      /* Get realm and nonce from credential */
@@ -743,15 +733,6 @@ Index: res/pjproject/pjnath/src/pjnath/stun_auth.c
  	p_info->realm = cred->data.static_cred.realm;
  	p_info->nonce = cred->data.static_cred.nonce;
      } else if (cred->type == PJ_STUN_AUTH_CRED_DYNAMIC) {
-@@ -281,7 +290,7 @@
- 	}
-     }
- 
--    if (amsgi == NULL) {
-+    if (amsgi == NULL && cred->type != PJ_STUN_AUTH_CRED_WEBRTC) {
- 	/* According to rfc3489bis-10 Sec 10.1.2/10.2.2, we should return 400
- 	   for short term, and 401 for long term.
- 	   The rule has been changed from rfc3489bis-06
 @@ -318,7 +327,20 @@
      }
  
@@ -774,11 +755,40 @@ Index: res/pjproject/pjnath/src/pjnath/stun_auth.c
  	pj_bool_t username_ok;
  	username_ok = !pj_strcmp(&auser->value, 
  				 &cred->data.static_cred.username);
+Index: res/pjproject/pjnath/src/pjnath/turn_session.c
+===================================================================
+--- res/pjproject/pjnath/src/pjnath/turn_session.c	(revision 372708)
++++ res/pjproject/pjnath/src/pjnath/turn_session.c	(working copy)
+@@ -421,7 +421,10 @@
+ 	/* This may recursively call this function again with
+ 	 * state==PJ_TURN_STATE_DEALLOCATED.
+ 	 */
++	/* No need to deallocate as we're already deallocating!
++	 * See https://trac.pjsip.org/repos/ticket/1551
+ 	send_refresh(sess, 0);
++	*/
+ 	break;
+     case PJ_TURN_STATE_DEALLOCATED:
+     case PJ_TURN_STATE_DESTROYING:
 Index: res/pjproject/pjnath/src/pjnath/stun_session.c
 ===================================================================
 --- res/pjproject/pjnath/src/pjnath/stun_session.c	(revision 372708)
 +++ res/pjproject/pjnath/src/pjnath/stun_session.c	(working copy)
-@@ -657,7 +657,10 @@
+@@ -500,11 +500,9 @@
+     pj_memcpy(&sess->cb, cb, sizeof(*cb));
+     sess->use_fingerprint = fingerprint;
+     sess->log_flag = 0xFFFF;
+-    
+-    sess->srv_name.ptr = (char*) pj_pool_alloc(pool, 32);
+-    sess->srv_name.slen = pj_ansi_snprintf(sess->srv_name.ptr, 32,
+-					   "pjnath-%s", pj_get_version());
+ 
++    pj_stun_session_set_software_name(sess, &cfg->software_name);
++
+     sess->rx_pool = pj_pool_create(sess->cfg->pf, name, 
+ 				   PJNATH_POOL_LEN_STUN_TDATA, 
+ 				   PJNATH_POOL_INC_STUN_TDATA, NULL);
+@@ -657,7 +655,10 @@
  static pj_status_t get_auth(pj_stun_session *sess,
  			    pj_stun_tx_data *tdata)
  {
@@ -790,7 +800,7 @@ Index: res/pjproject/pjnath/src/pjnath/stun_session.c
  	//tdata->auth_info.realm = sess->cred.data.static_cred.realm;
  	tdata->auth_info.realm = sess->server_realm;
  	tdata->auth_info.username = sess->cred.data.static_cred.username;
-@@ -728,9 +731,9 @@
+@@ -728,9 +729,9 @@
      
      /* Get authentication information for the request */
      if (sess->auth_type == PJ_STUN_AUTH_NONE) {
@@ -802,7 +812,26 @@ Index: res/pjproject/pjnath/src/pjnath/stun_session.c
  	/* MUST put authentication in request */
  	status = get_auth(sess, tdata);
  	if (status != PJ_SUCCESS) {
-@@ -1174,7 +1177,7 @@
+@@ -1138,11 +1139,17 @@
+     {
+ 	return PJ_SUCCESS;
+     }
+-
++	
+     status = pj_stun_authenticate_request(pkt, pkt_len, rdata->msg, 
+ 					  &sess->cred, tmp_pool, &rdata->info,
+ 					  &response);
+     if (status != PJ_SUCCESS && response != NULL) {
++		if(sess->cred.type == PJ_STUN_AUTH_CRED_WEBRTC){
++			// Fix for http://code.google.com/p/sipml5/issues/detail?id=36
++			// Do not send error to chrome
++			return (!sess->cred.data.webrtc_cred.rx_username.slen || !sess->cred.data.webrtc_cred.tx_username.slen) ? -1 : PJ_SUCCESS;
++		}
++		
+ 	PJ_LOG(5,(SNAME(sess), "Message authentication failed"));
+ 	send_response(sess, token, tmp_pool, response, &rdata->info, 
+ 		      PJ_FALSE, src_addr, src_addr_len);
+@@ -1174,7 +1181,7 @@
  
      if (sess->auth_type == PJ_STUN_AUTH_NONE)
  	options |= PJ_STUN_NO_AUTHENTICATE;
@@ -811,7 +840,7 @@ Index: res/pjproject/pjnath/src/pjnath/stun_session.c
      /* Authenticate the message, unless PJ_STUN_NO_AUTHENTICATE
       * is specified in the option.
       */
-@@ -1261,7 +1264,7 @@
+@@ -1261,7 +1268,7 @@
  
      if (sess->auth_type == PJ_STUN_AUTH_NONE)
  	options |= PJ_STUN_NO_AUTHENTICATE;
@@ -820,7 +849,7 @@ Index: res/pjproject/pjnath/src/pjnath/stun_session.c
      /* Authenticate the message, unless PJ_STUN_NO_AUTHENTICATE
       * is specified in the option.
       */
-@@ -1434,3 +1437,7 @@
+@@ -1434,3 +1441,7 @@
      return status;
  }
  
