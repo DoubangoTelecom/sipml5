@@ -127,7 +127,7 @@ _Firewall traversal_<br />
 From *sipml5* home page, enter *xlite5* in the call control box and press *call*.
 
 ==Known issues==
- # For outgoing calls (chrome -> any SIP client/PSTN) all works as expected but for incoming calls sometimes we only have one-way audio. *To be fixed.*
+ # ~~For outgoing calls (chrome -> any SIP client/PSTN) all works as expected but for incoming calls sometimes we only have one-way audio.~~ *Fixed by sipml5 r86.*
 
 ==Technical help==
 Please check our [http://code.google.com/p/sipml5/issues/list issue tracker] or [https://groups.google.com/group/doubango developer group] if you have any problem.
