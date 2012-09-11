@@ -98,11 +98,7 @@ $PREFIX/sbin/safe_asterisk
 }}}
 
 ==Configure sipml5==
- * Checkout sipml5 source code
-{{{
-svn checkout http://sipml5.googlecode.com/svn/trunk/ sipml5-read-only
-}}}
- * Open *sipml5-read-only/trunk/call.htm* file using chrome
+ * Open [http://sipml5.org/call.htm?svn=9 http://sipml5.org/call.htm] on your browser
  * Click on *Expert mode?* and set the fields as follow
 [http://sipml5.googlecode.com/svn/trunk/asterisk/screenhot_chrome_expert.png]<br />
 _Expert mode fields settings_<br />
