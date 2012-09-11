@@ -106,7 +106,7 @@ svn checkout http://sipml5.googlecode.com/svn/trunk/ sipml5-read-only
  * Click on *Expert mode?* and set the fields as follow
 [http://sipml5.googlecode.com/svn/trunk/asterisk/screenhot_chrome_expert.png]<br />
 _Expert mode fields settings_<br />
-The websocket connection url is *ws://192.168.0.12:8088/ws*.
+The websocket connection url is *ws://192.168.0.12:8088/ws* (Do not forget the */ws* at the end). <br />
 *192.168.0.12* = Asterisk Server IP address. You have to change this value with yours.<br />
 *8088* = Websocket listening port (defined in *$PREFIX/etc/asterisk/http.conf*)
  * Go back to the home screen and set the fields as follow
