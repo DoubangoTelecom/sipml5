@@ -7,7 +7,7 @@
 * SIP INVITE Server Transaction as per RFC 3261 subclause 17.2.1.
 */
 tsip_transac_ist.prototype = Object.create(tsip_transac.prototype);
-tsip_transac_ist.prototype.__b_debug_state_machine = false;
+tsip_transac_ist.prototype.__b_debug_state_machine = true;
 
 var tsip_transac_ist_actions_e =
 {
@@ -416,6 +416,7 @@ function __tsip_transac_ist_Accepted_2_Accepted_timerX(ao_args){
 function __tsip_transac_ist_Accepted_2_Accepted_iACK(ao_args) {
     var o_transac = ao_args[0];
     var o_request = ao_args[1];
+    o_transac.timer_cancel('X');
     return o_transac.get_dialog().callback(tsip_dialog_event_type_e.I_MSG, o_request);
 }
 

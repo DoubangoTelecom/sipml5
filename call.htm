@@ -377,7 +377,7 @@
                                     //tsip_stack.prototype.SetProxyOutBound('192.168.0.9', 5060, tsip_transport_type_e.UDP), // uncomment to use SIP outbound proxy
                                     // not valid? "IM-client/OMA1.0 sipML5-v0.0.0000.0/mozilla/5.0 (windows nt 6.0) applewebkit/537.9 (khtml, like gecko) chrome/23.0.1261.1 safari/537.9"
                                     // tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v0.0.0000.0/' + (navigator.userAgent || "unknown").toLowerCase()),
-                                    tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v0.0.0000.0/'),
+                                    tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v1.0.89.0/'),
                                     tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
             if (oSipStack) {
                 oSipStack.on_event_stack = onSipEventStack;
@@ -568,6 +568,7 @@
                 if (tsk_utils_have_webrtc4all()) {
                     if (b_local) __o_display_local.style.visibility = "visible";
                     else __o_display_remote.style.visibility = "visible";
+                   
                 }
                 else {
                     o_elt_video.src = o_src_video;
@@ -598,6 +599,7 @@
             tdVideo.style.height = '0px';
             divVideo.style.height = '0px';
         }
+        btnFullScreen.disabled = !b_show;
     }
 
     // Callback function for SIP Stacks
@@ -1075,7 +1077,7 @@
                     <tr>
                        <td align='center'>
                             <div id='divCallOptions' class='call-options' style='opacity: 0; margin-top: 3px'>
-                                <input type="button" class="btn" style="" id="btnFullScreen" value="FullScreen" onclick='toggleFullScreen();' /> &nbsp;
+                                <input type="button" class="btn" style="" id="btnFullScreen" value="FullScreen" disabled onclick='toggleFullScreen();' /> &nbsp;
                                 <input type="button" class="btn" style="" id="btnHoldResume" value="Hold" onclick='sipToggleHoldResume();' /> &nbsp;
                                 <input type="button" class="btn" style="" id="btnTransfer" value="Transfer" onclick='sipTransfer();' /> &nbsp;
                                 <!--input type="button" class="btn" style="" id="btnKeyPad" value="KeyPad" onclick='toto();' /-->
