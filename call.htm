@@ -179,7 +179,7 @@
         // checks for WebRTC support
         if (!tsk_utils_have_webrtc()) {
             // is it chrome?
-            if (navigator.userAgent.toLowerCase().indexOf("Chrome") > -1) {
+            if (navigator.userAgent.toLowerCase().indexOf("chrome") > -1) {
                     if (confirm("You're using an old Chrome version or WebRTC is not enabled.\nDo you want to see how to enable WebRTC?")) {
                         window.location = 'http://www.webrtc.org/running-the-demos';
                     }
@@ -225,7 +225,7 @@
                     }
                 }
                 else if (navigator.userAgent) {
-                    if (navigator.userAgent.toLowerCase().indexOf("Safari") > -1 || navigator.userAgent.toLowerCase().indexOf("Firefox") > -1 || navigator.userAgent.toLowerCase().indexOf("Opera") > -1) {
+                    if (navigator.userAgent.toLowerCase().indexOf("safari") > -1 || navigator.userAgent.toLowerCase().indexOf("firefox") > -1 || navigator.userAgent.toLowerCase().indexOf("opera") > -1) {
                         if (confirm("Your browser don't support WebRTC.\nDo you want to install WebRTC4all extension to enjoy audio/video calls?\nIMPORTANT: You must restart your browser after the installation.")) {
                             window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
                         }
