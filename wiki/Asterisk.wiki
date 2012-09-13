@@ -133,7 +133,7 @@ To test with these browsers you will need to install [http://code.google.com/p/w
 ==Updates==
  # *r90*: Fix one-way audio when the called party is chrome
  # *r91*: Fix ICE authentication issues
- # *r94*: Add support for IE, Firefox, Safari and Opera (thanks to [http://code.google.com/p/webrtc4all webrtc4all]). Disable STUN keepAlive to avoid overrun.
+ # *r98*: Add support for IE, Firefox, Safari and Opera (thanks to [http://code.google.com/p/webrtc4all webrtc4all]). Disable STUN keepAlive to avoid overrun.
 
 ==Technical help==
 Please check our [http://code.google.com/p/sipml5/issues/list issue tracker] or [https://groups.google.com/group/doubango developer group] if you have any problem.
