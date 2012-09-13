@@ -34,17 +34,19 @@
 </head>
 
 <script type="text/javascript">
-    window.onload = function () {
-        var cbVideoDisable;
-        var cbAVPFDisable;
-        var txtWebsocketServerUrl;
-        var txtInfo;
 
+    var cbVideoDisable;
+    var cbAVPFDisable;
+    var txtWebsocketServerUrl;
+    var txtSIPOutboundProxyUrl;
+    var txtInfo;
+
+    window.onload = function () {
         cbVideoDisable = document.getElementById("cbVideoDisable");
         cbAVPFDisable = document.getElementById("cbAVPFDisable");
         txtWebsocketServerUrl = document.getElementById("txtWebsocketServerUrl");
         txtSIPOutboundProxyUrl = document.getElementById("txtSIPOutboundProxyUrl");
-        txtInfo = document.getElementById("txtWebsocketServerUrl");
+        txtInfo = document.getElementById("txtInfo");
 
         txtWebsocketServerUrl.disabled = !window.WebSocket;
         document.getElementById("btnSave").disabled = !window.localStorage;
@@ -56,7 +58,9 @@
     function settingsSave() {
         window.localStorage.setItem('org.doubango.expert.disable_video', cbVideoDisable.checked ? "true" : "false");
         window.localStorage.setItem('org.doubango.expert.disable_avpf', cbAVPFDisable.checked ? "true" : "false");
-        window.localStorage.setItem('org.doubango.expert.websocket_server_url', txtWebsocketServerUrl.value);
+        if (!txtWebsocketServerUrl.disabled) {
+            window.localStorage.setItem('org.doubango.expert.websocket_server_url', txtWebsocketServerUrl.value);
+        }
         window.localStorage.setItem('org.doubango.expert.sip_outboundproxy_url', txtSIPOutboundProxyUrl.value);
 
         txtInfo.innerHTML = '<i>Saved</i>';
