@@ -124,7 +124,7 @@ _xlite5 account configuration_<br />
 _Firewall traversal_<br />
 
 ==Testing==
-From *sipml5* home page, enter *xlite5* in the call control box and press *call*.
+From *sipml5* home page, enter *1061* in the call control box and press *call*.
 
 ==Known issues==
  # ~~For outgoing calls (chrome -> any SIP client/PSTN) all works as expected but for incoming calls sometimes we only have one-way audio.~~ UPDATE: *Fixed by sipml5 r91.* You have to patch Asterisk again and rebuild it.
