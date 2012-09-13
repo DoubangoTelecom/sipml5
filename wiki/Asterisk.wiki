@@ -126,14 +126,14 @@ _Firewall traversal_<br />
 ==Testing with chrome==
 From *sipml5* home page, enter *1061* in the call control box and press *call*.
 
-==Testing with IE, Firefox, Safari and Opera==
+==Testing with Firefox, IE9+, Safari and Opera==
 To test with these browsers you will need to install [http://code.google.com/p/webrtc4all/downloads/list webrtc4all] version *1.11.745* or later. <br />
 *IMPORTANT*: The websocket transport is disabled on these browsers (because not supported or using old version) and you have to set a *SIP outbound proxy* using the expert view. Only *UDP* is supported as transport protocol. The value of the SIP outbound proxy should be something like *udp://192.168.0.12:5060*.
 
 ==Updates==
  # *r90*: Fix one-way audio when the called party is chrome
  # *r91*: Fix ICE authentication issues
- # *r98*: Add support for IE, Firefox, Safari and Opera (thanks to [http://code.google.com/p/webrtc4all webrtc4all]). Disable STUN keepAlive to avoid overrun.
+ # *r98*: Add support for Firefox, IE9+, Safari and Opera (thanks to [http://code.google.com/p/webrtc4all webrtc4all]). Disable STUN keepAlive to avoid overrun.
 
 ==Technical help==
 Please check our [http://code.google.com/p/sipml5/issues/list issue tracker] or [https://groups.google.com/group/doubango developer group] if you have any problem.
