@@ -1,9 +1,9 @@
-﻿<!--
+﻿<!DOCTYPE html>
+<!--
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
 * License: GPLv3
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 -->
-<!DOCTYPE html>
 <html>
 <!-- head -->
 <head>
@@ -15,7 +15,7 @@
     <meta name="author" content="Doubango Telecom" />
 
     <!-- SIP API and utility functions -->
-    <script src="src/tinySIP/src/tsip_api.js?svn=9" type="text/javascript"> </script>
+    <script src="src/tinySIP/src/tsip_api.js?svn=10" type="text/javascript"> </script>
     <!-- Styles -->
     <link href="./assets/css/bootstrap.css" rel="stylesheet" />
     <style type="text/css">
@@ -93,7 +93,7 @@
 
     // to avoid caching
     //if (window.location.href.indexOf("svn=") == -1) {
-    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=9" : "&svn=9"); 
+    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=10" : "&svn=10");
     //}
 
     var sTransferNumber;
@@ -167,8 +167,8 @@
 
         // check webrtc4all version
         if (tsk_utils_have_webrtc4all()) {
-            tsk_utils_log_info("WebRTC type = " + WebRtc4all_GetType());
-            if (tsk_utils_webrtc4all_get_version() != "1.9.731") {
+            tsk_utils_log_info("WebRTC type = " + WebRtc4all_GetType() + " version = " + tsk_utils_webrtc4all_get_version());
+            if (tsk_utils_webrtc4all_get_version() != "1.11.745") {
                 if (confirm("Your WebRtc4all extension is outdated. A new version with critical bug fix is available. Do you want to install it?\nIMPORTANT: You must restart your browser after the installation.")) {
                     window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
                     return;
@@ -303,12 +303,12 @@
             if ((s_value = window.localStorage.getItem('org.doubango.identity.realm'))) txtRealm.value = s_value;
         }
         else {
-            //txtDisplayName.value = "004";
-            //txtPrivateIdentity.value = "004";
-            //txtPublicIdentity.value = "sip:004@192.168.0.10";
-            //txtPassword.value = "d3sb7j4fb8";
-            //txtRealm.value = "192.168.0.10";
-            //txtPhoneNumber.value = "78";
+            //txtDisplayName.value = "1060";
+            //txtPrivateIdentity.value = "1060";
+            //txtPublicIdentity.value = "sip:1060@doubango.org";
+            //txtPassword.value = "1060";
+            //txtRealm.value = "doubango.org";
+            //txtPhoneNumber.value = "1062";
         }
     };
 
@@ -352,10 +352,12 @@
             var s_proxy;
             // @NotUsed
             // var b_disable_avpf = (window.localStorage.getItem('org.doubango.expert.disable_avpf') == "true");
-            var s_websocket_server_url = window.localStorage.getItem('org.doubango.expert.websocket_server_url');
+            var s_websocket_server_url = window.localStorage ? window.localStorage.getItem('org.doubango.expert.websocket_server_url') : null;
+            var s_sip_outboundproxy_url = window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null;
             tsk_utils_log_info("s_websocket_server_url=" + (s_websocket_server_url || "(null)"));
+            tsk_utils_log_info("s_sip_outboundproxy_url=" + (s_sip_outboundproxy_url || "(null)"));
 
-            if (tsk_utils_have_webrtc4all()) {
+            if (!tsk_utils_have_websocket()) {
                 // port and host will be updated using the result from DNS SRV(NAPTR(realm))
                 i_port = 5060;
                 s_proxy = txtRealm.value;
@@ -374,21 +376,20 @@
                                     tsip_stack.prototype.SetPassword(txtPassword.value),
                                     tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
                                     tsip_stack.prototype.SetWebsocketServerUrl(s_websocket_server_url),
-                                    //tsip_stack.prototype.SetProxyOutBound('192.168.0.9', 5060, tsip_transport_type_e.UDP), // uncomment to use SIP outbound proxy
+                                    tsip_stack.prototype.SetProxyOutBoundUrl(s_sip_outboundproxy_url),
                                     // not valid? "IM-client/OMA1.0 sipML5-v0.0.0000.0/mozilla/5.0 (windows nt 6.0) applewebkit/537.9 (khtml, like gecko) chrome/23.0.1261.1 safari/537.9"
                                     // tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v0.0.0000.0/' + (navigator.userAgent || "unknown").toLowerCase()),
                                     tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v1.0.89.0/'),
                                     tsip_stack.prototype.SetHeader('Organization', 'Doubango Telecom'));
-            if (oSipStack) {
-                oSipStack.on_event_stack = onSipEventStack;
-                oSipStack.on_event_dialog = onSipEventDialog;
-                oSipStack.on_event_invite = onSipEventInvite;
+            
+            oSipStack.on_event_stack = onSipEventStack;
+            oSipStack.on_event_dialog = onSipEventDialog;
+            oSipStack.on_event_invite = onSipEventInvite;
 
-                if (oSipStack.start() != 0) {
-                    txtRegStatus.innerHTML = '<b>Failed to start the SIP stack</b>';
-                }
-                else return;
+            if (oSipStack.start() != 0) {
+                txtRegStatus.innerHTML = '<b>Failed to start the SIP stack</b>';
             }
+            else return;
         }
         catch (e) {
             txtRegStatus.innerHTML = "<b>2:" + e + "</b>";
@@ -412,7 +413,7 @@
                                 tsip_session.prototype.SetToStr(txtPhoneNumber.value),
                                 tsip_session.prototype.SetCaps("+sip.ice")
                             );
-            bDisableVideo = (window.localStorage.getItem('org.doubango.expert.disable_video') == "true");
+            bDisableVideo = (window.localStorage && window.localStorage.getItem('org.doubango.expert.disable_video') == "true");
             if (oSipSessionCall.call(bDisableVideo ? tmedia_type_e.AUDIO : tmedia_type_e.AUDIO_VIDEO) != 0) {
                 oSipSessionCall = null;
                 txtCallStatus.value = 'Failed to make call';
@@ -952,7 +953,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="index.html?svn=9">Home</a></li>
+                        <li class="active"><a href="index.html?svn=10">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->

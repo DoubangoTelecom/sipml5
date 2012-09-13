@@ -11,7 +11,7 @@ function tsk_utils_init_webrtc() {
 
 function tsk_utils_have_websocket() {
     try {
-        return (WebSocket != null);
+        return !!window.WebSocket;
     }
     catch (e) {
         return false;
