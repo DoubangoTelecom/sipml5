@@ -272,6 +272,7 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
     this.network.i_local_port = 0;
     this.network.s_proxy_cscf_host = s_proxy_cscf_host;
     this.network.i_proxy_cscf_port = i_proxy_cscf_port;
+    // IMPORTANT: Safari and Opera support WebSocket but they are using the old version
     this.network.e_proxy_cscf_type = tsk_utils_have_webrtc4all() ? tsip_transport_type_e.UDP : tsip_transport_type_e.WS;
     this.network.o_uri_realm = o_uri_realm;
     this.network.s_proxy_outbound_host = null;
@@ -528,9 +529,50 @@ tsip_stack.prototype.SetHeader("Organization", "Doubango Telecom")
 // or
 o_stack.set(tsip_stack.prototype.SetProxyOutBound("192.168.0.10", 5060, tsip_transport_type_e.UDP));
 @endcode
+@sa @ref SetWebsocketServerUrl
 */
 tsip_stack.prototype.SetProxyOutBound = function (s_proxy_host, i_proxy_port, e_proxy_type) {
     return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.PROXY_OUTBOUND, s_proxy_host, i_proxy_port, e_proxy_type);
+}
+
+/**
+* Static parameter function used to set the SIP outbound proxy url.
+@code
+var o_stack = new tsip_stack("doubango.org", "alice", "sip:alice@doubango.org", "192.168.0.12", 5062,
+tsip_stack.prototype.SetProxyOutBoundUrl("udp://192.168.0.12:5060"),
+tsip_stack.prototype.SetPassword ("mypassword"),
+tsip_stack.prototype.SetDisplayName("alice"),
+tsip_stack.prototype.SetHeader("User-Agent", "IM-client/OMA1.0 sipML5/v0.0.0000.0"),
+tsip_stack.prototype.SetHeader("Organization", "Doubango Telecom")
+);
+// or
+o_stack.set(tsip_stack.prototype.SetProxyOutBoundUrl("udp://192.168.0.12:5060"));
+@endcode
+@sa @ref SetProxyOutBound
+*/
+tsip_stack.prototype.SetProxyOutBoundUrl = function (s_url) {
+    if (!s_url) {
+        // restore default values
+        return tsip_stack.prototype.SetProxyOutBound(null, 5060, tsip_transport_type_e.UDP);
+    }
+
+    var ao_params = tsk_string_parse_url(s_url);
+    if (!ao_params || ao_params.length < 3) {
+        tsk_utils_log_error(s_url + " not valid as outbound proxy url");
+        return null;
+    }
+
+    var e_tranport;
+    switch (ao_params[0]) {
+        case "udp": default: e_tranport = tsip_transport_type_e.UDP; break;
+        case "tcp": e_tranport = tsip_transport_type_e.TCP; break;
+        case "tls": e_tranport = tsip_transport_type_e.TLS; break;
+        case "dtls": e_tranport = tsip_transport_type_e.DTLS; break;
+        case "sctp": e_tranport = tsip_transport_type_e.SCTP; break;
+        case "ws": e_tranport = tsip_transport_type_e.WS; break;
+        case "wss": e_tranport = tsip_transport_type_e.WSS; break;
+    }
+    return tsip_stack.prototype.SetProxyOutBound(ao_params[1], ao_params[2], e_tranport);
 }
 
 tsip_stack.prototype.SetWebsocketServerUrl = function (s_websocket_server_url) {

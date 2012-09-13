@@ -1,9 +1,9 @@
-﻿<!--
+﻿<!DOCTYPE html>
+<!--
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
 * License: GPLv3
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 -->
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -43,8 +43,10 @@
         cbVideoDisable = document.getElementById("cbVideoDisable");
         cbAVPFDisable = document.getElementById("cbAVPFDisable");
         txtWebsocketServerUrl = document.getElementById("txtWebsocketServerUrl");
+        txtSIPOutboundProxyUrl = document.getElementById("txtSIPOutboundProxyUrl");
         txtInfo = document.getElementById("txtWebsocketServerUrl");
 
+        txtWebsocketServerUrl.disabled = !window.WebSocket;
         document.getElementById("btnSave").disabled = !window.localStorage;
         document.getElementById("btnRevert").disabled = !window.localStorage;
 
@@ -55,6 +57,7 @@
         window.localStorage.setItem('org.doubango.expert.disable_video', cbVideoDisable.checked ? "true" : "false");
         window.localStorage.setItem('org.doubango.expert.disable_avpf', cbAVPFDisable.checked ? "true" : "false");
         window.localStorage.setItem('org.doubango.expert.websocket_server_url', txtWebsocketServerUrl.value);
+        window.localStorage.setItem('org.doubango.expert.sip_outboundproxy_url', txtSIPOutboundProxyUrl.value);
 
         txtInfo.innerHTML = '<i>Saved</i>';
     }
@@ -63,6 +66,7 @@
         cbVideoDisable.checked = (window.localStorage.getItem('org.doubango.expert.disable_video') == "true");
         cbAVPFDisable.checked = (window.localStorage.getItem('org.doubango.expert.disable_avpf') == "true");
         txtWebsocketServerUrl.value = (window.localStorage.getItem('org.doubango.expert.websocket_server_url') || "");
+        txtSIPOutboundProxyUrl.value = (window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') || "");
 
         if (!bNotUserAction) {
             txtInfo.innerHTML = '<i>Reverted</i>';
@@ -98,7 +102,15 @@
                         <label style="height: 100%">WebSocket Server URL:</label>
                     </td>
                     <td>
-                        <input type="text" style="width: 100%; height: 100%" id="txtWebsocketServerUrl" value="" placeholder="e.g. ws://sipml5.org:4062" />
+                        <input type="text" style="width: 100%; height: 100%" id="txtWebsocketServerUrl" value="" placeholder="e.g. ws://sipml5.org:5062" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label style="height: 100%">SIP outbound Proxy URL:</label>
+                    </td>
+                    <td>
+                        <input type="text" style="width: 100%; height: 100%" id="txtSIPOutboundProxyUrl" value="" placeholder="e.g. udp://sipml5.org:5060" />
                     </td>
                 </tr>
 
@@ -108,7 +120,7 @@
                         &nbsp;
                         <input type="button" class="btn-danger" id="btnRevert" value="Revert" onclick='settingsRevert();' />
                     </td>
-                    </tr>
+               </tr>
             </table>
         </div>
     </div>

@@ -21,15 +21,33 @@ Index: channels/chan_sip.c
  /*! \brief Definition of this channel for PBX channel registration */
  struct ast_channel_tech sip_tech = {
  	.type = "SIP",
-@@ -10430,6 +10433,7 @@
- 			  address, &port, cand_type, relay_address, &relay_port) >= 7) {
+@@ -10412,9 +10415,10 @@
+ {
+ 	struct ast_rtp_engine_ice *ice;
+ 	int found = FALSE;
+-	char ufrag[256], pwd[256], foundation[32], transport[4], address[46], cand_type[6], relay_address[46] = "";
++	char ufrag[256], pwd[256], foundation[32], transport[4], address[46], cand_type[6], next_att[24] = "", relay_address[46] = "";
+ 	struct ast_rtp_engine_ice_candidate candidate = { 0, };
+ 	int port, relay_port = 0;
++	int generation = -1;
+ 
+ 	if (!instance || !(ice = ast_rtp_instance_get_ice(instance))) {
+ 		return found;
+@@ -10426,10 +10430,11 @@
+ 	} else if (sscanf(a, "ice-pwd: %255s", pwd) == 1) {
+ 		ice->set_authentication(instance, NULL, pwd);
+ 		found = TRUE;
+-	} else if (sscanf(a, "candidate: %31s %30u %3s %30u %23s %30u typ %5s %*s %23s %*s %30u", foundation, &candidate.id, transport, &candidate.priority,
+-			  address, &port, cand_type, relay_address, &relay_port) >= 7) {
++	} else if (sscanf(a, "candidate: %31s %30u %3s %30u %23s %30u typ %5s %s %23s %*s %30u", foundation, &candidate.id, transport, &candidate.priority,
++			  address, &port, cand_type, next_att, relay_address, &relay_port) >= 7) {
  		candidate.foundation = foundation;
  		candidate.transport = transport;
-+		candidate.is_webrtc = sip_pvt_is_webrtc(p);
++		candidate.is_webrtc = (sip_pvt_is_webrtc(p) || (!strcasecmp(next_att, "generation") || !strcasecmp(next_att, "name"))); // (WS, WSS or UDP+webrtc4IE)
  
  		ast_sockaddr_parse(&candidate.address, address, PARSE_PORT_FORBID);
  		ast_sockaddr_set_port(&candidate.address, port);
-@@ -11990,13 +11994,14 @@
+@@ -11990,7 +11995,7 @@
  }
  
  /*! \brief Add ICE attributes to SDP */
@@ -38,18 +56,11 @@ Index: channels/chan_sip.c
  {
  	struct ast_rtp_engine_ice *ice = ast_rtp_instance_get_ice(instance);
  	const char *username, *password;
- 	struct ao2_container *candidates;
- 	struct ao2_iterator i;
- 	struct ast_rtp_engine_ice_candidate *candidate;
-+	static const int generation = 0;
- 
- 	/* If no ICE support is present we can't very well add the attributes */
- 	if (!ice || !(candidates = ice->get_local_candidates(instance))) {
 @@ -12013,6 +12018,13 @@
  	i = ao2_iterator_init(candidates, 0);
  
  	while ((candidate = ao2_iterator_next(&i))) {
-+		if(is_webrtc){
++		if((candidate->is_webrtc = is_webrtc)){
 +			int i;
 +			int len = strlen(candidate->transport);
 +			for(i = 0; i < len; ++i){
@@ -59,19 +70,21 @@ Index: channels/chan_sip.c
  		ast_str_append(a_buf, 0, "a=candidate:%s %d %s %d ", candidate->foundation, candidate->id, candidate->transport, candidate->priority);
  		ast_str_append(a_buf, 0, "%s ", ast_sockaddr_stringify_host(&candidate->address));
  		ast_str_append(a_buf, 0, "%s typ ", ast_sockaddr_stringify_port(&candidate->address));
-@@ -12030,6 +12042,11 @@
+@@ -12030,6 +12042,13 @@
  			ast_str_append(a_buf, 0, "rport %s", ast_sockaddr_stringify_port(&candidate->relay_address));
  		}
  
 +		if(is_webrtc){
++			static const int generation = 0;
++			static const int svn = 10;
 +			// add generation attribute in ICE candidate
-+			ast_str_append(a_buf, 0, " generation %d", generation);
++			ast_str_append(a_buf, 0, " generation %d svn %d", generation, svn);
 +		}
 +
  		ast_str_append(a_buf, 0, "\r\n");
  	}
  
-@@ -12517,7 +12534,7 @@
+@@ -12517,7 +12536,7 @@
  			}
  
  			if (!doing_directmedia && ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -80,7 +93,7 @@ Index: channels/chan_sip.c
  			}
  		}
  
-@@ -12534,7 +12551,7 @@
+@@ -12534,7 +12553,7 @@
  			}
  
  			if (!doing_directmedia && ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -89,7 +102,7 @@ Index: channels/chan_sip.c
  			}
  		}
  
-@@ -12633,7 +12650,7 @@
+@@ -12633,7 +12652,7 @@
  			ast_str_append(&a_text, 0, "a=ptime:%d\r\n", min_text_packet_size);
  
  		if (!doing_directmedia && ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -98,7 +111,7 @@ Index: channels/chan_sip.c
  		}
  
  		if (m_audio->len - m_audio->used < 2 || m_video->len - m_video->used < 2 ||
-@@ -15416,6 +15433,9 @@
+@@ -15416,6 +15435,9 @@
  		ast_string_field_set(peer, useragent, useragent);
  		ast_verb(4, "Saved useragent \"%s\" for peer %s\n", peer->useragent, peer->name);
  	}
@@ -108,7 +121,7 @@ Index: channels/chan_sip.c
  	return PARSE_REGISTER_UPDATE;
  }
  
-@@ -32882,6 +32902,14 @@
+@@ -32882,6 +32904,14 @@
  	return 0;
  }
  
@@ -538,7 +551,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
  	    unsigned j;
  
 +		// WebRTC STUN refreshness
-+		if(ice->opt.is_webrtc){
++		if(ice->opt.is_webrtc && PJ_FALSE){ // FIXME: No longer needed in newest chrome and make Asterisk to overrun
 +			pj_status_t status;
 +			pj_ice_msg_data* msg_data;
 +
