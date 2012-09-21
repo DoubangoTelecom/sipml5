@@ -526,7 +526,7 @@ function __tsip_transport_webrtc4all_onevent(o_self, i_type, s_data) {
 
         var o_message = tsip_message.prototype.Parse(o_ragel_state, true);
         if (o_message) {
-            //--tsk_utils_log_info("recv=" + o_message.toString());
+            tsk_utils_log_info("RECV=" + o_message.toString());
             o_message.o_socket = o_self.o_transport;
             return o_self.get_layer().handle_incoming_message(o_message);
         }

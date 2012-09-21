@@ -12,21 +12,21 @@ _sipML5 solution using Asterisk_
 <hr />
 
 ==Building source code==
-The current Asterisk version (revision 372699) allows to register and make calls from Chrome but no audio will flow.
+The current Asterisk version (revision 373330) allows to register and make calls from Chrome but no audio will flow.
 The problem comes from ICE implementation in Chrome which is not fully compliant with RFC 5245. To fix this problem you'll need to apply the provided patch and rebuild Asterisk as explained in this section.
 
- # checkout Asterisk source code *revision 372699*
+ # checkout Asterisk source code *revision 373330*
 {{{
-svn checkout -r 372699 http://svn.digium.com/svn/asterisk/trunk asterisk
+svn checkout -r 373330 http://svn.digium.com/svn/asterisk/trunk asterisk
 }}}
- # copy the [http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_372699.patch patch] into *asterisk* folder
+ # copy the [http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_373330.patch patch] into *asterisk* folder
 {{{
 cd asterisk
-wget http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_372699.patch
+wget http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_373330.patch
 }}}
  # apply the patch
  {{{
- patch -p0 -i ./asterisk_372699.patch
+ patch -p0 -i ./asterisk_373330.patch
  }}}
  # configure for build
 {{{
