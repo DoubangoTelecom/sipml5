@@ -164,7 +164,7 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
             o_hdr_O.i_sess_version = this.i_sdp_lo_version++;
         }
         /* Remove 'video' media if not enabled (bug in chrome: doesn't honor 'has_video' parameter) */
-        if (!this.o_sdp_ro && !(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) { // initial offer and no video
+        if (/*!this.o_sdp_ro &&*/ !(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
             this.o_sdp_lo.remove_media("video");
         }
         /* hold / resume */

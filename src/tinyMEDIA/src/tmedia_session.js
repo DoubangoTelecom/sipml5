@@ -75,7 +75,7 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
             __o_sessiondescription_class = w4aSessionDescription;
         }
         else if (tsk_utils_have_webrtc()) {
-            __o_peerconnection_class = window.webkitPeerConnection || window.webkitPeerConnection00;
+            __o_peerconnection_class = /*window.webkitRTCPeerConnection ||*/ window.webkitPeerConnection || window.webkitPeerConnection00;
             __o_sessiondescription_class = SessionDescription;
         }
         else { // force die
