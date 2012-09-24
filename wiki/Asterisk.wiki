@@ -3,6 +3,10 @@
 
 <wiki:toc max_depth="2" />
 
+<font color="red" size="2">
+<strong>We strongly recommend using Chrome stable instead of Canary</strong><br />
+</font>
+
 This is a short guide explaining how to configure any HTML5 SIP client to work with Asterisk.
 This example talk about [http://code.google.com/p/sipml5/ sipml5] client but any client using WebRTC should work. We also use [http://www.counterpath.com/x-lite.html xlite5] but off course any SIP client could be used.
 I assume that you already know how Asterisk works.
