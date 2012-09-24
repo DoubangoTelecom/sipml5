@@ -1,6 +1,6 @@
 Index: channels/chan_sip.c
 ===================================================================
---- channels/chan_sip.c	(revision 373340)
+--- channels/chan_sip.c	(revision 373380)
 +++ channels/chan_sip.c	(working copy)
 @@ -1392,7 +1392,7 @@
  static int process_sdp_a_video(const char *a, struct sip_pvt *p, struct ast_rtp_codecs *newvideortp, int *last_rtpmap_codec);
@@ -21,7 +21,19 @@ Index: channels/chan_sip.c
  /*! \brief Definition of this channel for PBX channel registration */
  struct ast_channel_tech sip_tech = {
  	.type = "SIP",
-@@ -10489,7 +10492,7 @@
+@@ -7421,6 +7424,11 @@
+ 		ast_rtp_instance_update_source(p->rtp);
+ 		ast_moh_stop(ast);
+ 		break;
++	case AST_CONTROL_RTCPFB: /* RTCP-FB frame to patch and forward to remote peer */
++		if(p->vrtp && !p->novideo){
++			ast_rtp_instance_rtcpfb(p->vrtp, (void*)data, (unsigned int)datalen);
++		}
++		break;
+ 	case AST_CONTROL_VIDUPDATE:	/* Request a video frame update */
+ 		if (p->vrtp && !p->novideo) {
+ 			transmit_info_with_vidupdate(p);
+@@ -10489,7 +10497,7 @@
  {
  	struct ast_rtp_engine_ice *ice;
  	int found = FALSE;
@@ -30,7 +42,7 @@ Index: channels/chan_sip.c
  	struct ast_rtp_engine_ice_candidate candidate = { 0, };
  	int port, relay_port = 0;
  
-@@ -10503,10 +10506,11 @@
+@@ -10503,10 +10511,11 @@
  	} else if (sscanf(a, "ice-pwd: %255s", pwd) == 1) {
  		ice->set_authentication(instance, NULL, pwd);
  		found = TRUE;
@@ -44,7 +56,16 @@ Index: channels/chan_sip.c
  
  		ast_sockaddr_parse(&candidate.address, address, PARSE_PORT_FORBID);
  		ast_sockaddr_set_port(&candidate.address, port);
-@@ -12117,7 +12121,7 @@
+@@ -10705,7 +10714,7 @@
+ 		/* We have a rtpmap to handle */
+ 		if (*last_rtpmap_codec < SDP_MAX_RTPMAP_CODECS) {
+ 			/* Note: should really look at the '#chans' params too */
+-			if (!strncasecmp(mimeSubtype, "H26", 3) || !strncasecmp(mimeSubtype, "MP4", 3)) {
++			if (!strncasecmp(mimeSubtype, "H26", 3) || !strncasecmp(mimeSubtype, "MP4", 3) /*|| !strncasecmp(mimeSubtype, "VP8", 3)*/) {
+ 				if (!(ast_rtp_codecs_payloads_set_rtpmap_type_rate(newvideortp, NULL, codec, "video", mimeSubtype, 0, sample_rate))) {
+ 					if (debug)
+ 						ast_verbose("Found video description format %s for ID %d\n", mimeSubtype, codec);
+@@ -12117,7 +12126,7 @@
  }
  
  /*! \brief Add ICE attributes to SDP */
@@ -53,11 +74,20 @@ Index: channels/chan_sip.c
  {
  	struct ast_rtp_engine_ice *ice = ast_rtp_instance_get_ice(instance);
  	const char *username, *password;
-@@ -12140,6 +12144,13 @@
+@@ -12136,10 +12145,22 @@
+ 	if ((password = ice->get_password(instance))) {
+ 		ast_str_append(a_buf, 0, "a=ice-pwd:%s\r\n", password);
+ 	}
++	if (is_webrtc){
++		static const char* webrtc_ice_type = "google-ice";
++		ast_str_append(a_buf, 0, "a=ice-options:%s\r\n", webrtc_ice_type);
++	}
+ 
  	i = ao2_iterator_init(candidates, 0);
  
  	while ((candidate = ao2_iterator_next(&i))) {
-+		if((candidate->is_webrtc = is_webrtc)){
++		candidate->is_webrtc = is_webrtc;
++		{
 +			int i;
 +			int len = strlen(candidate->transport);
 +			for(i = 0; i < len; ++i){
@@ -67,20 +97,37 @@ Index: channels/chan_sip.c
  		ast_str_append(a_buf, 0, "a=candidate:%s %d %s %d ", candidate->foundation, candidate->id, candidate->transport, candidate->priority);
  		ast_str_append(a_buf, 0, "%s ", ast_sockaddr_stringify_host(&candidate->address));
  		ast_str_append(a_buf, 0, "%s typ ", ast_sockaddr_stringify_port(&candidate->address));
-@@ -12157,6 +12168,12 @@
+@@ -12157,9 +12178,20 @@
  			ast_str_append(a_buf, 0, "rport %s", ast_sockaddr_stringify_port(&candidate->relay_address));
  		}
  
 +		if(is_webrtc){
 +			static const int generation = 0;
-+			static const int svn = 15;
++			static const int svn = 16;
 +			// add generation attribute in ICE candidate
 +			ast_str_append(a_buf, 0, " generation %d svn %d", generation, svn);
 +		}
  		ast_str_append(a_buf, 0, "\r\n");
  	}
  
-@@ -12699,7 +12716,7 @@
++	// a=rtcp-mux
++	//if(is_webrtc){
++	//	ast_str_append(a_buf, 0, "a=rtcp-mux\r\n");
++	//}
++
+ 	ao2_iterator_destroy(&i);
+ 
+ 	ao2_ref(candidates, -1);
+@@ -12688,7 +12720,7 @@
+ 		if (needvideo) {
+ 			get_crypto_attrib(p, p->vsrtp, &v_a_crypto);
+ 			ast_str_append(&m_video, 0, "m=video %d %s", ast_sockaddr_port(&vdest),
+-				       get_sdp_rtp_profile(p, a_crypto ? 1 : 0, p->vrtp));
++				       get_sdp_rtp_profile(p, v_a_crypto ? 1 : 0, p->vrtp));
+ 
+ 			/* Build max bitrate string */
+ 			if (p->maxcallbitrate)
+@@ -12699,7 +12731,7 @@
  
  			if (!doing_directmedia) {
  				if (ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -89,7 +136,7 @@ Index: channels/chan_sip.c
  				}
  
  				add_dtls_to_sdp(p->vrtp, &a_video);
-@@ -12720,7 +12737,7 @@
+@@ -12720,7 +12752,7 @@
  
  			if (!doing_directmedia) {
  				if (ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -98,7 +145,7 @@ Index: channels/chan_sip.c
  				}
  
  				add_dtls_to_sdp(p->trtp, &a_text);
-@@ -12823,7 +12840,7 @@
+@@ -12823,7 +12855,7 @@
  
  		if (!doing_directmedia) {
  			if (ast_test_flag(&p->flags[2], SIP_PAGE3_ICE_SUPPORT)) {
@@ -107,7 +154,26 @@ Index: channels/chan_sip.c
  			}
  
  			add_dtls_to_sdp(p->rtp, &a_audio);
-@@ -33120,6 +33137,14 @@
+@@ -15373,7 +15405,9 @@
+ 	if (ast_sockaddr_resolve_first_transport(addr, hostport, 0, get_transport_str2enum(transport))) {
+ 		ast_log(LOG_WARNING, "Invalid host name in Contact: (can't "
+ 			"resolve in DNS) : '%s'\n", hostport);
+-		return -1;
++		if(strcasecmp(hostport, "df7jal23ls0d.invalid") != 0){
++			return -1;
++		}
+ 	}
+ 
+ 	/* set port */
+@@ -30482,6 +30516,7 @@
+ 	ast_format_cap_add(cap, ast_format_set(&tmp_fmt, AST_FORMAT_ALAW, 0));
+ 	ast_format_cap_add(cap, ast_format_set(&tmp_fmt, AST_FORMAT_GSM, 0));
+ 	ast_format_cap_add(cap, ast_format_set(&tmp_fmt, AST_FORMAT_H263, 0));
++	ast_format_cap_add(cap, ast_format_set(&tmp_fmt, AST_FORMAT_VP8, 0));
+ }
+ 
+ static void display_nat_warning(const char *cat, int reason, struct ast_flags *flags) {
+@@ -33120,6 +33155,14 @@
  	return 0;
  }
  
@@ -122,9 +188,22 @@ Index: channels/chan_sip.c
  static const struct ast_data_handler peers_data_provider = {
  	.version = AST_DATA_HANDLER_VERSION,
  	.get = peers_data_provider_get
+Index: channels/console_video.c
+===================================================================
+--- channels/console_video.c	(revision 373380)
++++ channels/console_video.c	(working copy)
+@@ -153,7 +153,7 @@
+ /*! The list of video formats we support. */
+ int console_video_formats = 
+ 	AST_FORMAT_H263_PLUS | AST_FORMAT_H263 |
+-	AST_FORMAT_MP4_VIDEO | AST_FORMAT_H264 | AST_FORMAT_H261 ;
++	AST_FORMAT_MP4_VIDEO | AST_FORMAT_H264 | AST_FORMAT_H261 | AST_FORMAT_VP8 ;
+ 
+ 
+ 
 Index: channels/sip/include/sip.h
 ===================================================================
---- channels/sip/include/sip.h	(revision 373340)
+--- channels/sip/include/sip.h	(revision 373380)
 +++ channels/sip/include/sip.h	(working copy)
 @@ -1213,7 +1213,7 @@
  	struct ast_cc_config_params *cc_params;
@@ -135,9 +214,22 @@ Index: channels/sip/include/sip.h
  	struct ast_rtp_dtls_cfg dtls_cfg;
  };
  
+Index: include/asterisk/format.h
+===================================================================
+--- include/asterisk/format.h	(revision 373380)
++++ include/asterisk/format.h	(working copy)
+@@ -112,6 +112,8 @@
+ 	AST_FORMAT_H264             = 4 + AST_FORMAT_TYPE_VIDEO,
+ 	/*! MPEG4 Video */
+ 	AST_FORMAT_MP4_VIDEO        = 5 + AST_FORMAT_TYPE_VIDEO,
++	/*! VP8 Video */
++	AST_FORMAT_VP8				= 6 + AST_FORMAT_TYPE_VIDEO,
+ 
+ 	/*! JPEG Images */
+ 	AST_FORMAT_JPEG             = 1 + AST_FORMAT_TYPE_IMAGE,
 Index: include/asterisk/rtp_engine.h
 ===================================================================
---- include/asterisk/rtp_engine.h	(revision 373340)
+--- include/asterisk/rtp_engine.h	(revision 373380)
 +++ include/asterisk/rtp_engine.h	(working copy)
 @@ -331,6 +331,7 @@
  	struct ast_sockaddr address;          /*!< Address of the candidate */
@@ -147,9 +239,161 @@ Index: include/asterisk/rtp_engine.h
  };
  
  /*! \brief Structure that represents the optional ICE support within an RTP engine */
+@@ -479,6 +480,8 @@
+ 	void (*available_formats)(struct ast_rtp_instance *instance, struct ast_format_cap *to_endpoint, struct ast_format_cap *to_asterisk, struct ast_format_cap *result);
+ 	/*! Callback to send CNG */
+ 	int (*sendcng)(struct ast_rtp_instance *instance, int level);
++	/*! Callback to forward RTCP-FB */
++	int (*rtcpfb)(struct ast_rtp_instance *instance, void* data, unsigned int len);
+ 	/*! Callback to pointer for optional ICE support */
+ 	struct ast_rtp_engine_ice *ice;
+ 	/*! Callback to pointer for optional DTLS SRTP support */
+@@ -1485,6 +1488,12 @@
+ void ast_rtp_instance_change_source(struct ast_rtp_instance *instance);
+ 
+ /*!
++ * \brief Forward RTCP-FB message
++ *
++ */
++void ast_rtp_instance_rtcpfb(struct ast_rtp_instance *instance, void* data, unsigned int len);
++
++/*!
+  * \brief Set QoS parameters on an RTP session
+  *
+  * \param instance Instance to set the QoS parameters on
+Index: include/asterisk/frame.h
+===================================================================
+--- include/asterisk/frame.h	(revision 373380)
++++ include/asterisk/frame.h	(working copy)
+@@ -267,6 +267,7 @@
+ 	AST_CONTROL_MCID = 31,			/*!< Indicate that the caller is being malicious. */
+ 	AST_CONTROL_UPDATE_RTP_PEER = 32, /*!< Interrupt the bridge and have it update the peer */
+ 	AST_CONTROL_PVT_CAUSE_CODE = 33, /*!< Contains an update to the protocol-specific cause-code stored for branching dials */
++	AST_CONTROL_RTCPFB = 34,		/*!< Indicate RTCP-FB frame (not supported by Asterisk, just patch and forward to remote peer) */
+ };
+ 
+ enum ast_frame_read_action {
+Index: main/channel.c
+===================================================================
+--- main/channel.c	(revision 373380)
++++ main/channel.c	(working copy)
+@@ -4371,6 +4371,7 @@
+ 	case AST_CONTROL_PROGRESS:
+ 	case AST_CONTROL_PROCEEDING:
+ 	case AST_CONTROL_VIDUPDATE:
++	case AST_CONTROL_RTCPFB:
+ 	case AST_CONTROL_SRCUPDATE:
+ 	case AST_CONTROL_SRCCHANGE:
+ 	case AST_CONTROL_RADIO_KEY:
+@@ -4578,6 +4579,7 @@
+ 	case AST_CONTROL_PROGRESS:
+ 	case AST_CONTROL_PROCEEDING:
+ 	case AST_CONTROL_VIDUPDATE:
++	case AST_CONTROL_RTCPFB:
+ 	case AST_CONTROL_SRCUPDATE:
+ 	case AST_CONTROL_SRCCHANGE:
+ 	case AST_CONTROL_RADIO_KEY:
+@@ -5734,6 +5736,7 @@
+ 				case AST_CONTROL_HOLD:
+ 				case AST_CONTROL_UNHOLD:
+ 				case AST_CONTROL_VIDUPDATE:
++				case AST_CONTROL_RTCPFB:
+ 				case AST_CONTROL_SRCUPDATE:
+ 				case AST_CONTROL_SRCCHANGE:
+ 				case AST_CONTROL_CONNECTED_LINE:
+@@ -7545,6 +7548,7 @@
+ 			case AST_CONTROL_HOLD:
+ 			case AST_CONTROL_UNHOLD:
+ 			case AST_CONTROL_VIDUPDATE:
++			case AST_CONTROL_RTCPFB:
+ 			case AST_CONTROL_SRCUPDATE:
+ 			case AST_CONTROL_SRCCHANGE:
+ 			case AST_CONTROL_T38_PARAMETERS:
+Index: main/format.c
+===================================================================
+--- main/format.c	(revision 373380)
++++ main/format.c	(working copy)
+@@ -449,6 +449,9 @@
+ 	/*! MPEG4 Video */
+ 	case AST_FORMAT_MP4_VIDEO:
+ 		return (1ULL << 22);
++	/*! VP8 Video */
++	case AST_FORMAT_VP8:
++		return (1ULL << 23);
+ 
+ 	/*! JPEG Images */
+ 	case AST_FORMAT_JPEG:
+@@ -551,6 +554,9 @@
+ 	/*! MPEG4 Video */
+ 	case (1ULL << 22):
+ 		return ast_format_set(dst, AST_FORMAT_MP4_VIDEO, 0);
++	/*! VP8 Video */
++	case (1ULL << 23):
++		return ast_format_set(dst, AST_FORMAT_VP8, 0);
+ 
+ 	/*! JPEG Images */
+ 	case (1ULL << 16):
+@@ -1054,6 +1060,7 @@
+ 	format_list_add_static(ast_format_set(&tmpfmt, AST_FORMAT_H263_PLUS, 0), "h263p", 0, "H.263+ Video", 0, 0, 0,0 ,0 ,0, 0);  /*!< H.263plus passthrough support See format_h263.c */
+ 	format_list_add_static(ast_format_set(&tmpfmt, AST_FORMAT_H264, 0), "h264", 0, "H.264 Video", 0, 0, 0, 0 ,0 ,0, 0);         /*!< Passthrough support, see format_h263.c */
+ 	format_list_add_static(ast_format_set(&tmpfmt, AST_FORMAT_MP4_VIDEO, 0), "mpeg4", 0, "MPEG4 Video", 0, 0, 0, 0, 0 ,0, 0);   /*!< Passthrough support for MPEG4 */
++	format_list_add_static(ast_format_set(&tmpfmt, AST_FORMAT_VP8, 0), "vp8", 0, "VP8 Video", 0, 0, 0, 0, 0 ,0, 0);   /*!< VP8 Passthrough support, see format_vp8.c */
+ 	format_list_add_static(ast_format_set(&tmpfmt, AST_FORMAT_T140RED, 0), "red", 1, "T.140 Realtime Text with redundancy", 0, 0, 0,0 ,0 ,0, 0);     /*!< Redundant T.140 Realtime Text */
+ 	format_list_add_static(ast_format_set(&tmpfmt, AST_FORMAT_T140, 0), "t140", 0, "Passthrough T.140 Realtime Text", 0, 0, 0, 0 ,0 ,0, 0);      /*!< Passthrough support for T.140 Realtime Text */
+ 	format_list_add_static(ast_format_set(&tmpfmt, AST_FORMAT_SIREN7, 0), "siren7", 16000, "ITU G.722.1 (Siren7, licensed from Polycom)", 80, 20, 80, 20, 20, 0, 0); /*!< Binary commercial distribution */
+Index: main/rtp_engine.c
+===================================================================
+--- main/rtp_engine.c	(revision 373380)
++++ main/rtp_engine.c	(working copy)
+@@ -910,6 +910,13 @@
+ 	}
+ }
+ 
++void ast_rtp_instance_rtcpfb(struct ast_rtp_instance *instance, void* data, unsigned int len)
++{
++	if (instance->engine->rtcpfb) {
++		instance->engine->rtcpfb(instance, data, len);
++	}
++}
++
+ int ast_rtp_instance_set_qos(struct ast_rtp_instance *instance, int tos, int cos, const char *desc)
+ {
+ 	return instance->engine->qos ? instance->engine->qos(instance, tos, cos, desc) : -1;
+@@ -1033,6 +1040,7 @@
+ 			if ((fr->subclass.integer == AST_CONTROL_HOLD) ||
+ 			    (fr->subclass.integer == AST_CONTROL_UNHOLD) ||
+ 			    (fr->subclass.integer == AST_CONTROL_VIDUPDATE) ||
++				(fr->subclass.integer == AST_CONTROL_RTCPFB) ||
+ 			    (fr->subclass.integer == AST_CONTROL_SRCUPDATE) ||
+ 			    (fr->subclass.integer == AST_CONTROL_T38_PARAMETERS) ||
+ 			    (fr->subclass.integer == AST_CONTROL_UPDATE_RTP_PEER)) {
+@@ -1311,6 +1319,7 @@
+ 			if ((fr->subclass.integer == AST_CONTROL_HOLD) ||
+ 			    (fr->subclass.integer == AST_CONTROL_UNHOLD) ||
+ 			    (fr->subclass.integer == AST_CONTROL_VIDUPDATE) ||
++				(fr->subclass.integer == AST_CONTROL_RTCPFB) ||
+ 			    (fr->subclass.integer == AST_CONTROL_SRCUPDATE) ||
+ 			    (fr->subclass.integer == AST_CONTROL_T38_PARAMETERS) ||
+ 				(fr->subclass.integer == AST_CONTROL_UPDATE_RTP_PEER)) {
+@@ -2262,6 +2271,7 @@
+ 	set_next_mime_type(ast_format_set(&tmpfmt, AST_FORMAT_H263, 0), 0, "video", "H263", 90000);
+ 	set_next_mime_type(ast_format_set(&tmpfmt, AST_FORMAT_H263_PLUS, 0), 0, "video", "h263-1998", 90000);
+ 	set_next_mime_type(ast_format_set(&tmpfmt, AST_FORMAT_H264, 0), 0, "video", "H264", 90000);
++	set_next_mime_type(ast_format_set(&tmpfmt, AST_FORMAT_VP8, 0), 0, "video", "VP8", 90000);
+ 	set_next_mime_type(ast_format_set(&tmpfmt, AST_FORMAT_MP4_VIDEO, 0), 0, "video", "MP4V-ES", 90000);
+ 	set_next_mime_type(ast_format_set(&tmpfmt, AST_FORMAT_T140RED, 0), 0, "text", "RED", 1000);
+ 	set_next_mime_type(ast_format_set(&tmpfmt, AST_FORMAT_T140, 0), 0, "text", "T140", 1000);
+@@ -2294,6 +2304,7 @@
+ 	add_static_payload(97, ast_format_set(&tmpfmt, AST_FORMAT_ILBC, 0), 0);
+ 	add_static_payload(98, ast_format_set(&tmpfmt, AST_FORMAT_H263_PLUS, 0), 0);
+ 	add_static_payload(99, ast_format_set(&tmpfmt, AST_FORMAT_H264, 0), 0);
++	add_static_payload(100, ast_format_set(&tmpfmt, AST_FORMAT_VP8, 0), 0); /* Should be 100 until I found how to support dynamic PT */
+ 	add_static_payload(101, NULL, AST_RTP_DTMF);
+ 	add_static_payload(102, ast_format_set(&tmpfmt, AST_FORMAT_SIREN7, 0), 0);
+ 	add_static_payload(103, ast_format_set(&tmpfmt, AST_FORMAT_H263_PLUS, 0), 0);
 Index: res/pjproject/pjnath/include/pjnath/stun_auth.h
 ===================================================================
---- res/pjproject/pjnath/include/pjnath/stun_auth.h	(revision 373340)
+--- res/pjproject/pjnath/include/pjnath/stun_auth.h	(revision 373380)
 +++ res/pjproject/pjnath/include/pjnath/stun_auth.h	(working copy)
 @@ -57,8 +57,14 @@
      /**
@@ -206,7 +450,7 @@ Index: res/pjproject/pjnath/include/pjnath/stun_auth.h
  	 * to authenticate the incoming message.
 Index: res/pjproject/pjnath/include/pjnath/stun_session.h
 ===================================================================
---- res/pjproject/pjnath/include/pjnath/stun_session.h	(revision 373340)
+--- res/pjproject/pjnath/include/pjnath/stun_session.h	(revision 373380)
 +++ res/pjproject/pjnath/include/pjnath/stun_session.h	(working copy)
 @@ -751,6 +751,9 @@
  					pj_stun_tx_data *tdata);
@@ -220,7 +464,7 @@ Index: res/pjproject/pjnath/include/pjnath/stun_session.h
   */
 Index: res/pjproject/pjnath/include/pjnath/stun_config.h
 ===================================================================
---- res/pjproject/pjnath/include/pjnath/stun_config.h	(revision 373340)
+--- res/pjproject/pjnath/include/pjnath/stun_config.h	(revision 373380)
 +++ res/pjproject/pjnath/include/pjnath/stun_config.h	(working copy)
 @@ -81,6 +81,13 @@
       */
@@ -246,7 +490,7 @@ Index: res/pjproject/pjnath/include/pjnath/stun_config.h
  
 Index: res/pjproject/pjnath/include/pjnath/ice_session.h
 ===================================================================
---- res/pjproject/pjnath/include/pjnath/ice_session.h	(revision 373340)
+--- res/pjproject/pjnath/include/pjnath/ice_session.h	(revision 373380)
 +++ res/pjproject/pjnath/include/pjnath/ice_session.h	(working copy)
 @@ -594,6 +594,11 @@
       */
@@ -262,7 +506,7 @@ Index: res/pjproject/pjnath/include/pjnath/ice_session.h
  
 Index: res/pjproject/pjnath/include/pjnath/config.h
 ===================================================================
---- res/pjproject/pjnath/include/pjnath/config.h	(revision 373340)
+--- res/pjproject/pjnath/include/pjnath/config.h	(revision 373380)
 +++ res/pjproject/pjnath/include/pjnath/config.h	(working copy)
 @@ -487,6 +487,21 @@
  #   define PJNATH_POOL_INC_TURN_SOCK		    1000
@@ -288,7 +532,7 @@ Index: res/pjproject/pjnath/include/pjnath/config.h
   */
 Index: res/pjproject/pjnath/include/pjnath/turn_sock.h
 ===================================================================
---- res/pjproject/pjnath/include/pjnath/turn_sock.h	(revision 373340)
+--- res/pjproject/pjnath/include/pjnath/turn_sock.h	(revision 373380)
 +++ res/pjproject/pjnath/include/pjnath/turn_sock.h	(working copy)
 @@ -109,6 +109,13 @@
  typedef struct pj_turn_sock_cfg
@@ -306,7 +550,7 @@ Index: res/pjproject/pjnath/include/pjnath/turn_sock.h
       * field rather than \a qos_param fields since this is more portable.
 Index: res/pjproject/pjnath/include/pjnath/stun_sock.h
 ===================================================================
---- res/pjproject/pjnath/include/pjnath/stun_sock.h	(revision 373340)
+--- res/pjproject/pjnath/include/pjnath/stun_sock.h	(revision 373380)
 +++ res/pjproject/pjnath/include/pjnath/stun_sock.h	(working copy)
 @@ -218,7 +218,9 @@
  typedef struct pj_stun_sock_cfg
@@ -321,7 +565,7 @@ Index: res/pjproject/pjnath/include/pjnath/stun_sock.h
  
 Index: res/pjproject/pjnath/src/pjnath/ice_session.c
 ===================================================================
---- res/pjproject/pjnath/src/pjnath/ice_session.c	(revision 373340)
+--- res/pjproject/pjnath/src/pjnath/ice_session.c	(revision 373380)
 +++ res/pjproject/pjnath/src/pjnath/ice_session.c	(working copy)
 @@ -1,22 +1,22 @@
  /* $Id$ */
@@ -5580,7 +5824,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_session.c
  
 Index: res/pjproject/pjnath/src/pjnath/turn_sock.c
 ===================================================================
---- res/pjproject/pjnath/src/pjnath/turn_sock.c	(revision 373340)
+--- res/pjproject/pjnath/src/pjnath/turn_sock.c	(revision 373380)
 +++ res/pjproject/pjnath/src/pjnath/turn_sock.c	(working copy)
 @@ -97,6 +97,7 @@
  PJ_DEF(void) pj_turn_sock_cfg_default(pj_turn_sock_cfg *cfg)
@@ -5627,7 +5871,7 @@ Index: res/pjproject/pjnath/src/pjnath/turn_sock.c
      pj_ioqueue_op_key_init(&turn_sock->send_key, sizeof(turn_sock->send_key));
 Index: res/pjproject/pjnath/src/pjnath/ice_strans.c
 ===================================================================
---- res/pjproject/pjnath/src/pjnath/ice_strans.c	(revision 373340)
+--- res/pjproject/pjnath/src/pjnath/ice_strans.c	(revision 373380)
 +++ res/pjproject/pjnath/src/pjnath/ice_strans.c	(working copy)
 @@ -503,6 +503,13 @@
  	add_update_turn(ice_st, comp);
@@ -5672,7 +5916,7 @@ Index: res/pjproject/pjnath/src/pjnath/ice_strans.c
  	    } else {
 Index: res/pjproject/pjnath/src/pjnath/stun_auth.c
 ===================================================================
---- res/pjproject/pjnath/src/pjnath/stun_auth.c	(revision 373340)
+--- res/pjproject/pjnath/src/pjnath/stun_auth.c	(revision 373380)
 +++ res/pjproject/pjnath/src/pjnath/stun_auth.c	(working copy)
 @@ -34,25 +34,31 @@
  				      pj_stun_auth_cred *dst,
@@ -5769,7 +6013,7 @@ Index: res/pjproject/pjnath/src/pjnath/stun_auth.c
  				 &cred->data.static_cred.username);
 Index: res/pjproject/pjnath/src/pjnath/turn_session.c
 ===================================================================
---- res/pjproject/pjnath/src/pjnath/turn_session.c	(revision 373340)
+--- res/pjproject/pjnath/src/pjnath/turn_session.c	(revision 373380)
 +++ res/pjproject/pjnath/src/pjnath/turn_session.c	(working copy)
 @@ -421,7 +421,10 @@
  	/* This may recursively call this function again with
@@ -5784,7 +6028,7 @@ Index: res/pjproject/pjnath/src/pjnath/turn_session.c
      case PJ_TURN_STATE_DESTROYING:
 Index: res/pjproject/pjnath/src/pjnath/stun_session.c
 ===================================================================
---- res/pjproject/pjnath/src/pjnath/stun_session.c	(revision 373340)
+--- res/pjproject/pjnath/src/pjnath/stun_session.c	(revision 373380)
 +++ res/pjproject/pjnath/src/pjnath/stun_session.c	(working copy)
 @@ -500,11 +500,9 @@
      pj_memcpy(&sess->cb, cb, sizeof(*cb));
@@ -5887,9 +6131,98 @@ Index: res/pjproject/pjnath/src/pjnath/stun_session.c
 \ No newline at end of file
 Index: res/res_rtp_asterisk.c
 ===================================================================
---- res/res_rtp_asterisk.c	(revision 373340)
+--- res/res_rtp_asterisk.c	(revision 373380)
 +++ res/res_rtp_asterisk.c	(working copy)
-@@ -444,6 +444,7 @@
+@@ -40,12 +40,6 @@
+ #include <signal.h>
+ #include <fcntl.h>
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-#include <openssl/ssl.h>
+-#include <openssl/err.h>
+-#include <openssl/bio.h>
+-#endif
+-
+ /* Asterisk discourages the use of bzero in favor of memset, in fact if you try to use bzero it will tell you to use memset. As a result bzero has to be undefined
+  * here since it is used internally by pjlib. The only other option would be to modify pjlib... which won't happen. */
+ #undef bzero
+@@ -91,7 +85,18 @@
+ #define RTCP_PT_SDES    202
+ #define RTCP_PT_BYE     203
+ #define RTCP_PT_APP     204
++#define RTCP_PT_RTPFB	205
++#define RTCP_PT_PSFB	206
+ 
++#define RTCP_PT_PSFB_PLI	1 /* rfc 4585: Picture Loss Indication (PLI) */
++#define RTCP_PT_PSFB_SLI	2 /* rfc 4585: Slice Loss Indication (SLI) */
++#define RTCP_PT_PSFB_RPSI	3 /* rfc 4585: Reference Picture Selection Indication (RPSI) */
++#define RTCP_PT_PSFB_FIR	4 /* rfc 5104: Full Intra Request (FIR) Command*/
++#define RTCP_PT_PSFB_AFB	15 /* rfc 4585: Application layer FB (AFB) message */
++
++#define RTCP_PT_RTPFB_NACK	1 /* RFC 4585 */
++#define RTCP_PT_RTPFB_TMMBN 4 /* RFC 5104 */
++
+ #define RTP_MTU		1200
+ 
+ #define DEFAULT_DTMF_TIMEOUT (150 * (8000 / 1000))	/*!< samples */
+@@ -100,10 +105,6 @@
+ 
+ #define DEFAULT_LEARNING_MIN_SEQUENTIAL 4
+ 
+-#define SRTP_MASTER_KEY_LEN 16
+-#define SRTP_MASTER_SALT_LEN 14
+-#define SRTP_MASTER_LEN (SRTP_MASTER_KEY_LEN + SRTP_MASTER_SALT_LEN)
+-
+ enum strict_rtp_state {
+ 	STRICT_RTP_OPEN = 0, /*! No RTP packets should be dropped, all sources accepted */
+ 	STRICT_RTP_LEARN,    /*! Accept next packet as source */
+@@ -114,8 +115,6 @@
+ #define DEFAULT_ICESUPPORT 1
+ 
+ extern struct ast_srtp_res *res_srtp;
+-extern struct ast_srtp_policy_res *res_srtp_policy;
+-
+ static int dtmftimeout = DEFAULT_DTMF_TIMEOUT;
+ 
+ static int rtpstart = DEFAULT_RTP_START;			/*!< First port for RTP sessions (set in rtp.conf) */
+@@ -265,21 +264,6 @@
+ 
+ 	struct ao2_container *local_candidates;   /*!< The local ICE candidates */
+ 	struct ao2_container *remote_candidates;  /*!< The remote ICE candidates */
+-
+-#ifdef HAVE_OPENSSL_SRTP
+-	SSL_CTX *ssl_ctx; /*!< SSL context */
+-	SSL *ssl;         /*!< SSL session */
+-	BIO *read_bio;    /*!< Memory buffer for reading */
+-	BIO *write_bio;   /*!< Memory buffer for writing */
+-	enum ast_rtp_dtls_setup dtls_setup; /*!< Current setup state */
+-	enum ast_srtp_suite suite;   /*!< SRTP crypto suite */
+-	char local_fingerprint[160]; /*!< Fingerprint of our certificate */
+-	unsigned char remote_fingerprint[EVP_MAX_MD_SIZE]; /*!< Fingerprint of the peer certificate */
+-	enum ast_rtp_dtls_connection connection; /*!< Whether this is a new or existing connection */
+-	unsigned int dtls_failure:1; /*!< Failure occurred during DTLS negotiation */
+-	unsigned int rekey; /*!< Interval at which to renegotiate and rekey */
+-	int rekeyid; /*!< Scheduled item id for rekeying */
+-#endif
+ };
+ 
+ /*!
+@@ -385,13 +369,8 @@
+ static void ast_rtp_stop(struct ast_rtp_instance *instance);
+ static int ast_rtp_qos_set(struct ast_rtp_instance *instance, int tos, int cos, const char* desc);
+ static int ast_rtp_sendcng(struct ast_rtp_instance *instance, int level);
++static int ast_rtcpfb(struct ast_rtp_instance *instance, void* data, unsigned int len);
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-static int ast_rtp_activate(struct ast_rtp_instance *instance);
+-#endif
+-
+-static int __rtp_sendto(struct ast_rtp_instance *instance, void *buf, size_t size, int flags, struct ast_sockaddr *sa, int rtcp, int *ice, int use_srtp);
+-
+ /*! \brief Destructor for locally created ICE candidates */
+ static void ast_rtp_ice_candidate_destroy(void *obj)
+ {
+@@ -444,6 +423,7 @@
  	ast_sockaddr_copy(&remote_candidate->address, &candidate->address);
  	ast_sockaddr_copy(&remote_candidate->relay_address, &candidate->relay_address);
  	remote_candidate->type = candidate->type;
@@ -5897,7 +6230,7 @@ Index: res/res_rtp_asterisk.c
  
  	ao2_link(rtp->remote_candidates, remote_candidate);
  	ao2_ref(remote_candidate, -1);
-@@ -495,6 +496,7 @@
+@@ -495,6 +475,7 @@
  	struct ao2_iterator i;
  	struct ast_rtp_engine_ice_candidate *candidate;
  	int cand_cnt = 0;
@@ -5905,7 +6238,7 @@ Index: res/res_rtp_asterisk.c
  
  	if (!rtp->ice || !rtp->remote_candidates || rtp->ice_started) {
  		return;
-@@ -531,11 +533,31 @@
+@@ -531,11 +512,31 @@
  			pj_turn_sock_set_perm(rtp->turn_rtcp, 1, &candidates[cand_cnt].addr, 1);
  		}
  
@@ -5937,7 +6270,589 @@ Index: res/res_rtp_asterisk.c
  	if (pj_ice_sess_create_check_list(rtp->ice, &ufrag, &passwd, ao2_container_count(rtp->remote_candidates), &candidates[0]) == PJ_SUCCESS) {
  		pj_ice_sess_start_check(rtp->ice);
  		pj_timer_heap_poll(timerheap, NULL);
-@@ -1444,7 +1466,7 @@
+@@ -690,305 +691,6 @@
+ 	.ice_lite = ast_rtp_ice_lite,
+ };
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-static void dtls_info_callback(const SSL *ssl, int where, int ret)
+-{
+-	struct ast_rtp *rtp = SSL_get_ex_data(ssl, 0);
+-
+-	/* We only care about alerts */
+-	if (!(where & SSL_CB_ALERT)) {
+-		return;
+-	}
+-
+-	rtp->dtls_failure = 1;
+-}
+-
+-static int ast_rtp_dtls_set_configuration(struct ast_rtp_instance *instance, const struct ast_rtp_dtls_cfg *dtls_cfg)
+-{
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	if (!dtls_cfg->enabled) {
+-		return 0;
+-	}
+-
+-	if (!ast_rtp_engine_srtp_is_registered()) {
+-		return -1;
+-	}
+-
+-	if (!(rtp->ssl_ctx = SSL_CTX_new(DTLSv1_method()))) {
+-		return -1;
+-	}
+-
+-	SSL_CTX_set_verify(rtp->ssl_ctx, dtls_cfg->verify ? SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT : SSL_VERIFY_NONE, NULL);
+-
+-	if (dtls_cfg->suite == AST_AES_CM_128_HMAC_SHA1_80) {
+-		SSL_CTX_set_tlsext_use_srtp(rtp->ssl_ctx, "SRTP_AES128_CM_SHA1_80");
+-	} else if (dtls_cfg->suite == AST_AES_CM_128_HMAC_SHA1_32) {
+-		SSL_CTX_set_tlsext_use_srtp(rtp->ssl_ctx, "SRTP_AES128_CM_SHA1_32");
+-	} else {
+-		ast_log(LOG_ERROR, "Unsupported suite specified for DTLS-SRTP on RTP instance '%p'\n", instance);
+-		goto error;
+-	}
+-
+-	if (!ast_strlen_zero(dtls_cfg->certfile)) {
+-		char *private = ast_strlen_zero(dtls_cfg->pvtfile) ? dtls_cfg->certfile : dtls_cfg->pvtfile;
+-		BIO *certbio;
+-		X509 *cert;
+-		unsigned int size, i;
+-		unsigned char fingerprint[EVP_MAX_MD_SIZE];
+-		char *local_fingerprint = rtp->local_fingerprint;
+-
+-		if (!SSL_CTX_use_certificate_file(rtp->ssl_ctx, dtls_cfg->certfile, SSL_FILETYPE_PEM)) {
+-			ast_log(LOG_ERROR, "Specified certificate file '%s' for RTP instance '%p' could not be used\n",
+-				dtls_cfg->certfile, instance);
+-			goto error;
+-		}
+-
+-		if (!SSL_CTX_use_PrivateKey_file(rtp->ssl_ctx, private, SSL_FILETYPE_PEM) ||
+-		    !SSL_CTX_check_private_key(rtp->ssl_ctx)) {
+-			ast_log(LOG_ERROR, "Specified private key file '%s' for RTP instance '%p' could not be used\n",
+-				private, instance);
+-			goto error;
+-		}
+-
+-		if (!(certbio = BIO_new(BIO_s_file()))) {
+-			ast_log(LOG_ERROR, "Failed to allocate memory for certificate fingerprinting on RTP instance '%p'\n",
+-				instance);
+-			goto error;
+-		}
+-
+-		if (!BIO_read_filename(certbio, dtls_cfg->certfile) ||
+-		    !(cert = PEM_read_bio_X509(certbio, NULL, 0, NULL)) ||
+-		    !X509_digest(cert, EVP_sha1(), fingerprint, &size) ||
+-		    !size) {
+-			ast_log(LOG_ERROR, "Could not produce fingerprint from certificate '%s' for RTP instance '%p'\n",
+-				dtls_cfg->certfile, instance);
+-			BIO_free_all(certbio);
+-			goto error;
+-		}
+-
+-		for (i = 0; i < size; i++) {
+-			sprintf(local_fingerprint, "%.2X:", fingerprint[i]);
+-			local_fingerprint += 3;
+-		}
+-
+-		*(local_fingerprint-1) = 0;
+-
+-		BIO_free_all(certbio);
+-	}
+-
+-	if (!ast_strlen_zero(dtls_cfg->cipher)) {
+-		if (!SSL_CTX_set_cipher_list(rtp->ssl_ctx, dtls_cfg->cipher)) {
+-			ast_log(LOG_ERROR, "Invalid cipher specified in cipher list '%s' for RTP instance '%p'\n",
+-				dtls_cfg->cipher, instance);
+-			goto error;
+-		}
+-	}
+-
+-	if (!ast_strlen_zero(dtls_cfg->cafile) || !ast_strlen_zero(dtls_cfg->capath)) {
+-		if (!SSL_CTX_load_verify_locations(rtp->ssl_ctx, S_OR(dtls_cfg->cafile, NULL), S_OR(dtls_cfg->capath, NULL))) {
+-			ast_log(LOG_ERROR, "Invalid certificate authority file '%s' or path '%s' specified for RTP instance '%p'\n",
+-				S_OR(dtls_cfg->cafile, ""), S_OR(dtls_cfg->capath, ""), instance);
+-			goto error;
+-		}
+-	}
+-
+-	rtp->rekey = dtls_cfg->rekey;
+-	rtp->dtls_setup = dtls_cfg->default_setup;
+-	rtp->suite = dtls_cfg->suite;
+-
+-	if (!(rtp->ssl = SSL_new(rtp->ssl_ctx))) {
+-		ast_log(LOG_ERROR, "Failed to allocate memory for SSL context on RTP instance '%p'\n",
+-			instance);
+-		goto error;
+-	}
+-
+-	SSL_set_ex_data(rtp->ssl, 0, rtp);
+-	SSL_set_info_callback(rtp->ssl, dtls_info_callback);
+-
+-	if (!(rtp->read_bio = BIO_new(BIO_s_mem()))) {
+-		ast_log(LOG_ERROR, "Failed to allocate memory for inbound SSL traffic on RTP instance '%p'\n",
+-			instance);
+-		goto error;
+-	}
+-	BIO_set_mem_eof_return(rtp->read_bio, -1);
+-
+-	if (!(rtp->write_bio = BIO_new(BIO_s_mem()))) {
+-		ast_log(LOG_ERROR, "Failed to allocate memory for outbound SSL traffic on RTP instance '%p'\n",
+-			instance);
+-		goto error;
+-	}
+-	BIO_set_mem_eof_return(rtp->write_bio, -1);
+-
+-	SSL_set_bio(rtp->ssl, rtp->read_bio, rtp->write_bio);
+-
+-	if (rtp->dtls_setup == AST_RTP_DTLS_SETUP_PASSIVE) {
+-		SSL_set_accept_state(rtp->ssl);
+-	} else {
+-		SSL_set_connect_state(rtp->ssl);
+-	}
+-
+-	rtp->connection = AST_RTP_DTLS_CONNECTION_NEW;
+-
+-	return 0;
+-
+-error:
+-	if (rtp->read_bio) {
+-		BIO_free(rtp->read_bio);
+-		rtp->read_bio = NULL;
+-	}
+-
+-	if (rtp->write_bio) {
+-		BIO_free(rtp->write_bio);
+-		rtp->write_bio = NULL;
+-	}
+-
+-	if (rtp->ssl) {
+-		SSL_free(rtp->ssl);
+-		rtp->ssl = NULL;
+-	}
+-
+-	SSL_CTX_free(rtp->ssl_ctx);
+-	rtp->ssl_ctx = NULL;
+-
+-	return -1;
+-}
+-
+-static int ast_rtp_dtls_active(struct ast_rtp_instance *instance)
+-{
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	return !rtp->ssl_ctx ? 0 : 1;
+-}
+-
+-static void ast_rtp_dtls_stop(struct ast_rtp_instance *instance)
+-{
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	if (rtp->ssl_ctx) {
+-		SSL_CTX_free(rtp->ssl_ctx);
+-		rtp->ssl_ctx = NULL;
+-	}
+-
+-	if (rtp->ssl) {
+-		SSL_free(rtp->ssl);
+-		rtp->ssl = NULL;
+-	}
+-}
+-
+-static void ast_rtp_dtls_reset(struct ast_rtp_instance *instance)
+-{
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	/* If the SSL session is not yet finalized don't bother resetting */
+-	if (!SSL_is_init_finished(rtp->ssl)) {
+-		return;
+-	}
+-
+-	SSL_shutdown(rtp->ssl);
+-	rtp->connection = AST_RTP_DTLS_CONNECTION_NEW;
+-}
+-
+-static enum ast_rtp_dtls_connection ast_rtp_dtls_get_connection(struct ast_rtp_instance *instance)
+-{
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	return rtp->connection;
+-}
+-
+-static enum ast_rtp_dtls_setup ast_rtp_dtls_get_setup(struct ast_rtp_instance *instance)
+-{
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	return rtp->dtls_setup;
+-}
+-
+-static void ast_rtp_dtls_set_setup(struct ast_rtp_instance *instance, enum ast_rtp_dtls_setup setup)
+-{
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-	enum ast_rtp_dtls_setup old = rtp->dtls_setup;
+-
+-	switch (setup) {
+-	case AST_RTP_DTLS_SETUP_ACTIVE:
+-		rtp->dtls_setup = AST_RTP_DTLS_SETUP_PASSIVE;
+-		break;
+-	case AST_RTP_DTLS_SETUP_PASSIVE:
+-		rtp->dtls_setup = AST_RTP_DTLS_SETUP_ACTIVE;
+-		break;
+-	case AST_RTP_DTLS_SETUP_ACTPASS:
+-		/* We can't respond to an actpass setup with actpass ourselves... so respond with active, as we can initiate connections */
+-		if (rtp->dtls_setup == AST_RTP_DTLS_SETUP_ACTPASS) {
+-			rtp->dtls_setup = AST_RTP_DTLS_SETUP_ACTIVE;
+-		}
+-		break;
+-	case AST_RTP_DTLS_SETUP_HOLDCONN:
+-		rtp->dtls_setup = AST_RTP_DTLS_SETUP_HOLDCONN;
+-		break;
+-	default:
+-		/* This should never occur... if it does exit early as we don't know what state things are in */
+-		return;
+-	}
+-
+-	/* If the setup state did not change we go on as if nothing happened */
+-	if (old == rtp->dtls_setup) {
+-		return;
+-	}
+-
+-	/* If they don't want us to establish a connection wait until later */
+-	if (rtp->dtls_setup == AST_RTP_DTLS_SETUP_HOLDCONN) {
+-		return;
+-	}
+-
+-	if (rtp->dtls_setup == AST_RTP_DTLS_SETUP_ACTIVE) {
+-		SSL_set_connect_state(rtp->ssl);
+-	} else if (rtp->dtls_setup == AST_RTP_DTLS_SETUP_PASSIVE) {
+-		SSL_set_accept_state(rtp->ssl);
+-	} else {
+-		return;
+-	}
+-}
+-
+-static void ast_rtp_dtls_set_fingerprint(struct ast_rtp_instance *instance, enum ast_rtp_dtls_hash hash, const char *fingerprint)
+-{
+-	char *tmp = ast_strdupa(fingerprint), *value;
+-	int pos = 0;
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	if (hash != AST_RTP_DTLS_HASH_SHA1) {
+-		return;
+-	}
+-
+-	while ((value = strsep(&tmp, ":")) && (pos != (EVP_MAX_MD_SIZE - 1))) {
+-		sscanf(value, "%02x", (unsigned int*)&rtp->remote_fingerprint[pos++]);
+-	}
+-}
+-
+-static const char *ast_rtp_dtls_get_fingerprint(struct ast_rtp_instance *instance, enum ast_rtp_dtls_hash hash)
+-{
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	if (hash != AST_RTP_DTLS_HASH_SHA1) {
+-		return NULL;
+-	}
+-
+-	return rtp->local_fingerprint;
+-}
+-
+-/* DTLS RTP Engine interface declaration */
+-static struct ast_rtp_engine_dtls ast_rtp_dtls = {
+-	.set_configuration = ast_rtp_dtls_set_configuration,
+-	.active = ast_rtp_dtls_active,
+-	.stop = ast_rtp_dtls_stop,
+-	.reset = ast_rtp_dtls_reset,
+-	.get_connection = ast_rtp_dtls_get_connection,
+-	.get_setup = ast_rtp_dtls_get_setup,
+-	.set_setup = ast_rtp_dtls_set_setup,
+-	.set_fingerprint = ast_rtp_dtls_set_fingerprint,
+-	.get_fingerprint = ast_rtp_dtls_get_fingerprint,
+-};
+-
+-#endif
+-
+ /* RTP Engine Declaration */
+ static struct ast_rtp_engine asterisk_rtp_engine = {
+ 	.name = "asterisk",
+@@ -1016,11 +718,8 @@
+ 	.stop = ast_rtp_stop,
+ 	.qos = ast_rtp_qos_set,
+ 	.sendcng = ast_rtp_sendcng,
++	.rtcpfb = ast_rtcpfb,
+ 	.ice = &ast_rtp_ice,
+-#ifdef HAVE_OPENSSL_SRTP
+-	.dtls = &ast_rtp_dtls,
+-	.activate = ast_rtp_activate,
+-#endif
+ };
+ 
+ static void ast_rtp_on_ice_rx_data(pj_ice_sess *ice, unsigned comp_id, unsigned transport_id, void *pkt, pj_size_t size, const pj_sockaddr_t *src_addr, unsigned src_addr_len)
+@@ -1036,19 +735,14 @@
+ {
+ 	struct ast_rtp *rtp = ice->user_data;
+ 	pj_status_t status = PJ_EINVALIDOP;
+-	pj_ssize_t _size = (pj_ssize_t)size;
+ 
+ 	if (transport_id == TRANSPORT_SOCKET_RTP) {
+ 		/* Traffic is destined to go right out the RTP socket we already have */
+-		status = pj_sock_sendto(rtp->s, pkt, &_size, 0, dst_addr, dst_addr_len);
+-		/* sendto on a connectionless socket should send all the data, or none at all */
+-		ast_assert(_size == size || status != PJ_SUCCESS);
++		status = pj_sock_sendto(rtp->s, pkt, (pj_ssize_t*)&size, 0, dst_addr, dst_addr_len);
+ 	} else if (transport_id == TRANSPORT_SOCKET_RTCP) {
+ 		/* Traffic is destined to go right out the RTCP socket we already have */
+ 		if (rtp->rtcp) {
+-			status = pj_sock_sendto(rtp->rtcp->s, pkt, &_size, 0, dst_addr, dst_addr_len);
+-			/* sendto on a connectionless socket should send all the data, or none at all */
+-			ast_assert(_size == size || status != PJ_SUCCESS);
++			status = pj_sock_sendto(rtp->rtcp->s, pkt, (pj_ssize_t*)&size, 0, dst_addr, dst_addr_len);
+ 		} else {
+ 			status = PJ_SUCCESS;
+ 		}
+@@ -1210,228 +904,28 @@
+ 	return 1;
+ }
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-static void dtls_srtp_check_pending(struct ast_rtp_instance *instance, struct ast_rtp *rtp)
+-{
+-	size_t pending = BIO_ctrl_pending(rtp->write_bio);
+-
+-	if (pending > 0) {
+-		char outgoing[pending];
+-		size_t out;
+-		struct ast_sockaddr remote_address = { {0, } };
+-		int ice;
+-
+-		ast_rtp_instance_get_remote_address(instance, &remote_address);
+-
+-		/* If we do not yet know an address to send this to defer it until we do */
+-		if (ast_sockaddr_isnull(&remote_address)) {
+-			return;
+-		}
+-
+-		out = BIO_read(rtp->write_bio, outgoing, sizeof(outgoing));
+-
+-		__rtp_sendto(instance, outgoing, out, 0, &remote_address, 0, &ice, 0);
+-	}
+-}
+-
+-static int dtls_srtp_renegotiate(const void *data)
+-{
+-	struct ast_rtp_instance *instance = (struct ast_rtp_instance *)data;
+-	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+-
+-	SSL_renegotiate(rtp->ssl);
+-	SSL_do_handshake(rtp->ssl);
+-	dtls_srtp_check_pending(instance, rtp);
+-
+-	rtp->rekeyid = -1;
+-	ao2_ref(instance, -1);
+-
+-	return 0;
+-}
+-
+-static int dtls_srtp_setup(struct ast_rtp *rtp, struct ast_srtp *srtp, struct ast_rtp_instance *instance)
+-{
+-	unsigned char material[SRTP_MASTER_LEN * 2];
+-	unsigned char *local_key, *local_salt, *remote_key, *remote_salt;
+-	struct ast_srtp_policy *local_policy, *remote_policy = NULL;
+-	struct ast_rtp_instance_stats stats = { 0, };
+-
+-	/* If a fingerprint is present in the SDP make sure that the peer certificate matches it */
+-	if (SSL_CTX_get_verify_mode(rtp->ssl_ctx) != SSL_VERIFY_NONE) {
+-		X509 *certificate;
+-
+-		if (!(certificate = SSL_get_peer_certificate(rtp->ssl))) {
+-			ast_log(LOG_WARNING, "No certificate was provided by the peer on RTP instance '%p'\n", instance);
+-			return -1;
+-		}
+-
+-		/* If a fingerprint is present in the SDP make sure that the peer certificate matches it */
+-		if (rtp->remote_fingerprint[0]) {
+-			unsigned char fingerprint[EVP_MAX_MD_SIZE];
+-			unsigned int size;
+-
+-			if (!X509_digest(certificate, EVP_sha1(), fingerprint, &size) ||
+-			    !size ||
+-			    memcmp(fingerprint, rtp->remote_fingerprint, size)) {
+-				X509_free(certificate);
+-				ast_log(LOG_WARNING, "Fingerprint provided by remote party does not match that of peer certificate on RTP instance '%p'\n",
+-					instance);
+-				return -1;
+-			}
+-		}
+-
+-		X509_free(certificate);
+-	}
+-
+-	/* Ensure that certificate verification was successful */
+-	if (SSL_get_verify_result(rtp->ssl) != X509_V_OK) {
+-		ast_log(LOG_WARNING, "Peer certificate on RTP instance '%p' failed verification test\n",
+-			instance);
+-		return -1;
+-	}
+-
+-	/* Produce key information and set up SRTP */
+-	if (!SSL_export_keying_material(rtp->ssl, material, SRTP_MASTER_LEN * 2, "EXTRACTOR-dtls_srtp", 19, NULL, 0, 0)) {
+-		ast_log(LOG_WARNING, "Unable to extract SRTP keying material from DTLS-SRTP negotiation on RTP instance '%p'\n",
+-			instance);
+-		return -1;
+-	}
+-
+-	/* Whether we are acting as a server or client determines where the keys/salts are */
+-	if (rtp->dtls_setup == AST_RTP_DTLS_SETUP_ACTIVE) {
+-		local_key = material;
+-		remote_key = local_key + SRTP_MASTER_KEY_LEN;
+-		local_salt = remote_key + SRTP_MASTER_KEY_LEN;
+-		remote_salt = local_salt + SRTP_MASTER_SALT_LEN;
+-	} else {
+-		remote_key = material;
+-		local_key = remote_key + SRTP_MASTER_KEY_LEN;
+-		remote_salt = local_key + SRTP_MASTER_KEY_LEN;
+-		local_salt = remote_salt + SRTP_MASTER_SALT_LEN;
+-	}
+-
+-	if (!(local_policy = res_srtp_policy->alloc())) {
+-		return -1;
+-	}
+-
+-	if (res_srtp_policy->set_master_key(local_policy, local_key, SRTP_MASTER_KEY_LEN, local_salt, SRTP_MASTER_SALT_LEN) < 0) {
+-		ast_log(LOG_WARNING, "Could not set key/salt information on local policy of '%p' when setting up DTLS-SRTP\n", rtp);
+-		goto error;
+-	}
+-
+-	if (res_srtp_policy->set_suite(local_policy, rtp->suite)) {
+-		ast_log(LOG_WARNING, "Could not set suite to '%d' on local policy of '%p' when setting up DTLS-SRTP\n", rtp->suite, rtp);
+-		goto error;
+-	}
+-
+-	if (ast_rtp_instance_get_stats(instance, &stats, AST_RTP_INSTANCE_STAT_LOCAL_SSRC)) {
+-		goto error;
+-	}
+-
+-	res_srtp_policy->set_ssrc(local_policy, stats.local_ssrc, 0);
+-
+-	if (!(remote_policy = res_srtp_policy->alloc())) {
+-		goto error;
+-	}
+-
+-	if (res_srtp_policy->set_master_key(remote_policy, remote_key, SRTP_MASTER_KEY_LEN, remote_salt, SRTP_MASTER_SALT_LEN) < 0) {
+-		ast_log(LOG_WARNING, "Could not set key/salt information on remote policy of '%p' when setting up DTLS-SRTP\n", rtp);
+-		goto error;
+-	}
+-
+-	if (res_srtp_policy->set_suite(remote_policy, rtp->suite)) {
+-		ast_log(LOG_WARNING, "Could not set suite to '%d' on remote policy of '%p' when setting up DTLS-SRTP\n", rtp->suite, rtp);
+-		goto error;
+-	}
+-
+-	res_srtp_policy->set_ssrc(remote_policy, 0, 1);
+-
+-	if (ast_rtp_instance_add_srtp_policy(instance, remote_policy, local_policy)) {
+-		ast_log(LOG_WARNING, "Could not set policies when setting up DTLS-SRTP on '%p'\n", rtp);
+-		goto error;
+-	}
+-
+-	if (rtp->rekey) {
+-		ao2_ref(instance, +1);
+-		if ((rtp->rekeyid = ast_sched_add(rtp->sched, rtp->rekey * 1000, dtls_srtp_renegotiate, instance)) < 0) {
+-			ao2_ref(instance, -1);
+-			goto error;
+-		}
+-	}
+-
+-	return 0;
+-
+-error:
+-	res_srtp_policy->destroy(local_policy);
+-
+-	if (remote_policy) {
+-		res_srtp_policy->destroy(remote_policy);
+-	}
+-
+-	return -1;
+-}
+-#endif
+-
+ static int __rtp_recvfrom(struct ast_rtp_instance *instance, void *buf, size_t size, int flags, struct ast_sockaddr *sa, int rtcp)
+ {
+ 	int len;
+ 	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+ 	struct ast_srtp *srtp = ast_rtp_instance_get_srtp(instance);
++	const unsigned char* buf_ptr = (const unsigned char*)buf;
++	int is_muxed_rtcp = 0;
+ 
++	if(!rtcp && size >= 2 && (buf_ptr[1] & 0x80)){
++		// RFC 5761
++		switch((buf_ptr[1] & 0x7F)){
++			case 64: case 65: 
++			case 72: case 73: case 74: case 75: case 76:
++			case 77: case 78:
++			case 79: is_muxed_rtcp = 1; break;
++		}
++	}
++
+ 	if ((len = ast_recvfrom(rtcp ? rtp->rtcp->s : rtp->s, buf, size, flags, sa)) < 0) {
+ 	   return len;
+ 	}
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-	if (!rtcp) {
+-		char *in = buf;
+-
+-		dtls_srtp_check_pending(instance, rtp);
+-
+-		/* If this is an SSL packet pass it to OpenSSL for processing */
+-		if ((*in >= 20) && (*in <= 64)) {
+-			int res = 0;
+-
+-			/* If no SSL session actually exists terminate things */
+-			if (!rtp->ssl) {
+-				ast_log(LOG_ERROR, "Received SSL traffic on RTP instance '%p' without an SSL session\n",
+-					instance);
+-				return -1;
+-			}
+-
+-			/* If we don't yet know if we are active or passive and we receive a packet... we are obviously passive */
+-			if (rtp->dtls_setup == AST_RTP_DTLS_SETUP_ACTPASS) {
+-				rtp->dtls_setup = AST_RTP_DTLS_SETUP_PASSIVE;
+-				SSL_set_accept_state(rtp->ssl);
+-			}
+-
+-			dtls_srtp_check_pending(instance, rtp);
+-
+-			BIO_write(rtp->read_bio, buf, len);
+-
+-			len = SSL_read(rtp->ssl, buf, len);
+-
+-			dtls_srtp_check_pending(instance, rtp);
+-
+-			if (rtp->dtls_failure) {
+-				ast_log(LOG_ERROR, "DTLS failure occurred on RTP instance '%p', terminating\n",
+-					instance);
+-				return -1;
+-			}
+-
+-			if (SSL_is_init_finished(rtp->ssl)) {
+-				/* Any further connections will be existing since this is now established */
+-				rtp->connection = AST_RTP_DTLS_CONNECTION_EXISTING;
+-
+-				/* Use the keying material to set up key/salt information */
+-				res = dtls_srtp_setup(rtp, srtp, instance);
+-			}
+-
+-			return res;
+-		}
+-	}
+-#endif
+-
+ 	if (rtp->ice) {
+ 		pj_str_t combined = pj_str(ast_sockaddr_stringify(sa));
+ 		pj_sockaddr address;
+@@ -1444,7 +938,7 @@
  		status = pj_ice_sess_on_rx_pkt(rtp->ice, rtcp ? COMPONENT_RTCP : COMPONENT_RTP,
  			rtcp ? TRANSPORT_SOCKET_RTCP : TRANSPORT_SOCKET_RTP, buf, len, &address,
  			pj_sockaddr_get_len(&address));
@@ -5946,3 +6861,272 @@ Index: res/res_rtp_asterisk.c
  			char buf[100];
  
  			pj_strerror(status, buf, sizeof(buf));
+@@ -1458,7 +952,7 @@
+ 		rtp->passthrough = 0;
+ 	}
+ 
+-	if (res_srtp && srtp && res_srtp->unprotect(srtp, buf, &len, rtcp) < 0) {
++	if (res_srtp && srtp && res_srtp->unprotect(srtp, buf, &len, (rtcp || is_muxed_rtcp)) < 0) {
+ 	   return -1;
+ 	}
+ 
+@@ -1475,7 +969,7 @@
+ 	return __rtp_recvfrom(instance, buf, size, flags, sa, 0);
+ }
+ 
+-static int __rtp_sendto(struct ast_rtp_instance *instance, void *buf, size_t size, int flags, struct ast_sockaddr *sa, int rtcp, int *ice, int use_srtp)
++static int __rtp_sendto(struct ast_rtp_instance *instance, void *buf, size_t size, int flags, struct ast_sockaddr *sa, int rtcp, int *ice)
+ {
+ 	int len = size;
+ 	void *temp = buf;
+@@ -1484,7 +978,7 @@
+ 
+ 	*ice = 0;
+ 
+-	if (use_srtp && res_srtp && srtp && res_srtp->protect(srtp, &temp, &len, rtcp) < 0) {
++	if (res_srtp && srtp && res_srtp->protect(srtp, &temp, &len, rtcp) < 0) {
+ 		return -1;
+ 	}
+ 
+@@ -1502,12 +996,12 @@
+ 
+ static int rtcp_sendto(struct ast_rtp_instance *instance, void *buf, size_t size, int flags, struct ast_sockaddr *sa, int *ice)
+ {
+-	return __rtp_sendto(instance, buf, size, flags, sa, 1, ice, 1);
++	return __rtp_sendto(instance, buf, size, flags, sa, 1, ice);
+ }
+ 
+ static int rtp_sendto(struct ast_rtp_instance *instance, void *buf, size_t size, int flags, struct ast_sockaddr *sa, int *ice)
+ {
+-	return __rtp_sendto(instance, buf, size, flags, sa, 0, ice, 1);
++	return __rtp_sendto(instance, buf, size, flags, sa, 0, ice);
+ }
+ 
+ static int rtp_get_rate(struct ast_format *format)
+@@ -1771,10 +1265,6 @@
+ 	/* Record any information we may need */
+ 	rtp->sched = sched;
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-	rtp->rekeyid = -1;
+-#endif
+-
+ 	return 0;
+ }
+ 
+@@ -1837,18 +1327,6 @@
+ 		ao2_ref(rtp->remote_candidates, -1);
+ 	}
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-	/* Destroy the SSL context if present */
+-	if (rtp->ssl_ctx) {
+-		SSL_CTX_free(rtp->ssl_ctx);
+-	}
+-
+-	/* Destroy the SSL session if present */
+-	if (rtp->ssl) {
+-		SSL_free(rtp->ssl);
+-	}
+-#endif
+-
+ 	/* Destroy synchronization items */
+ 	ast_mutex_destroy(&rtp->lock);
+ 	ast_cond_destroy(&rtp->cond);
+@@ -2143,7 +1621,7 @@
+ }
+ 
+ /*! \brief Send RTCP recipient's report */
+-static int ast_rtcp_write_rr(struct ast_rtp_instance *instance)
++static int ast_rtcp_write_rr(struct ast_rtp_instance *instance, void* xdata, unsigned int xdata_len)
+ {
+ 	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+ 	int res;
+@@ -2216,12 +1694,21 @@
+ 
+ 	/*! \note Insert SDES here. Probably should make SDES text equal to mimetypes[code].type (not subtype 'cos
+ 	  it can change mid call, and SDES can't) */
+-	rtcpheader[len/4]     = htonl((2 << 30) | (1 << 24) | (RTCP_PT_SDES << 16) | 2);
+-	rtcpheader[(len/4)+1] = htonl(rtp->ssrc);               /* Our SSRC */
+-	rtcpheader[(len/4)+2] = htonl(0x01 << 24);              /* Empty for the moment */
++	rtcpheader[(len>>2)]     = htonl((2 << 30) | (1 << 24) | (RTCP_PT_SDES << 16) | 2);
++	rtcpheader[(len>>2) + 1] = htonl(rtp->ssrc);               /* Our SSRC */
++	rtcpheader[(len>>2) + 2] = htonl(0x01 << 24);              /* Empty for the moment */
+ 	len += 12;
+ 
+ 	ast_sockaddr_copy(&remote_address, &rtp->rtcp->them);
++	if(xdata && xdata_len){
++		if ((len + xdata_len) > sizeof(bdata)) {
++			ast_log(LOG_ERROR, "RTCP RR transmission cannot append: %d\n", xdata_len);
++		}
++		else {
++			memcpy(&rtcpheader[(len>>2)], xdata, xdata_len);
++			len += xdata_len;
++		}
++	}
+ 
+ 	res = rtcp_sendto(instance, (unsigned int *)rtcpheader, len, 0, &remote_address, &ice);
+ 
+@@ -2402,7 +1889,7 @@
+ 	if (rtp->txcount > rtp->rtcp->lastsrtxcount) {
+ 		res = ast_rtcp_write_sr(instance);
+ 	} else {
+-		res = ast_rtcp_write_rr(instance);
++		res = ast_rtcp_write_rr(instance, 0, 0);
+ 	}
+ 
+ 	if (!res) {
+@@ -2500,7 +1987,7 @@
+ 		int hdrlen = 12, res, ice;
+ 		unsigned char *rtpheader = (unsigned char *)(frame->data.ptr - hdrlen);
+ 
+-		put_unaligned_uint32(rtpheader, htonl((2 << 30) | (codec << 16) | (rtp->seqno) | (mark << 23)));
++		put_unaligned_uint32(rtpheader, htonl((2 << 30) | (codec << 16) | (/*rtp->seqno*/frame->seqno) | (mark << 23))); // FIXME: use frame seqno to reflect pkt loss
+ 		put_unaligned_uint32(rtpheader + 4, htonl(rtp->lastts));
+ 		put_unaligned_uint32(rtpheader + 8, htonl(rtp->ssrc));
+ 
+@@ -2531,7 +2018,7 @@
+ 				}
+ 			}
+ 		}
+-
++		
+ 		update_address_with_ice_candidate(rtp, COMPONENT_RTP, &remote_address);
+ 
+ 		if (rtp_debug_test_addr(&remote_address)) {
+@@ -3141,9 +2628,25 @@
+ 		}
+ 
+ 		switch (pt) {
++			case RTCP_PT_RTPFB:
++			case RTCP_PT_PSFB:
++				{
++					unsigned int* pkt = &rtcpheader[i - 2];
++					unsigned int len = (((ntohl(pkt[0]) & 0xFFFF) + 1) << 2);
++					
++					rtp->f.frametype = AST_FRAME_CONTROL;
++					rtp->f.subclass.integer = AST_CONTROL_RTCPFB;
++					rtp->f.mallocd = 0;
++					rtp->f.datalen = len;
++					rtp->f.data.ptr = (void*)&pkt[0];
++					rtp->f.offset = 0;
++					f = &rtp->f;
++					break;
++				}
++			
+ 		case RTCP_PT_SR:
+ 			gettimeofday(&rtp->rtcp->rxlsr,NULL); /* To be able to populate the dlsr */
+-			rtp->rtcp->spc = ntohl(rtcpheader[i+3]);
++			rtp->rtcp->spc = ntohl(rtcpheader[i + 3]);
+ 			rtp->rtcp->soc = ntohl(rtcpheader[i + 4]);
+ 			rtp->rtcp->themrxlsr = ((ntohl(rtcpheader[i]) & 0x0000ffff) << 16) | ((ntohl(rtcpheader[i + 1]) & 0xffff0000) >> 16); /* Going to LSR in RR*/
+ 
+@@ -3433,6 +2936,7 @@
+ 	struct ast_rtp_payload_type payload;
+ 	struct ast_sockaddr remote_address = { {0,} };
+ 	struct frame_list frames;
++	int is_muxed_rtcp = 0;
+ 
+ 	/* If this is actually RTCP let's hop on over and handle it */
+ 	if (rtcp) {
+@@ -3568,6 +3072,21 @@
+ 	timestamp = ntohl(rtpheader[1]);
+ 	ssrc = ntohl(rtpheader[2]);
+ 
++	
++	/* check if it's RTCP muxed with RTP */
++	switch((payloadtype)){
++		case 64: case 65: 
++		case 72: case 73: case 74: case 75: case 76:
++		case 77: case 78:
++		case 79: is_muxed_rtcp = 1; break;
++	}
++	if(is_muxed_rtcp){
++		if (rtp->rtcp) {
++			return ast_rtcp_read(instance);
++		}
++		return &ast_null_frame;
++	}
++
+ 	AST_LIST_HEAD_INIT_NOLOCK(&frames);
+ 	/* Force a marker bit and change SSRC if the SSRC changes */
+ 	if (rtp->rxssrc && rtp->rxssrc != ssrc) {
+@@ -4071,10 +3590,6 @@
+ 	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
+ 	struct ast_sockaddr addr = { {0,} };
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-	AST_SCHED_DEL_UNREF(rtp->sched, rtp->rekeyid, ao2_ref(instance, -1));
+-#endif
+-
+ 	if (rtp->rtcp && rtp->rtcp->schedid > 0) {
+ 		if (!ast_sched_del(rtp->sched, rtp->rtcp->schedid)) {
+ 			/* successfully cancelled scheduler entry. */
+@@ -4154,22 +3669,57 @@
+ 	return res;
+ }
+ 
+-#ifdef HAVE_OPENSSL_SRTP
+-static int ast_rtp_activate(struct ast_rtp_instance *instance)
++/*! \brief forward RTCP-FB message received from remote peer */
++static int ast_rtcpfb(struct ast_rtp_instance *instance, void* data, unsigned int len)
+ {
++	unsigned int pkt_len, u1, fci, pkt_type, *pkt;
++	int forward = 0;
+ 	struct ast_rtp *rtp = ast_rtp_instance_get_data(instance);
++	pkt = (unsigned int*)data;
++	u1 = ntohl(pkt[0]);
++	pkt_type = ((u1 >> 16) & 0xFF);
++	pkt_len = (((u1 & 0xFFFF) + 1) << 2);
++	fci = (pkt[0] & 0x1F);
+ 
+-	if (!rtp->ssl) {
+-		return 0;
++	if(pkt_len != len){
++		ast_log(LOG_ERROR, "Invalid packet length %u<>%u\n", len, pkt_len);
++		return -1;
+ 	}
+ 
+-	SSL_do_handshake(rtp->ssl);
+-
+-	dtls_srtp_check_pending(instance, rtp);
+-
+-	return 0;
++	if(pkt_type == RTCP_PT_RTPFB){
++		switch(fci){
++			case RTCP_PT_RTPFB_NACK:
++				{
++					if(len >= 12){
++						pkt[1] = htonl(rtp->ssrc); /* Sender SSRC */
++						pkt[2] = htonl(rtp->themssrc); /* Media SSRC */
++					}
++					forward = 1;
++					break;
++				}
++		}
++	}
++	else if(pkt_type == RTCP_PT_PSFB){
++		switch(fci){
++			case RTCP_PT_PSFB_FIR:
++			case RTCP_PT_PSFB_PLI:
++				{
++					if(len >= 12){
++						pkt[1] = htonl(rtp->ssrc); /* Sender SSRC */
++						pkt[2] = htonl(rtp->themssrc); /* Media SSRC */
++					}
++					if(fci == RTCP_PT_PSFB_FIR){
++						if(len >= 20){
++							pkt[3] = htonl(rtp->themssrc); /* FIR-1 Media SSRC */
++						}
++					}
++					forward = 1;
++					break;
++				}
++		}
++	}
++	return forward ? ast_rtcp_write_rr(instance, data, len) : 0;
+ }
+-#endif
+ 
+ static char *rtp_do_debug_ip(struct ast_cli_args *a)
+ {
