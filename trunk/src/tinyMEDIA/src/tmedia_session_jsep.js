@@ -75,7 +75,7 @@ tmedia_session_jsep.prototype.__get_lo = function () {
                     if (!b_moreToFollow) {
                         This.o_sdp_lo = tsdp_message.prototype.Parse(This.o_sdp_jsep_lo.toSdp());
                         if (This.o_sdp_lo) {
-                            This.decorate_lo();
+                            This.decorate_lo(true);
                         }
                         if (This.o_mgr) {
                             This.o_mgr.callback(tmedia_session_events_e.GET_LO_SUCCESS, This.e_type);
@@ -134,7 +134,7 @@ tmedia_session_jsep.prototype.__get_lo = function () {
         if (!b_start_ice) {
             this.o_sdp_lo = tsdp_message.prototype.Parse(this.o_sdp_jsep_lo.toSdp());
             if (this.o_sdp_lo) {
-                this.decorate_lo();
+                this.decorate_lo(false);
                 this.o_sdp_jsep_lo = new __o_sessiondescription_class(this.o_sdp_lo);
             }
         }
@@ -151,7 +151,7 @@ tmedia_session_jsep.prototype.__get_lo = function () {
     return this.o_sdp_lo;
 }
 
-tmedia_session_jsep.prototype.decorate_lo = function () {
+tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
     if (this.o_sdp_lo) {
         /* Session name for debugging */
         var o_hdr_S;
@@ -161,10 +161,13 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
         /* Session version */
         var o_hdr_O;
         if ((o_hdr_O = this.o_sdp_lo.get_header(tsdp_header_type_e.O))) {
-            o_hdr_O.i_sess_version = this.i_sdp_lo_version++;
+            o_hdr_O.i_sess_version = this.i_sdp_lo_version;
+            if (b_inc_version) {
+                ++this.i_sdp_lo_version;
+            }
         }
         /* Remove 'video' media if not enabled (bug in chrome: doesn't honor 'has_video' parameter) */
-        if (/*!this.o_sdp_ro &&*/ !(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
+        if (/*!this.o_sdp_ro &&*/!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
             this.o_sdp_lo.remove_media("video");
         }
         /* hold / resume */
@@ -212,7 +215,9 @@ tmedia_session_jsep.prototype.__set_ro = function (o_sdp, b_is_offer) {
 
             //console.debug("SDP_RO=%s", this.o_sdp_ro.toString());
             // FIXME: Chrome fails to parse SDP with global SDP "a=" attributes
-            // Chrome 21.0.1154.0+ generate "a=group:BUNDLE audio video" but cannot parse it (looks like SDP attributes order issue)
+            // Chrome 21.0.1154.0+ generate "a=group:BUNDLE audio video" but cannot parse it
+            // In fact, new the attribute is left the ice callback is called twice and the 2nd one trigger new INVITE then 200OK. The SYN_ERR is caused by the SDP in the 200 OK.
+            // Is it because of "a=rtcp:1 IN IP4 0.0.0.0"?
             this.o_sdp_ro.remove_header(tsdp_header_type_e.A); 
             this.o_pc.setRemoteDescription(b_is_offer ? __o_peerconnection_class.SDP_OFFER : __o_peerconnection_class.SDP_ANSWER,
                             new __o_sessiondescription_class(this.o_sdp_ro.toString()));
@@ -251,7 +256,7 @@ tmedia_session_jsep.prototype.__hold = function () {
 
     this.o_sdp_ro = null;
 
-    this.decorate_lo();
+    this.decorate_lo(true);
 
     return 0;
 }

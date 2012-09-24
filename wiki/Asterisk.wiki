@@ -12,8 +12,9 @@ _sipML5 solution using Asterisk_
 <hr />
 
 ==Building source code==
-The current Asterisk version (revision 373330) allows to register and make calls from Chrome but no audio will flow.
-The problem comes from ICE implementation in Chrome which is not fully compliant with RFC 5245. To fix this problem you'll need to apply the provided patch and rebuild Asterisk as explained in this section.
+The current Asterisk version (revision 373330) allows to register and make calls from Chrome but no audio or video will flow.
+The problem comes from ICE implementation in Chrome which is not fully compliant with RFC 5245. To fix this problem you'll need to apply the provided patch and rebuild Asterisk as explained in this section.<br />
+This patch also adds support for VP8 video codec.
 
  # checkout Asterisk source code *revision 373330*
 {{{
@@ -46,7 +47,7 @@ Open [http://sipml5.googlecode.com/svn/trunk/asterisk/sip.conf $PREFIX/etc/aster
 udpbindaddr=0.0.0.0:5060
 realm=doubango.org
 domainsasrealm=doubango.org
-videosupport=no
+videosupport=yes
 directmedia=no
 avpf=yes 
 encryption=yes
@@ -74,6 +75,7 @@ hasiax = no
 hassip = yes
 encryption = yes
 avpf = yes
+allow = vp8
 
 [1061]
 type=peer
@@ -135,7 +137,8 @@ To test with these browsers you will need to install [http://code.google.com/p/w
  # *r90*: Fix one-way audio when the called party is chrome
  # *r91*: Fix ICE authentication issues
  # *r98*: Add support for Firefox, IE9+, Safari and Opera (thanks to [http://code.google.com/p/webrtc4all webrtc4all]). Disable STUN keepAlive to avoid overrun.
- # *r104*: Fix issue 42. Use Asterisk *373330*.
+ # *r104*: Fix issue 42. Use Asterisk *373330*. Re-enable STUN keepAlive.
+ # *r106*: Adds support for VP8 video codec in Asterisk.
 
 ==Technical help==
 Please check our [http://code.google.com/p/sipml5/issues/list issue tracker] or [https://groups.google.com/group/doubango developer group] if you have any problem.
