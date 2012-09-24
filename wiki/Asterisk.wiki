@@ -148,5 +148,5 @@ Starting r106 there is experimental support for VP8 video codec. To be used at y
 
 ==Technical help==
 Please check our [http://code.google.com/p/sipml5/issues/list issue tracker] or [https://groups.google.com/group/doubango developer group] if you have any problem.
-<br />
-*bossiel*
+<hr />
+_bossiel_
