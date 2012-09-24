@@ -13,7 +13,7 @@ _sipML5 solution using Asterisk_
 
 ==Building source code==
 The current Asterisk version (revision 373330) allows to register and make calls from Chrome but no audio or video will flow.
-The problem comes from ICE implementation in Chrome which is not fully compliant with RFC 5245. To fix this problem you'll need to apply the provided patch and rebuild Asterisk as explained in this section.<br />
+The problem comes from ICE implementation in Chrome which is not fully compliant with RFC 5245. To fix this problem you'll need to apply the provided patch and rebuild Asterisk as explained in this section.
 This patch also adds support for VP8 video codec.
 
  # checkout Asterisk source code *revision 373330*
