@@ -4,7 +4,7 @@
 <wiki:toc max_depth="2" />
 
 <font color="red" size="2">
-<strong>We strongly recommend using Chrome stable (tested with 21.0.1180.89) instead of Canary</strong><br />
+<strong>We strongly recommend using Chrome stable (latest chrome version known to work: 22.0.1229.79 m) instead of Canary</strong><br />
 </font>
 
 This is a short guide explaining how to configure any HTML5 SIP client to work with Asterisk.
