@@ -1,0 +1,74 @@
+<html>
+<!-- head -->
+<head>
+    <title>Testing WebRTC</title>
+</head>
+<script type="text/javascript">
+    var o_stream = null;
+    var o_sdp;
+    var o_pc;
+    var o_offer, o_answer;
+    var b_remote_sdp = false;
+
+    window.onload = function () {
+        if (navigator.webkitGetUserMedia) {
+            navigator.webkitGetUserMedia({ audio: true, video: true },
+            function (stream) {
+                o_stream = stream;
+                document.getElementById("btnTest").disabled = false;
+            },
+            function (e) {
+                console.error(e.toString());
+            });
+        }
+    };
+
+    function test_webrtc() {
+        var s_offer = "v=0\r\n" +
+                    "o=root 1494914416 1494914416 IN IP4 192.106.69.240\r\n" +
+                    "s=Asterisk PBX SVN-trunk-r373330M\r\n" +
+                    "c=IN IP4 192.106.69.240\r\n" +
+                    "t=0 0\r\n" +
+                    "m=audio 11214 RTP/SAVPF 0 8 101\r\n" +
+                    "a=rtpmap:0 PCMU/8000\r\n" +
+                    "a=rtpmap:8 PCMA/8000\r\n" +
+                    "a=rtpmap:101 telephone-event/8000\r\n" +
+                    "a=fmtp:101 0-16\r\n" +
+                    "a=silenceSupp:off - - - -\r\n" +
+                    "a=ptime:20\r\n" +
+                    "a=ice-ufrag:4b25b6ed7058afcf453471412e597796\r\n" +
+                    "a=ice-pwd:11e4fa9c5d3e46674a9c64a8472b58d4\r\n" +
+                    "a=ice-options:google-ice\r\n" +
+                    "a=candidate:Hd4e6131a 1 udp 2130706431 192.106.69.240 11214 typ host\r\n" +
+                    "a=candidate:Hd4e6131a 2 udp 2130706430 192.106.69.240 11215 typ host\r\n" +
+                    "a=sendrecv\r\n" +
+                    "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:Re6uBCh/xCT8/ZBLfh+zJTFw/TcjnrtN+WKdD+Nt\r\n" +
+                    "\r\n";
+
+        o_pc = new webkitPeerConnection00("STUN stun.l.google.com:19302",
+                function (o_candidate, b_moreToFollow) {
+                    if (o_candidate) {
+                        console.debug("Candidate: %s", o_candidate.toSdp());
+                        o_answer.addCandidate(o_candidate);
+                    }
+                    if (!b_moreToFollow) {
+                        console.debug("Final SDP=%s", o_pc.localDescription.toSdp());
+                    }
+                }
+        );
+
+        o_pc.addStream(o_stream);
+        o_offer = new SessionDescription(s_offer);
+        o_pc.setRemoteDescription(webkitPeerConnection00.SDP_OFFER, o_offer);
+        o_answer = o_pc.createAnswer(o_offer.toSdp(), { has_audio: true, has_video: true });
+        o_pc.setLocalDescription(webkitPeerConnection00.SDP_ANSWER, o_answer);
+        o_pc.startIce({ use_candidates: "all" });
+    }
+</script>
+<!-- body -->
+<body>
+    <form action=''>
+    <input type="button" id="btnTest" disabled value="Test" onclick='test_webrtc();' />
+    </form>
+</body>
+</html>

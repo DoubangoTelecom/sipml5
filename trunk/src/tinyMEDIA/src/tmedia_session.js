@@ -6,6 +6,7 @@
 var __o_stream = null;
 var __o_peerconnection_class = undefined;
 var __o_sessiondescription_class = undefined;
+var __o_iceCandidate_class = undefined;
 
 if (navigator.webkitGetUserMedia) {
     navigator.webkitGetUserMedia({ audio: true, video: true },
@@ -64,30 +65,40 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
     this.ao_sessions = new Array();
     this.ao_params = new Array();
 
-    if (b_offerer) {
-        this.load_sessions();
-    }
-
     // initialize media classes
+    // Must be done before loading sessions
     if (__o_peerconnection_class == undefined) {
         if (tsk_utils_have_webrtc4all()) {
             __o_peerconnection_class = w4aPeerConnection;
             __o_sessiondescription_class = w4aSessionDescription;
+            __o_iceCandidate_class = w4aIceCandidate;
         }
         else if (tsk_utils_have_webrtc()) {
-            __o_peerconnection_class = /*window.webkitRTCPeerConnection ||*/ window.webkitPeerConnection || window.webkitPeerConnection00;
-            __o_sessiondescription_class = SessionDescription;
+            __o_peerconnection_class = (window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.webkitPeerConnection);
+            // https://groups.google.com/group/discuss-webrtc/browse_thread/thread/ccaff9c94aa2aac1
+            __o_sessiondescription_class = (window.RTCSessionDescription || window.SessionDescription);
+            __o_iceCandidate_class = (window.RTCIceCandidate || window.IceCandidate);
         }
         else { // force die
             __o_peerconnection_class = null;
             __o_sessiondescription_class = null;
+            __o_iceCandidate_class = null;
         }
+
+        tsk_utils_log_info("PeerConnectionClass = " + (__o_peerconnection_class || "unknown") + 
+                            " SessionDescriptionClass = " + (__o_sessiondescription_class || "unknown") +
+                            " IceCandidateClass = " + (__o_iceCandidate_class || "unknown")
+                            );
+    }
+
+    if (b_offerer) {
+        this.load_sessions();
     }
 }
 
 tmedia_session_mgr.prototype.is_roap = function () {
     try {
-        return tsk_utils_have_webrtc4all() ? false : ((window.webkitPeerConnection || window.webkitPeerConnection00) ? false : true);
+        return tsk_utils_have_webrtc4all() ? false : ((window.webkitRTCPeerConnection || window.webkitPeerConnection || window.webkitPeerConnection00) ? false : true);
     }
     catch (e) { }
     return false;
@@ -585,7 +596,7 @@ tmedia_session.prototype.Create = function (e_type, o_mgr) {
         case tmedia_type_e.AUDIO:
             {
                 if (o_mgr.is_jsep()) {
-                    return new tmedia_session_jsep(o_mgr);
+                    return tmedia_session_jsep.prototype.CreateInstance(o_mgr);
                 }
                 else {
                     return new tmedia_session_roap(o_mgr);
