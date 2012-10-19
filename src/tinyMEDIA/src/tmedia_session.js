@@ -74,12 +74,19 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
             __o_iceCandidate_class = w4aIceCandidate;
         }
         else if (tsk_utils_have_webrtc()) {
-            __o_peerconnection_class = (window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.webkitPeerConnection);
             // https://groups.google.com/group/discuss-webrtc/browse_thread/thread/ccaff9c94aa2aac1
-            __o_sessiondescription_class = (window.RTCSessionDescription || window.SessionDescription);
-            __o_iceCandidate_class = (window.RTCIceCandidate || window.IceCandidate);
+            if (window.webkitPeerConnection00 && window.SessionDescription && window.IceCandidate) {
+                __o_peerconnection_class = window.webkitPeerConnection00;
+                __o_sessiondescription_class = window.SessionDescription;
+                __o_iceCandidate_class = window.IceCandidate;
+            }
+            else if (window.webkitRTCPeerConnection && window.RTCSessionDescription && window.RTCIceCandidate) {
+                __o_peerconnection_class = window.webkitRTCPeerConnection;
+                __o_sessiondescription_class = window.RTCSessionDescription;
+                __o_iceCandidate_class = window.RTCIceCandidate;
+            }
         }
-        else { // force die
+        if (!__o_peerconnection_class || !__o_sessiondescription_class || !__o_iceCandidate_class) { // force die
             __o_peerconnection_class = null;
             __o_sessiondescription_class = null;
             __o_iceCandidate_class = null;
