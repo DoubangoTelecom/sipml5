@@ -3,20 +3,10 @@
 * License: GPLv3
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
-var __o_stream = null;
+
 var __o_peerconnection_class = undefined;
 var __o_sessiondescription_class = undefined;
 var __o_iceCandidate_class = undefined;
-
-if (navigator.webkitGetUserMedia) {
-    navigator.webkitGetUserMedia({ audio: true, video: true },
-        function (stream) {
-            __o_stream = stream;
-        },
-        function (error) {
-            tsk_utils_log_error(error);
-        });
-    }
 
 var tmedia_session_events_e =
 {
@@ -75,21 +65,23 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
         }
         else if (tsk_utils_have_webrtc()) {
             // https://groups.google.com/group/discuss-webrtc/browse_thread/thread/ccaff9c94aa2aac1
-            if (window.webkitPeerConnection00 && window.SessionDescription && window.IceCandidate) {
-                __o_peerconnection_class = window.webkitPeerConnection00;
-                __o_sessiondescription_class = window.SessionDescription;
-                __o_iceCandidate_class = window.IceCandidate;
+        if (WebRtc4all_GetType() == WebRtcType_e.NATIVE) {
+                if (window.webkitPeerConnection00 && window.SessionDescription && window.IceCandidate) {
+                    __o_peerconnection_class = window.webkitPeerConnection00;
+                    __o_sessiondescription_class = window.SessionDescription;
+                    __o_iceCandidate_class = window.IceCandidate;
+                }
+                else if (window.webkitRTCPeerConnection && window.RTCSessionDescription && window.RTCIceCandidate) {
+                    __o_peerconnection_class = window.webkitRTCPeerConnection;
+                    __o_sessiondescription_class = window.RTCSessionDescription;
+                    __o_iceCandidate_class = window.RTCIceCandidate;
+                }
             }
-            else if (window.webkitRTCPeerConnection && window.RTCSessionDescription && window.RTCIceCandidate) {
-                __o_peerconnection_class = window.webkitRTCPeerConnection;
-                __o_sessiondescription_class = window.RTCSessionDescription;
-                __o_iceCandidate_class = window.RTCIceCandidate;
+            else if (WebRtc4all_GetType() == WebRtcType_e.ERICSSON) {
+                if (window.webkitPeerConnection) {
+                    __o_peerconnection_class = window.webkitPeerConnection;
+                }
             }
-        }
-        if (!__o_peerconnection_class || !__o_sessiondescription_class || !__o_iceCandidate_class) { // force die
-            __o_peerconnection_class = null;
-            __o_sessiondescription_class = null;
-            __o_iceCandidate_class = null;
         }
 
         tsk_utils_log_info("PeerConnectionClass = " + (__o_peerconnection_class || "unknown") + 
@@ -105,7 +97,7 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
 
 tmedia_session_mgr.prototype.is_roap = function () {
     try {
-        return tsk_utils_have_webrtc4all() ? false : ((window.webkitRTCPeerConnection || window.webkitPeerConnection || window.webkitPeerConnection00) ? false : true);
+        return tsk_utils_have_webrtc4all() ? false : ((window.webkitRTCPeerConnection || window.webkitPeerConnection00) ? false : true);
     }
     catch (e) { }
     return false;

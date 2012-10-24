@@ -16,6 +16,7 @@ w4aSessionDescription.prototype.o_sdp = null;
 w4aIceCandidate.prototype.media = null;
 w4aIceCandidate.prototype.label = null; // part of the standard
 
+var __o_stream = null;
 
 var WebRtcType_e =
 {
@@ -23,7 +24,8 @@ var WebRtcType_e =
 
     NATIVE: 0,
     IE: 1,
-    NPAPI: 2
+    NPAPI: 2,
+    ERICSSON: 3
 };
 
 var __webrtc_type = WebRtcType_e.NONE;
@@ -40,12 +42,15 @@ function WebRtc4all_Init() {
             oWebRtc4npapi.stype = 'visibility:hidden;';
             document.body.appendChild(oWebRtc4npapi);
         }
-        catch (e) { }
+        catch (e) { }        
 
         // WebRtc plugin type
         try {
-            if ((navigator.webkitGetUserMedia && (window.webkitPeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection))) {
+            if ((navigator.webkitGetUserMedia && (window.webkitPeerConnection00 || window.webkitRTCPeerConnection))) {
                 __webrtc_type = WebRtcType_e.NATIVE; // Google Chrome
+            }
+            else if (navigator.webkitGetUserMedia && window.webkitPeerConnection) {
+                __webrtc_type = WebRtcType_e.ERICSSON;
             }
         }
         catch (e) { }
@@ -63,6 +68,17 @@ function WebRtc4all_Init() {
         }
 
         __b_webrtc4all_initialized = true;
+
+        if (navigator.webkitGetUserMedia) {
+            navigator.webkitGetUserMedia(WebRtc4all_GetType() == WebRtcType_e.ERICSSON ? ("audio, video") : ({ audio: true, video: true }),
+                    function (stream) {
+                        tsk_utils_log_info("Got stream :)");
+                        __o_stream = stream;
+                    },
+                    function (error) {
+                        tsk_utils_log_error(error);
+                    });
+        }
     }
 }
 
