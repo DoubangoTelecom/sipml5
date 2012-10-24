@@ -59,18 +59,20 @@ tmedia_session_roap.prototype.__pause = function () {
 
 
 tmedia_session_roap.prototype.__stop = function () {
-    this.o_mgr.set_stream_video_remote(null);
-    this.o_mgr.set_stream_video_local(null);
+    tsk_utils_log_info("PeerConnection::stop()");
 
     if (this.o_pc) {
         this.o_pc.close();
         this.o_pc = null;
     }
+    this.o_mgr.set_stream_video_remote(null);
+    this.o_mgr.set_stream_video_local(null);
 
     return 0;
 }
 
 tmedia_session_roap.prototype.__get_lo = function () {
+    tsk_utils_log_info("ROAP: __get_lo");
     if (!this.o_pc) {
         __o_session_roap = this;
 
@@ -78,7 +80,7 @@ tmedia_session_roap.prototype.__get_lo = function () {
         this.o_mgr.set_stream_video_local(__o_stream);
 
         __o_session_roap.o_local_stream = __o_stream;
-        __o_session_roap.o_pc = new webkitDeprecatedPeerConnection("STUN stun.l.google.com:19302", __o_session_roap.__on_signaling_message);
+        __o_session_roap.o_pc = new __o_peerconnection_class("STUN stun.l.google.com:19302", __o_session_roap.__on_signaling_message);
         //__o_session_roap.o_pc = new webkitDeprecatedPeerConnection("NONE", __o_session_roap.__on_signaling_message);
         __o_session_roap.o_pc.o_session = __o_session_roap;
         __o_session_roap.o_pc.onstatechange = tmedia_session_roap.prototype.__on_state_change;
@@ -88,6 +90,7 @@ tmedia_session_roap.prototype.__get_lo = function () {
         __o_session_roap.o_pc.onremovestream = tmedia_session_roap.prototype.__on_remove_stream;
 
         if (__o_session_roap.o_pc) {
+            tsk_utils_log_info("ROAP: __get_lo::addStream()");
             __o_session_roap.o_pc.addStream(__o_session_roap.o_local_stream);
         }
 
@@ -108,30 +111,13 @@ tmedia_session_roap.prototype.__hold = function () {
         this.o_pc.removeStream(this.o_local_stream);
         return 0;
     }
-    /*if (this.o_sdp_ro && this.o_sdp_lo) {// Must be true as session is connected
-    this.e_state = tmedia_session_state_e.LOCAL_HOLD;
-    var s_sdp_json_ro = tsk_string_format(
-    "{\n" +
-    "\"answererSessionId\" : \"{0}\",\n" +
-    "\"messageType\" : \"OFFER\",\n" +
-    "\"offererSessionId\" : \"{1}\",\n" +
-    "\"sdp\" : \"{2}\",\n" +
-    "\"seq\" : {3},\n" +
-    "\"tieBreaker\": {4}\n" +
-    "}\n", this.o_pc_json.answererSessionId, this.o_pc_json.offererSessionId, this.o_sdp_ro.toString("\\r\\n"), (this.o_pc_json.seq + 1), Math.floor((Math.random() * 0x0000FFFF)));
-
-    tsk_utils_log_info("RO_FORCE_LO=" + s_sdp_json_ro);
-
-    this.o_sdp_json_ro = JSON.parse(s_sdp_json_ro);
-    this.o_pc.processSignalingMessage("SDP\n" + s_sdp_json_ro);
-    return 0;
-    }*/
 
     tsk_utils_log_error("Invalid state");
     return -1;
 }
 
 tmedia_session_roap.prototype.__set_ro = function (o_sdp, b_is_offer) {
+    tsk_utils_log_info("ROAP: __set_ro");
     this.o_sdp_ro = o_sdp;
 
     if (!this.o_pc) {
@@ -238,29 +224,36 @@ tmedia_session_roap.prototype.__on_signaling_message = function (message) {
     try {
         __o_session_roap.o_pc_json = JSON.parse(message);
         if (__o_session_roap.o_pc_json.messageType == "OFFER" || __o_session_roap.o_pc_json.messageType == "ANSWER") {
+            var o_sdp = tsdp_message.prototype.Parse(__o_session_roap.o_pc_json.sdp);
+            if (!o_sdp) {
+                tsk_utils_log_error("failed to parse sdp" + __o_session_roap.o_pc_json.sdp);
+                __o_session_roap.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, this.e_type);
+                return;
+            }
+            // https://groups.google.com/group/ericsson-labs-web-rtc/browse_thread/thread/4acadd0da3fce37c
+            var o_hdr_ma = o_sdp.get_header_m_by_name("audio");
+            var o_hdr_mv = o_sdp.get_header_m_by_name("video");
+            /*if (o_hdr_ma && o_hdr_ma.i_port < 1024) {
+                tsk_utils_log_error("Audio media contains invalid port:" + o_hdr_ma.i_port);
+                return;
+            }
+            if (o_hdr_mv && o_hdr_mv.i_port < 1024) {
+                tsk_utils_log_error("Video media contains invalid port:" + o_hdr_mv.i_port);
+                return;
+            }*/
+
             __o_session_roap.o_sdp_json_lo = __o_session_roap.o_pc_json;
-            __o_session_roap.o_sdp_lo = tsdp_message.prototype.Parse(__o_session_roap.o_sdp_json_lo.sdp);
+            __o_session_roap.o_sdp_lo = o_sdp;
 
             var o_hdr_S;
             if ((o_hdr_S = __o_session_roap.o_sdp_lo.get_header(tsdp_header_type_e.S))) {
-                o_hdr_S.s_value = "webrtc (chrome 1087)";
+                o_hdr_S.s_value = "webrtc (roap)";
             }
 
             var o_hdr_O;
             if ((o_hdr_O = __o_session_roap.o_sdp_lo.get_header(tsdp_header_type_e.O))) {
                 o_hdr_O.i_sess_version = __o_session_roap.o_sdp_json_lo.seq;
             }
-
-            /*if (__o_session_roap.o_sdp_json_lo.answererSessionId) {
-            __o_session_roap.s_answererSessionId = __o_session_roap.o_sdp_json_lo.answererSessionId;
-            }
-            if (__o_session_roap.o_sdp_json_lo.offererSessionId) {
-            __o_session_roap.s_offererSessionId = __o_session_roap.o_sdp_json_lo.offererSessionId;
-            }
-
-            if (__o_session_roap.b_lo_held) {
-
-            }*/
 
             /* Hold/Resume */
             if (__o_session_roap.b_lo_held || __o_session_roap.b_ro_held) {
@@ -273,22 +266,18 @@ tmedia_session_roap.prototype.__on_signaling_message = function (message) {
 
             //__o_session_roap.o_sdp_lo.remove_media("video");
             //__o_session_roap.o_sdp_lo.add_media("video", 0, "RTP/AVP");
-
-            // FIXME:
-            var o_hdr_m = __o_session_roap.o_sdp_lo.get_header_m_by_name("audio");
-            if (o_hdr_m) {
-                //o_hdr_m.s_proto = "RTP/AVP";
-                //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "rtcp");
-                //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "ssrc");
-            }
-            o_hdr_m = __o_session_roap.o_sdp_lo.get_header_m_by_name("video");
-            if (o_hdr_m) {
-                //o_hdr_m.s_proto = "RTP/AVP";
-                //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "rtcp");
-                //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "ssrc");
-            }
-
             
+            if (o_hdr_ma) {
+                //o_hdr_m.s_proto = "RTP/AVP";
+                //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "rtcp");
+                //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "ssrc");
+            }
+            if (o_hdr_mv) {
+                //o_hdr_m.s_proto = "RTP/AVP";
+                //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "rtcp");
+                //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "ssrc");
+            }
+
 
             if (__o_session_roap.e_state == tmedia_session_state_e.LOCAL_HOLD) {
                 __o_session_roap.e_state = tmedia_session_state_e.OFFER_SENT;
@@ -300,8 +289,8 @@ tmedia_session_roap.prototype.__on_signaling_message = function (message) {
             __o_session_roap.o_mgr.callback(tmedia_session_events_e.SET_RO_SUCCESS, this.e_type);
         }
         if (__o_session_roap.o_pc_json.messageType == "ERROR") {
-            // FIXME: to be implemented
-            //__o_session_roap.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, this.e_type);
+            tsk_utils_log_error("onSignalingMessage::messageType = ERROR");
+            __o_session_roap.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, this.e_type); // FIXME
         }
     }
     catch (e) {
