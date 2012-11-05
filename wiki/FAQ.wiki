@@ -33,11 +33,10 @@ Yes. Please check wiki page at [http://code.google.com/p/sipml5/wiki/Asterisk ht
 Yes but it requires a browser with support for WebRTC and WebSocket. For now only Ericsson WebRTC implementation (https://labs.ericsson.com/blog/bowser-the-world-s-first-webrtc-enabled-mobile-browser) runs on these systems.
 Issues on Ericsson WebRTC implementation: https://groups.google.com/group/ericsson-labs-web-rtc/browse_thread/thread/4acadd0da3fce37c
 
-==How to reduce the file sizes before deploying==
+==How to reduce the size of the scripts before deploying==
 To compress the scripts (css and javascript) you have to execute:
 {{{
  cd yuicompressor
  ./deploy.sh
 }}}
-the compressed files will be generated inside *deploy* directory.=======
-Yes. Please check wiki page at [http://code.google.com/p/sipml5/wiki/Asterisk http://code.google.com/p/sipml5/wiki/Asterisk]
+the compressed files will be generated inside *deploy* directory.
