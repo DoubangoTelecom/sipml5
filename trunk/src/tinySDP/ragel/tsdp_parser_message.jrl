@@ -51,7 +51,12 @@
 	
 	action parse_header_Dummy{
 		if((header = tsdp_header_Dummy.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
-			sdp_msg.add_header(header);
+			if(hdr_M){
+				hdr_M.ao_hdr_Dummy.push(header);
+			}
+			else{
+				sdp_msg.add_header(header);
+			}
 		}
 	}
 	

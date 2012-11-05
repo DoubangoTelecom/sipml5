@@ -1,3 +1,5 @@
+
+/* line 1 "./ragel/tsip_parser_header_Authorization.jrl" */
 /*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
 * License: GPLv3
@@ -5,11 +7,11 @@
 */
 tsip_header_Authorization.prototype = Object.create(tsip_header.prototype);
 
-/* line 120 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 105 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 
 
-/* line 30 "./src/headers/tsip_header_Authorization.js" */
+/* line 15 "./src/headers/tsip_header_Authorization.js" */
 _tsip_machine_parser_header_Authorization_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
@@ -8466,7 +8468,7 @@ tsip_machine_parser_header_Authorization_error = 0;
 tsip_machine_parser_header_Authorization_en_main = 1;
 
 
-/* line 123 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 108 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 function tsip_header_Authorization(){
 	tsip_header.call(this, tsip_header_type_e.Authorization);
@@ -8541,14 +8543,14 @@ tsip_header_Authorization.prototype.Parse = function(s_str){
 	var hdr_Authorization = new tsip_header_Authorization();
 	
 	
-/* line 8562 "./src/headers/tsip_header_Authorization.js" */
+/* line 8547 "./src/headers/tsip_header_Authorization.js" */
 {
 	 cs = tsip_machine_parser_header_Authorization_start;
 } /* JSCodeGen::writeInit */
 
-/* line 197 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 182 "./ragel/tsip_parser_header_Authorization.jrl" */
 	
-/* line 8569 "./src/headers/tsip_header_Authorization.js" */
+/* line 8554 "./src/headers/tsip_header_Authorization.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -8633,90 +8635,90 @@ tsip_header_Authorization.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Authorization_actions[_acts - 1]) {
 case 0:
-/* line 28 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 13 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 32 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 17 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_scheme = "Digest";
 			break;
 case 2:
-/* line 36 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 21 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_scheme = "Basic";
 			break;
 case 3:
-/* line 40 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 25 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		tsip_header.call(hdr_Authorization, tsip_header_type_e.Authorization);
 			break;
 case 4:
-/* line 44 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 29 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		tsip_header.call(hdr_Authorization, tsip_header_type_e.Proxy_Authorization);
 			break;
 case 5:
-/* line 48 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 33 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_username = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 6:
-/* line 52 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 37 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_realm = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 7:
-/* line 56 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 41 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_nonce = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 8:
-/* line 60 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 45 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 9:
-/* line 64 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 49 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_response = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 10:
-/* line 68 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 53 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_algorithm = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 11:
-/* line 72 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 57 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_cnonce = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 12:
-/* line 76 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 61 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_opaque = tsk_string_unquote_2(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
 			break;
 case 13:
-/* line 80 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 65 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_qop = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 14:
-/* line 84 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 69 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		hdr_Authorization.s_nc = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 15:
-/* line 88 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 73 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 		tsk_ragel_add_param(s_str, p, i_tag_start, hdr_Authorization.ao_params);
 			break;
 case 16:
-/* line 92 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 77 "./ragel/tsip_parser_header_Authorization.jrl" */
 
 			break;
-/* line 8737 "./src/headers/tsip_header_Authorization.js" */
+/* line 8722 "./src/headers/tsip_header_Authorization.js" */
 			} /* action switch */
 		}
 	}
@@ -8743,12 +8745,12 @@ case 16:
 	}
 	}
 
-/* line 198 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 183 "./ragel/tsip_parser_header_Authorization.jrl" */
 	
 	if( cs < 
-/* line 8767 "./src/headers/tsip_header_Authorization.js" */
+/* line 8752 "./src/headers/tsip_header_Authorization.js" */
 1351
-/* line 199 "./ragel/tsip_parser_header_Authorization.jrl" */
+/* line 184 "./ragel/tsip_parser_header_Authorization.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse 'Authorization' header: " + s_str);
 		return null;

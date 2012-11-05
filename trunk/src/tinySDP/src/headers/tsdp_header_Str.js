@@ -6,85 +6,104 @@
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
 
-// Parse headers: E, I, K, P, S, U
+// Parse headers: B, E, I, K, P, R, S, T, U, Z, Dummy
 tsdp_header_Str.prototype = Object.create(tsdp_header.prototype);
+tsdp_header_B.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_E.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_I.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_K.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_P.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_R.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_S.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_T.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_U.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_Z.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_Dummy.prototype = Object.create(tsdp_header_Str.prototype);
 
 tsdp_header_Str.prototype.s_value = null;
 
 
-/* line 61 "./ragel/tsdp_parser_header_Str.jrl" */
+/* line 56 "./ragel/tsdp_parser_header_Str.jrl" */
 
 
 
-/* line 41 "./src/headers/tsdp_header_Str.js" */
+/* line 31 "./src/headers/tsdp_header_Str.js" */
 _tsdp_machine_parser_header_Str_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
-	7, 2, 0, 7
+	7, 1, 8, 1, 9, 1, 10, 1, 
+	11, 1, 12, 2, 0, 12
 ];
 
 _tsdp_machine_parser_header_Str_key_offsets = [
-	0, 0, 6, 8, 10, 11, 13, 15, 
-	17, 19, 21, 25, 28
+	0, 0, 14, 16, 18, 19, 21, 23, 
+	25, 27, 29, 31, 33, 35, 37, 39, 
+	43, 46
 ];
 
 _tsdp_machine_parser_header_Str_trans_keys = [
-	101, 105, 107, 112, 115, 117, 32, 61, 
+	98, 101, 105, 107, 112, 114, 115, 116, 
+	117, 122, 65, 90, 97, 121, 32, 61, 
 	32, 61, 10, 32, 61, 32, 61, 32, 
-	61, 32, 61, 32, 61, 13, 32, 0, 
-	65535, 13, 0, 65535, 0
+	61, 32, 61, 32, 61, 32, 61, 32, 
+	61, 32, 61, 32, 61, 32, 61, 13, 
+	32, 0, 65535, 13, 0, 65535, 0
 ];
 
 _tsdp_machine_parser_header_Str_single_lengths = [
-	0, 6, 2, 2, 1, 2, 2, 2, 
-	2, 2, 2, 1, 0
+	0, 10, 2, 2, 1, 2, 2, 2, 
+	2, 2, 2, 2, 2, 2, 2, 2, 
+	1, 0
 ];
 
 _tsdp_machine_parser_header_Str_range_lengths = [
-	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 1, 1, 0
+	0, 2, 0, 0, 0, 0, 0, 0, 
+	0, 0, 0, 0, 0, 0, 0, 1, 
+	1, 0
 ];
 
 _tsdp_machine_parser_header_Str_index_offsets = [
-	0, 0, 7, 10, 13, 15, 18, 21, 
-	24, 27, 30, 34, 37
+	0, 0, 13, 16, 19, 21, 24, 27, 
+	30, 33, 36, 39, 42, 45, 48, 51, 
+	55, 58
 ];
 
 _tsdp_machine_parser_header_Str_trans_targs = [
-	2, 5, 6, 7, 8, 9, 0, 3, 
-	10, 0, 3, 10, 0, 12, 0, 3, 
-	10, 0, 3, 10, 0, 3, 10, 0, 
-	3, 10, 0, 3, 10, 0, 4, 10, 
-	11, 0, 4, 11, 0, 0, 0
+	5, 6, 7, 8, 9, 10, 11, 12, 
+	13, 14, 2, 2, 0, 3, 15, 0, 
+	3, 15, 0, 17, 0, 3, 15, 0, 
+	3, 15, 0, 3, 15, 0, 3, 15, 
+	0, 3, 15, 0, 3, 15, 0, 3, 
+	15, 0, 3, 15, 0, 3, 15, 0, 
+	3, 15, 0, 4, 15, 16, 0, 4, 
+	16, 0, 0, 0
 ];
 
 _tsdp_machine_parser_header_Str_trans_actions = [
-	0, 0, 0, 0, 0, 0, 0, 3, 
-	3, 0, 0, 0, 0, 0, 0, 5, 
-	5, 0, 7, 7, 0, 9, 9, 0, 
-	11, 11, 0, 13, 13, 0, 17, 0, 
-	1, 0, 15, 0, 0, 0, 0
+	0, 0, 0, 0, 0, 0, 0, 0, 
+	0, 0, 1, 1, 0, 23, 23, 0, 
+	0, 0, 0, 0, 0, 3, 3, 0, 
+	5, 5, 0, 7, 7, 0, 9, 9, 
+	0, 11, 11, 0, 13, 13, 0, 15, 
+	15, 0, 17, 17, 0, 19, 19, 0, 
+	21, 21, 0, 27, 0, 1, 0, 25, 
+	0, 0, 0, 0
 ];
 
 _tsdp_machine_parser_header_Str_eof_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 17, 15, 0
+	0, 0, 0, 0, 0, 0, 0, 27, 
+	25, 0
 ];
 
 tsdp_machine_parser_header_Str_start = 1;
-tsdp_machine_parser_header_Str_first_final = 10;
+tsdp_machine_parser_header_Str_first_final = 15;
 tsdp_machine_parser_header_Str_error = 0;
 
 tsdp_machine_parser_header_Str_en_main = 1;
 
 
-/* line 64 "./ragel/tsdp_parser_header_Str.jrl" */
+/* line 59 "./ragel/tsdp_parser_header_Str.jrl" */
 
 function tsdp_header_Str(e_type, s_value){
 	tsdp_header.call(this, e_type);
@@ -105,14 +124,14 @@ tsdp_header_Str.prototype.Parse = function(s_str){
 	var o_hdr = null;
 	
 	
-/* line 124 "./src/headers/tsdp_header_Str.js" */
+/* line 128 "./src/headers/tsdp_header_Str.js" */
 {
 	 cs = tsdp_machine_parser_header_Str_start;
 } /* JSCodeGen::writeInit */
 
-/* line 84 "./ragel/tsdp_parser_header_Str.jrl" */
+/* line 79 "./ragel/tsdp_parser_header_Str.jrl" */
 	
-/* line 131 "./src/headers/tsdp_header_Str.js" */
+/* line 135 "./src/headers/tsdp_header_Str.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -196,36 +215,51 @@ tsdp_header_Str.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_Str_actions[_acts - 1]) {
 case 0:
-/* line 39 "./ragel/tsdp_parser_header_Str.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_Str.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 43 "./ragel/tsdp_parser_header_Str.jrl" */
- o_hdr = new tsdp_header_E(); 		break;
+/* line 33 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_B(); 		break;
 case 2:
-/* line 44 "./ragel/tsdp_parser_header_Str.jrl" */
- o_hdr = new tsdp_header_I(); 		break;
+/* line 34 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_E(); 		break;
 case 3:
-/* line 45 "./ragel/tsdp_parser_header_Str.jrl" */
- o_hdr = new tsdp_header_K(); 		break;
+/* line 35 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_I(); 		break;
 case 4:
-/* line 46 "./ragel/tsdp_parser_header_Str.jrl" */
- o_hdr = new tsdp_header_P(); 		break;
+/* line 36 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_K(); 		break;
 case 5:
-/* line 47 "./ragel/tsdp_parser_header_Str.jrl" */
- o_hdr = new tsdp_header_S(); 		break;
+/* line 37 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_P(); 		break;
 case 6:
-/* line 48 "./ragel/tsdp_parser_header_Str.jrl" */
- o_hdr = new tsdp_header_U(); 		break;
+/* line 38 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_R(); 		break;
 case 7:
-/* line 50 "./ragel/tsdp_parser_header_Str.jrl" */
+/* line 39 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_S(); 		break;
+case 8:
+/* line 40 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_T(); 		break;
+case 9:
+/* line 41 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_U(); 		break;
+case 10:
+/* line 42 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_Z(); 		break;
+case 11:
+/* line 43 "./ragel/tsdp_parser_header_Str.jrl" */
+ o_hdr = new tsdp_header_Dummy(); o_hdr.c_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start)[0]; 		break;
+case 12:
+/* line 45 "./ragel/tsdp_parser_header_Str.jrl" */
 
 		if(o_hdr){
 			o_hdr.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
-/* line 244 "./src/headers/tsdp_header_Str.js" */
+/* line 263 "./src/headers/tsdp_header_Str.js" */
 			} /* action switch */
 		}
 	}
@@ -254,18 +288,18 @@ case 7:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_Str_actions[__acts - 1]) {
 case 0:
-/* line 39 "./ragel/tsdp_parser_header_Str.jrl" */
+/* line 29 "./ragel/tsdp_parser_header_Str.jrl" */
 
 		i_tag_start = p;
 			break;
-case 7:
-/* line 50 "./ragel/tsdp_parser_header_Str.jrl" */
+case 12:
+/* line 45 "./ragel/tsdp_parser_header_Str.jrl" */
 
 		if(o_hdr){
 			o_hdr.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
-/* line 284 "./src/headers/tsdp_header_Str.js" */
+/* line 303 "./src/headers/tsdp_header_Str.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -279,12 +313,12 @@ case 7:
 	}
 	}
 
-/* line 85 "./ragel/tsdp_parser_header_Str.jrl" */
+/* line 80 "./ragel/tsdp_parser_header_Str.jrl" */
 	
 	if( cs < 
-/* line 301 "./src/headers/tsdp_header_Str.js" */
-10
-/* line 86 "./ragel/tsdp_parser_header_Str.jrl" */
+/* line 320 "./src/headers/tsdp_header_Str.js" */
+15
+/* line 81 "./ragel/tsdp_parser_header_Str.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse header: " + s_str);
 		return null;
@@ -293,9 +327,14 @@ case 7:
 	return o_hdr;
 }
 
+function tsdp_header_B(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.B, s_value); }
 function tsdp_header_E(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.E, s_value); }
 function tsdp_header_I(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.I, s_value); }
 function tsdp_header_K(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.K, s_value); }
 function tsdp_header_P(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.P, s_value); }
+function tsdp_header_R(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.R, s_value); }
 function tsdp_header_S(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.S, s_value); }
+function tsdp_header_T(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.T, s_value); }
 function tsdp_header_U(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.U, s_value); }
+function tsdp_header_Z(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.Z, s_value); }
+function tsdp_header_Dummy(s_name, s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.DUMMY, s_value); this.s_name = s_name; }

@@ -7,12 +7,12 @@
 */
 tsip_header_Contact.prototype = Object.create(tsip_header.prototype);
 
-/* line 89 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 74 "./ragel/tsip_parser_header_Contact.jrl" */
 
 
 
 
-/* line 31 "./src/headers/tsip_header_Contact.js" */
+/* line 16 "./src/headers/tsip_header_Contact.js" */
 _tsip_machine_parser_header_Contact_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
@@ -360,7 +360,7 @@ tsip_machine_parser_header_Contact_error = 0;
 tsip_machine_parser_header_Contact_en_main = 1;
 
 
-/* line 93 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 78 "./ragel/tsip_parser_header_Contact.jrl" */
 
 function tsip_header_Contact(){
 	tsip_header.call(this, tsip_header_type_e.Contact);
@@ -389,14 +389,14 @@ tsip_header_Contact.prototype.Parse = function(s_str){
 	var curr_contact = null;
 	
 	
-/* line 408 "./src/headers/tsip_header_Contact.js" */
+/* line 393 "./src/headers/tsip_header_Contact.js" */
 {
 	 cs = tsip_machine_parser_header_Contact_start;
 } /* JSCodeGen::writeInit */
 
-/* line 121 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 106 "./ragel/tsip_parser_header_Contact.jrl" */
 	
-/* line 415 "./src/headers/tsip_header_Contact.js" */
+/* line 400 "./src/headers/tsip_header_Contact.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -481,19 +481,19 @@ tsip_header_Contact.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Contact_actions[_acts - 1]) {
 case 0:
-/* line 28 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 13 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 32 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 17 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(!curr_contact){
 			curr_contact = new tsip_header_Contact();
 		}
 			break;
 case 2:
-/* line 38 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 23 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact){
 		    curr_contact.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -501,7 +501,7 @@ case 2:
 		}
 			break;
 case 3:
-/* line 45 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 30 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact && !curr_contact.o_uri){
 		    var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -511,21 +511,21 @@ case 3:
 		}
 			break;
 case 4:
-/* line 54 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 39 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact){
 		    curr_contact.i_expires = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 		}
 			break;
 case 5:
-/* line 60 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 45 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact){
 		    tsk_ragel_add_param(s_str, p, i_tag_start, curr_contact.ao_params);
 		}
 			break;
 case 6:
-/* line 66 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 51 "./ragel/tsip_parser_header_Contact.jrl" */
 
 		if(curr_contact){
 		    hdr_contacts.push(curr_contact);
@@ -533,10 +533,10 @@ case 6:
 		}
 			break;
 case 7:
-/* line 73 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 58 "./ragel/tsip_parser_header_Contact.jrl" */
 
 			break;
-/* line 555 "./src/headers/tsip_header_Contact.js" */
+/* line 540 "./src/headers/tsip_header_Contact.js" */
 			} /* action switch */
 		}
 	}
@@ -563,12 +563,12 @@ case 7:
 	}
 	}
 
-/* line 122 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 107 "./ragel/tsip_parser_header_Contact.jrl" */
 	
 	if( cs < 
-/* line 585 "./src/headers/tsip_header_Contact.js" */
+/* line 570 "./src/headers/tsip_header_Contact.js" */
 126
-/* line 123 "./ragel/tsip_parser_header_Contact.jrl" */
+/* line 108 "./ragel/tsip_parser_header_Contact.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse 'Contact' header: " + s_str);
 		return null;

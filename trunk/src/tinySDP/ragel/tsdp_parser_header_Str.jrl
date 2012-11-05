@@ -4,14 +4,19 @@
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
 
-// Parse headers: E, I, K, P, S, U
+// Parse headers: B, E, I, K, P, R, S, T, U, Z, Dummy
 tsdp_header_Str.prototype = Object.create(tsdp_header.prototype);
+tsdp_header_B.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_E.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_I.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_K.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_P.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_R.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_S.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_T.prototype = Object.create(tsdp_header_Str.prototype);
 tsdp_header_U.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_Z.prototype = Object.create(tsdp_header_Str.prototype);
+tsdp_header_Dummy.prototype = Object.create(tsdp_header_Str.prototype);
 
 tsdp_header_Str.prototype.s_value = null;
 
@@ -25,12 +30,17 @@ tsdp_header_Str.prototype.s_value = null;
 		i_tag_start = p;
 	}
 
+	action is_B{ o_hdr = new tsdp_header_B(); }
 	action is_E{ o_hdr = new tsdp_header_E(); }
 	action is_I{ o_hdr = new tsdp_header_I(); }
 	action is_K{ o_hdr = new tsdp_header_K(); }
 	action is_P{ o_hdr = new tsdp_header_P(); }
+	action is_R{ o_hdr = new tsdp_header_R(); }
 	action is_S{ o_hdr = new tsdp_header_S(); }
+	action is_T{ o_hdr = new tsdp_header_T(); }
 	action is_U{ o_hdr = new tsdp_header_U(); }
+	action is_Z{ o_hdr = new tsdp_header_Z(); }
+	action is_Dummy{ o_hdr = new tsdp_header_Dummy(); o_hdr.c_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start)[0]; }
 
 	action parse_value{
 		if(o_hdr){
@@ -38,7 +48,7 @@ tsdp_header_Str.prototype.s_value = null;
 		}
 	}
 		
-	Str = ('e'%is_E | 'i'%is_I | 'k'%is_K | 'p'%is_P | 's'%is_S | 'u'%is_U) SP* "=" SP*<: js_any*>tag %parse_value;
+	Str = ( ('b'%is_B | 'e'%is_E | 'i'%is_I | 'k'%is_K | 'p'%is_P | 'r'%is_R | 's'%is_S | 't'%is_T | 'u'%is_U | 'z'%is_Z)@1 | (alpha>tag%is_Dummy)@0 ) :>SP* "=" SP*<: js_any*>tag %parse_value;
 	
 	# Entry point
 	main := Str :>CRLF?;
@@ -76,9 +86,14 @@ tsdp_header_Str.prototype.Parse = function(s_str){
 	return o_hdr;
 }
 
+function tsdp_header_B(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.B, s_value); }
 function tsdp_header_E(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.E, s_value); }
 function tsdp_header_I(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.I, s_value); }
 function tsdp_header_K(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.K, s_value); }
 function tsdp_header_P(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.P, s_value); }
+function tsdp_header_R(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.R, s_value); }
 function tsdp_header_S(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.S, s_value); }
+function tsdp_header_T(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.T, s_value); }
 function tsdp_header_U(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.U, s_value); }
+function tsdp_header_Z(s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.Z, s_value); }
+function tsdp_header_Dummy(s_name, s_value){ tsdp_header_Str.call(this, tsdp_header_type_e.DUMMY, s_value); this.s_name = s_name; }

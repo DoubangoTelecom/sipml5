@@ -107,6 +107,34 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
     return 0;
 }
 
+tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
+    if (this.o_sdp_ro) {
+        var o_hdr_M;
+        var i_index = 0;
+
+        // FIXME: Chrome fails to parse SDP with global SDP "a=" attributes
+        // Chrome 21.0.1154.0+ generate "a=group:BUNDLE audio video" but cannot parse it
+        // In fact, new the attribute is left the ice callback is called twice and the 2nd one trigger new INVITE then 200OK. The SYN_ERR is caused by the SDP in the 200 OK.
+        // Is it because of "a=rtcp:1 IN IP4 0.0.0.0"?
+        if (b_remove_bundle) {
+            this.o_sdp_ro.remove_header(tsdp_header_type_e.A);
+        }
+
+        // change profile if not secure
+        while ((o_hdr_M = this.o_sdp_ro.get_header_at(tsdp_header_type_e.M, i_index++))) {
+            if (o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                for (var i = 0; i < o_hdr_M.ao_hdr_A.length; ++i) {
+                    if (o_hdr_M.ao_hdr_A[i].s_field == "crypto") {
+                        o_hdr_M.s_proto = "RTP/SAVPF";
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
 tmedia_session_jsep.prototype.subscribe_stream_events = function () {
     if (this.o_pc) {
         this.o_pc.onstatechange = function (evt) {
@@ -281,13 +309,8 @@ tmedia_session_jsep00.prototype.__set_ro = function (o_sdp, b_is_offer) {
 
     if (this.o_pc) {
         try {
-
             //console.debug("SDP_RO=%s", this.o_sdp_ro.toString());
-            // FIXME: Chrome fails to parse SDP with global SDP "a=" attributes
-            // Chrome 21.0.1154.0+ generate "a=group:BUNDLE audio video" but cannot parse it
-            // In fact, new the attribute is left the ice callback is called twice and the 2nd one trigger new INVITE then 200OK. The SYN_ERR is caused by the SDP in the 200 OK.
-            // Is it because of "a=rtcp:1 IN IP4 0.0.0.0"?
-            this.o_sdp_ro.remove_header(tsdp_header_type_e.A);
+            this.decorate_ro(true);
             this.o_pc.setRemoteDescription(b_is_offer ? __o_peerconnection_class.SDP_OFFER : __o_peerconnection_class.SDP_ANSWER,
                             new __o_sessiondescription_class(this.o_sdp_ro.toString()));
             if (!this.b_sdp_ro_pending && b_is_offer) {
@@ -417,6 +440,8 @@ tmedia_session_jsep01.prototype.__set_ro = function (o_sdp, b_is_offer) {
     if (this.o_pc) {
         try {
             var This = this;
+            this.decorate_ro(false);
+            tsk_utils_log_info("SET_RO=" + This.o_sdp_ro.toString());
             this.o_pc.setRemoteDescription(
                         new __o_sessiondescription_class({ type: b_is_offer ? "offer" : "answer", sdp : This.o_sdp_ro.toString() }),
                         function () { // success callback
