@@ -18,12 +18,12 @@ tsip_header_Refer_To.prototype = Object.create(tsip_header_NameAddr.prototype);
 tsip_header_Referred_By.prototype = Object.create(tsip_header_NameAddr.prototype);
 
 
-/* line 93 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 78 "./ragel/tsip_parser_header_NameAddr.jrl" */
 
 
 
 
-/* line 42 "./src/headers/tsip_header_NameAddr.js" */
+/* line 27 "./src/headers/tsip_header_NameAddr.js" */
 _tsip_machine_parser_header_NameAddr_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
@@ -343,7 +343,7 @@ tsip_machine_parser_header_NameAddr_error = 0;
 tsip_machine_parser_header_NameAddr_en_main = 1;
 
 
-/* line 97 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 82 "./ragel/tsip_parser_header_NameAddr.jrl" */
 
 function tsip_header_NameAddr(e_type, o_uri, s_tag){
 	tsip_header.call(this, e_type);
@@ -370,14 +370,14 @@ tsip_header_NameAddr.prototype.Parse = function(s_str){
 	var o_hdr;
 	
 	
-/* line 389 "./src/headers/tsip_header_NameAddr.js" */
+/* line 374 "./src/headers/tsip_header_NameAddr.js" */
 {
 	 cs = tsip_machine_parser_header_NameAddr_start;
 } /* JSCodeGen::writeInit */
 
-/* line 123 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 108 "./ragel/tsip_parser_header_NameAddr.jrl" */
 	
-/* line 396 "./src/headers/tsip_header_NameAddr.js" */
+/* line 381 "./src/headers/tsip_header_NameAddr.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -462,12 +462,12 @@ tsip_header_NameAddr.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_NameAddr_actions[_acts - 1]) {
 case 0:
-/* line 39 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 24 "./ragel/tsip_parser_header_NameAddr.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 43 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 28 "./ragel/tsip_parser_header_NameAddr.jrl" */
 
 	    if(o_hdr && !o_hdr.o_uri){
 		    var s_uri = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -477,7 +477,7 @@ case 1:
 		}
 			break;
 case 2:
-/* line 52 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 37 "./ragel/tsip_parser_header_NameAddr.jrl" */
 
 		if(o_hdr){
 			o_hdr.s_display_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -485,33 +485,33 @@ case 2:
 		}
 			break;
 case 3:
-/* line 59 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 44 "./ragel/tsip_parser_header_NameAddr.jrl" */
 
 		if(o_hdr){
 			o_hdr.s_tag = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 		}
 			break;
 case 4:
-/* line 65 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 50 "./ragel/tsip_parser_header_NameAddr.jrl" */
 
 	    tsk_ragel_add_param(s_str, p, i_tag_start, o_hdr.ao_params);
 			break;
 case 5:
-/* line 69 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 54 "./ragel/tsip_parser_header_NameAddr.jrl" */
  o_hdr = new tsip_header_From(); 		break;
 case 6:
-/* line 70 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 55 "./ragel/tsip_parser_header_NameAddr.jrl" */
  o_hdr = new tsip_header_To(); 		break;
 case 7:
-/* line 71 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 56 "./ragel/tsip_parser_header_NameAddr.jrl" */
  o_hdr = new tsip_header_Refer_To(); 		break;
 case 8:
-/* line 72 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 57 "./ragel/tsip_parser_header_NameAddr.jrl" */
  o_hdr = new tsip_header_Referred_By(); 		break;
 case 9:
-/* line 74 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 59 "./ragel/tsip_parser_header_NameAddr.jrl" */
  		break;
-/* line 530 "./src/headers/tsip_header_NameAddr.js" */
+/* line 515 "./src/headers/tsip_header_NameAddr.js" */
 			} /* action switch */
 		}
 	}
@@ -538,12 +538,12 @@ case 9:
 	}
 	}
 
-/* line 124 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 109 "./ragel/tsip_parser_header_NameAddr.jrl" */
 	
 	if( cs < 
-/* line 560 "./src/headers/tsip_header_NameAddr.js" */
+/* line 545 "./src/headers/tsip_header_NameAddr.js" */
 125
-/* line 125 "./ragel/tsip_parser_header_NameAddr.jrl" */
+/* line 110 "./ragel/tsip_parser_header_NameAddr.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse header: " + s_str);
 		return null;

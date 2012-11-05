@@ -251,7 +251,7 @@ function prev_not_comma(o_ragel_state, i_p){
 	# /*== Organization: ==*/
 	action parse_header_Organization 
 	{
-		var header = tsip_header_Dummy.prototype.Parse(s_str);
+		var header = tsip_header_Organization.prototype.Parse(s_str);
 		o_msg.add_headers(header);
 	}
 
@@ -301,12 +301,8 @@ function prev_not_comma(o_ragel_state, i_p){
 	# /*== P-Charging-Function-Addresses : ==*/
 	action parse_header_P_Charging_Function_Addresses 
 	{
-	    var headers = tsip_header_P_Charging_Function_Addresses.prototype.Parse(s_str);
-		if(headers){
-			for(var i = 0; i < headers.length; ++i){
-				o_msg.add_header(headers[i]);
-			}
-		}
+		var header = tsip_header_P_Charging_Function_Addresses.prototype.Parse(s_str);
+		o_msg.add_headers(header);
 	}
 
 	# /*== P_Charging_Vector: ==*/
@@ -687,12 +683,8 @@ function prev_not_comma(o_ragel_state, i_p){
 	# /*== Warning: ==*/
 	action parse_header_Warning 
 	{
-	    var headers = tsip_header_Warning.prototype.Parse(s_str);
-		if(headers){
-			for(var i = 0; i < headers.length; ++i){
-				o_msg.add_header(headers[i]);
-			}
-		}
+	    var header = tsip_header_Warning.prototype.Parse(s_str);
+		o_msg.add_headers(header);
 	}
 
 	# /*== WWW-Authenticate: ==*/

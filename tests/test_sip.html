@@ -51,7 +51,7 @@
 	"Contact: <sip:mamadou@192.168.0.11:63140>;expires=3600;q=1.0,<sip:mamadou@192.168.0.11:56717>;expires=3600;q=1.0\r\n" +
 	"Contact: <sip:mamadou@127.0.0.1:5060>;expires=3600;q=1.0\r\n" +
 	"Contact: <sip:mamadou@127.0.0.1>;expires=3600;q=1.0\r\n" +
-	"P-Preferred-Identity: <sip:mamadou@open-ims.test>\r\n" +
+	"P-Preferred-Identity: <sip:mamadou@open-ims.test>, \"Cullen Jennings\" <sip:fluffy@cisco.com>\r\n" +
 	"Service-Route: <sip:orig@open-ims.test:6060;lr>, <sip:orig2@open-ims.test:6060;lr>,<sip:orig3@open-ims.test:6060;lr>\r\n" +
     "Route: <sip:orig@open-ims.test:6060;lr>, <sip:orig2@open-ims.test:6060;lr>,<sip:orig3@open-ims.test:6060;lr>\r\n" +
     "Record-Route: <sip:orig@open-ims.test:6060;lr>, <sip:orig2@open-ims.test:6060;lr>,<sip:orig3@open-ims.test:6060;lr>\r\n" +
@@ -72,6 +72,7 @@
     "P-Asserted-Identity: \"Cullen Jennings\" <sip:fluffy@cisco.com>,tel:+33\r\n" +
     "P-Asserted-Identity: tel:+14085264000\r\n" +
     "P-Associated-URI: \"Cullen Jennings\" <sip:fluffy@cisco.com>,tel:+33\r\n" +
+    "P-Charging-Function-Addresses: ccf=192.1.1.1; ccf=192.1.1.2\r\n" +
     "l: 3\r\n" +
     "Allow: INVITE, ACK, CANCEL, BYE, MESSAGE, OPTIONS, NOTIFY, PRACK\r\n" +
     "u: talk, hold, conference, LocalModeStatus\r\n" +
@@ -88,6 +89,10 @@
 	"Subscription-State: active;reason=deactivated;expires=507099;retry-after=145;test=jk\r\n" +
     "Supported: gruu, outbound, path, timer\r\n" +
     "Require: pref, path\r\n" +
+    "Warning: 301 isi.edu \"Incompatible network address type 'E.164'\"\r\n" +
+    "Date: Thu, 21 Feb 2002 13:02:03 GMT\r\n" +
+    "This_Is_Dummy_Header: Dummy value\r\n" +
+    "Organization: Doubango Telecom\r\n" +
 	"\r\n" +
     "abc";
 

@@ -44,11 +44,11 @@ ProcessFile "./src/headers" "tsip_header_Content_Type" "tsip_parser_header_Conte
 # ==CSeq
 ProcessFile "./src/headers" "tsip_header_CSeq" "tsip_parser_header_CSeq"
 
-# ==Date
-ProcessFile "./src/headers" "tsip_header_Date" "tsip_parser_header_Date"
+# ==Date (see Str)
+#ProcessFile "./src/headers" "tsip_header_Date" "tsip_parser_header_Date"
 
-# ==Dummy
-ProcessFile "./src/headers" "tsip_header_Dummy" "tsip_parser_header_Dummy"
+# ==Dummy (see Str)
+#ProcessFile "./src/headers" "tsip_header_Dummy" "tsip_parser_header_Dummy"
 
 # ==Event (see Str)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Event.js ./ragel/tsip_parser_header_Event.jrl
@@ -86,11 +86,11 @@ ProcessFile "./src/headers" "tsip_header_NameAddrArray" "tsip_parser_header_Name
 # ==P-Associated-URI (see NameAddrArray)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_P_Associated_URI.js ./ragel/tsip_parser_header_P_Associated_URI.jrl
 
-# ==P-Charging-Function-Addresses
-ProcessFile "./src/headers" "tsip_header_P_Charging_Function_Addresses" "tsip_parser_header_P_Charging_Function_Addresses"
+# ==P-Charging-Function-Addresses (see Str)
+#ProcessFile "./src/headers" "tsip_header_P_Charging_Function_Addresses" "tsip_parser_header_P_Charging_Function_Addresses"
 
-# ==P-Preferred-Identity
-ProcessFile "./src/headers" "tsip_header_P_Preferred_Identity" "tsip_parser_header_P_Preferred_Identity"
+# ==P-Preferred-Identity (see NameAddrArray)
+#ProcessFile "./src/headers" "tsip_header_P_Preferred_Identity" "tsip_parser_header_P_Preferred_Identity"
 
 # ==Path (see NameAddrArray)
 #ragel.exe $OPTIONS -o ./src/headers/tsip_header_Path.js ./ragel/tsip_parser_header_Path.jrl
@@ -158,8 +158,8 @@ ProcessFile "./src/headers" "tsip_header_Subscription_State" "tsip_parser_header
 # ==Via
 ProcessFile "./src/headers" "tsip_header_Via" "tsip_parser_header_Via"
 
-# == Warning
-ProcessFile "./src/headers" "tsip_header_Warning" "tsip_parser_header_Warning"
+# == Warning (see Str)
+#ProcessFile "./src/headers" "tsip_header_Warning" "tsip_parser_header_Warning"
 
 # == WWW-Authenticate
 ProcessFile "./src/headers" "tsip_header_WWW_Authenticate" "tsip_parser_header_WWW_Authenticate"

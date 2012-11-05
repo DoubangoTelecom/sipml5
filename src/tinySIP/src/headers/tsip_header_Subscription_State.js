@@ -7,11 +7,11 @@
 */
 tsip_header_Subscription_State.prototype = Object.create(tsip_header.prototype);
 
-/* line 61 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 46 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 
 
-/* line 30 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 15 "./src/headers/tsip_header_Subscription_State.js" */
 _tsip_machine_parser_header_Subscription_State_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6
@@ -417,7 +417,7 @@ tsip_machine_parser_header_Subscription_State_error = 0;
 tsip_machine_parser_header_Subscription_State_en_main = 1;
 
 
-/* line 64 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 49 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 function tsip_header_Subscription_State(s_state, s_reason, i_expires, i_retry_after){
 	tsip_header.call(this, tsip_header_type_e.Subscription_State);
@@ -453,14 +453,14 @@ tsip_header_Subscription_State.prototype.Parse = function(s_str){
 	var hdr_Subscription_State = new tsip_header_Subscription_State(null, null, -1, -1);
 	
 	
-/* line 472 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 457 "./src/headers/tsip_header_Subscription_State.js" */
 {
 	 cs = tsip_machine_parser_header_Subscription_State_start;
 } /* JSCodeGen::writeInit */
 
-/* line 99 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 84 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 	
-/* line 479 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 464 "./src/headers/tsip_header_Subscription_State.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -545,40 +545,40 @@ tsip_header_Subscription_State.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsip_machine_parser_header_Subscription_State_actions[_acts - 1]) {
 case 0:
-/* line 28 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 13 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 32 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 17 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 		hdr_Subscription_State.s_state = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 36 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 21 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 	    hdr_Subscription_State.s_reason = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 40 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 25 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 	    hdr_Subscription_State.i_expires = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 44 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 29 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 	    hdr_Subscription_State.i_retry_after = tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 5:
-/* line 48 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 33 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 		tsk_ragel_add_param(s_str, p, i_tag_start, hdr_Subscription_State.ao_params);
 			break;
 case 6:
-/* line 52 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 37 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 
 			break;
-/* line 597 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 582 "./src/headers/tsip_header_Subscription_State.js" */
 			} /* action switch */
 		}
 	}
@@ -605,12 +605,12 @@ case 6:
 	}
 	}
 
-/* line 100 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 85 "./ragel/tsip_parser_header_Subscription_State.jrl" */
 	
 	if( cs < 
-/* line 627 "./src/headers/tsip_header_Subscription_State.js" */
+/* line 612 "./src/headers/tsip_header_Subscription_State.js" */
 136
-/* line 101 "./ragel/tsip_parser_header_Subscription_State.jrl" */
+/* line 86 "./ragel/tsip_parser_header_Subscription_State.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse 'Subscription-State' header: " + s_str);
 		return null;

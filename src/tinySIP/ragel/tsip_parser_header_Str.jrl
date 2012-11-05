@@ -4,15 +4,20 @@
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
 
-// Parse headers: 'Call-ID', 'Event', 'P-Access-Network-Info', 'Server', 'SIP-ETag', 'SIP-If-Match', 'User-Agent'
+// Parse headers: 'Call-ID', 'Event', 'P-Access-Network-Info', 'P-Charging-Function-Addresses', 'Server', 'SIP-ETag', 'SIP-If-Match', 'User-Agent'
 tsip_header_Str.prototype = Object.create(tsip_header.prototype);
 tsip_header_Call_ID.prototype = Object.create(tsip_header_Str.prototype);
+tsip_header_Date.prototype = Object.create(tsip_header_Str.prototype);
 tsip_header_Event.prototype = Object.create(tsip_header_Str.prototype);
+tsip_header_Organization.prototype = Object.create(tsip_header_Str.prototype);
 tsip_header_P_Access_Network_Info.prototype = Object.create(tsip_header_Str.prototype);
+tsip_header_P_Charging_Function_Addresses.prototype = Object.create(tsip_header_Str.prototype);
 tsip_header_Server.prototype = Object.create(tsip_header_Str.prototype);
 tsip_header_SIP_ETag.prototype = Object.create(tsip_header_Str.prototype);
 tsip_header_SIP_If_Match.prototype = Object.create(tsip_header_Str.prototype);
 tsip_header_User_Agent.prototype = Object.create(tsip_header_Str.prototype);
+tsip_header_Warning.prototype = Object.create(tsip_header_Str.prototype);
+tsip_header_Dummy.prototype = Object.create(tsip_header_Str.prototype);
 
 %%{
 	machine tsip_machine_parser_header_Str;
@@ -25,13 +30,24 @@ tsip_header_User_Agent.prototype = Object.create(tsip_header_Str.prototype);
 	}
 
 	action is_Call_ID { o_hdr = new  tsip_header_Call_ID(); }
+	action is_Date { o_hdr = new  tsip_header_Date(); }
 	action is_Event { o_hdr = new  tsip_header_Event(); }
+	action is_Organization { o_hdr = new tsip_header_Organization(); }
 	action is_PANI { o_hdr = new tsip_header_P_Access_Network_Info(); }
+	action is_PCFA { o_hdr = new tsip_header_P_Charging_Function_Addresses(); }
 	action is_Server { o_hdr = new tsip_header_Server(); }
 	action is_SIP_ETag { o_hdr = new tsip_header_SIP_ETag(); }
 	action is_SIP_If_Match { o_hdr = new tsip_header_SIP_If_Match(); }
 	action is_User_Agent { o_hdr = new tsip_header_User_Agent(); }
+	action is_Warning { o_hdr = new tsip_header_Warning(); }
+	action is_Dummy { o_hdr = new tsip_header_Dummy(); }
 	
+	action parse_name{
+		if(o_hdr){
+			o_hdr.s_name = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
+		}
+	}
+
 	action parse_value{
 		if(o_hdr){
 			o_hdr.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
@@ -47,15 +63,22 @@ tsip_header_User_Agent.prototype = Object.create(tsip_header_Str.prototype);
 	action eob{ }
 
 	Str =	(
-				( "Call-ID"i | "i"i )%is_Call_ID |
-				( "Event"i | "o"i )%is_Event |
-				("P-Access-Network-Info"i)%is_PANI |
-				("Server"i)%is_Server |
-				("SIP-ETag"i)%is_SIP_ETag |
-				("SIP-If-Match"i)%is_SIP_If_Match |
-				("User-Agent"i)%is_User_Agent
-			)
-			 HCOLON (((js_any - SEMI) - COMMA)*)>tag %parse_value ( (SEMI | COMMA) generic_param>tag %parse_param )*;
+				(
+					("Call-ID"i | "i"i)%is_Call_ID |
+					("Date"i)%is_Date |
+					("Event"i | "o"i)%is_Event |
+					("Organization"i)%is_Organization |
+					("P-Access-Network-Info"i)%is_PANI |
+					("P-Charging-Function-Addresses"i)%is_PCFA |
+					("Server"i)%is_Server |
+					("SIP-ETag"i)%is_SIP_ETag |
+					("SIP-If-Match"i)%is_SIP_If_Match |
+					("User-Agent"i)%is_User_Agent |
+					("Warning"i)%is_Warning 
+				)@1
+				|
+				( (js_any*)%is_Dummy )@0
+			)>tag %parse_name :>HCOLON<: (js_any*)>tag %parse_value ( (SEMI | COMMA) <:generic_param>tag %parse_param )*;
 	
 	# Entry point
 	main := Str :>CRLF @eob;
@@ -94,9 +117,14 @@ tsip_header_Str.prototype.Parse = function(s_str){
 }
 
 function tsip_header_Call_ID(s_value){ tsip_header_Str.call(this, tsip_header_type_e.Call_ID, s_value); }
+function tsip_header_Date(s_value){ tsip_header_Str.call(this, tsip_header_type_e.Date, s_value); }
 function tsip_header_Event(s_value){ tsip_header_Str.call(this, tsip_header_type_e.Event, s_value); }
+function tsip_header_Organization(s_value){ tsip_header_Str.call(this, tsip_header_type_e.Organization, s_value); }
 function tsip_header_P_Access_Network_Info(s_value){ tsip_header_Str.call(this, tsip_header_type_e.P_Access_Network_Info, s_value); }
+function tsip_header_P_Charging_Function_Addresses(s_value){ tsip_header_Str.call(this, tsip_header_type_e.P_Charging_Function_Addresses, s_value); }
 function tsip_header_Server(s_value){ tsip_header_Str.call(this, tsip_header_type_e.Server, s_value); }
 function tsip_header_SIP_ETag(s_value){ tsip_header_Str.call(this, tsip_header_type_e.SIP_ETag, s_value); }
 function tsip_header_SIP_If_Match(s_value){ tsip_header_Str.call(this, tsip_header_type_e.SIP_If_Match, s_value); }
 function tsip_header_User_Agent(s_value){ tsip_header_Str.call(this, tsip_header_type_e.User_Agent, s_value); }
+function tsip_header_Warning(s_value){ tsip_header_Str.call(this, tsip_header_type_e.Warning, s_value); }
+function tsip_header_Dummy(s_name, s_value){ tsip_header_Str.call(this, tsip_header_type_e.Dummy, s_value); this.s_name = s_name; }

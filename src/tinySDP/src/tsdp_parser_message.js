@@ -6,12 +6,12 @@
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
 
-/* line 191 "./ragel/tsdp_parser_message.jrl" */
+/* line 181 "./ragel/tsdp_parser_message.jrl" */
 
 
 /* Ragel data */
 
-/* line 30 "./src/tsdp_parser_message.js" */
+/* line 15 "./src/tsdp_parser_message.js" */
 _tsdp_machine_message_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4, 1, 5, 1, 6, 1, 
@@ -117,7 +117,7 @@ tsdp_machine_message_error = 0;
 tsdp_machine_message_en_main = 34;
 
 
-/* line 195 "./ragel/tsdp_parser_message.jrl" */
+/* line 185 "./ragel/tsdp_parser_message.jrl" */
 
 tsdp_message.prototype.Parse = function(s_str){
 	var cs = 0;
@@ -132,14 +132,14 @@ tsdp_message.prototype.Parse = function(s_str){
 	var hdr_M = null;
 	
 	
-/* line 151 "./src/tsdp_parser_message.js" */
+/* line 136 "./src/tsdp_parser_message.js" */
 {
 	 cs = tsdp_machine_message_start;
 } /* JSCodeGen::writeInit */
 
-/* line 209 "./ragel/tsdp_parser_message.jrl" */
+/* line 199 "./ragel/tsdp_parser_message.jrl" */
 	
-/* line 158 "./src/tsdp_parser_message.js" */
+/* line 143 "./src/tsdp_parser_message.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -223,12 +223,12 @@ tsdp_message.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_message_actions[_acts - 1]) {
 case 0:
-/* line 29 "./ragel/tsdp_parser_message.jrl" */
+/* line 14 "./ragel/tsdp_parser_message.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 36 "./ragel/tsdp_parser_message.jrl" */
+/* line 21 "./ragel/tsdp_parser_message.jrl" */
 
 		if(hdr_M){
 			if((header = tsdp_header_A.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
@@ -240,7 +240,7 @@ case 1:
 		}
 			break;
 case 2:
-/* line 47 "./ragel/tsdp_parser_message.jrl" */
+/* line 32 "./ragel/tsdp_parser_message.jrl" */
 
 		if(hdr_M){
 			if((header = tsdp_header_B.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
@@ -252,7 +252,7 @@ case 2:
 		}
 			break;
 case 3:
-/* line 58 "./ragel/tsdp_parser_message.jrl" */
+/* line 43 "./ragel/tsdp_parser_message.jrl" */
 
 		if(hdr_M && !hdr_M.o_hdr_C){
 			hdr_M.o_hdr_C = tsdp_header_C.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
@@ -262,21 +262,26 @@ case 3:
 		}
 			break;
 case 4:
-/* line 67 "./ragel/tsdp_parser_message.jrl" */
+/* line 52 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_Dummy.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
-			sdp_msg.add_header(header);
+			if(hdr_M){
+				hdr_M.ao_hdr_Dummy.push(header);
+			}
+			else{
+				sdp_msg.add_header(header);
+			}
 		}
 			break;
 case 5:
-/* line 73 "./ragel/tsdp_parser_message.jrl" */
+/* line 63 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_E.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(header);
 		}
 			break;
 case 6:
-/* line 79 "./ragel/tsdp_parser_message.jrl" */
+/* line 69 "./ragel/tsdp_parser_message.jrl" */
 
 		if(hdr_M && !hdr_M.o_hdr_I){
 			hdr_M.o_hdr_I = tsdp_header_I.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
@@ -286,7 +291,7 @@ case 6:
 		}
 			break;
 case 7:
-/* line 88 "./ragel/tsdp_parser_message.jrl" */
+/* line 78 "./ragel/tsdp_parser_message.jrl" */
 
 		if(hdr_M && !hdr_M.o_hdr_K){
 			hdr_M.o_hdr_K = tsdp_header_K.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start));
@@ -296,28 +301,28 @@ case 7:
 		}
 			break;
 case 8:
-/* line 97 "./ragel/tsdp_parser_message.jrl" */
+/* line 87 "./ragel/tsdp_parser_message.jrl" */
 
 		if((hdr_M = tsdp_header_M.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(hdr_M);
 		}
 			break;
 case 9:
-/* line 103 "./ragel/tsdp_parser_message.jrl" */
+/* line 93 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_O.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(header);
 		}
 			break;
 case 10:
-/* line 109 "./ragel/tsdp_parser_message.jrl" */
+/* line 99 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_P.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(header);
 		}
 			break;
 case 11:
-/* line 115 "./ragel/tsdp_parser_message.jrl" */
+/* line 105 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_R.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			if(hdr_T){
@@ -329,14 +334,14 @@ case 11:
 		}
 			break;
 case 12:
-/* line 126 "./ragel/tsdp_parser_message.jrl" */
+/* line 116 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_S.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(header);
 		}
 			break;
 case 13:
-/* line 132 "./ragel/tsdp_parser_message.jrl" */
+/* line 122 "./ragel/tsdp_parser_message.jrl" */
 
 		if((hdr_T = tsdp_header_T.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(hdr_T);
@@ -344,27 +349,27 @@ case 13:
 		}
 			break;
 case 14:
-/* line 139 "./ragel/tsdp_parser_message.jrl" */
+/* line 129 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_U.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(header);
 		}
 			break;
 case 15:
-/* line 145 "./ragel/tsdp_parser_message.jrl" */
+/* line 135 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_V.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(header);
 		}
 			break;
 case 16:
-/* line 151 "./ragel/tsdp_parser_message.jrl" */
+/* line 141 "./ragel/tsdp_parser_message.jrl" */
 
 		if((header = tsdp_header_Z.prototype.Parse(tsk_ragel_parser_get_string(s_str, p, i_tag_start)))){
 			sdp_msg.add_header(header);
 		}
 			break;
-/* line 383 "./src/tsdp_parser_message.js" */
+/* line 373 "./src/tsdp_parser_message.js" */
 			} /* action switch */
 		}
 	}
@@ -391,12 +396,12 @@ case 16:
 	}
 	}
 
-/* line 210 "./ragel/tsdp_parser_message.jrl" */
+/* line 200 "./ragel/tsdp_parser_message.jrl" */
 	
 	if( cs < 
-/* line 413 "./src/tsdp_parser_message.js" */
+/* line 403 "./src/tsdp_parser_message.js" */
 34
-/* line 211 "./ragel/tsdp_parser_message.jrl" */
+/* line 201 "./ragel/tsdp_parser_message.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse sdp message: " + s_str);
 		return null;

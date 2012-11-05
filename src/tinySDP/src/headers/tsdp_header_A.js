@@ -1,3 +1,5 @@
+
+/* line 1 "./ragel/tsdp_parser_header_A.jrl" */
 /*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
 * License: GPLv3
@@ -6,11 +8,11 @@
 
 tsdp_header_A.prototype = Object.create(tsdp_header.prototype);
 
-/* line 49 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 34 "./ragel/tsdp_parser_header_A.jrl" */
 
 
 
-/* line 31 "./src/headers/tsdp_header_A.js" */
+/* line 16 "./src/headers/tsdp_header_A.js" */
 _tsdp_machine_parser_header_A_actions = [
 	0, 1, 0, 1, 1, 1, 2, 2, 
 	0, 2
@@ -75,7 +77,7 @@ tsdp_machine_parser_header_A_error = 0;
 tsdp_machine_parser_header_A_en_main = 1;
 
 
-/* line 52 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 37 "./ragel/tsdp_parser_header_A.jrl" */
 
 function tsdp_header_A(s_field, s_value){
 	tsdp_header.call(this, tsdp_header_type_e.A);
@@ -121,14 +123,14 @@ tsdp_header_A.prototype.Parse = function(s_str){
 	var hdr_A = new tsdp_header_A(null, null);
 	
 	
-/* line 142 "./src/headers/tsdp_header_A.js" */
+/* line 127 "./src/headers/tsdp_header_A.js" */
 {
 	 cs = tsdp_machine_parser_header_A_start;
 } /* JSCodeGen::writeInit */
 
-/* line 97 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 82 "./ragel/tsdp_parser_header_A.jrl" */
 	
-/* line 149 "./src/headers/tsdp_header_A.js" */
+/* line 134 "./src/headers/tsdp_header_A.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -213,21 +215,21 @@ tsdp_header_A.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_A_actions[_acts - 1]) {
 case 0:
-/* line 29 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 14 "./ragel/tsdp_parser_header_A.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 33 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 18 "./ragel/tsdp_parser_header_A.jrl" */
 
 		hdr_A.s_field = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 37 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 22 "./ragel/tsdp_parser_header_A.jrl" */
 
 		hdr_A.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
-/* line 248 "./src/headers/tsdp_header_A.js" */
+/* line 233 "./src/headers/tsdp_header_A.js" */
 			} /* action switch */
 		}
 	}
@@ -256,21 +258,21 @@ case 2:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_A_actions[__acts - 1]) {
 case 0:
-/* line 29 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 14 "./ragel/tsdp_parser_header_A.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 33 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 18 "./ragel/tsdp_parser_header_A.jrl" */
 
 		hdr_A.s_field = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 37 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 22 "./ragel/tsdp_parser_header_A.jrl" */
 
 		hdr_A.s_value = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
-/* line 291 "./src/headers/tsdp_header_A.js" */
+/* line 276 "./src/headers/tsdp_header_A.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -284,12 +286,12 @@ case 2:
 	}
 	}
 
-/* line 98 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 83 "./ragel/tsdp_parser_header_A.jrl" */
 	
 	if( cs < 
-/* line 308 "./src/headers/tsdp_header_A.js" */
+/* line 293 "./src/headers/tsdp_header_A.js" */
 5
-/* line 99 "./ragel/tsdp_parser_header_A.jrl" */
+/* line 84 "./ragel/tsdp_parser_header_A.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse \"a=\" header: " + s_str);
 		return null;

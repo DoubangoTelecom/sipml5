@@ -8,12 +8,12 @@
 
 tsdp_header_M.prototype = Object.create(tsdp_header.prototype);
 
-/* line 64 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 49 "./ragel/tsdp_parser_header_M.jrl" */
 
 
 
 
-/* line 32 "./src/headers/tsdp_header_M.js" */
+/* line 17 "./src/headers/tsdp_header_M.js" */
 _tsdp_machine_parser_header_M_actions = [
 	0, 1, 0, 1, 1, 1, 2, 1, 
 	3, 1, 4
@@ -96,7 +96,7 @@ tsdp_machine_parser_header_M_error = 0;
 tsdp_machine_parser_header_M_en_main = 1;
 
 
-/* line 68 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 53 "./ragel/tsdp_parser_header_M.jrl" */
 
 function tsdp_header_M(s_media, i_port, s_proto){
 	tsdp_header.call(this, tsdp_header_type_e.M);
@@ -111,6 +111,7 @@ function tsdp_header_M(s_media, i_port, s_proto){
 	this.ao_hdr_B = new Array();
 	this.o_hdr_K = null;
 	this.ao_hdr_A = new Array();
+	this.ao_hdr_Dummy = new Array();
 }
 
 tsdp_header_M.prototype.toString = function(s_endline){
@@ -169,6 +170,10 @@ tsdp_header_M.prototype.toString = function(s_endline){
 	// a=* (zero or more media attribute lines)
 	for(var i = 0; i < this.ao_hdr_A.length; ++i){
 		s_str += this.ao_hdr_A[i].tostring_full(false, s_endline);
+	}
+	// dummies
+	for(var i = 0; i < this.ao_hdr_Dummy.length; ++i){
+		s_str += this.ao_hdr_Dummy[i].tostring_full(false, s_endline);
 	}
 		
 	return s_str.substring(0, s_str.length - s_endline.length);
@@ -409,14 +414,14 @@ tsdp_header_M.prototype.Parse = function(s_str){
 	var hdr_M = new tsdp_header_M(null, 0, null);
 	
 	
-/* line 428 "./src/headers/tsdp_header_M.js" */
+/* line 418 "./src/headers/tsdp_header_M.js" */
 {
 	 cs = tsdp_machine_parser_header_M_start;
 } /* JSCodeGen::writeInit */
 
-/* line 380 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 370 "./ragel/tsdp_parser_header_M.jrl" */
 	
-/* line 435 "./src/headers/tsdp_header_M.js" */
+/* line 425 "./src/headers/tsdp_header_M.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -501,31 +506,31 @@ tsdp_header_M.prototype.Parse = function(s_str){
 			_acts += 1;
 			switch (_tsdp_machine_parser_header_M_actions[_acts - 1]) {
 case 0:
-/* line 29 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 14 "./ragel/tsdp_parser_header_M.jrl" */
 
 		i_tag_start = p;
 			break;
 case 1:
-/* line 33 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 18 "./ragel/tsdp_parser_header_M.jrl" */
 
 		hdr_M.s_media = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 2:
-/* line 37 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 22 "./ragel/tsdp_parser_header_M.jrl" */
 
 		hdr_M.i_port= tsk_ragel_parser_get_int(s_str, p, i_tag_start);
 			break;
 case 3:
-/* line 45 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 30 "./ragel/tsdp_parser_header_M.jrl" */
 
 		hdr_M.s_proto = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 49 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 34 "./ragel/tsdp_parser_header_M.jrl" */
 
 		tsk_ragel_parser_add_string(s_str, p, i_tag_start, hdr_M.as_fmt);
 			break;
-/* line 544 "./src/headers/tsdp_header_M.js" */
+/* line 534 "./src/headers/tsdp_header_M.js" */
 			} /* action switch */
 		}
 	}
@@ -554,16 +559,16 @@ case 4:
 		__acts += 1;
 		switch (_tsdp_machine_parser_header_M_actions[__acts - 1]) {
 case 3:
-/* line 45 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 30 "./ragel/tsdp_parser_header_M.jrl" */
 
 		hdr_M.s_proto = tsk_ragel_parser_get_string(s_str, p, i_tag_start);
 			break;
 case 4:
-/* line 49 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 34 "./ragel/tsdp_parser_header_M.jrl" */
 
 		tsk_ragel_parser_add_string(s_str, p, i_tag_start, hdr_M.as_fmt);
 			break;
-/* line 582 "./src/headers/tsdp_header_M.js" */
+/* line 572 "./src/headers/tsdp_header_M.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -577,12 +582,12 @@ case 4:
 	}
 	}
 
-/* line 381 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 371 "./ragel/tsdp_parser_header_M.jrl" */
 	
 	if( cs < 
-/* line 599 "./src/headers/tsdp_header_M.js" */
+/* line 589 "./src/headers/tsdp_header_M.js" */
 13
-/* line 382 "./ragel/tsdp_parser_header_M.jrl" */
+/* line 372 "./ragel/tsdp_parser_header_M.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse \"m=\" header: " + s_str);
 		return null;

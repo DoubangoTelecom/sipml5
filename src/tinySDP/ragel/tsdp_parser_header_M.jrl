@@ -64,6 +64,7 @@ function tsdp_header_M(s_media, i_port, s_proto){
 	this.ao_hdr_B = new Array();
 	this.o_hdr_K = null;
 	this.ao_hdr_A = new Array();
+	this.ao_hdr_Dummy = new Array();
 }
 
 tsdp_header_M.prototype.toString = function(s_endline){
@@ -122,6 +123,10 @@ tsdp_header_M.prototype.toString = function(s_endline){
 	// a=* (zero or more media attribute lines)
 	for(var i = 0; i < this.ao_hdr_A.length; ++i){
 		s_str += this.ao_hdr_A[i].tostring_full(false, s_endline);
+	}
+	// dummies
+	for(var i = 0; i < this.ao_hdr_Dummy.length; ++i){
+		s_str += this.ao_hdr_Dummy[i].tostring_full(false, s_endline);
 	}
 		
 	return s_str.substring(0, s_str.length - s_endline.length);

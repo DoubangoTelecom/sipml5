@@ -14,20 +14,20 @@ export OPTIONS="-E -L -T0"
 # SDP Message parser
 ProcessFile "./src" "tsdp_parser_message" "tsdp_parser_message"
 
-# ==Str (E, I, K, P, S, U)
+# ==Str (E, I, K, P, R, S, U, Z)
 ProcessFile "./src/headers" "tsdp_header_Str" "tsdp_parser_header_Str"
 
 # ==A
 ProcessFile "./src/headers" "tsdp_header_A" "tsdp_parser_header_A"
 
 # ==B
-ProcessFile "./src/headers" "tsdp_header_B" "tsdp_parser_header_B"
+#ProcessFile "./src/headers" "tsdp_header_B" "tsdp_parser_header_B"
 
 # ==C
 ProcessFile "./src/headers" "tsdp_header_C" "tsdp_parser_header_C"
 
 # ==Dummy
-ProcessFile "./src/headers" "tsdp_header_Dummy" "tsdp_parser_header_Dummy"
+#ProcessFile "./src/headers" "tsdp_header_Dummy" "tsdp_parser_header_Dummy"
 
 # ==E
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_E.js ./ragel/tsdp_parser_header_E.jrl
@@ -48,13 +48,13 @@ ProcessFile "./src/headers" "tsdp_header_O" "tsdp_parser_header_O"
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_P.js ./ragel/tsdp_parser_header_P.jrl
 
 # ==R
-ProcessFile "./src/headers" "tsdp_header_R" "tsdp_parser_header_R"
+#ProcessFile "./src/headers" "tsdp_header_R" "tsdp_parser_header_R"
 
 # ==S
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_S.js ./ragel/tsdp_parser_header_S.jrl
 
 # ==T
-ProcessFile "./src/headers" "tsdp_header_T" "tsdp_parser_header_T"
+#ProcessFile "./src/headers" "tsdp_header_T" "tsdp_parser_header_T"
 
 # ==U
 #ragel.exe $OPTIONS -o ./src/headers/tsdp_header_U.js ./ragel/tsdp_parser_header_U.jrl
@@ -63,5 +63,5 @@ ProcessFile "./src/headers" "tsdp_header_T" "tsdp_parser_header_T"
 ProcessFile "./src/headers" "tsdp_header_V" "tsdp_parser_header_V"
 
 # ==Z
-ProcessFile "./src/headers" "tsdp_header_Z" "tsdp_parser_header_Z"
+#ProcessFile "./src/headers" "tsdp_header_Z" "tsdp_parser_header_Z"
 
