@@ -28,8 +28,6 @@ tmedia_session_jsep.prototype.b_ro_changed = false;
 tmedia_session_jsep.prototype.b_lo_held = false;
 tmedia_session_jsep.prototype.b_ro_held = false;
 
-tmedia_session_jsep01.prototype.ao_servers = null;
-
 //
 //  JSEP
 //
@@ -349,7 +347,7 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
         this.o_local_stream = __o_stream;
 
         this.o_pc = new __o_peerconnection_class(
-                this.ao_servers,
+                { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
                 { has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) }
         );
         this.o_pc.onicecandidate = function (o_event) {
@@ -441,7 +439,7 @@ tmedia_session_jsep01.prototype.__set_ro = function (o_sdp, b_is_offer) {
         try {
             var This = this;
             this.decorate_ro(false);
-            tsk_utils_log_info("SET_RO=" + This.o_sdp_ro.toString());
+            
             this.o_pc.setRemoteDescription(
                         new __o_sessiondescription_class({ type: b_is_offer ? "offer" : "answer", sdp : This.o_sdp_ro.toString() }),
                         function () { // success callback

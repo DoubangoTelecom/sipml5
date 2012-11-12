@@ -7,7 +7,7 @@ do
 	src_dir=`dirname "$src_file"`
 	base=${src_file%/*}
 	
-	if [ ${src_dir} != *"/yuicompressor" ] && [ ${src_dir} != *"/tests" ] && [ ${src_dir} != *"/asterisk" ] && [ ${src_dir} != *"/docs" ]
+	if [ ${src_dir} != ../yuicompressor ] && [ ${src_dir} != ../tests ] && [ ${src_dir} != ../asterisk ] && [ ${src_dir} != ../docs ]
 	then
 		dest_dir=$DEPLOY_FOLDER/${src_dir: 3}
 		dest_file=$dest_dir/$name
