@@ -356,6 +356,7 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
             //    This.o_pc.addIceCandidate(new __o_iceCandidate_class(o_event.candidate));
             // }
             if (This.o_pc.iceState == "completed" || (o_event && !o_event.candidate)) {
+                tsk_utils_log_info("ICE GATHERING COMPLETED!");
                 if (This.o_pc.localDescription) {
                     This.o_sdp_jsep_lo = This.o_pc.localDescription;
                     This.o_sdp_lo = tsdp_message.prototype.Parse(This.o_sdp_jsep_lo.sdp);
@@ -385,7 +386,6 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
 
         if (b_answer) {
             this.o_pc.createAnswer(
-                /* new __o_sessiondescription_class({ type: "offer", sdp: This.o_sdp_ro.toString() }), */
                 function (desc) {
                     This.o_pc.setLocalDescription(desc);
                 },
@@ -395,16 +395,6 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
                 },
                 { has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) }, // MediaConstraints
                 false // createProvisionalAnswer
-             );
-
-            this.o_pc.createAnswer(
-                function (desc) {
-                    This.o_pc.setLocalDescription(desc);
-                },
-                function (s_error) {
-                    This.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, This.e_type);
-                    tsk_utils_log_error(s_error);
-                }
              );
         }
         else {
