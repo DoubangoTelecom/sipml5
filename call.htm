@@ -168,7 +168,7 @@
         // check webrtc4all version
         if (tsk_utils_have_webrtc4all()) {
             tsk_utils_log_info("WebRTC type = " + WebRtc4all_GetType() + " version = " + tsk_utils_webrtc4all_get_version());
-            if (tsk_utils_webrtc4all_get_version() != "1.11.745") {
+            if (tsk_utils_webrtc4all_get_version() != "1.12.756") {
                 if (confirm("Your WebRtc4all extension is outdated. A new version with critical bug fix is available. Do you want to install it?\nIMPORTANT: You must restart your browser after the installation.")) {
                     window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
                     return;

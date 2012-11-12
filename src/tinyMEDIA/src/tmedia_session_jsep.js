@@ -82,7 +82,7 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
         /* Session version */
         var o_hdr_O;
         if (this.i_sdp_lo_version == -1) {
-            this.i_sdp_lo_version = (this instanceof tmedia_session_jsep00) ? 1 : 2; // 1: google-ice, 2: standard-ice
+            this.i_sdp_lo_version = ((__o_peerconnection_class == window.webkitRTCPeerConnection) || (__o_peerconnection_class == w4aPeerConnection)) ? 2 : 1; // 1: google-ice, 2: standard-ice
         }
         if ((o_hdr_O = this.o_sdp_lo.get_header(tsdp_header_type_e.O))) {
             o_hdr_O.i_sess_version = this.i_sdp_lo_version;
