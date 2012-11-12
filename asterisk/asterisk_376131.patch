@@ -1,0 +1,53 @@
+Index: channels/chan_sip.c
+===================================================================
+--- channels/chan_sip.c	(revision 376139)
++++ channels/chan_sip.c	(working copy)
+@@ -12498,6 +12498,12 @@
+ 	i = ao2_iterator_init(candidates, 0);
+ 
+ 	while ((candidate = ao2_iterator_next(&i))) {
++		static const int generation = 0;
++		static const int svn = 20;
++		int i, len = strlen(candidate->transport);
++		for(i = 0; i < len; ++i){
++   			candidate->transport[i] = tolower(candidate->transport[i]);
++		}
+ 		ast_str_append(a_buf, 0, "a=candidate:%s %d %s %d ", candidate->foundation, candidate->id, candidate->transport, candidate->priority);
+ 		ast_str_append(a_buf, 0, "%s ", ast_sockaddr_stringify_host(&candidate->address));
+ 		ast_str_append(a_buf, 0, "%s typ ", ast_sockaddr_stringify_port(&candidate->address));
+@@ -12514,7 +12520,7 @@
+ 			ast_str_append(a_buf, 0, " raddr %s ", ast_sockaddr_stringify_host(&candidate->relay_address));
+ 			ast_str_append(a_buf, 0, "rport %s", ast_sockaddr_stringify_port(&candidate->relay_address));
+ 		}
+-
++		ast_str_append(a_buf, 0, " generation %d svn %d", generation, svn);
+ 		ast_str_append(a_buf, 0, "\r\n");
+ 		ao2_ref(candidate, -1);
+ 	}
+Index: res/pjproject/pjnath/src/pjnath/stun_auth.c
+===================================================================
+--- res/pjproject/pjnath/src/pjnath/stun_auth.c	(revision 376139)
++++ res/pjproject/pjnath/src/pjnath/stun_auth.c	(working copy)
+@@ -256,6 +256,22 @@
+ 	p_info->realm = cred->data.static_cred.realm;
+ 	p_info->nonce = cred->data.static_cred.nonce;
+     } else if (cred->type == PJ_STUN_AUTH_CRED_DYNAMIC) {
++	// FIXME: bug in chrome: ICE gathering stops when we start receiving success responses before the end of the process
++	// -> send auth failure until we get SDP response from chrome
++	pj_str_t tx_realm = {0}, tx_username = {0}, tx_nonce = {0}, tx_password = {0};
++	pj_stun_passwd_type data_type = PJ_STUN_PASSWD_PLAIN;
++	status = cred->data.dyn_cred.get_cred(msg, cred->data.dyn_cred.user_data, 
++						  pool,
++						  &tx_realm, 
++						  &tx_username,
++						  &tx_nonce, 
++						  &data_type, &tx_password);
++	if (status != PJ_SUCCESS)
++	    return status;
++	if(!tx_username.slen && !tx_password.slen){
++	    err_code = PJ_STUN_SC_UNAUTHORIZED;
++	    goto on_auth_failed;
++	}
+ 	status = cred->data.dyn_cred.get_auth(cred->data.dyn_cred.user_data,
+ 					      pool, &p_info->realm, 
+ 					      &p_info->nonce);
