@@ -4,7 +4,7 @@
 <wiki:toc max_depth="2" />
 
 <font color="red" size="2">
-<strong>We strongly recommend using Chrome stable (latest chrome version known to work: 22.0.1229.79 m) instead of Canary</strong><br />
+<strong>We strongly recommend using Chrome stable (latest chrome version known to work: *23.0.1271.64 m*) instead of Canary</strong><br />
 </font>
 
 This is a short guide explaining how to configure any HTML5 SIP client to work with Asterisk.
@@ -16,22 +16,22 @@ _sipML5 solution using Asterisk_
 <hr />
 
 ==Building source code==
-The current Asterisk version (revision 373330) allows to register and make calls from Chrome but no audio or video will flow.
+The current Asterisk version (revision 376131) allows to register and make calls from Chrome but no audio or video will flow.
 The problem comes from ICE implementation in Chrome which is not fully compliant with RFC 5245. To fix this problem you'll need to apply the provided patch and rebuild Asterisk as explained in this section.
 This patch also adds experimental support for VP8 video codec.
 
- # checkout Asterisk source code *revision 373330*
+ # checkout Asterisk source code *revision 376131*
 {{{
-svn checkout -r 373330 http://svn.digium.com/svn/asterisk/trunk asterisk
+svn checkout -r 376131 http://svn.digium.com/svn/asterisk/trunk asterisk
 }}}
- # copy the [http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_373330.patch patch] into *asterisk* folder
+ # copy the [http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_376131.patch patch] into *asterisk* folder
 {{{
 cd asterisk
-wget http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_373330.patch
+wget http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_376131.patch
 }}}
  # apply the patch
  {{{
- patch -p0 -i ./asterisk_373330.patch
+ patch -p0 -i ./asterisk_376131.patch
  }}}
  # configure for build
 {{{
@@ -46,20 +46,15 @@ make samples
 }}}
 
 ==Configure *sip.conf*==
-Open [http://sipml5.googlecode.com/svn/trunk/asterisk/sip.conf $PREFIX/etc/asterisk/sip.conf] and change the default values as follow
+Open [http://sipml5.googlecode.com/svn/trunk/asterisk/etc/sip.conf $PREFIX/etc/asterisk/sip.conf] and change the default values as follow
 {{{
 udpbindaddr=0.0.0.0:5060
 realm=doubango.org
-domainsasrealm=doubango.org
-videosupport=no
-directmedia=no
-avpf=yes 
-encryption=yes
 transport=udp,ws,wss
 }}}
 
 ==Configure *http.conf*==
-Open [http://sipml5.googlecode.com/svn/trunk/asterisk/http.conf $PREFIX/etc/asterisk/http.conf] and change the default values as follow
+Open [http://sipml5.googlecode.com/svn/trunk/asterisk/etc/http.conf $PREFIX/etc/asterisk/http.conf] and change the default values as follow
 {{{
 enabled=yes
 bindaddr=0.0.0.0
@@ -67,7 +62,7 @@ bindport=8088
 }}}
 
 ==Create two users for testing==
-Open [http://sipml5.googlecode.com/svn/trunk/asterisk/users.conf $PREFIX/etc/asterisk/users.conf] and add two users (*1060* for chrome and *1061* for xlite5)
+Open [http://sipml5.googlecode.com/svn/trunk/asterisk/etc/users.conf $PREFIX/etc/asterisk/users.conf] and add two users (*1060* for chrome and *1061* for xlite5)
 {{{
 [1060]
 type=peer
@@ -79,6 +74,9 @@ hasiax = no
 hassip = yes
 encryption = yes
 avpf = yes
+icesupport = yes
+videosupport=no
+directmedia=no
 
 [1061]
 type=peer
@@ -88,10 +86,12 @@ secret=1061
 context=default
 hasiax = no
 hassip = yes
+; enable ice if supported by your ua (e.g. xlite)
+icesupport = yes
 }}}
 
 ==Setting extensions==
-Open [http://sipml5.googlecode.com/svn/trunk/asterisk/extensions.conf $PREFIX/etc/asterisk/extensions.conf] and add two extensions to the *[default]* section
+Open [http://sipml5.googlecode.com/svn/trunk/asterisk/etc/extensions.conf $PREFIX/etc/asterisk/extensions.conf] and add two extensions to the *[default]* section
 {{{
 exten => 100,1,Dial(SIP/1060)
 exten => 101,1,Dial(SIP/1061)
