@@ -61,6 +61,7 @@ bindaddr=0.0.0.0
 bindport=8088
 }}}
 
+==Configure *rtp.conf*==
 Open [http://sipml5.googlecode.com/svn/trunk/asterisk/etc/rtp.conf $PREFIX/etc/asterisk/rtp.conf] and change the default values as follow
 {{{
 stunaddr=stun.l.google.com:19302
