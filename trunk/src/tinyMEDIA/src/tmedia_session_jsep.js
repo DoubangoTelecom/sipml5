@@ -77,7 +77,7 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
         /* Session name for debugging */
         var o_hdr_S;
         if ((o_hdr_S = this.o_sdp_lo.get_header(tsdp_header_type_e.S))) {
-            o_hdr_S.s_value = "webrtc (chrome 22.0.1189.0) - Doubango Telecom (sipML5 r000)";
+            o_hdr_S.s_value = "Doubango Telecom - PeerConnection";
         }
         /* Session version */
         var o_hdr_O;
@@ -337,6 +337,8 @@ tmedia_session_jsep00.prototype.__set_ro = function (o_sdp, b_is_offer) {
 
 function tmedia_session_jsep01(o_mgr) {
     tmedia_session_jsep.call(this, o_mgr);
+    // FIXME: fails on Canary. WHY?
+    // this.o_media_constraints = { 'OfferToReceiveAudio': !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), 'OfferToReceiveVideo': !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) };
 }
 
 tmedia_session_jsep01.prototype.__get_lo = function () {
@@ -348,7 +350,7 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
 
         this.o_pc = new __o_peerconnection_class(
                 { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
-                { has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) }
+                this.o_media_constraints
         );
         this.o_pc.onicecandidate = function (o_event) {
             tsk_utils_log_info("onicecandidate = " + This.o_pc.iceState);
@@ -393,7 +395,7 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
                     This.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, This.e_type);
                     tsk_utils_log_error(s_error);
                 },
-                { has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) }, // MediaConstraints
+                this.o_media_constraints,
                 false // createProvisionalAnswer
              );
         }
@@ -406,7 +408,7 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
                     This.o_mgr.callback(tmedia_session_events_e.SET_RO_FAILED, This.e_type);
                     tsk_utils_log_error(s_error);
                 },
-                { has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)} // MediaConstraints
+                this.o_media_constraints
             );
 
         }
