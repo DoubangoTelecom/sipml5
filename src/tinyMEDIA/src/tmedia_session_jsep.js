@@ -337,8 +337,13 @@ tmedia_session_jsep00.prototype.__set_ro = function (o_sdp, b_is_offer) {
 
 function tmedia_session_jsep01(o_mgr) {
     tmedia_session_jsep.call(this, o_mgr);
-    // FIXME: fails on Canary. WHY?
-    // this.o_media_constraints = { 'OfferToReceiveAudio': !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), 'OfferToReceiveVideo': !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) };
+    this.o_media_constraints = 
+    { 'mandatory': 
+        {
+            'OfferToReceiveAudio': !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id),
+            'OfferToReceiveVideo': !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)
+        }
+     }; 
 }
 
 tmedia_session_jsep01.prototype.__get_lo = function () {
