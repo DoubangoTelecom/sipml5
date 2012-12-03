@@ -603,68 +603,79 @@ tsip_dialog_invite.prototype.send_bye = function(){
 	return i_ret;
 }
 
-tsip_dialog_invite.prototype.send_cancel = function(){
-	/* RFC 3261 - 9 Canceling a Request
-		If the request being cancelled contains a Route header field, the
-		CANCEL request MUST include that Route header field's values.
-		==> up to tsip_dialog_request_new()
-	*/
+tsip_dialog_invite.prototype.send_cancel = function () {
+    /* RFC 3261 - 9 Canceling a Request
+    If the request being cancelled contains a Route header field, the
+    CANCEL request MUST include that Route header field's values.
+    ==> up to tsip_dialog_request_new()
+    */
 
-	/*	RFC 3261 - 9 Canceling a Request
-		Once the CANCEL is constructed, the client SHOULD check whether it
-		has received any response (provisional or final) for the request
-		being cancelled (herein referred to as the "original request").
+    /*	RFC 3261 - 9 Canceling a Request
+    Once the CANCEL is constructed, the client SHOULD check whether it
+    has received any response (provisional or final) for the request
+    being cancelled (herein referred to as the "original request").
 
-		If no provisional response has been received, the CANCEL request MUST
-		NOT be sent; rather, the client MUST wait for the arrival of a
-		provisional response before sending the request.
-		==> up to the caller to check that we are not in the initial state and the FSM
-		is in Trying state.
-   */
+    If no provisional response has been received, the CANCEL request MUST
+    NOT be sent; rather, the client MUST wait for the arrival of a
+    provisional response before sending the request.
+    ==> up to the caller to check that we are not in the initial state and the FSM
+    is in Trying state.
+    */
 
-	/*	RFC 3261 - 9 Canceling a Request
-		The following procedures are used to construct a CANCEL request.  The
-		Request-URI, Call-ID, To, the numeric part of CSeq, and From header
-		fields in the CANCEL request MUST be identical to those in the
-		request being cancelled, including tags.  A CANCEL constructed by a
-		client MUST have only a single Via header field value matching the
-		top Via value in the request being cancelled.  Using the same values
-		for these header fields allows the CANCEL to be matched with the
-		request it cancels (Section 9.2 indicates how such matching occurs).
-		However, the method part of the CSeq header field MUST have a value
-		of CANCEL.  This allows it to be identified and processed as a
-		transaction in its own right (See Section 17)
-	*/
-	if(this.o_last_oInvite){
-		/* to avoid concurrent access, take a reference to the request */
-		var o_request; 
+    /*	RFC 3261 - 9 Canceling a Request
+    The following procedures are used to construct a CANCEL request.  The
+    Request-URI, Call-ID, To, the numeric part of CSeq, and From header
+    fields in the CANCEL request MUST be identical to those in the
+    request being cancelled, including tags.  A CANCEL constructed by a
+    client MUST have only a single Via header field value matching the
+    top Via value in the request being cancelled.  Using the same values
+    for these header fields allows the CANCEL to be matched with the
+    request it cancels (Section 9.2 indicates how such matching occurs).
+    However, the method part of the CSeq header field MUST have a value
+    of CANCEL.  This allows it to be identified and processed as a
+    transaction in its own right (See Section 17)
+    */
+    if (this.o_last_oInvite) {
+        /* to avoid concurrent access, take a reference to the request */
+        var o_request;
         var i_index;
 
-        if ((o_request = new tsip_request("CANCEL", this.o_last_oInvite.line.request.o_uri, this.o_last_oInvite.o_hdr_From.o_uri, this.o_last_oInvite.o_hdr_To.o_uri, this.o_last_oInvite.o_hdr_Call_ID.s_value, this.o_last_oInvite.o_hdr_CSeq.i_seq))) {
-			o_request.o_hdr_firstVia = this.o_last_oInvite.o_hdr_firstVia;
+        if ((o_request = new tsip_request("CANCEL", this.o_last_oInvite.line.request.o_uri, null, null, this.o_last_oInvite.o_hdr_Call_ID.s_value, this.o_last_oInvite.o_hdr_CSeq.i_seq))) {
+            o_request.o_hdr_firstVia = this.o_last_oInvite.o_hdr_firstVia;
+            o_request.o_hdr_From = this.o_last_oInvite.o_hdr_From;
+            o_request.o_hdr_To = this.o_last_oInvite.o_hdr_To;
 
-			// Copy Authorizations, Routes and Proxy-Auth
-			for(i_index = 0; i_index < this.o_last_oInvite.ao_headers.length; ++i_index){
-				switch(this.o_last_oInvite.ao_headers[i_index].e_type){
-					case tsip_header_type_e.Route:
-					case tsip_header_type_e.Proxy_Authorization:
-					case tsip_header_type_e.Authorization:
+            // Copy Authorizations, Routes and Proxy-Auth
+            for (i_index = 0; i_index < this.o_last_oInvite.ao_headers.length; ++i_index) {
+                switch (this.o_last_oInvite.ao_headers[i_index].e_type) {
+                    case tsip_header_type_e.Route:
+                    case tsip_header_type_e.Proxy_Authorization:
+                    case tsip_header_type_e.Authorization:
                         o_request.ao_headers.push(this.o_last_oInvite.ao_headers[i_index]);
-						break;
-				}
-			}
-			
-			return this.request_send(o_request);
-		}
-		else{
-			tsk_utils_log_error("Failed to create CANCEL request");
-			return -2;
-		}
-	}
-	else{
-		tsk_utils_log_warn("There is no INVITE request to cancel");
-		return 0;
-	}
+                        break;
+                }
+            }
+            /* Add outbound proxy */
+            // The outbound proxy is added as Route header only if the transport is WS/WSS to allow webrtc2sip to forward the request
+            // For all other protocols (e.g UDP) the request will already be sent to the outbound proxy address
+            if (this.get_stack().network.e_proxy_cscf_type == tsip_transport_type_e.WS || this.get_stack().network.e_proxy_cscf_type == tsip_transport_type_e.WSS) {
+                var s_proxy_outbound = this.get_stack().__get_proxy_outbound_uri_string();
+                if (s_proxy_outbound) {
+                    o_request.add_header(new tsip_header_Dummy("Route", s_proxy_outbound), true/*true*/);
+                }
+            }
+
+            return this.request_send(o_request);
+        }
+        else {
+            tsk_utils_log_error("Failed to create CANCEL request");
+            return -2;
+        }
+    }
+    else {
+        tsk_utils_log_warn("There is no INVITE request to cancel");
+        return 0;
+    }
 }
 
 tsip_dialog_invite.prototype.notify_parent = function (o_response) {

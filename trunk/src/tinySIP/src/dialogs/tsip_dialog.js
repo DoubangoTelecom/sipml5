@@ -281,7 +281,14 @@ tsip_dialog.prototype.request_new = function (s_method) {
 					o_request.line.request.e_type == tsip_request_type_e.PUBLISH ||
 					o_request.line.request.e_type == tsip_request_type_e.REGISTER) {
                     /**** with expires */
-                    s_contact = tsk_string_format("m: \"{1}\"<{0}:{2}@{3}:{4}>;expires={5}\r\n", "sip", o_stack.identity.s_display_name, o_uri_from.s_user_name, "127.0.0.1", 5060, Math.floor(this.i_expires / 1000));
+                    s_contact = tsk_string_format("m: \"{1}\"<{0}:{2}@{3}:{4};rtcweb-breaker={5}>;expires={6}\r\n",
+                        "sip",
+                        o_stack.identity.s_display_name,
+                        o_uri_from.s_user_name,
+                        "127.0.0.1",
+                        5060,
+                        o_stack.network.b_rtcweb_enabled ? "yes" : "no",
+                        Math.floor(this.i_expires / 1000));
                 }
                 else {
                     /**** without expires */
@@ -292,7 +299,19 @@ tsip_dialog.prototype.request_new = function (s_method) {
                         */
                         o_request.add_header(new tsip_header_Expires(this.i_expires / 1000));
                     }
-                    s_contact = tsk_string_format("m: \"{1}\"<{0}:{2}@{3}:{4}>\r\n", "sip", o_stack.identity.s_display_name, o_uri_from.s_user_name, "127.0.0.1", 5060);
+                    s_contact = tsk_string_format("m: \"{1}\"<{0}:{2}@{3}:{4};rtcweb-breaker={5}>",
+                        "sip",
+                        o_stack.identity.s_display_name,
+                        o_uri_from.s_user_name,
+                        "127.0.0.1",
+                        5060,
+                        o_stack.network.b_rtcweb_enabled ? "yes" : "no");
+
+                    if (o_request.line.request.e_type == tsip_request_type_e.INVITE && o_stack.network.b_rtcweb_enabled) {
+                        s_contact += ";impi=" + o_stack.identity.s_impi;
+                        s_contact += ";ha1=" + tsip_auth_digest_HA1(o_stack.identity.s_impi, o_stack.network.o_uri_realm.s_host, o_stack.identity.s_password);
+                    }
+                    s_contact += "\r\n";
                 }
                 ao_hdr_contacts = tsip_header_Contact.prototype.Parse(s_contact);
                 if (ao_hdr_contacts && ao_hdr_contacts.length > 0) {
@@ -431,7 +450,7 @@ tsip_dialog.prototype.request_new = function (s_method) {
     if (o_stack.network.e_proxy_cscf_type == tsip_transport_type_e.WS || o_stack.network.e_proxy_cscf_type == tsip_transport_type_e.WSS) {
         var s_proxy_outbound = o_stack.__get_proxy_outbound_uri_string();
         if (s_proxy_outbound) {
-            o_request.add_header(new tsip_header_Dummy("Route", s_proxy_outbound));
+            o_request.add_header(new tsip_header_Dummy("Route", s_proxy_outbound), true/*top*/);
         }
     }
 

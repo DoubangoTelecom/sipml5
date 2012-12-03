@@ -181,7 +181,9 @@ var tsip_stack_param_type_e =
 	DNSSERVER : 27,
 	MODE_SERVER: 28,
 	PROXY_OUTBOUND: 30,
-    WEBSOCKET_SERVER_URL: 31,
+	WEBSOCKET_SERVER_URL: 31,
+	ENABLE_RTCWEB_BREAKER: 32,
+    ENABLE_SECURE_TRANSPORT: 33,
 	
 	/* === Security === */
 	EARLY_IMS : 40,
@@ -279,6 +281,7 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
     this.network.i_proxy_outbound_port = 5060;
     this.network.e_proxy_outbound_type = this.network.e_proxy_cscf_type;
     this.network.s_websocket_server_url = null;
+    this.network.b_rtcweb_enabled = false;
 
     this.network.aor = {};
     this.network.aor.s_ip = null;
@@ -579,6 +582,16 @@ tsip_stack.prototype.SetWebsocketServerUrl = function (s_websocket_server_url) {
     return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.WEBSOCKET_SERVER_URL, s_websocket_server_url);
 }
 
+tsip_stack.prototype.SetRTCWebBreakerEnabled = function (b_enabled) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.ENABLE_RTCWEB_BREAKER, b_enabled);
+}
+
+tsip_stack.prototype.SetSecureTransportEnabled = function (b_enabled) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.ENABLE_SECURE_TRANSPORT, b_enabled);
+}
+
+
+
 /**
 * Adds SIP header to all sessions created using this stack
 * @tparam String s_name SIP header name
@@ -639,7 +652,30 @@ tsip_stack.prototype.__set = function (ao_params) {
                 }
             case tsip_stack_param_type_e.WEBSOCKET_SERVER_URL:
                 {
+                    // e.g. wss://192.168.0.10:5060/myurl
                     this.network.s_websocket_server_url = o_curr.ao_values[0];
+                    // the default transport is WS and must be changed if the user provides it's own url
+                    if (this.network.s_websocket_server_url) {
+                        if (this.network.s_websocket_server_url.indexOf("wss://") == 0) {
+                            this.network.e_proxy_cscf_type = tsip_transport_type_e.WSS;
+                        }
+                        else if (this.network.s_websocket_server_url.indexOf("ws://") == 0) {
+                            this.network.e_proxy_cscf_type = tsip_transport_type_e.WS;
+                        }
+                    }
+                    break;
+                }
+            case tsip_stack_param_type_e.ENABLE_RTCWEB_BREAKER:
+                {
+                    this.network.b_rtcweb_enabled = o_curr.ao_values[0];
+                    break;
+                }
+
+            case tsip_stack_param_type_e.ENABLE_SECURE_TRANSPORT:
+                {
+                    if (o_curr.ao_values[0] && this.network.e_proxy_cscf_type == tsip_transport_type_e.WS) {
+                        this.network.e_proxy_cscf_type = tsip_transport_type_e.WSS;
+                    }
                     break;
                 }
 

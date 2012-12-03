@@ -155,16 +155,21 @@ function tsip_request(s_method, o_uri_request, o_uri_from, o_uri_to, s_call_id, 
 		which contains the method, Request-URI, and SIP version.
 	*/
     this.add_headers( 
-        new tsip_header_To(o_uri_to, null),
-        new tsip_header_From(o_uri_from, null),
         new tsip_header_CSeq(i_cseq, s_method),
         new tsip_header_Call_ID(s_call_id),
         new tsip_header_Max_Forwards(TSIP_HEADER_MAX_FORWARDS_DEFAULT),
         /* Via will be added by the transport layer */
 		new tsip_header_Content_Length(0));
+    if (o_uri_to) {
+        this.add_headers(new tsip_header_To(o_uri_to, null));
+    }
+    if (o_uri_from) {
+        this.add_headers(new tsip_header_From(o_uri_from, null));
+    }
 }
 
-tsip_message.prototype.add_header = function (o_hdr) {
+// b_top: optional
+tsip_message.prototype.add_header = function (o_hdr, b_top) {
     if (!o_hdr) {
         tsk_utils_log_error("Invalid argument");
         return -1;
@@ -245,7 +250,12 @@ tsip_message.prototype.add_header = function (o_hdr) {
             }
     }
 
-    this.ao_headers.push(o_hdr);
+    if (b_top) {
+        this.ao_headers.unshift(o_hdr);
+    }
+    else {
+        this.ao_headers.push(o_hdr);
+    }
 
     return 0;
 }

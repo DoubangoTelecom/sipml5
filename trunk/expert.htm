@@ -43,7 +43,7 @@
 
     window.onload = function () {
         cbVideoDisable = document.getElementById("cbVideoDisable");
-        cbAVPFDisable = document.getElementById("cbAVPFDisable");
+        cbRTCWebBreaker = document.getElementById("cbRTCWebBreaker");
         txtWebsocketServerUrl = document.getElementById("txtWebsocketServerUrl");
         txtSIPOutboundProxyUrl = document.getElementById("txtSIPOutboundProxyUrl");
         txtInfo = document.getElementById("txtInfo");
@@ -57,7 +57,7 @@
 
     function settingsSave() {
         window.localStorage.setItem('org.doubango.expert.disable_video', cbVideoDisable.checked ? "true" : "false");
-        window.localStorage.setItem('org.doubango.expert.disable_avpf', cbAVPFDisable.checked ? "true" : "false");
+        window.localStorage.setItem('org.doubango.expert.enable_rtcweb_breaker', cbRTCWebBreaker.checked ? "true" : "false");
         if (!txtWebsocketServerUrl.disabled) {
             window.localStorage.setItem('org.doubango.expert.websocket_server_url', txtWebsocketServerUrl.value);
         }
@@ -68,7 +68,7 @@
 
     function settingsRevert(bNotUserAction) {
         cbVideoDisable.checked = (window.localStorage.getItem('org.doubango.expert.disable_video') == "true");
-        cbAVPFDisable.checked = (window.localStorage.getItem('org.doubango.expert.disable_avpf') == "true");
+        cbRTCWebBreaker.checked = (window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true");
         txtWebsocketServerUrl.value = (window.localStorage.getItem('org.doubango.expert.websocket_server_url') || "");
         txtSIPOutboundProxyUrl.value = (window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') || "");
 
@@ -95,15 +95,15 @@
                 </tr>
                 <tr>
                     <td>
-                        <label style="height: 100%">Disable AVPF:</label>
+                        <label style="height: 100%">Enable RTCWeb Breaker<sup><a href="#aRTCWebBreaker">[1]</a></sup>:</label>
                     </td>
                     <td>
-                        <input type='checkbox' id='cbAVPFDisable' />
+                        <input type='checkbox' id='cbRTCWebBreaker' />
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <label style="height: 100%">WebSocket Server URL:</label>
+                        <label style="height: 100%">WebSocket Server URL<sup><a href="#aWebSocketServerURL">[2]</a></sup>:</label>
                     </td>
                     <td>
                         <input type="text" style="width: 100%; height: 100%" id="txtWebsocketServerUrl" value="" placeholder="e.g. ws://sipml5.org:5062" />
@@ -111,7 +111,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <label style="height: 100%">SIP outbound Proxy URL:</label>
+                        <label style="height: 100%">SIP outbound Proxy URL<sup><a href="#aSIPOutboundProxyURL">[3]</a></sup>:</label>
                     </td>
                     <td>
                         <input type="text" style="width: 100%; height: 100%" id="txtSIPOutboundProxyUrl" value="" placeholder="e.g. udp://sipml5.org:5060" />
@@ -128,5 +128,25 @@
             </table>
         </div>
     </div>
+
+    <hr />
+    <footer>
+        
+            <a name="aRTCWebBreaker"><sup><b>[1]</b></sup></a> The <b>RTCWeb Breaker</b> is used to enable audio and video transcoding when the endpoints do not support the same codecs or the remote server is not RTCWeb-compliant. Please note that the <b>Media Coder</b> will most likely be disabled on the <b>sipml5.org</b> hosted server.<br />
+            For example, you can enable this feature if:
+            <ul>
+                <li>You're using <b>Google Chrome</b> which only support VP8 codec and trying to call a legacy SIP client supporting only <b>H.264</b>, <b>H.263</b>, <b>Theora</b> or <b>MP4V-ES</b></li>
+                <li>Making audio/video calls from/to <a href="https://www.google.com/intl/en/chrome/browser/">Google Chrome</a> to/from <a href="https://labs.ericsson.com/apps/bowser">Ericsson Bowser</a></li>
+                <li>You're using any compliant RTCWeb browser and trying to call any SIP client (e.g. <b>xlite</b>) not implementing some mandatory features (e.g. <b>ICE</b>, <b>SRTP</b>, <b>DTLS</b>...)</li>
+                <li>Your media server is not RTCWeb-capable (e.g. <b>FreeSWITCH</b>)</li>
+            </ul>
+            Please check the <a href="http://webrtc2sip.org/technical-guide-1.0.pdf">Technical guide</a> for more information about the <b>RTCWeb Breaker</b> and <b>Media Coder</b>.<br />
+
+            <a name="aWebSocketServerURL"><sup><b>[2]</b></sup></a> The <b>WebSocket Server URL</b> is only required if you're a developer and using your own SIP Proxy gateway not publicly reachable. <br />
+
+            <a name="aSIPOutboundProxyURL"><sup><b>[3]</b></sup></a> The <b>SIP outbound Proxy URL</b> is used to set the destination IP address and Port to use for all outgoing requests regardless the <i>domain name</i> (a.k.a <i>realm</i>).
+            This is a good option for developers using a SIP domain name without valid DNS A/NAPTR/SRV records.
+        
+    </footer>
 </body>
 </html>

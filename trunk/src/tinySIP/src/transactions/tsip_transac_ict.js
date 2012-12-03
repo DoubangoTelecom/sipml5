@@ -199,7 +199,17 @@ tsip_transac_ict.prototype.send_ack = function(o_response){
 		}
 		if(o_request.o_hdr_To){
 			o_request.o_hdr_To.s_tag = o_response.o_hdr_To.s_tag;
-		}
+        }
+
+        /* Add outbound proxy */
+        // The outbound proxy is added as Route header only if the transport is WS/WSS to allow webrtc2sip to forward the request
+        // For all other protocols (e.g UDP) the request will already be sent to the outbound proxy address
+        if (this.get_stack().network.e_proxy_cscf_type == tsip_transport_type_e.WS || this.get_stack().network.e_proxy_cscf_type == tsip_transport_type_e.WSS) {
+        var s_proxy_outbound = this.get_stack().__get_proxy_outbound_uri_string();
+            if (s_proxy_outbound) {
+                o_request.add_header(new tsip_header_Dummy("Route", s_proxy_outbound), true/*top*/);
+            }
+        }
 		// Routes
 		for(var i = 0; i < this.o_request.ao_headers.length; ++i){
 			if(this.o_request.ao_headers[i].e_type == tsip_header_type_e.Route){

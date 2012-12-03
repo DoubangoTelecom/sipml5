@@ -352,12 +352,13 @@
             // create SIP stack
             var i_port;
             var s_proxy;
-            // @NotUsed
-            // var b_disable_avpf = (window.localStorage.getItem('org.doubango.expert.disable_avpf') == "true");
+            
             var s_websocket_server_url = window.localStorage ? window.localStorage.getItem('org.doubango.expert.websocket_server_url') : null;
             var s_sip_outboundproxy_url = window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null;
+            var b_rtcweb_breaker_enabled = (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false);
             tsk_utils_log_info("s_websocket_server_url=" + (s_websocket_server_url || "(null)"));
             tsk_utils_log_info("s_sip_outboundproxy_url=" + (s_sip_outboundproxy_url || "(null)"));
+            tsk_utils_log_info("b_rtcweb_breaker_enabled=" + (b_rtcweb_breaker_enabled ? "yes" : "no"));
 
             if (!tsk_utils_have_websocket()) {
                 // port and host will be updated using the result from DNS SRV(NAPTR(realm))
@@ -365,11 +366,20 @@
                 s_proxy = txtRealm.value;
             }
             else {
-                // there are at least 5 servers running on the cloud on ports: 4062, 5062, 6062, 7062 and 8062
+                // there are at least 5 servers running on the cloud.
                 // we will connect to one of them and let the balancer to choose the right one (less connected sockets)
                 // each port can accept up to 65K connections which means that the cloud can manage 325K active connections
                 // the number of port will be increased or decreased based on the current trafic
-                i_port = 4062 + (((new Date().getTime()) % 5) * 1000);
+
+                // webrtc2sip 1.0 (Resiprocate): 4062, 5062, 6062, 7062 and 8062
+                // webrtc2sip 2.0 (Doubango): 
+                //      WS: 10060, 11060, 12060, 13060, 14060
+                //      WSS: 10062, 11062, 12062, 13062, 14062
+                //
+                // Resiprocate version (v1.0) is deprecated but still used until Doubango version is fully tested
+                // Doubango version (v2.0) is only used if RTCWeb Breaker is enabled and always use secure transport (WSS)
+
+                i_port = (b_rtcweb_breaker_enabled ? 10062 : 4062) + (((new Date().getTime()) % 5) * 1000);
                 s_proxy = "sipml5.org";
             }
             
@@ -377,8 +387,10 @@
             oSipStack = new tsip_stack(txtRealm.value, txtPrivateIdentity.value, txtPublicIdentity.value, s_proxy, i_port,
                                     tsip_stack.prototype.SetPassword(txtPassword.value),
                                     tsip_stack.prototype.SetDisplayName(txtDisplayName.value),
-                                    tsip_stack.prototype.SetWebsocketServerUrl(s_websocket_server_url),
                                     tsip_stack.prototype.SetProxyOutBoundUrl(s_sip_outboundproxy_url),
+                                    tsip_stack.prototype.SetRTCWebBreakerEnabled(b_rtcweb_breaker_enabled),
+                                    tsip_stack.prototype.SetSecureTransportEnabled(b_rtcweb_breaker_enabled), // always use secure transport when RTCWebBreaker
+                                    tsip_stack.prototype.SetWebsocketServerUrl(s_websocket_server_url),
                                     // not valid? "IM-client/OMA1.0 sipML5-v0.0.0000.0/mozilla/5.0 (windows nt 6.0) applewebkit/537.9 (khtml, like gecko) chrome/23.0.1261.1 safari/537.9"
                                     // tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v0.0.0000.0/' + (navigator.userAgent || "unknown").toLowerCase()),
                                     tsip_stack.prototype.SetHeader('User-Agent', 'IM-client/OMA1.0 sipML5-v1.0.89.0/'),
