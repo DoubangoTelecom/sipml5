@@ -4,7 +4,7 @@
 <wiki:toc max_depth="2" />
 
 <font color="red" size="2">
-<strong>We strongly recommend using Chrome stable (latest chrome version known to work: *23.0.1271.64 m*) instead of Canary</strong><br />
+<strong>We strongly recommend using the _RTCWeb Breaker_ on the [http://sipml5.org/expert.htm expert window] instead of patching Asterisk.</strong><br />
 </font>
 
 This is a short guide explaining how to configure any HTML5 SIP client to work with Asterisk.
