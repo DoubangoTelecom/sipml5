@@ -9,11 +9,19 @@
     var o_pc;
     var o_offer, o_answer;
     var b_remote_sdp = false;
-    var b_audio = true, b_video = false;
+    var o_webkitGetUserMediaHasType = { audio: true, video: false };
+    var o_MediaContraintsHasType = { audio: true, video: true };
+    var o_media_constraints =
+    { 'mandatory':
+        {
+            'OfferToReceiveAudio': o_MediaContraintsHasType.audio,
+            'OfferToReceiveVideo': o_MediaContraintsHasType.video
+        }
+    };
 
     window.onload = function () {
         if (navigator.webkitGetUserMedia) {
-            navigator.webkitGetUserMedia({ audio: true, video: true },
+            navigator.webkitGetUserMedia({ audio: o_webkitGetUserMediaHasType.audio, video: o_webkitGetUserMediaHasType.video },
             function (stream) {
                 o_stream = stream;
                 document.getElementById("btnTest").disabled = false;
@@ -24,104 +32,32 @@
         }
     };
 
-    function test_webrtc() {
-        /*var s_offer = "v=0\r\n" +
-                    "o=root 1494914416 1494914416 IN IP4 192.106.69.240\r\n" +
-                    "s=Asterisk PBX SVN-trunk-r373330M\r\n" +
-                    "c=IN IP4 192.106.69.240\r\n" +
-                    "t=0 0\r\n" +
-                    "m=audio 11214 RTP/SAVPF 0 8 101\r\n" +
-                    "a=rtpmap:0 PCMU/8000\r\n" +
-                    "a=rtpmap:8 PCMA/8000\r\n" +
-                    "a=rtpmap:101 telephone-event/8000\r\n" +
-                    "a=fmtp:101 0-16\r\n" +
-                    "a=silenceSupp:off - - - -\r\n" +
-                    "a=ptime:20\r\n" +
-                    "a=ice-ufrag:4b25b6ed7058afcf453471412e597796\r\n" +
-                    "a=ice-pwd:11e4fa9c5d3e46674a9c64a8472b58d4\r\n" +
-                    "a=ice-options:google-ice\r\n" +
-                    "a=candidate:Hd4e6131a 1 udp 2130706431 192.106.69.240 11214 typ host\r\n" +
-                    "a=candidate:Hd4e6131a 2 udp 2130706430 192.106.69.240 11215 typ host\r\n" +
-                    "a=sendrecv\r\n" +
-                    "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:Re6uBCh/xCT8/ZBLfh+zJTFw/TcjnrtN+WKdD+Nt\r\n" +
-                    "\r\n";*/
-
-        /*var s_offer = "v=0\r\n" +
-        "o=doubango 1983 678901 IN IP4 192.168.0.9\r\n" +
-        "s=Asterisk PBX SVN-trunk-r375803\r\n" +
-        "c=IN IP4 192.168.0.9\r\n" +
+    function test_webrtc_answer() {
+        var s_offer = "v=0\r\n" +
+        "o=root 1899020397 1899020397 IN IP4 87.106.69.240\r\n" +
+        "s=Asterisk PBX SVN-trunk-r376131M\r\n" +
+        "c=IN IP4 87.106.69.240\r\n" +
         "t=0 0\r\n" +
-        "m=audio 61290 RTP/SAVPF 3 8 0 101\r\n" +
-        "c=IN IP4 192.168.0.9\r\n" +
-        "a=ptime:20\r\n" +
-        "a=rtpmap:3 GSM/8000/1\r\n" +
-        "a=rtpmap:8 PCMA/8000/1\r\n" +
-        "a=rtpmap:0 PCMU/8000/1\r\n" +
-        "a=rtpmap:101 telephone-event/8000/1\r\n" +
-        "a=fmtp:101 0-15\r\n" +
-        "a=tcap:1 RTP/SAVPF\r\n" +
-        "a=pcfg:1 t=1\r\n" +
-        "a=sendrecv\r\n" +
-        "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:/uEoftjtAfLDY5Gn3vcdEZUO2+JQHMkAfDJIELx6\r\n" +
-        "a=crypto:2 AES_CM_128_HMAC_SHA1_32 inline:0N8V9ceMSOEHqpYWkO3R3jWGAIoYaFc2jtJ5+5FC\r\n" +
-        "a=ssrc:4056144864 cname:ldjWoB60jbyQlR6e\r\n" +
-        "a=ssrc:4056144864 mslabel:6994f7d1-6ce9-4fbd-acfd-84e5131ca2e2\r\n" +
-        "a=ssrc:4056144864 label:Doubango\r\n" +
-        "a=ice-ufrag:hNwAywjbDLK6uAf\r\n" +
-        "a=ice-pwd:OBn3g1p8GdOptUP2FW3h1\r\n" +
-        "a=mid:audio\r\n" +
-        "a=candidate:1BmI5gMS 1 UDP 2130706431 192.168.0.9 61290 typ host\r\n" +
-        "a=candidate:1BmI5gMS 2 UDP 2130706430 192.168.0.9 61291 typ host\r\n" +
-        "a=candidate:srflx1Bm 1 UDP 1694498815 88.179.39.5 61290 typ srflx\r\n" +
-        "a=candidate:srflx1Bm 2 UDP 1694498814 88.179.39.5 61291 typ srflx\r\n";*/
-
-
-        /*var s_offer = "v=0\r\n" +
-        "o=root 877324514 877324514 IN IP4 87.106.69.240\r\n" +
-        "s=Asterisk PBX SVN-trunk-r375803\r\n" +
-        "t=0 0\r\n" +
-        "m=audio 64627 RTP/SAVPF 103 104 0 8 106 105 13 126\r\n" +
-        "c=IN IP4 88.179.39.5\r\n" +
-        "a=rtcp:64627 IN IP4 88.179.39.5\r\n" +
-        "a=candidate:H576a45f0 1 udp 2113937151 87.106.69.240 16470 typ host generation 0\r\n" +
-        "a=candidate:H576a45f0 2 udp 2113937151 87.106.69.240 16471 typ host generation 0\r\n" +
-        "a=ice-ufrag:Ko2NR4RIEo19ExhL\r\n" +
-        "a=ice-pwd:bbMfgioM4zLmvIxZIGhTRi/B\r\n" +
-        "a=sendrecv\r\n" +
-        "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:R2TjtHaV6rcIFKY+NXCvLxDqMJkcS9MEHm4sg1NF\r\n" +
-        "a=rtpmap:103 ISAC/16000\r\n" +
-        "a=rtpmap:104 ISAC/32000\r\n" +
+        "m=audio 16872 RTP/SAVPF 0 8 101\r\n" +
         "a=rtpmap:0 PCMU/8000\r\n" +
         "a=rtpmap:8 PCMA/8000\r\n" +
-        "a=rtpmap:106 CN/32000\r\n" +
-        "a=rtpmap:105 CN/16000\r\n" +
-        "a=rtpmap:13 CN/8000\r\n" +
-        "a=rtpmap:126 telephone-event/8000\r\n";*/
+        "a=rtpmap:101 telephone-event/8000\r\n" +
+        "a=fmtp:101 0-16\r\n" +
+        "a=silenceSupp:off - - - -\r\n" +
+        "a=ptime:20\r\n" +
+        "a=ice-ufrag:4d41d1d24fe82de138e9871d4905fbbe\r\n" +
+        "a=ice-pwd:71454c1b48845b8b37b6f9875d5d844f\r\n" +
+        "a=candidate:H576a45f0 1 udp 2130706431 87.106.69.240 16872 typ host generation 0 svn 25\r\n" +
+        "a=candidate:S576a45f0 1 udp 1694498815 87.106.69.240 16872 typ srflx generation 0 svn 25\r\n" +
+        "a=candidate:H576a45f0 2 udp 2130706430 87.106.69.240 16873 typ host generation 0 svn 25\r\n" +
+        "a=candidate:S576a45f0 2 udp 1694498814 87.106.69.240 16872 typ srflx generation 0 svn 25\r\n" +
+        "a=sendrecv\r\n" +
+        "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:DPm7A6pyoRY1ctub98B92/j/dqFO4yuSgD+Gbx9m\r\n";
 
-
-                    var s_offer = "v=0\r\n" +
-                    "o=root 1848775725 1848775725 IN IP4 87.106.69.240\r\n" +
-                    "s=Asterisk PBX SVN-trunk-r376131\r\n" +
-                    "c=IN IP4 87.106.69.240\r\n" +
-                    "t=0 0\r\n" +
-                    "m=audio 11812 RTP/SAVPF 0 3 8 101\r\n" +
-                    "a=rtpmap:0 PCMU/8000\r\n" +
-                    "a=rtpmap:3 GSM/8000\r\n" +
-                    "a=rtpmap:8 PCMA/8000\r\n" +
-                    "a=rtpmap:101 telephone-event/8000\r\n" +
-                    "a=fmtp:101 0-16\r\n" +
-                    "a=silenceSupp:off - - - -\r\n" +
-                    "a=ptime:20\r\n" +
-                    "a=ice-ufrag:241f6a5c1829b05e2b49bd844c887486\r\n" +
-                    "a=ice-pwd:41f303f865d625321476529f1e592baa\r\n" +
-                    "a=candidate:H576a45f0 1 udp 2130706431 87.106.69.240 11410 typ host generation 0 svn 20\r\n" +
-                    "a=candidate:H576a45f0 2 udp 2130706430 87.106.69.240 11411 typ host generation 0 svn 20\r\n" +
-                    "a=sendrecv\r\n" +
-                    "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:ETGUc0jtg5DQNF2hfrpiwzQpI785AEsWqUDaDVG5\r\n";
  
         o_pc = new webkitRTCPeerConnection(
                 { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
-                { has_audio: b_audio, has_video: b_video }
+                o_media_constraints
         );
 
         o_pc.onicecandidate = function (o_event) {
@@ -158,15 +94,86 @@
                 function (s_error) {
                     console.error("createAnswer nok: " + s_error);
                 },
-                { has_audio: b_audio, has_video: b_video }, // MediaConstraints
+                o_media_constraints, // MediaConstraints
                 false // createProvisionalAnswer
              );
-    }
+  }
+
+
+
+
+  function test_webrtc_offer() {
+      var s_answer = "v=0\r\n" +
+        "o=root 1899020397 1899020397 IN IP4 87.106.69.240\r\n" +
+        "s=Asterisk PBX SVN-trunk-r376131M\r\n" +
+        "c=IN IP4 87.106.69.240\r\n" +
+        "t=0 0\r\n" +
+        "m=audio 16872 RTP/SAVPF 0 8 101\r\n" +
+        "a=rtpmap:0 PCMU/8000\r\n" +
+        "a=rtpmap:8 PCMA/8000\r\n" +
+        "a=rtpmap:101 telephone-event/8000\r\n" +
+        "a=fmtp:101 0-16\r\n" +
+        "a=silenceSupp:off - - - -\r\n" +
+        "a=ptime:20\r\n" +
+        "a=ice-ufrag:4d41d1d24fe82de138e9871d4905fbbe\r\n" +
+        "a=ice-pwd:71454c1b48845b8b37b6f9875d5d844f\r\n" +
+        "a=candidate:H576a45f0 1 udp 2130706431 87.106.69.240 16872 typ host generation 0 svn 25\r\n" +
+        "a=candidate:S576a45f0 1 udp 1694498815 87.106.69.240 16872 typ srflx generation 0 svn 25\r\n" +
+        "a=candidate:H576a45f0 2 udp 2130706430 87.106.69.240 16873 typ host generation 0 svn 25\r\n" +
+        "a=candidate:S576a45f0 2 udp 1694498814 87.106.69.240 16872 typ srflx generation 0 svn 25\r\n" +
+        "a=sendrecv\r\n" +
+        "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:DPm7A6pyoRY1ctub98B92/j/dqFO4yuSgD+Gbx9m\r\n";
+
+
+      o_pc = new webkitRTCPeerConnection(
+                { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
+                o_media_constraints
+        );
+
+      o_pc.onicecandidate = function (o_event) {
+          console.info("onicecandidate = " + o_pc.iceState);
+          if (o_pc.iceState == "completed" || (o_event && !o_event.candidate)) {
+              console.info("ICE COMPLETED");
+
+              o_pc.setRemoteDescription(
+                    new RTCSessionDescription({ type: "answer", sdp: s_answer }),
+                    function () { // success callback
+                        console.info("setRemoteDescription ok");
+                    },
+                    function (s_error) { // error callback
+                        console.error("setRemoteDescription nok");
+                    }
+              );
+          }
+          else if (o_pc.iceState == "failed") {
+              console.error("Ice state is 'failed'");
+          }
+      }
+      o_pc.onopen = function () {
+          console.info("onopen");
+      }
+
+      o_pc.addStream(o_stream);
+
+      o_pc.createOffer(
+                function (desc) {
+                    o_pc.setLocalDescription(desc);
+                },
+                function (s_error) {
+                    console.error("createAnswer nok: " + s_error);
+                },
+                o_media_constraints
+            );
+  }
+
+
+
+
 </script>
 <!-- body -->
 <body>
     <form action=''>
-    <input type="button" id="btnTest" disabled value="Test" onclick='test_webrtc();' />
+    <input type="button" id="btnTest" disabled value="Test" onclick='test_webrtc_offer();' />
     </form>
 </body>
 </html>
