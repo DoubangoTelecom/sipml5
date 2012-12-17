@@ -6,6 +6,9 @@
 ==Where to get help?==
 For any technical issue, please connect to our developer group: [https://groups.google.com/group/doubango https://groups.google.com/group/doubango].
 
+==How to use sipML5 API in my project==
+The API is a single file and could be downloaded at [http://code.google.com/p/sipml5/wiki/Downloads http://code.google.com/p/sipml5/wiki/Downloads]. To get started, please check the [http://sipml5.org/docgen/index.html?svn=20 programmer's guide] and [http://sipml5.org/docgen/symbols/SIPml.html API].
+
 ==How to get notified for new updates?==
 To get notified, please subscribe to our mailing list at [http://doubango.org/contact.html http://doubango.org/contact.html]
 
@@ -40,7 +43,6 @@ Issues on Ericsson WebRTC implementation: https://groups.google.com/group/ericss
 ==How to reduce the size of the scripts before deploying==
 To compress the scripts (css and javascript) you have to execute:
 {{{
- cd yuicompressor
- ./deploy.sh
+ ./release.sh
 }}}
-the compressed files will be generated inside *deploy* directory.
+the compressed files will be generated inside *release* directory.
