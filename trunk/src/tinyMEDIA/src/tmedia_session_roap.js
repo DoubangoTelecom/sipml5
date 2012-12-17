@@ -51,9 +51,9 @@ tmedia_session_roap.prototype.__start = function () {
 }
 
 tmedia_session_roap.prototype.__pause = function () {
-    if (this.o_local_stream) {
+    //if (this.o_local_stream) {
         
-    }
+    //}
     return 0;
 }
 
@@ -186,8 +186,6 @@ tmedia_session_roap.prototype.__set_ro = function (o_sdp, b_is_offer) {
         tsk_utils_log_error(e);
         return -2;
     }
-
-    return 0;
 }
 
 tmedia_session_roap.prototype.__acked = function () {
@@ -267,16 +265,16 @@ tmedia_session_roap.prototype.__on_signaling_message = function (message) {
             //__o_session_roap.o_sdp_lo.remove_media("video");
             //__o_session_roap.o_sdp_lo.add_media("video", 0, "RTP/AVP");
             
-            if (o_hdr_ma) {
+            //if (o_hdr_ma) {
                 //o_hdr_m.s_proto = "RTP/AVP";
                 //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "rtcp");
                 //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "ssrc");
-            }
-            if (o_hdr_mv) {
+            //}
+            //if (o_hdr_mv) {
                 //o_hdr_m.s_proto = "RTP/AVP";
                 //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "rtcp");
                 //tsdp_header_A.prototype.RemoveAllByField(o_hdr_m.ao_hdr_A, "ssrc");
-            }
+            //}
 
 
             if (__o_session_roap.e_state == tmedia_session_state_e.LOCAL_HOLD) {

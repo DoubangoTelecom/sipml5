@@ -4,9 +4,10 @@
 # folder (./src/headers) jsname(tsip_header_Authorization) jrlname (tsip_parser_header_Authorization)
 ProcessFile()
 {
-	ragel.exe $OPTIONS -o $1/$2.js ./ragel/$3.jrl
+	ragel-js.exe $OPTIONS -o $1/$2.js ./ragel/$3.jrl
 	sed -i 's/const _tsip_machine_parser_/_tsip_machine_parser_/g' $1/$2.js
 	sed -i 's/const tsip_machine_parser_/tsip_machine_parser_/g' $1/$2.js
+	# sed -i -b 's/if (_goto_level <= _test_eof) {$1/$2.js}//g' $1/$2.js
 }
 
 export OPTIONS="-E -L -T0"

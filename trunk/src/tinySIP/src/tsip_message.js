@@ -450,10 +450,10 @@ tsip_message.prototype.get_content = function () {
 
 tsip_message.prototype.get_content_as_string = function () {
     if (this.o_content) {
-        if (this.o_content instanceof String) {
+        /*if (this.o_content instanceof String) {
             this.o_content;
         }
-        else if (this.o_content instanceof Array) {
+        else */if (this.o_content instanceof Array) {
             return tsk_buff_u8b2utf8(this.o_content);
         }
     }
@@ -651,7 +651,8 @@ tsip_message.prototype.GetRequestType = function(s_method) {
     return tsip_request_type_e.NONE;
 }
 
-
-tsip_api_add_js_scripts('head',
-'src/tinySIP/src/parsers/tsip_parser_message.js'
-);
+if(__b_debug_mode){
+    tsip_api_add_js_scripts('head',
+    'src/tinySIP/src/parsers/tsip_parser_message.js'
+    );
+}

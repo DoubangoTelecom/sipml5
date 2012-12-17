@@ -7,6 +7,11 @@ function tsk_string_is_null_or_empty(s_str) {
     return !s_str || s_str == "";
 }
 
+function tsk_string_is_string(o_str) {
+    return (o_str instanceof String || typeof o_str == "string");
+}
+
+
 function tsk_string_index_of(s_str, i_len, s_substr){
     var i_ret = -1;
     if(s_str && s_substr){

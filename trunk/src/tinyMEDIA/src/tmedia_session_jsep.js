@@ -52,15 +52,15 @@ tmedia_session_jsep.prototype.__prepare = function () {
 }
 
 tmedia_session_jsep.prototype.__start = function () {
-    if (this.o_local_stream) {
-    }
+    //if (this.o_local_stream) {
+    //}
     return 0;
 }
 
 tmedia_session_jsep.prototype.__pause = function () {
-    if (this.o_local_stream) {
+    //if (this.o_local_stream) {
 
-    }
+    //}
     return 0;
 }
 

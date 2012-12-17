@@ -190,22 +190,23 @@ tsip_header.prototype.FindByType = function(ao_headers, e_type) {
     return null;
 }
 
+if(__b_debug_mode){
+    tsip_api_add_js_scripts('head',
+        'src/tinySIP/src/headers/tsip_header_Int.js', // 'Content-Length', 'Expires', 'Max-Forwards', 'Min_Expires', 'Min-SE', 'RSeq'
+        'src/tinySIP/src/headers/tsip_header_NameAddr.js', // 'From', 'To', 'Refer-To', 'Referred-By'
+        // 'src/tinySIP/src/headers/tsip_header_NameAddrArray.js', #include_in<tsip_header_NameAddr.js> // 'P-Asserted-Identity', 'P-Associated-URI', 'P-Preferred-Identity', 'Path', 'Record-Route', 'Route', 'Service-Route'
+        'src/tinySIP/src/headers/tsip_header_Str.js', // Call-ID, 'Date', 'Event', 'P-Access-Network-Info', 'P-Charging-Function-Addresses', 'Server', SIP-ETag, SIP-If-Match, User-Agent, Warning, Dummy
+        'src/tinySIP/src/headers/tsip_header_StrArray.js', // 'Allow', 'Allow-Events', 'Privacy', 'Require', 'Supported'
 
-tsip_api_add_js_scripts('head',
-    'src/tinySIP/src/headers/tsip_header_Int.js', // 'Content-Length', 'Expires', 'Max-Forwards', 'Min_Expires', 'Min-SE', 'RSeq'
-    'src/tinySIP/src/headers/tsip_header_NameAddr.js', // 'From', 'To', 'Refer-To', 'Referred-By'
-// 'src/tinySIP/src/headers/tsip_header_NameAddrArray.js', #include_in<tsip_header_NameAddr.js> // 'P-Asserted-Identity', 'P-Associated-URI', 'P-Preferred-Identity', 'Path', 'Record-Route', 'Route', 'Service-Route'
-    'src/tinySIP/src/headers/tsip_header_Str.js', // Call-ID, 'Date', 'Event', 'P-Access-Network-Info', 'P-Charging-Function-Addresses', 'Server', SIP-ETag, SIP-If-Match, User-Agent, Warning, Dummy
-    'src/tinySIP/src/headers/tsip_header_StrArray.js', // 'Allow', 'Allow-Events', 'Privacy', 'Require', 'Supported'
-
-    'src/tinySIP/src/headers/tsip_header_Authorization.js',
-    'src/tinySIP/src/headers/tsip_header_Contact.js',
-    'src/tinySIP/src/headers/tsip_header_Content_Type.js',
-    'src/tinySIP/src/headers/tsip_header_CSeq.js',
-    'src/tinySIP/src/headers/tsip_header_RAck.js',
-    'src/tinySIP/src/headers/tsip_header_Refer_Sub.js',
-    'src/tinySIP/src/headers/tsip_header_Session_Expires.js',
-    'src/tinySIP/src/headers/tsip_header_Subscription_State.js',
-    'src/tinySIP/src/headers/tsip_header_Via.js',
-    'src/tinySIP/src/headers/tsip_header_WWW_Authenticate.js'
-);
+        'src/tinySIP/src/headers/tsip_header_Authorization.js',
+        'src/tinySIP/src/headers/tsip_header_Contact.js',
+        'src/tinySIP/src/headers/tsip_header_Content_Type.js',
+        'src/tinySIP/src/headers/tsip_header_CSeq.js',
+        'src/tinySIP/src/headers/tsip_header_RAck.js',
+        'src/tinySIP/src/headers/tsip_header_Refer_Sub.js',
+        'src/tinySIP/src/headers/tsip_header_Session_Expires.js',
+        'src/tinySIP/src/headers/tsip_header_Subscription_State.js',
+        'src/tinySIP/src/headers/tsip_header_Via.js',
+        'src/tinySIP/src/headers/tsip_header_WWW_Authenticate.js'
+    );
+}

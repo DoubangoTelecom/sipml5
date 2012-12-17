@@ -9,8 +9,8 @@
     var o_pc;
     var o_offer, o_answer;
     var b_remote_sdp = false;
-    var o_webkitGetUserMediaHasType = { audio: true, video: false };
-    var o_MediaContraintsHasType = { audio: true, video: true };
+    var o_webkitGetUserMediaHasType = { audio: true, video: true };
+    var o_MediaContraintsHasType = { audio: true, video: false };
     var o_media_constraints =
     { 'mandatory':
         {
@@ -63,7 +63,7 @@
         o_pc.onicecandidate = function (o_event) {
             console.info("onicecandidate = " + o_pc.iceState);
             if (o_pc.iceState == "completed" || (o_event && !o_event.candidate)) {
-                console.info("ICE COMPLETED");
+                console.info("ICE COMPLETED: " + o_pc.localDescription.sdp);
             }
             else if (o_pc.iceState == "failed") {
                 console.error("Ice state is 'failed'");
@@ -133,7 +133,7 @@
       o_pc.onicecandidate = function (o_event) {
           console.info("onicecandidate = " + o_pc.iceState);
           if (o_pc.iceState == "completed" || (o_event && !o_event.candidate)) {
-              console.info("ICE COMPLETED");
+              console.info("ICE COMPLETED: " + o_pc.localDescription.sdp);
 
               o_pc.setRemoteDescription(
                     new RTCSessionDescription({ type: "answer", sdp: s_answer }),

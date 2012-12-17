@@ -617,9 +617,10 @@ tmedia_session.prototype.Create = function (e_type, o_mgr) {
     }
 }
 
-
-tmedia_api_add_js_scripts('head',
-    'src/tinyMEDIA/src/tmedia_session_jsep.js',
-    'src/tinyMEDIA/src/tmedia_session_roap.js',
-    'src/tinyMEDIA/src/tmedia_session_ghost.js'
-);
+if(__b_debug_mode){
+    tmedia_api_add_js_scripts('head',
+        'src/tinyMEDIA/src/tmedia_session_jsep.js',
+        'src/tinyMEDIA/src/tmedia_session_roap.js',
+        'src/tinyMEDIA/src/tmedia_session_ghost.js'
+    );
+}

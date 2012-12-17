@@ -18,7 +18,7 @@ var tsip_transport_event_type_e =
 {
     STARTED: 0,
     STOPPED: 1,
-    ERROR: 2,
+    ERROR: 2
 };
 
 function tsip_transport(e_type, o_stack, s_host, i_port, s_description, fn_callback) {
@@ -204,7 +204,7 @@ tsip_transport.prototype.send = function (s_branch, o_message, s_dest_ip, i_dest
 
     tsk_utils_log_info("SEND: " + o_data);
 
-    if (o_data.length > 1300) {
+    //if (o_data.length > 1300) {
         /*	RFC 3261 - 18.1.1 Sending Requests (FIXME)
         If a request is within 200 bytes of the path MTU, or if it is larger
         than 1300 bytes and the path MTU is unknown, the request MUST be sent
@@ -217,7 +217,7 @@ tsip_transport.prototype.send = function (s_branch, o_message, s_dest_ip, i_dest
         datagram packet size.  For UDP, this size is 65,535 bytes, including
         IP and UDP headers.
         */
-    }
+    //}
 
     return this.__send(o_data, o_data.length);
 }
@@ -267,7 +267,7 @@ tsip_transport.prototype.message_addvia = function(s_branch, o_message){
 	}
 
 	/* multicast case */
-	if(false){
+	//if(false){
 		/*	RFC 3261 - 18.1.1 Sending Requests (FIXME)
 			A client that sends a request to a multicast address MUST add the
 			"maddr" parameter to its Via header field value containing the
@@ -276,7 +276,7 @@ tsip_transport.prototype.message_addvia = function(s_branch, o_message){
 			in this specification, and will be a subject of future
 			standardization when the need arises.
 		*/
-	}
+	//}
 
 	return 0;
 }
@@ -470,9 +470,9 @@ function __tsip_transport_webrtc4all_start(o_self) {
         }
 
         // IMPORTANT: StartDebug is not implemented in all functions
-        if(o_self.o_transport.StartDebug){
+        //if(o_self.o_transport.StartDebug){
             //o_self.o_transport.StartDebug(); // To debug ATL/COM objects (C/C++)
-        }
+        //}
         o_self.o_transport.Start(b_isInternetExplorer ? WebRtc4all_GetLooper() : 0);
         if(o_self.o_transport.defaultDestAddr && o_self.o_transport.defaultDestPort){ // use connection info from DNS results
             o_self.s_host = o_self.o_transport.defaultDestAddr;

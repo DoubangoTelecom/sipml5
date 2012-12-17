@@ -557,7 +557,9 @@ function tsip_header_To(o_uri, s_tag){ tsip_header_NameAddr.call(this, tsip_head
 function tsip_header_Refer_To(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Refer_To, o_uri); }
 function tsip_header_Referred_By(o_uri){ tsip_header_NameAddr.call(this, tsip_header_type_e.Referred_By, o_uri); }
 
-tsip_api_add_js_scripts('head',
-    'src/tinySIP/src/headers/tsip_header_NameAddrArray.js' // 'P-Asserted-Identity', 'P-Associated-URI', 'Path', 'Record-Route', 'Route', 'Service-Route'
-);
+if(__b_debug_mode){
+	tsip_api_add_js_scripts('head',
+		'src/tinySIP/src/headers/tsip_header_NameAddrArray.js' // 'P-Asserted-Identity', 'P-Associated-URI', 'Path', 'Record-Route', 'Route', 'Service-Route'
+	);
+}
 

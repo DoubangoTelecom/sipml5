@@ -192,6 +192,8 @@ tsdp_message.prototype.toString = function (s_endline) {
     return s_str;
 }
 
-tsdp_api_add_js_scripts('head',
-'src/tinySDP/src/tsdp_parser_message.js'
-);
+if(__b_debug_mode){
+    tsdp_api_add_js_scripts('head',
+    'src/tinySDP/src/tsdp_parser_message.js'
+    );
+}

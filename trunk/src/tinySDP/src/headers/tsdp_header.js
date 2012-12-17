@@ -48,11 +48,13 @@ function tsdp_header_compare_by_rank(o_hdr_1, o_hdr_2) {
 }
 
 
-tsdp_api_add_js_scripts('head',
-    'src/tinySDP/src/headers/tsdp_header_A.js',
-    'src/tinySDP/src/headers/tsdp_header_C.js',
-    'src/tinySDP/src/headers/tsdp_header_M.js',
-    'src/tinySDP/src/headers/tsdp_header_O.js',
-    'src/tinySDP/src/headers/tsdp_header_Str.js', // B, E, I, K, P, R, S, T, U, Z
-    'src/tinySDP/src/headers/tsdp_header_V.js'
-);
+if(__b_debug_mode){
+    tsdp_api_add_js_scripts('head',
+        'src/tinySDP/src/headers/tsdp_header_A.js',
+        'src/tinySDP/src/headers/tsdp_header_C.js',
+        'src/tinySDP/src/headers/tsdp_header_M.js',
+        'src/tinySDP/src/headers/tsdp_header_O.js',
+        'src/tinySDP/src/headers/tsdp_header_Str.js', // B, E, I, K, P, R, S, T, U, Z
+        'src/tinySDP/src/headers/tsdp_header_V.js'
+    );
+}
