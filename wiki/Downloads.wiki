@@ -1,0 +1,4 @@
+#summary Downloads
+
+|| *Version* || *API documentation* || *Quick start* || *Status* || *Download Link* ||
+|| *Latest* (1.0.0) || [http://sipml5.org/deploy/docgen/symbols/SIPml.html?v=1.0.0 1.0.0] || [http://sipml5.org/deploy/docgen/index.html 1.0.0]|| stable ||[http://sipml5.googlecode.com/svn/trunk/release/SIPml-api.js SIPml-api.js] ||
