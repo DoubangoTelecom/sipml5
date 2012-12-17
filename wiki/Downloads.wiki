@@ -1,4 +1,5 @@
 #summary Downloads
+#labels Featured,Phase-Requirements,Phase-Deploy
 
 || *Version* || *API documentation* || *Quick start* || *Status* || *Download Link* ||
 || *Latest* (1.0.0) || [http://sipml5.org/docgen/symbols/SIPml.html?v=1.0.0 1.0.0] || [http://sipml5.org/docgen/index.html 1.0.0]|| stable ||[http://sipml5.googlecode.com/svn/trunk/release/SIPml-api.js SIPml-api.js] ||
