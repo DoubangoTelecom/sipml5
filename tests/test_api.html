@@ -1,0 +1,99 @@
+<!--
+* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* License: GPLv3
+* This file is part of Open Source sipML5 solution <http://www.sipml5.org>
+-->
+<html>
+<!-- head -->
+<head>
+    <title>Test API</title>
+    <script src="../release/SIPml-api.js" type="text/javascript"> </script>
+</head>
+
+<script type="text/javascript">
+
+    var o_registration, o_call, o_stack;
+
+    window.onload = function () {
+
+        var makeCall = function(e){
+                        var stack =  new SIPml.Stack({realm: 'example.org', impi: 'bob', impu: 'sip:bob@example.org', password: 'mysecret',
+                            events_listener: { events: 'started', listener: function(e){
+                                        var callSession = stack.newSession('call-audiovideo', {
+                                                video_local: document.getElementById('video-local'),
+                                                video_remote: document.getElementById('video-remote')
+                                            });
+                                        callSession.call('alice');
+                                    } 
+                                }
+                        });
+                        stack.start();
+                    };
+
+        var sendMessage = function(e){
+                        var stack =  new SIPml.Stack({realm: 'sip2sip.info', impi: '002', impu: 'sip:002@sip2sip.info', password: 'mysecret',
+                            websocket_proxy_url: 'ws://192.168.11:10060',
+                            outbound_proxy_url: 'udp://192.168.0.9:5060',
+                            events_listener: { events: 'started', listener: function(e){
+                                        var messageSession = stack.newSession('message', { });
+                                        messageSession.send('0039', 'Pêche à la moule', 'text/plain;charset=utf-8');
+                                    } 
+                                }
+                        });
+                        stack.start();
+                    };
+
+        var receiveMessage = function(e){
+                        var stack =  new SIPml.Stack({realm: 'sip2sip.info', impi: '002', impu: 'sip:002@sip2sip.info', password: 'mysecret',
+                            websocket_proxy_url: 'ws://192.168.11:10060',
+                            outbound_proxy_url: 'udp://192.168.0.9:5060',
+                            events_listener: { events: '*', listener: function(e){
+                                        if(e.type == 'started'){
+                                            var registerSession = stack.newSession('register', {});
+                                            registerSession.register();
+                                        }
+                                        else if(e.type == 'i_new_message'){
+                                            e.newSession.accept();
+                                            console.info('SMS-content = ' + e.getContentString() + ' and SMS-content-type = ' + e.getContentType());
+                                        }
+                                    } 
+                                }
+                        });
+                        stack.start();
+                    };
+
+
+         SIPml.init(receiveMessage);
+    }
+
+    function call() {
+        o_call = o_stack.newSession('call-audiovideo', {
+            video_local: document.getElementById('video_local'),
+            video_remote: document.getElementById('video_remote'),
+            sip_caps: [
+                                    { name: '+g.oma.sip-im' },
+                                    { name: '+sip.ice' },
+                                    { name: 'language', value: '\"en,fr\"' }
+                            ],
+            sip_headers: [
+                                    { name: 'What', value: 'Audio/Video call', session: false },
+                                    { name: 'Organization-2', value: 'Doubango Telecom', session: false }
+                            ]
+        });
+
+        o_call.addEventListener(['connecting', 'connected', 'terminating', 'terminated'], function (e) {
+            console.info('call event = ' + e.type);
+        });
+
+        o_call.call('+33600000000');
+    }
+
+</script>
+
+<!-- body -->
+<body>
+    <form action=''>
+    <input type="button" value="call" id="btnCall" onclick='call();' disabled />
+    </form>
+</body>
+</html>

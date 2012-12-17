@@ -831,9 +831,9 @@ tsip_dialog.prototype.update_with_response = function (o_response) {
                 this.s_tag_remote = s_tag
             }
             // PRACK and BYE will have same CSeq value ==> Let CSeq value to be incremented by "tsip_dialog_request_new()"
-            if (false) {
-                this.i_cseq_value = o_response.o_hdr_CSeq ? o_response.o_hdr_CSeq.i_seq : this.i_cseq_value;
-            }
+            //if (false) {
+            //    this.i_cseq_value = o_response.o_hdr_CSeq ? o_response.o_hdr_CSeq.i_seq : this.i_cseq_value;
+            //}
 
         }
 
@@ -1091,10 +1091,12 @@ function tsip_dialog_compare(o_d1, o_d2) {
     return -1;
 }
 
-tsip_api_add_js_scripts('head',
-    'src/tinySIP/src/dialogs/tsip_dialog_generic.js',
-    'src/tinySIP/src/dialogs/tsip_dialog_invite.js',
-    'src/tinySIP/src/dialogs/tsip_dialog_publish.js',
-    'src/tinySIP/src/dialogs/tsip_dialog_register.js',
-    'src/tinySIP/src/dialogs/tsip_dialog_subscribe.js'
-);
+if(__b_debug_mode){
+    tsip_api_add_js_scripts('head',
+        'src/tinySIP/src/dialogs/tsip_dialog_generic.js',
+        'src/tinySIP/src/dialogs/tsip_dialog_invite.js',
+        'src/tinySIP/src/dialogs/tsip_dialog_publish.js',
+        'src/tinySIP/src/dialogs/tsip_dialog_register.js',
+        'src/tinySIP/src/dialogs/tsip_dialog_subscribe.js'
+    );
+}

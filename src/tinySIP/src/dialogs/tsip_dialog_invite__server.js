@@ -98,7 +98,7 @@ function __tsip_dialog_invite_cond_is_bad_content(o_dialog, o_message) {
         return true;
     }
     // generate local offer and check it's validity
-    if (false) { // FIXME: get_lo() is asynchronous
+    /*if (false) { // FIXME: get_lo() is asynchronous
         if (o_dialog.o_msession_mgr && (o_sdp_lo = o_dialog.o_msession_mgr.get_lo())) {
             // check that we have at least one valid session (Only if no bodiless initial INVITE)
             if (!b_bodiless_INVITE && !o_dialog.o_msession_mgr.has_active_session()) {
@@ -110,7 +110,7 @@ function __tsip_dialog_invite_cond_is_bad_content(o_dialog, o_message) {
             i_ret = o_dialog.send_error(o_message, 488, "Not Acceptable", "SIP; cause=488; text=\"Bad content\"");
             return true;
         }
-    }
+    }*/
 
     return false;
 }

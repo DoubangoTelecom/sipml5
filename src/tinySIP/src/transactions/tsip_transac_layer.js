@@ -21,7 +21,7 @@ tsip_transac_layer.prototype.transac_new = function (b_is_ct, o_message, o_dialo
 
     var o_transac = null;
 
-    while (this.b_locked);
+    while (this.b_locked){}
 
     this.b_locked = true;
 
@@ -74,7 +74,7 @@ tsip_transac_layer.prototype.transac_new = function (b_is_ct, o_message, o_dialo
 tsip_transac_layer.prototype.indexof = function (o_transac) {
     var i_index = -1;
     if (o_transac) {
-        while (this.b_locked);
+        while (this.b_locked){}
 
         this.b_locked = true;
         for(var i = 0; i < this.ao_transacs.length; ++i){
@@ -90,7 +90,7 @@ tsip_transac_layer.prototype.indexof = function (o_transac) {
 
 tsip_transac_layer.prototype.remove = function (o_transac) {
     if (o_transac) {
-        while (this.b_locked);
+        while (this.b_locked){}
 
         this.b_locked = true;
         for (var i = 0; i < this.ao_transacs.length; ++i) {
@@ -111,7 +111,7 @@ tsip_transac_layer.prototype.cancel_by_dialog = function (o_dialog) {
 
     var o_transac = null;
 
-    while (this.b_locked);
+    while (this.b_locked){}
 
     this.b_locked = true;
 
@@ -119,7 +119,7 @@ tsip_transac_layer.prototype.cancel_by_dialog = function (o_dialog) {
         o_transac = this.ao_transacs[i];
         if (o_dialog.compare(o_transac.get_dialog()) == 0) {
             // async call to avoid dealoc
-            setTimeout(function () { o_transac.fsm_act((tsip_action_type_e.CANCEL, null)); }, 1);
+            setTimeout(function () { o_transac.fsm_act(tsip_action_type_e.CANCEL, null); }, 1);
         }
     }
 
@@ -164,7 +164,7 @@ tsip_transac_layer.prototype.find_client = function (o_response) {
 		return null;
 	}
 
-    while (this.b_locked);
+    while (this.b_locked){}
 
 	this.b_locked = true;
 
@@ -217,7 +217,7 @@ tsip_transac_layer.prototype.find_server = function(o_message)
 		return null;
 	}
 
-	while (this.b_locked);
+	while (this.b_locked){}
 
 	this.b_locked = true;
 

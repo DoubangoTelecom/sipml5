@@ -35,7 +35,7 @@ tsip_transport_layer.prototype.get_layer_dialog = function () {
 }
 
 tsip_transport_layer.prototype.stop = function () {
-    while (this.b_locked);
+    while (this.b_locked){}
 
     this.b_locked = true;
 
@@ -60,7 +60,7 @@ tsip_transport_layer.prototype.send = function (s_branch, o_message) {
 
 tsip_transport_layer.prototype.transport_new = function (e_type, s_host, i_port, s_description, fn_callback) {
     var o_transport = null;
-    while (this.b_locked);
+    while (this.b_locked){}
 
     this.b_locked = true;
     o_transport = new tsip_transport(e_type, this.o_stack, s_host, i_port, s_description, fn_callback);
@@ -73,7 +73,7 @@ tsip_transport_layer.prototype.transport_new = function (e_type, s_host, i_port,
 
 tsip_transport_layer.prototype.transport_remove = function (o_transport) {
     if (o_transport) {
-        while (this.b_locked);
+        while (this.b_locked){}
 
         this.b_locked = true;
         for (var i = 0; i < this.ao_transports.length; ++i) {
@@ -197,7 +197,7 @@ tsip_transport_layer.prototype.transport_find = function (o_message) {
 		}
 		
         /* Find the transport */
-        while(this.b_locked);
+        while(this.b_locked){}
         this.b_locked = true;
 		for(i = 0; i < this.ao_transports.length; ++i){
 			 if(this.ao_transports[i].have_socket(o_message.o_socket)){

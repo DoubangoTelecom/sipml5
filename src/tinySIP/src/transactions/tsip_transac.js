@@ -145,10 +145,12 @@ function tsip_transac_compare(o_transac1, o_transac2){
 	return -1;
 }
 
-tsip_api_add_js_scripts('head',
- 'src/tinySIP/src/transactions/tsip_transac_ict.js',
- 'src/tinySIP/src/transactions/tsip_transac_ist.js',
- 'src/tinySIP/src/transactions/tsip_transac_layer.js',
- 'src/tinySIP/src/transactions/tsip_transac_nict.js',
- 'src/tinySIP/src/transactions/tsip_transac_nist.js'
-);
+if(__b_debug_mode){
+    tsip_api_add_js_scripts('head',
+     'src/tinySIP/src/transactions/tsip_transac_ict.js',
+     'src/tinySIP/src/transactions/tsip_transac_ist.js',
+     'src/tinySIP/src/transactions/tsip_transac_layer.js',
+     'src/tinySIP/src/transactions/tsip_transac_nict.js',
+     'src/tinySIP/src/transactions/tsip_transac_nist.js'
+    );
+}

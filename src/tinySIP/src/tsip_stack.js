@@ -751,6 +751,7 @@ tsip_stack.prototype.signal = function (i_code, s_phrase) {
     if (this.on_event_stack) {
         var on_event = this.on_event_stack;
         var o_event = new tsip_event(null, i_code, s_phrase, null, tsip_event_type_e.STACK);
+        o_event.o_stack = this;
         setTimeout(function () { on_event(o_event) }, 1);
     }
     return 0;

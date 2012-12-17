@@ -4,9 +4,10 @@
 # folder (./src/headers) jsname(tsdp_parser_message) jrlname (tsdp_parser_message)
 ProcessFile()
 {
-	ragel.exe $OPTIONS -o $1/$2.js ./ragel/$3.jrl
+	ragel-js $OPTIONS -o $1/$2.js ./ragel/$3.jrl
 	sed -i 's/const _tsdp_machine_/_tsdp_machine_/g' $1/$2.js
 	sed -i 's/const tsdp_machine_/tsdp_machine_/g' $1/$2.js
+	# sed -i -b 's/if (_goto_level <= _test_eof) {$1/$2.js}//g' $1/$2.js
 }
 
 export OPTIONS="-E -L -T0"

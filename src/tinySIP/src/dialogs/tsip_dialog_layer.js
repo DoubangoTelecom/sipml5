@@ -36,7 +36,7 @@ tsip_dialog_layer.prototype.find_by_ss = function (o_session) {
 tsip_dialog_layer.prototype.find_by_ssid = function (i_sid) {   
     var o_dialog = null;
 
-    while (this.b_locked);
+    while (this.b_locked){}
 
     this.b_locked = true;
     for (var i = 0; i < this.ao_dialogs.length; ++i) {
@@ -55,7 +55,7 @@ tsip_dialog_layer.prototype.find = function(s_callid, s_to_tag, s_from_tag, e_re
 	var o_dialog;
 	var b_cid_matched = false;
 	
-	while (this.b_locked);
+	while (this.b_locked){}
     this.b_locked = true;
 
 	for(var i = 0; i< this.ao_dialogs.length; ++i){
@@ -97,7 +97,7 @@ tsip_dialog_layer.prototype.find = function(s_callid, s_to_tag, s_from_tag, e_re
 tsip_dialog_layer.prototype.dialog_new = function (e_dialog_type, o_session) {
     var o_dialog = null;
 
-    while (this.b_locked);
+    while (this.b_locked){}
 
     this.b_locked = true;
 
@@ -137,7 +137,7 @@ tsip_dialog_layer.prototype.dialog_new = function (e_dialog_type, o_session) {
 
 tsip_dialog_layer.prototype.dialog_remove = function (o_dialog) {
     if (o_dialog) {
-        while (this.b_locked);
+        while (this.b_locked){}
 
         this.b_locked = true;
         for (var i = 0; i < this.ao_dialogs.length; ++i) {

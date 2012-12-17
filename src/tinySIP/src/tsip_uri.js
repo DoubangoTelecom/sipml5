@@ -239,7 +239,8 @@ function tsip_uri_compare(o_uri_1, o_uri_2){
 	}
 }
 
-
-tsip_api_add_js_scripts('head',
-'src/tinySIP/src/parsers/tsip_parser_uri.js'
-);
+if(__b_debug_mode){
+    tsip_api_add_js_scripts('head',
+    'src/tinySIP/src/parsers/tsip_parser_uri.js'
+    );
+}

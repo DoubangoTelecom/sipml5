@@ -399,7 +399,8 @@ function __tsip_dialog_generic_onterm(o_self) {
 }
 
 
-
-tsip_api_add_js_scripts('head',
-'src/tinySIP/src/dialogs/tsip_dialog_generic__message.js'
-);
+if(__b_debug_mode){
+    tsip_api_add_js_scripts('head',
+    'src/tinySIP/src/dialogs/tsip_dialog_generic__message.js'
+    );
+}

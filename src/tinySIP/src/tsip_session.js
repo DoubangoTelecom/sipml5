@@ -293,13 +293,15 @@ tsip_session.prototype.SetAny = function (e_type) {
 
 
 
-tsip_api_add_js_scripts('head',
-'src/tinySIP/src/api/tsip_api_common.js',
-'src/tinySIP/src/api/tsip_api_info.js',
-'src/tinySIP/src/api/tsip_api_invite.js',
-'src/tinySIP/src/api/tsip_api_message.js',
-'src/tinySIP/src/api/tsip_api_options.js',
-'src/tinySIP/src/api/tsip_api_publish.js',
-'src/tinySIP/src/api/tsip_api_register.js',
-'src/tinySIP/src/api/tsip_api_subscribe.js'
-);
+if(__b_debug_mode){
+    tsip_api_add_js_scripts('head',
+    'src/tinySIP/src/api/tsip_api_common.js',
+    'src/tinySIP/src/api/tsip_api_info.js',
+    'src/tinySIP/src/api/tsip_api_invite.js',
+    'src/tinySIP/src/api/tsip_api_message.js',
+    'src/tinySIP/src/api/tsip_api_options.js',
+    'src/tinySIP/src/api/tsip_api_publish.js',
+    'src/tinySIP/src/api/tsip_api_register.js',
+    'src/tinySIP/src/api/tsip_api_subscribe.js'
+    );
+}

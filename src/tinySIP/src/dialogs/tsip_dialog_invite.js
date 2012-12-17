@@ -236,7 +236,7 @@ function tsip_dialog_invite(o_session, s_call_id) {
         // Any -> (local sdp request timeout) -> Terminated
         tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.TIMER_LO_SDP_REQUEST, tsip_dialog_invite_states_e.TERMINATED, x9997_Any_2_Any_X_LoSdpRequestTimeout, "x9997_Any_2_Any_X_LoSdpRequestTimeout"),
         // Any -> (transport error) -> Terminated
-        tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.TRANSPORT_ERROR, tsip_dialog_invite_states_e.TERMINATED, x9998_Any_2_Any_X_transportError, "x9998_Any_2_Any_X_transportError"),
+        tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.TRANSPORT_ERROR, tsip_dialog_invite_states_e.TERMINATED, x9998_Any_2_Terminated_X_transportError, "x9998_Any_2_Terminated_X_transportError"),
         // Any -> (error) -> Terminated
         tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.ERROR, tsip_dialog_invite_states_e.TERMINATED, x9999_Any_2_Any_X_Error, "x9999_Any_2_Any_X_Error")
     );
@@ -898,7 +898,7 @@ function __tsip_dialog_invite_event_callback(o_self, e_type, o_message){
 						else if (o_message.is_3456()) { // 300-699
 						    i_ret = o_self.fsm_act(tsip_dialog_invite_actions_e.I_300_to_699, o_message, null);
 					    }
-					    else; // Ignore
+					    //else; // Ignore
 				    }
 				    else{ /* Request */
 				        if (o_message.is_invite()) { // INVITE
@@ -1315,8 +1315,9 @@ function x9997_Any_2_Any_X_LoSdpRequestTimeout(ao_args) {
     return 0;
 }
 
-function x9998_Any_2_Any_X_transportError(ao_args) {
-    tsk_utils_log_error("Not implemented");
+function x9998_Any_2_Terminated_X_transportError(ao_args) {
+    var o_dialog = ao_args[0];
+    o_dialog.set_last_error(tsip_event_code_e.DIALOG_TRANSPORT_ERROR, "Transport error");
     return 0;
 }
 
@@ -1339,26 +1340,28 @@ function __tsip_dialog_invite_onterm(o_self) {
     o_self.timer_cancel('Shutdown');
     o_self.timer_cancel('LoSdpRequest');
 
-    o_self.signal(tsip_event_code_e.DIALOG_TERMINATED,
-            o_self.last_error.s_phrase ? o_self.last_error.s_phrase : "Call terminated",
-            o_self.last_error.o_message);
-
     // stops session if not already done
     // do not check if manager is started because peerconnection state must be closed in all cases
     if (o_self.o_msession_mgr) {
         i_ret = o_self.o_msession_mgr.stop();
     }
+    
+    // signal to the user must be done after the media session is stopped to be sure that all events (e.g. media_removed) will be notified
+    o_self.signal(tsip_event_code_e.DIALOG_TERMINATED,
+            o_self.last_error.s_phrase ? o_self.last_error.s_phrase : "Call terminated",
+            o_self.last_error.o_message);
 
     // deinit
     return o_self.deinit();
 }
 
 
-
-tsip_api_add_js_scripts('head',
-'src/tinySIP/src/dialogs/tsip_dialog_invite__client.js',
-'src/tinySIP/src/dialogs/tsip_dialog_invite__ect.js',
-'src/tinySIP/src/dialogs/tsip_dialog_invite__hold.js',
-'src/tinySIP/src/dialogs/tsip_dialog_invite__server.js',
-'src/tinySIP/src/dialogs/tsip_dialog_invite__timers.js'
-);
+if(__b_debug_mode){
+    tsip_api_add_js_scripts('head',
+    'src/tinySIP/src/dialogs/tsip_dialog_invite__client.js',
+    'src/tinySIP/src/dialogs/tsip_dialog_invite__ect.js',
+    'src/tinySIP/src/dialogs/tsip_dialog_invite__hold.js',
+    'src/tinySIP/src/dialogs/tsip_dialog_invite__server.js',
+    'src/tinySIP/src/dialogs/tsip_dialog_invite__timers.js'
+    );
+}
