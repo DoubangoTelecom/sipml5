@@ -170,7 +170,7 @@ tsip_header.prototype.IndexOfByName = function(ao_headers, s_name) {
     if (ao_headers && s_name) {
         var s_name_i = s_name.toLowerCase();
         for (var i = 0; i < ao_headers.length; ++i) {
-            var s_name_curr = tsip_header_get_name(ao_headers[i]);
+            var s_name_curr = ao_headers[i].get_name();
             if (s_name_curr && s_name_curr.toLowerCase() == s_name_i) {
                 return i;
             }
