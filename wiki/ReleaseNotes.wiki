@@ -7,7 +7,7 @@
  * SVN: 148
  * Date: December 20, 2012
  * Adds support for Presence publication and subscription
- * Fix issue 56, 57 and 59
+ * Fix issue 56, issue 57 and issue 59
 
 ==1.0.0==
  * SVN: 144
