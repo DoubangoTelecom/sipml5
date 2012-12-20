@@ -145,7 +145,7 @@ function tsip_transac_compare(o_transac1, o_transac2){
 	return -1;
 }
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsip_api_add_js_scripts('head',
      'src/tinySIP/src/transactions/tsip_transac_ict.js',
      'src/tinySIP/src/transactions/tsip_transac_ist.js',

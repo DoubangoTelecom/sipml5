@@ -140,6 +140,20 @@ tsip_event.prototype.signal = function () {
                 }
                 break;
             }
+        case tsip_event_type_e.PUBLISH:
+            {
+                if (This.o_session.o_stack.on_event_publish) {
+                    setTimeout(function () { This.o_session.o_stack.on_event_publish(This) }, 1);
+                }
+                break;
+            }
+        case tsip_event_type_e.SUBSCRIBE:
+            {
+                if (This.o_session.o_stack.on_event_subscribe) {
+                    setTimeout(function () { This.o_session.o_stack.on_event_subscribe(This) }, 1);
+                }
+                break;
+            }
     }
 
 

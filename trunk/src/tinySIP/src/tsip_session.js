@@ -293,7 +293,7 @@ tsip_session.prototype.SetAny = function (e_type) {
 
 
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsip_api_add_js_scripts('head',
     'src/tinySIP/src/api/tsip_api_common.js',
     'src/tinySIP/src/api/tsip_api_info.js',

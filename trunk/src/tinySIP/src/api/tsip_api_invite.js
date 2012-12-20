@@ -147,9 +147,9 @@ tsip_session_invite.prototype.get_url_video_remote = function () {
 */
 tsip_session_invite.prototype.__set_stream_video_local = function (o_stream) {
     if (this.o_url_video_local) {
-        window.webkitURL.revokeObjectURL(this.o_url_video_local);
+        window.nativeURL.revokeObjectURL(this.o_url_video_local);
     }
-    this.o_url_video_local = o_stream ? window.webkitURL.createObjectURL(o_stream) : null;
+    this.o_url_video_local = o_stream ? window.nativeURL.createObjectURL(o_stream) : null;
 }
 
 /*
@@ -157,9 +157,9 @@ Internal function
 */
 tsip_session_invite.prototype.__set_stream_video_remote = function (o_stream) {
     if (this.o_url_video_remote) {
-        window.webkitURL.revokeObjectURL(this.o_url_video_remote);
+        window.nativeURL.revokeObjectURL(this.o_url_video_remote);
     }
-    this.o_url_video_remote = o_stream ? window.webkitURL.createObjectURL(o_stream) : null;
+    this.o_url_video_remote = o_stream ? window.nativeURL.createObjectURL(o_stream) : null;
 }
 
 /**

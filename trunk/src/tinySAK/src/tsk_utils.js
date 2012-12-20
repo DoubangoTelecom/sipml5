@@ -54,6 +54,57 @@ function tsk_utils_have_stream() {
     return false;
 }
 
+var __s_navigator_friendly_name = undefined;
+function tsk_utils_get_navigator_friendly_name(){
+    if(!__s_navigator_friendly_name){
+        __s_navigator_friendly_name = 'unknown';
+        if (navigator.userAgent || navigator.appName) {
+            var ao_friendly_names = [
+                {s_id: 'chrome', s_name: 'chrome'},
+                {s_id: 'firefox', s_name: 'firefox'},
+                {s_id: 'safari', s_name: 'safari'},
+                {s_id: 'opera', s_name: 'opera'},
+                {s_id: 'microsoft internet explorer', s_name: 'ie'},
+                {s_id: 'netscape', s_name: 'netscape'}
+            ];
+            var s_userAgent = navigator.userAgent ? navigator.userAgent.toLowerCase() : 'null';
+            var s_appName = navigator.appName ? navigator.appName.toLowerCase() : 'null';
+            for (var i_index = 0; i_index < ao_friendly_names.length; ++i_index) {
+                if (s_userAgent.indexOf(ao_friendly_names[i_index].s_id) != -1 || s_appName.indexOf(ao_friendly_names[i_index].s_id) != -1) {
+                    __s_navigator_friendly_name = ao_friendly_names[i_index].s_name;
+                    break;
+                }
+            }
+        }
+    }
+    return __s_navigator_friendly_name;
+}
+
+var __s_system_friendly_name = undefined;
+function tsk_utils_get_system_friendly_name(){
+    if(!__s_system_friendly_name){
+        __s_system_friendly_name = 'unknown';
+        if (navigator.appVersion) {
+            var ao_friendly_names = [
+                {s_id: 'mac', s_name: 'mac'},
+                {s_id: 'powerpc', s_name: 'powerpc'},
+                {s_id: 'win', s_name: 'windows'},
+                {s_id: 'sunos', s_name: 'sunos'},
+                {s_id: 'linux', s_name: 'linux'}
+            ];
+            var s_appVersion = navigator.appVersion.toLowerCase();
+            for (var i_index = 0; i_index < ao_friendly_names.length; ++i_index) {
+                if (s_appVersion.indexOf(ao_friendly_names[i_index].s_id) != -1) {
+                    __s_system_friendly_name = ao_friendly_names[i_index].s_name;
+                    break;
+                }
+            }
+        }
+    }
+    return __s_system_friendly_name;
+}
+
+
 function tsk_utils_log_info(s_msg) {
     if (window.console) {
         window.console.info(s_msg);

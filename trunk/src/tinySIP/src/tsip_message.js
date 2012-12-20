@@ -651,7 +651,7 @@ tsip_message.prototype.GetRequestType = function(s_method) {
     return tsip_request_type_e.NONE;
 }
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsip_api_add_js_scripts('head',
     'src/tinySIP/src/parsers/tsip_parser_message.js'
     );

@@ -190,7 +190,7 @@ tsip_header.prototype.FindByType = function(ao_headers, e_type) {
     return null;
 }
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsip_api_add_js_scripts('head',
         'src/tinySIP/src/headers/tsip_header_Int.js', // 'Content-Length', 'Expires', 'Max-Forwards', 'Min_Expires', 'Min-SE', 'RSeq'
         'src/tinySIP/src/headers/tsip_header_NameAddr.js', // 'From', 'To', 'Refer-To', 'Referred-By'

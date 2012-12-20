@@ -21,7 +21,7 @@ var tmedia_type_e =
 };
 
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tmedia_api_add_js_scripts('head',
     'src/tinyMEDIA/src/tmedia_webrtc4all.js', // must be first
     'src/tinyMEDIA/src/tmedia_defaults.js',

@@ -1322,7 +1322,8 @@ function x9998_Any_2_Terminated_X_transportError(ao_args) {
 }
 
 function x9999_Any_2_Any_X_Error(ao_args) {
-    tsk_utils_log_error("Not implemented");
+    var o_dialog = ao_args[0];
+    
     return 0;
 }
 
@@ -1356,7 +1357,7 @@ function __tsip_dialog_invite_onterm(o_self) {
 }
 
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsip_api_add_js_scripts('head',
     'src/tinySIP/src/dialogs/tsip_dialog_invite__client.js',
     'src/tinySIP/src/dialogs/tsip_dialog_invite__ect.js',

@@ -48,7 +48,7 @@ function tsdp_header_compare_by_rank(o_hdr_1, o_hdr_2) {
 }
 
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsdp_api_add_js_scripts('head',
         'src/tinySDP/src/headers/tsdp_header_A.js',
         'src/tinySDP/src/headers/tsdp_header_C.js',

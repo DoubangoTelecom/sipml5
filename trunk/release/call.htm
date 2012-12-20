@@ -593,7 +593,7 @@
 
     // Callback function for SIP Stacks
     function onSipEventStack(e /*SIPml.Stack.Event*/) {
-        tsk_utils_log_info('==stack event = ' + e.type);
+        if (window.console) window.console.info('==stack event = ' + e.type);
         switch (e.type) {
             case 'started':
                 {
@@ -666,7 +666,7 @@
 
     // Callback function for SIP sessions (INVITE, REGISTER, MESSAGE...)
     function onSipEventSession(e /* SIPml.Session.Event */) {
-        tsk_utils_log_info('==session event = ' + e.type);
+        if (window.console) window.console.info('==session event = ' + e.type);
 
         switch (e.type) {
             case 'connecting': case 'connected':
