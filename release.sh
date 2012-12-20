@@ -6,6 +6,7 @@
 # This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 #
 
+API_VERSION=1.0.1
 API_FOLDER_NAME=release
 API_FILE_NAME=SIPml-api.js
 API_FILE_PATH=$API_FOLDER_NAME/$API_FILE_NAME
@@ -33,7 +34,7 @@ AppendFile()
 #dst
 AppendScripts()
 {
-	echo "var __b_debug_mode = false;" > $1
+	echo "var __b_release_mode = true;" > $1
 	
 	AppendFile src/tinySAK/src/tsk_base64.js $1
     AppendFile src/tinySAK/src/tsk_buff.js $1
@@ -44,6 +45,8 @@ AppendScripts()
     AppendFile src/tinySAK/src/tsk_string.js $1
     AppendFile src/tinySAK/src/tsk_utils.js $1
     
+	# at this step 'tsk_utils_log_info' is defined
+	echo "tsk_utils_log_info('API version = $API_VERSION');" >> $1
     
     AppendFile src/tinyMEDIA/src/tmedia_common.js $1
 		AppendFile src/tinyMEDIA/src/tmedia_webrtc4all.js $1 #include_in<tmedia_common.js>
@@ -90,16 +93,16 @@ AppendScripts()
 	
 	AppendFile src/tinySIP/src/dialogs/tsip_dialog.js $1
 		AppendFile src/tinySIP/src/dialogs/tsip_dialog_generic.js $1 #include_in<tsip_dialog.js>
-		AppendFile src/tinySIP/src/dialogs/tsip_dialog_generic__message.js $1 #include_in<tsip_dialog_generic.js>
+			AppendFile src/tinySIP/src/dialogs/tsip_dialog_generic__message.js $1 #include_in<tsip_dialog_generic.js>
+			AppendFile src/tinySIP/src/dialogs/tsip_dialog_generic__publish.js $1 #include_in<tsip_dialog_generic.js>
+			AppendFile src/tinySIP/src/dialogs/tsip_dialog_generic__subscribe.js $1 #include_in<tsip_dialog_generic.js>
 		AppendFile src/tinySIP/src/dialogs/tsip_dialog_invite.js $1 #include_in<tsip_dialog.js>
 			AppendFile src/tinySIP/src/dialogs/tsip_dialog_invite__client.js $1 #include_in<tsip_dialog_invite.js>
 			AppendFile src/tinySIP/src/dialogs/tsip_dialog_invite__ect.js $1 #include_in<tsip_dialog_invite.js>
 			AppendFile src/tinySIP/src/dialogs/tsip_dialog_invite__hold.js $1 #include_in<tsip_dialog_invite.js>
 			AppendFile src/tinySIP/src/dialogs/tsip_dialog_invite__server.js $1 #include_in<tsip_dialog_invite.js>
 			AppendFile src/tinySIP/src/dialogs/tsip_dialog_invite__timers.js $1 #include_in<tsip_dialog_invite.js>
-		AppendFile src/tinySIP/src/dialogs/tsip_dialog_publish.js $1 #include_in<tsip_dialog.js>
 		AppendFile src/tinySIP/src/dialogs/tsip_dialog_register.js $1 #include_in<tsip_dialog.js>
-		AppendFile src/tinySIP/src/dialogs/tsip_dialog_subscribe.js $1 #include_in<tsip_dialog.js>
     AppendFile src/tinySIP/src/dialogs/tsip_dialog_layer.js $1
     
     AppendFile src/tinySIP/src/headers/tsip_header.js $1
@@ -190,3 +193,5 @@ rm -rf $API_FILE_PATH.tmp.js
 # generate and deploy documentation
 ./docgen.sh
 DeployFolder docgen
+
+

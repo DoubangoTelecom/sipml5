@@ -260,7 +260,7 @@ tsip_dialog.prototype.request_new = function (s_method) {
         case tsip_request_type_e.BYE:
             {
                 if (o_request.line.request.e_type == tsip_request_type_e.PUBLISH) {
-                    o_request.add_header(tsip_header_Expires_create(this.i_expires / 1000));
+                    o_request.add_header(new tsip_header_Expires(this.i_expires / 1000));
                 }
                 /* add caps in "Accept-Contact" headers */
                 for (var i = 0; i < this.o_session.ao_caps.length; ++i) {
@@ -999,7 +999,7 @@ tsip_dialog.prototype.update_challenges = function (o_response, b_acceptNewVecto
     return 0;
 }
 
-tsip_dialog.prototype.get_newdelay = function (o_response) {
+tsip_dialog.prototype.get_newdelay = function (o_message) {
     var i_expires = this.i_expires / 1000; // in seconds
     var i_newdelay = i_expires; /* default value */
     var o_hdr;
@@ -1007,24 +1007,24 @@ tsip_dialog.prototype.get_newdelay = function (o_response) {
     var b_found = false;
 
     /* NOTIFY with subscription-state header with expires parameter */
-    if (o_response.is_response_to_notify()) {
+    if (o_message.is_notify()) {
         var o_hdr_state;
-        if ((o_hdr_state = o_response.get_header(tsip_header_type_e.Subscription_State))) {
+        if ((o_hdr_state = o_message.get_header(tsip_header_type_e.Subscription_State))) {
             if (o_hdr_state.i_expires > 0) {
-                i_expires = hdr_state.i_expires;
+                i_expires = o_hdr_state.i_expires;
                 b_found = true;
             }
         }
     }
 
     /* Expires header */
-    if (!b_found && (o_hdr = o_response.get_header(tsip_header_type_e.Expires))) {
+    if (!b_found && (o_hdr = o_message.get_header(tsip_header_type_e.Expires))) {
         i_expires = o_hdr.i_value;
         b_found = true;
     }
 
     /* Contact header */
-    for (i_index = 0; !b_found && (o_hdr = o_response.get_header_at(tsip_header_type_e.Contact, i_index)); ++i_index) {
+    for (i_index = 0; !b_found && (o_hdr = o_message.get_header_at(tsip_header_type_e.Contact, i_index)); ++i_index) {
         var o_hdr_contact = o_hdr;
         if (o_hdr_contact.o_uri) {
             var s_transport = tsk_param_get_value_by_name(o_hdr_contact.o_uri.ao_params, "transport");
@@ -1091,12 +1091,10 @@ function tsip_dialog_compare(o_d1, o_d2) {
     return -1;
 }
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsip_api_add_js_scripts('head',
         'src/tinySIP/src/dialogs/tsip_dialog_generic.js',
         'src/tinySIP/src/dialogs/tsip_dialog_invite.js',
-        'src/tinySIP/src/dialogs/tsip_dialog_publish.js',
-        'src/tinySIP/src/dialogs/tsip_dialog_register.js',
-        'src/tinySIP/src/dialogs/tsip_dialog_subscribe.js'
+        'src/tinySIP/src/dialogs/tsip_dialog_register.js'
     );
 }

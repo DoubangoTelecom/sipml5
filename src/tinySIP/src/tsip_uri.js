@@ -239,7 +239,7 @@ function tsip_uri_compare(o_uri_1, o_uri_2){
 	}
 }
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsip_api_add_js_scripts('head',
     'src/tinySIP/src/parsers/tsip_parser_uri.js'
     );

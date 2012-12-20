@@ -155,6 +155,9 @@ o_stack.on_event_message = function (evt: tsip_event_message) {
 */
 tsip_stack.prototype.on_event_message = null;
 
+tsip_stack.prototype.on_event_publish = null;
+tsip_stack.prototype.on_event_subscribe = null;
+
 /* Parameter type (Internal use) */
 var tsip_stack_param_type_e =
 {	

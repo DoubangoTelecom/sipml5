@@ -12,7 +12,7 @@
 // SIP dialog INFO as per RFC 6086
 
 tsip_dialog_generic.prototype = Object.create(tsip_dialog.prototype);
-tsip_dialog_generic.prototype.__b_debug_state_machine = false;
+tsip_dialog_generic.prototype.__b_debug_state_machine = true;
 
 var tsip_dialog_generic_actions_e =
 {
@@ -59,7 +59,12 @@ var tsip_dialog_generic_states_e =
 function tsip_dialog_generic(e_type, o_session, s_call_id) {
     tsip_dialog.call(this);
 
+    this.b_disconnecting = false;
     this.o_last_iMessage = null;
+
+    this.o_timerRefresh = null;
+    this.o_timerShutdown = null;
+    this.i_timerShutdown = (tsip_dialog.prototype.__i_timer_shutdown << 1) / 3;
 
     this.init(e_type, s_call_id, o_session, tsip_dialog_generic_states_e.STARTED, tsip_dialog_generic_states_e.TERMINATED);
     this.set_callback(__tsip_dialog_generic_event_callback);
@@ -67,14 +72,15 @@ function tsip_dialog_generic(e_type, o_session, s_call_id) {
     this.o_fsm.set_onterm_callback(__tsip_dialog_generic_onterm, this);
 
 
-    // initialize state machine
+    // initialize state machines
     this.init_message(); // MESSAGE Dialog
+    this.init_publish(); // PUBLISH Dialog
+    this.init_subscribe(); // SUBSCRIBE DIALOG
     this.o_fsm.set(
         /*=======================
         * === Started === 
         */
-        // Started -> (Any) -> Started
-        tsk_fsm_entry.prototype.CreateAlwaysNothing(tsip_dialog_generic_states_e.STARTED, "tsip_dialog_generic_Started_2_Started_X_any"),
+        // Up to each dialog (MESSAGE, PUBLISH, SUBSCRIBE...)
 
 
         /*=======================
@@ -82,9 +88,12 @@ function tsip_dialog_generic(e_type, o_session, s_call_id) {
         */
         // InProgress -> (1xx) -> InProgress
         tsk_fsm_entry.prototype.CreateAlways(tsip_dialog_generic_states_e.INPROGRESS, tsip_dialog_generic_actions_e.I_1XX, tsip_dialog_generic_states_e.INPROGRESS, tsip_dialog_generic_InProgress_2_InProgress_X_1xx, "tsip_dialog_generic_InProgress_2_InProgress_X_1xx"),
-        // InProgress -> (2xx) -> Terminated
+        
+        // InProgress -> (2xx dialogless) -> Terminated
         tsk_fsm_entry.prototype.Create(tsip_dialog_generic_states_e.INPROGRESS, tsip_dialog_generic_actions_e.I_2XX, __tsip_dialog_generic_cond_is_dialogless, tsip_dialog_generic_states_e.TERMINATED, tsip_dialog_generic_InProgress_2_Terminated_X_2xx, "tsip_dialog_generic_InProgress_2_Terminated_X_2xx"),
-        // InProgress -> (2xx) -> Connected
+        // InProgress -> (2xx disconnecting) -> Terminated
+        tsk_fsm_entry.prototype.Create(tsip_dialog_generic_states_e.INPROGRESS, tsip_dialog_generic_actions_e.I_2XX, __tsip_dialog_generic_cond_is_disconnecting, tsip_dialog_generic_states_e.TERMINATED, tsip_dialog_generic_InProgress_2_Terminated_X_2xx, "tsip_dialog_generic_InProgress_2_Terminated_X_2xx"),
+        // InProgress -> (2xx dialogfull and connecting) -> Connected
         tsk_fsm_entry.prototype.Create(tsip_dialog_generic_states_e.INPROGRESS, tsip_dialog_generic_actions_e.I_2XX, __tsip_dialog_generic_cond_is_dialogfull, tsip_dialog_generic_states_e.CONNECTED, tsip_dialog_generic_InProgress_2_Connected_X_2xx, "tsip_dialog_generic_InProgress_2_Connected_X_2xx"),
         // InProgress -> (401/407/421/494) -> InProgress
         tsk_fsm_entry.prototype.CreateAlways(tsip_dialog_generic_states_e.INPROGRESS, tsip_dialog_generic_actions_e.I_401_407_421_494, tsip_dialog_generic_states_e.INPROGRESS, tsip_dialog_generic_InProgress_2_InProgress_X_401_407_421_494, "tsip_dialog_generic_InProgress_2_InProgress_X_401_407_421_494"),
@@ -95,7 +104,7 @@ function tsip_dialog_generic(e_type, o_session, s_call_id) {
         // InProgress -> (shutdown) -> Terminated
         tsk_fsm_entry.prototype.CreateAlways(tsip_dialog_generic_states_e.INPROGRESS, tsip_dialog_generic_actions_e.SHUTDOWN, tsip_dialog_generic_states_e.TERMINATED, null, "tsip_dialog_generic_InProgress_2_Terminated_X_shutdown"),
         // InProgress -> (Any) -> InProgress
-        tsk_fsm_entry.prototype.CreateAlwaysNothing(tsip_dialog_generic_states_e.INPROGRESS, "tsip_dialog_generic_InProgress_2_InProgress_X_any"),
+        // tsk_fsm_entry.prototype.CreateAlwaysNothing(tsip_dialog_generic_states_e.INPROGRESS, "tsip_dialog_generic_InProgress_2_InProgress_X_any"),
 
         /*=======================
         * === Incoming === 
@@ -112,9 +121,19 @@ function tsip_dialog_generic(e_type, o_session, s_call_id) {
         /*=======================
         * === Any === 
         */
+        // Any -> (hangup) -> InProgress
+		tsk_fsm_entry.prototype.Create(tsk_fsm.prototype.__i_state_any, tsip_dialog_generic_actions_e.HANGUP, __tsip_dialog_generic_cond_not_silent_hangup, tsip_dialog_generic_states_e.INPROGRESS, __tsip_dialog_generic_Any_2_InProgress_X_hangup, "tsip_dialog_generic_Any_2_InProgress_X_hangup"),
+        // Any -> (silenthangup) -> Terminated
+		tsk_fsm_entry.prototype.Create(tsk_fsm.prototype.__i_state_any, tsip_dialog_generic_actions_e.HANGUP, __tsip_dialog_generic_cond_silent_hangup, tsip_dialog_generic_states_e.TERMINATED, null, "tsip_dialog_generic_Any_2_InProgress_X_silenthangup"),
+        // Any -> (shutdown) -> InProgress
+		tsk_fsm_entry.prototype.Create(tsk_fsm.prototype.__i_state_any, tsip_dialog_generic_actions_e.SHUTDOWN, __tsip_dialog_generic_cond_not_silent_shutdown, tsip_dialog_generic_states_e.INPROGRESS, __tsip_dialog_generic_Any_2_InProgress_X_shutdown, "tsip_dialog_generic_Any_2_InProgress_X_shutdown"),
+		// Any -> (silentshutdown) -> Terminated
+		tsk_fsm_entry.prototype.Create(tsk_fsm.prototype.__i_state_any, tsip_dialog_generic_actions_e.SHUTDOWN, __tsip_dialog_generic_cond_silent_shutdown, tsip_dialog_generic_states_e.TERMINATED, null, "tsip_dialog_generic_Any_2_InProgress_X_silentshutdown"),
+		// Any -> (shutdown timedout) -> Terminated
+		tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_generic_actions_e.SHUTDOWN_TIMEDOUT, tsip_dialog_generic_states_e.TERMINATED, null, "tsip_dialog_generic_shutdown_timedout"),
         // Any -> (transport error) -> Terminated
         tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_generic_actions_e.TRANSPORT_ERROR, tsip_dialog_generic_states_e.TERMINATED, tsip_dialog_generic_Any_2_Terminated_X_transportError, "tsip_dialog_generic_Any_2_Terminated_X_transportError"),
-        // Any -> (transport error) -> Terminated
+        // Any -> (error) -> Terminated
         tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_generic_actions_e.ERROR, tsip_dialog_generic_states_e.TERMINATED, tsip_dialog_generic_Any_2_Terminated_X_Error, "tsip_dialog_generic_Any_2_Terminated_X_Error")
 
     );
@@ -126,6 +145,16 @@ tsip_dialog_generic.prototype.signal_ao = function (i_code, s_phrase, o_response
         case tsip_dialog_type_e.MESSAGE:
             {
                 var o_event = new tsip_event_message(this.get_session(), i_code, s_phrase, o_response, tsip_event_message_type_e.AO_MESSAGE);
+                return o_event.signal();
+            }
+        case tsip_dialog_type_e.PUBLISH:
+            {
+                var o_event = new tsip_event_publish(this.get_session(), i_code, s_phrase, o_response, tsip_event_publish_type_e.AO_PUBLISH);
+                return o_event.signal();
+            }
+        case tsip_dialog_type_e.SUBSCRIBE:
+            {
+                var o_event = new tsip_event_subscribe(this.get_session(), i_code, s_phrase, o_response, tsip_event_subscribe_type_e.AO_SUBSCRIBE);
                 return o_event.signal();
             }
     }
@@ -145,6 +174,14 @@ tsip_dialog_generic.prototype.signal_i = function (i_code, s_phrase, o_request) 
                 }
                 break;
             }
+        case tsip_dialog_type_e.SUBSCRIBE:
+            {
+                if (o_request.is_notify()) {
+                    var o_event = new tsip_event_subscribe(this.get_session(), i_code, s_phrase, o_request, tsip_event_subscribe_type_e.I_NOTIFY);
+                    return o_event.signal();
+                }
+                break;
+            }
     }
 
     tsk_utils_log_error("not implemented");
@@ -155,7 +192,10 @@ function __tsip_dialog_generic_timer_callback(o_self, o_timer) {
     var i_ret = -1;
     if (o_self) {
         if (o_self.o_timerRefresh == o_timer) {
-            // i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.O_REGISTER, null, null);
+            switch (o_self.e_type) {
+                case tsip_dialog_type_e.PUBLISH: i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.O_PUBLISH, null, null); break;
+                case tsip_dialog_type_e.SUBSCRIBE: i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.O_SUBSCRIBE, null, null); break; 
+            }
         }
         else if (o_self.o_timerShutdown == o_timer) {
             i_ret = o_self.fsm_act(tsip_dialog_generic_actions_e.SHUTDOWN, null, null);
@@ -254,6 +294,24 @@ function __tsip_dialog_generic_cond_is_resp2message(o_dialog, o_message) {
 function __tsip_dialog_generic_cond_is_message(o_dialog, o_message) {
     return o_message.is_message();
 }
+function __tsip_dialog_generic_cond_is_disconnecting(o_dialog, o_message) {
+    return o_dialog.b_disconnecting;
+}
+function __tsip_dialog_generic_cond_is_connecting(o_dialog, o_message) {
+    return !__tsip_dialog_generic_cond_is_disconnecting(o_dialog, o_message);
+}
+function __tsip_dialog_generic_cond_silent_hangup(o_dialog, o_message){
+	return o_dialog.o_session.b_silent_hangup;
+}
+function __tsip_dialog_generic_cond_not_silent_hangup(o_dialog, o_message){
+    return !__tsip_dialog_generic_cond_silent_hangup(o_dialog, o_message);
+}
+function __tsip_dialog_generic_cond_silent_shutdown(o_dialog, o_message) {
+    return __tsip_dialog_generic_cond_silent_hangup(o_dialog, o_message);
+}
+function __tsip_dialog_generic_cond_not_silent_shutdown(o_dialog, o_message) {
+    return !__tsip_dialog_generic_cond_silent_shutdown(o_dialog, o_message);
+}
 
 
 //--------------------------------------------------------
@@ -279,7 +337,47 @@ function tsip_dialog_generic_InProgress_2_Terminated_X_2xx(ao_args) {
 
 // InProgress -> (2xx) -> Connected
 function tsip_dialog_generic_InProgress_2_Connected_X_2xx(ao_args) {
-    /* tsk_utils_log_error("Not implemented"); */
+    var o_dialog = ao_args[0];
+    var o_response = ao_args[1];
+
+    var b_first_time_to_connect = (o_dialog.e_state == tsip_dialog_state_e.INITIAL);
+
+    // Update the dialog state
+	if((i_ret = o_dialog.update_with_response(o_response)) != 0){
+		return i_ret;
+	}
+
+    // Etag
+    if(o_dialog.e_type == tsip_dialog_type_e.PUBLISH){
+        /*	RFC 3903 - 4.1.  Identification of Published Event State
+		    For each successful PUBLISH request, the ESC will generate and assign
+		    an entity-tag and return it in the SIP-ETag header field of the 2xx
+		    response.
+	    */
+        var o_hdr_etag;
+        if ((o_hdr_etag = o_response.get_header(tsip_header_type_e.SIP_ETag))) {
+            if(o_hdr_etag.s_value){
+                o_dialog.s_etag = o_hdr_etag.s_value;
+            }
+            else{
+                tsk_utils_log_warn("SIP-ETag header without value: Is it a bug?");
+            }
+        }
+    }
+
+    // Reset current action */
+	o_dialog.set_action_curr(null);
+
+    // Request timeout for dialog refresh (e.g re-registration)
+	o_dialog.i_timerRefresh = o_dialog.get_newdelay(o_response);
+	o_dialog.timer_schedule('generic', 'Refresh');
+
+    // alert user
+    o_dialog.signal_ao(o_response.get_response_code(), o_response.get_response_phrase(), o_response);
+	if (b_first_time_to_connect) {
+	    o_dialog.signal(tsip_event_code_e.DIALOG_CONNECTED, "Connected");
+	}
+
     return 0;
 }
 
@@ -304,6 +402,14 @@ function tsip_dialog_generic_InProgress_2_InProgress_X_401_407_421_494(ao_args) 
             {
                 return o_dialog.send_message();
             }
+        case tsip_dialog_type_e.PUBLISH:
+            {
+                return o_dialog.send_publish();
+            }
+        case tsip_dialog_type_e.SUBSCRIBE:
+            {
+                return o_dialog.send_subscribe();
+            }
     }
     return 0;
 }
@@ -312,6 +418,9 @@ function tsip_dialog_generic_InProgress_2_InProgress_X_401_407_421_494(ao_args) 
 function tsip_dialog_generic_InProgress_2_Terminated_X_300_to_699(ao_args) {
     var o_dialog = ao_args[0];
     var o_response = ao_args[1];
+
+    // save last error
+	o_dialog.set_last_error(o_response.get_response_code(), o_response.get_response_phrase(), o_response);
 
     return o_dialog.signal_ao(o_response.get_response_code(), o_response.get_response_phrase(), o_response);
 }
@@ -365,6 +474,55 @@ function tsip_dialog_generic_Incoming_2_Terminated_X_reject(ao_args) {
     return 0;
 }
 
+// Any -> (hangup) -> InProgress
+function __tsip_dialog_generic_Any_2_InProgress_X_hangup(ao_args){
+    var o_dialog = ao_args[0];
+	var o_action = ao_args[2];
+
+	// set  current action
+    o_dialog.set_action_curr(o_action);
+
+	// alert the user
+    o_dialog.signal(tsip_event_code_e.DIALOG_TERMINATING, "Disconnecting...");
+
+    o_dialog.b_disconnecting = true;
+    switch (o_dialog.e_type) {
+        case tsip_dialog_type_e.PUBLISH:
+            {
+                return o_dialog.send_publish();
+            }
+        case tsip_dialog_type_e.SUBSCRIBE:
+            {
+                return o_dialog.send_subscribe();
+            }
+    }
+	return 0;
+}
+
+// Any -> (shutdown) -> InProgress
+function __tsip_dialog_generic_Any_2_InProgress_X_shutdown(ao_args) {
+    var o_dialog = ao_args[0];
+	
+	// schedule shutdow timer
+    o_dialog.timer_schedule('generic', 'Shutdown');
+
+	// alert user
+    o_dialog.signal(tsip_event_code_e.DIALOG_TERMINATING, "Disconnecting...");
+
+	o_dialog.b_disconnecting = true;
+	switch (o_dialog.e_type) {
+        case tsip_dialog_type_e.PUBLISH:
+            {
+                return o_dialog.send_publish();
+            }
+        case tsip_dialog_type_e.SUBSCRIBE:
+            {
+                return o_dialog.send_subscribe();
+            }
+    }
+    return 0;
+}
+
 
 // Any -> (transport error) -> Terminated
 function tsip_dialog_generic_Any_2_Terminated_X_transportError(ao_args) {
@@ -386,12 +544,12 @@ function tsip_dialog_generic_Any_2_Terminated_X_Error(ao_args) {
 
 function __tsip_dialog_generic_onterm(o_self) {
     tsk_utils_log_info("=== " + o_self.e_type.s_name + " Dialog terminated ===");
-
-    //o_self.timer_cancel('Refresh');
-    //o_self.timer_cancel('Shutdown');
+    
+    o_self.timer_cancel('Refresh');
+    o_self.timer_cancel('Shutdown');
 
     o_self.signal(tsip_event_code_e.DIALOG_TERMINATED,
-            o_self.last_error.s_phrase ? o_self.last_error.s_phrase : "Dialog terminated",
+            o_self.last_error.s_phrase ? o_self.last_error.s_phrase : "Disconnected",
             o_self.last_error.o_message);
 
     // deinit
@@ -399,8 +557,10 @@ function __tsip_dialog_generic_onterm(o_self) {
 }
 
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tsip_api_add_js_scripts('head',
-    'src/tinySIP/src/dialogs/tsip_dialog_generic__message.js'
+        'src/tinySIP/src/dialogs/tsip_dialog_generic__message.js',
+        'src/tinySIP/src/dialogs/tsip_dialog_generic__publish.js',
+        'src/tinySIP/src/dialogs/tsip_dialog_generic__subscribe.js'
     );
 }

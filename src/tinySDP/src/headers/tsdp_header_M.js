@@ -21,7 +21,7 @@ _tsdp_machine_parser_header_M_actions = [
 
 _tsdp_machine_parser_header_M_key_offsets = [
 	0, 0, 1, 3, 18, 33, 35, 39, 
-	53, 54, 68, 82, 84, 87, 102, 102
+	53, 54, 68, 70, 73, 88, 88, 103
 ];
 
 _tsdp_machine_parser_header_M_trans_keys = [
@@ -33,28 +33,28 @@ _tsdp_machine_parser_header_M_trans_keys = [
 	37, 39, 126, 42, 43, 45, 46, 48, 
 	57, 65, 90, 95, 122, 10, 33, 37, 
 	39, 126, 42, 43, 45, 46, 48, 57, 
-	65, 90, 95, 122, 33, 37, 39, 126, 
-	42, 43, 45, 46, 48, 57, 65, 90, 
-	95, 122, 48, 57, 32, 48, 57, 13, 
-	32, 33, 37, 39, 47, 126, 42, 43, 
-	45, 57, 65, 90, 95, 122, 13, 32, 
-	33, 37, 39, 126, 42, 43, 45, 46, 
-	48, 57, 65, 90, 95, 122, 0
+	65, 90, 95, 122, 48, 57, 32, 48, 
+	57, 13, 32, 33, 37, 39, 47, 126, 
+	42, 43, 45, 57, 65, 90, 95, 122, 
+	13, 33, 37, 39, 126, 42, 43, 45, 
+	46, 48, 57, 65, 90, 95, 122, 13, 
+	32, 33, 37, 39, 126, 42, 43, 45, 
+	46, 48, 57, 65, 90, 95, 122, 0
 ];
 
 _tsdp_machine_parser_header_M_single_lengths = [
 	0, 1, 2, 5, 5, 0, 2, 4, 
-	1, 4, 4, 0, 1, 7, 0, 6
+	1, 4, 0, 1, 7, 0, 5, 6
 ];
 
 _tsdp_machine_parser_header_M_range_lengths = [
 	0, 0, 0, 5, 5, 1, 1, 5, 
-	0, 5, 5, 1, 1, 4, 0, 5
+	0, 5, 1, 1, 4, 0, 5, 5
 ];
 
 _tsdp_machine_parser_header_M_index_offsets = [
 	0, 0, 2, 5, 16, 27, 29, 33, 
-	43, 45, 55, 65, 67, 70, 82, 83
+	43, 45, 55, 57, 60, 72, 73, 84
 ];
 
 _tsdp_machine_parser_header_M_indicies = [
@@ -65,32 +65,33 @@ _tsdp_machine_parser_header_M_indicies = [
 	1, 10, 10, 10, 10, 10, 10, 10, 
 	10, 10, 1, 11, 1, 12, 12, 12, 
 	12, 12, 12, 12, 12, 12, 1, 13, 
-	13, 13, 13, 13, 13, 13, 13, 13, 
-	1, 14, 1, 7, 15, 1, 16, 17, 
-	13, 13, 13, 18, 13, 13, 13, 13, 
-	13, 1, 1, 19, 20, 21, 21, 21, 
-	21, 21, 21, 21, 21, 21, 1, 0
+	1, 7, 14, 1, 15, 16, 12, 12, 
+	12, 17, 12, 12, 12, 12, 12, 1, 
+	1, 18, 19, 19, 19, 19, 19, 19, 
+	19, 19, 19, 1, 20, 21, 22, 22, 
+	22, 22, 22, 22, 22, 22, 22, 1, 
+	0
 ];
 
 _tsdp_machine_parser_header_M_trans_targs = [
 	2, 0, 3, 4, 5, 4, 6, 7, 
-	11, 6, 13, 14, 15, 13, 12, 12, 
-	8, 9, 10, 8, 9, 15
+	10, 6, 12, 13, 12, 11, 11, 8, 
+	14, 9, 8, 15, 8, 14, 15
 ];
 
 _tsdp_machine_parser_header_M_trans_actions = [
 	0, 0, 0, 1, 3, 0, 1, 5, 
-	5, 0, 1, 0, 1, 0, 1, 0, 
-	7, 7, 0, 9, 9, 0
+	5, 0, 1, 0, 0, 1, 0, 7, 
+	7, 0, 0, 1, 9, 9, 0
 ];
 
 _tsdp_machine_parser_header_M_eof_actions = [
 	0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 7, 0, 9
+	0, 0, 0, 0, 7, 0, 0, 9
 ];
 
 tsdp_machine_parser_header_M_start = 1;
-tsdp_machine_parser_header_M_first_final = 13;
+tsdp_machine_parser_header_M_first_final = 12;
 tsdp_machine_parser_header_M_error = 0;
 
 tsdp_machine_parser_header_M_en_main = 1;
@@ -414,14 +415,14 @@ tsdp_header_M.prototype.Parse = function(s_str){
 	var hdr_M = new tsdp_header_M(null, 0, null);
 	
 	
-/* line 418 "./src/headers/tsdp_header_M.js" */
+/* line 419 "./src/headers/tsdp_header_M.js" */
 {
 	 cs = tsdp_machine_parser_header_M_start;
 } /* JSCodeGen::writeInit */
 
 /* line 370 "./ragel/tsdp_parser_header_M.jrl" */
 	
-/* line 425 "./src/headers/tsdp_header_M.js" */
+/* line 426 "./src/headers/tsdp_header_M.js" */
 {
 	var _klen, _trans, _keys, _ps, _widec, _acts, _nacts;
 	var _goto_level, _resume, _eof_trans, _again, _test_eof;
@@ -530,7 +531,7 @@ case 4:
 
 		tsk_ragel_parser_add_string(s_str, p, i_tag_start, hdr_M.as_fmt);
 			break;
-/* line 534 "./src/headers/tsdp_header_M.js" */
+/* line 535 "./src/headers/tsdp_header_M.js" */
 			} /* action switch */
 		}
 	}
@@ -568,7 +569,7 @@ case 4:
 
 		tsk_ragel_parser_add_string(s_str, p, i_tag_start, hdr_M.as_fmt);
 			break;
-/* line 572 "./src/headers/tsdp_header_M.js" */
+/* line 573 "./src/headers/tsdp_header_M.js" */
 		} /* eof action switch */
 	}
 	if (_trigger_goto) {
@@ -585,8 +586,8 @@ case 4:
 /* line 371 "./ragel/tsdp_parser_header_M.jrl" */
 	
 	if( cs < 
-/* line 589 "./src/headers/tsdp_header_M.js" */
-13
+/* line 590 "./src/headers/tsdp_header_M.js" */
+12
 /* line 372 "./ragel/tsdp_parser_header_M.jrl" */
  ){
 		tsk_utils_log_error("Failed to parse \"m=\" header: " + s_str);

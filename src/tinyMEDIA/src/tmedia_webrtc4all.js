@@ -46,10 +46,13 @@ function WebRtc4all_Init() {
 
         // WebRtc plugin type
         try {
-            if ((navigator.webkitGetUserMedia && (window.webkitPeerConnection00 || window.webkitRTCPeerConnection))) {
+            window.nativeRTCPeerConnection = (window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
+            window.nativeURL = (window.webkitURL || window.URL);
+            navigator.nativeGetUserMedia = (navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
+            if ((navigator.nativeGetUserMedia && window.nativeRTCPeerConnection)) {
                 __webrtc_type = WebRtcType_e.NATIVE; // Google Chrome
             }
-            else if (navigator.webkitGetUserMedia && window.webkitPeerConnection) {
+            else if (navigator.nativeGetUserMedia && window.webkitPeerConnection) {
                 __webrtc_type = WebRtcType_e.ERICSSON;
             }
         }
@@ -69,8 +72,8 @@ function WebRtc4all_Init() {
 
         __b_webrtc4all_initialized = true;
 
-        if (navigator.webkitGetUserMedia) {
-            navigator.webkitGetUserMedia(WebRtc4all_GetType() == WebRtcType_e.ERICSSON ? ("audio, video") : ({ audio: true, video: true }),
+        if (navigator.nativeGetUserMedia) {
+            navigator.nativeGetUserMedia(WebRtc4all_GetType() == WebRtcType_e.ERICSSON ? ("audio, video") : ({ audio: true, video: true }),
                     function (stream) {
                         tsk_utils_log_info("Got stream :)");
                         __o_stream = stream;

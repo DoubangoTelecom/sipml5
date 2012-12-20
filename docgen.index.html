@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!--
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
 * License: GPLv3
@@ -74,7 +74,9 @@
                     <li><a href="#Initializetheengine">Initialize the engine</a></li>
                     <li><a href="#login">Register/login</a></li>
                     <li><a href="#makeCall">Making/receiving audio/video call</a></li>
-                    <li><a href="#sendMessage">Send/receive SIP MESSAGE (SMS-like)</a></li>        
+                    <li><a href="#sendMessage">Send/receive SIP MESSAGE (SMS-like)</a></li>
+                    <li><a href="#publishPresence">Publish presence status</a></li>
+                    <li><a href="#subscribePresence">Subscribe for presence status change</a></li>
                 </ul>
             </li>
             <li><a href="#TechnicalHelp">Technical Help</a></li>
@@ -105,42 +107,6 @@
                     }
             );
         </code></pre>
-
-        <!--
-        Main namepaces: <br />
-        <ul>
-            <li>
-                <a href="docgen/symbols/SIPml.html">SIPml</a>
-                    <ul>
-                        <li><a href="docgen/symbols/SIPml.EventTarget.html">EventTarget</a></li>
-                    </ul>
-                    <ul>
-                        <li>
-                            <a href="docgen/symbols/SIPml.Event.html">Event</a>
-                            <ul>
-                                <li><a href="docgen/symbols/SIPml.Stack.Event.html">Stack.Event</a></li>
-                                <li><a href="docgen/symbols/SIPml.Session.Event.html">Session.Event</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <ul>
-                        <li>
-                            <a href="docgen/symbols/SIPml.Stack.html">Stack</a>
-                        </li>
-                    </ul>
-                    <ul>
-                        <li>
-                            <a href="docgen/symbols/SIPml.Session.html">Session</a>
-                            <ul>
-                                <li><a href="docgen/symbols/SIPml.Session.Registration.html">Registration</a></li>
-                                <li><a href="docgen/symbols/SIPml.Session.Call.html">Call</a></li>
-                                <li><a href="docgen/symbols/SIPml.Session.Message.html">Message</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-            </li>
-        </ul>
-        -->
 
         <hr />
         <a name="ClassDiagram"></a>
@@ -188,10 +154,10 @@
                 if(e.<a href="docgen/symbols/SIPml.Event.html#type">type</a> == 'started'){
                     <a href="#loginFunc">login</a>();
                 }
-                else if(e.<a href="docgen/symbols/SIPml.Event.html#type">type</a>== 'i_new_message'){ // incoming new SIP MESSAGE (SMS-like)
+                else if(e.<a href="docgen/symbols/SIPml.Event.html#type">type</a> == 'i_new_message'){ // incoming new SIP MESSAGE (SMS-like)
                     <a href="#acceptMessageFunc">acceptMessage</a>(e);
                 }
-                else if(e.<a href="docgen/symbols/SIPml.Event.html#type">type</a>== 'i_new_call'){ // incoming audio/video call
+                else if(e.<a href="docgen/symbols/SIPml.Event.html#type">type</a> == 'i_new_call'){ // incoming audio/video call
                     <a href="#acceptCallFunc">acceptCall</a>(e);
                 }
             }
@@ -232,6 +198,8 @@
                 if(e.<a href="docgen/symbols/SIPml.Event.html#type">type</a> == 'connected' && e.<a href="docgen/symbols/SIPml.Session.Event.html#session">session</a> == registerSession){
                     <a href="#makeCallFunc">makeCall</a>();
                     <a href="#sendMessageFunc">sendMessage</a>();
+                    <a href="#publishPresenceFunc">publishPresence</a>();
+                    <a href="#subscribePresenceFunc">subscribePresence</a>('johndoe'); // watch johndoe's presence status change
                 }
             }
             var login = function(){
@@ -276,7 +244,7 @@
         <a name="sendMessage"></a>
         <h2>Send/receive SIP MESSAGE (SMS-like)</h2>
         <p>
-            It's not required to login in order to make send SIP MESSAGEs but it's highly recommended if you're not using the stack in p2p mode.
+            It's not required to login in order to send SIP MESSAGEs (SMS-like) but it's highly recommended if you're not using the stack in p2p mode.
         </p>
         <pre><code>
             <a name="sendMessageFunc"></a>
@@ -300,6 +268,114 @@
                 console.info('SMS-content = ' + e.<a href="docgen/symbols/SIPml.Event.html#getContentString">getContentString</a>() + ' and SMS-content-type = ' + e.<a href="docgen/symbols/SIPml.Event.html#getContentType">getContentType</a>());
             }
         </code></pre>
+
+        <hr />
+        <a name="publishPresence"></a>
+        <h2>Publish presence status</h2>
+        <p>
+            It's not required to login in order to publish your presence status but it's highly recommended if you're not using the stack in p2p mode. <br />
+            Presence publication is used to indicate your presence (e.g. <i>online</i>), mood (e.g. <i>happy</i>) or any personal information to your wtachers (most likely the contacts in your address book). In the coming versions the presence
+            feature will be combined with XCAP to allow developing fully-featured RCS-e applications.<br />
+        </p>
+        <pre><code>
+            <a name="publishPresenceFunc"></a>
+            var publishSession;
+            var eventsListener = function(<a href="docgen/symbols/SIPml.Session.Event.html">e</a>){
+                console.info('session event = ' + e.<a href="docgen/symbols/SIPml.Session.Event.html#type">type</a>);
+            }
+            var publishPresence = function(){
+                publishSession = <a href="docgen/symbols/SIPml.Stack.html#newSession">sipStack.newSession</a>('publish', {
+                    events_listener: { events: '*', listener: eventsListener } // optional: '*' means all events
+                });                
+                var contentType = 'application/pidf+xml';
+                var content = '&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;\n' +
+                                '&lt;presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n' +
+                                    ' xmlns:im=\"urn:ietf:params:xml:ns:pidf:im\"' +
+             	                    ' entity=\"sip:bob@example.com\"&gt;\n' +
+                                    '&lt;tuple id=\"s8794\"&gt;\n' +
+                                    '&lt;status&gt;\n'+
+                                    '   &lt;basic>open&lt;/basic&gt;\n' +
+                                    '   &lt;im:im>away&lt;/im:im&gt;\n' +
+                                    '&lt;/status&gt;\n' +
+                                    '&lt;contact priority=\"0.8\"&gt;tel:+33600000000&lt;/contact&gt;\n' +
+                                    '&lt;note  xml:lang=\"fr\"&gt;Bonjour de Paris :)&lt;/note&gt;\n' +
+                                    '&lt;/tuple&gt;\n' +
+   	                            '&lt;/presence&gt;';
+
+                // send the PUBLISH request
+                publishSession.<a href="docgen/symbols/SIPml.Session.Publish.html#publish">publish</a>(content, contentType,{
+                    expires: 200,
+                    sip_caps: [
+                                    { name: '+g.oma.sip-im' },
+                                    { name: '+sip.ice' },
+                                    { name: 'language', value: '\"en,fr\"' }
+                              ],
+                    sip_headers: [
+                                    { name: 'Event', value: 'presence' },
+                                    { name: 'Organization', value: 'Doubango Telecom' }
+                                 ]
+                });
+            }
+        </code></pre>
+
+
+        <a name="subscribePresence"></a>
+        <h2>Subscribe for presence status</h2>
+        <p>
+            Subscription is used to watch for the status of a SIP entity. This SIP entity could be contact from your address book,  an rls-service, a voice mail, etc. 
+            When the entity status change, the subscriber will be notified using SIP NOTIFY request. <br />
+            Below, the code show how to subscribe for <i>johndoe</i>'s presence status and parse the content of the NOTIFY request. <br />
+        </p>
+        <pre><code>
+            <a name="subscribePresenceFunc"></a>
+            var subscribeSession;
+            var eventsListener = function(<a href="docgen/symbols/SIPml.Session.Event.html">e</a>){
+                console.info('session event = ' + e.<a href="docgen/symbols/SIPml.Session.Event.html#type">type</a>);
+                if(e.<a href="docgen/symbols/SIPml.Session.Event.html#type">type</a> == 'i_notify'){
+                    console.info('NOTIFY content = ' + e.<a href="docgen/symbols/SIPml.Event.html#getContentString">getContentString</a>());
+                    console.info('NOTIFY content-type = ' + e.<a href="docgen/symbols/SIPml.Event.html#getContentType">getContentType</a>());
+
+                    if (e.<a href="docgen/symbols/SIPml.Event.html#getContentType">getContentType</a>() == 'application/pidf+xml') {
+                        if (window.DOMParser) {
+                            var parser = new <a href="https://developer.mozilla.org/en-US/docs/DOM/DOMParser">DOMParser</a>();
+                            var xmlDoc = parser ? parser.parseFromString(e.<a href="docgen/symbols/SIPml.Event.html#getContentString">getContentString</a>(), "text/xml") : null;
+                            var presenceNode = xmlDoc ? xmlDoc.getElementsByTagName ("presence")[0] : null;
+                            if(presenceNode){
+                                var entityUri = presenceNode.getAttribute ("entity");
+                                var tupleNode = presenceNode.getElementsByTagName ("tuple")[0];
+                                if(entityUri && tupleNode){
+                                    var statusNode = tupleNode.getElementsByTagName ("status")[0];
+                                    if(statusNode){
+                                        var basicNode = statusNode.getElementsByTagName ("basic")[0];
+                                        if(basicNode){
+                                            console.info('Presence notification: Uri = ' + entityUri + ' status = ' + basicNode.textContent);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            var subscribePresence = function(to){
+                subscribeSession = <a href="docgen/symbols/SIPml.Stack.html#newSession">sipStack.newSession</a>('subscribe', {
+                            expires: 200,
+                            events_listener: { events: '*', listener: eventsListener },
+                            sip_headers: [
+                                          { name: 'Event', value: 'presence' }, // only notify for 'presence' events
+                                          { name: 'Accept', value: 'application/pidf+xml' } // supported content types (COMMA-sparated)
+                                ],
+                            sip_caps: [
+                                        { name: '+g.oma.sip-im', value: null },
+                                        { name: '+audio', value: null },
+                                        { name: 'language', value: '\"en,fr\"' }
+                                ]
+                        });
+                // start watching for entity's presence status (You may track event type <b>'connected'</b> to be sure that the request has been accepted by the server)
+                subscribeSession.<a href="docgen/symbols/SIPml.Session.Subscribe.html#subscribe">subscribe</a>(to);
+            }
+        </code></pre>
+
 
         <hr />
         <a name="TechnicalHelp"></a>

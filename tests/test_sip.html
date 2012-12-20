@@ -96,6 +96,19 @@
 	"\r\n" +
     "abc";
 
+    var __msg3 = "SIP/2.0 489 Bad Event\r\n" +
+    "Via: SIP/2.0/TCP 88.179.39.5:54699;rport=54699;received=88.179.39.5;branch=z9hG4bKHqqJ8fyToGFbX2VbKebqDJ5UPzsKPtsa\r\n" +
+    "From: <sip:12121212@sip2sip.info>;tag=TcKVRdLMNIE5bhmdLJg5\r\n" +
+    "To: <sip:12121212@sip2sip.info>;tag=104fb72fe3a4f8dc6b8eaad6b52e574f-ed23\r\n" +
+    "Call-ID: 867af179-cc08-a0da-5561-1d15a353426b\r\n" +
+    "CSeq: 60420 PUBLISH\r\n" +
+    "Content-Length: 0\r\n" +
+    "Allow-Events: dialog;sla, xcap-diff, presence.winfo, presence, message-summary\r\n" +
+    "Server: SIP Thor on OpenSIPS XS 1.8.0\r\n" +
+    "\r\n";
+    
+
+
     function test_msg_parse() {
         //var hdr = tsip_header_Content_Type.prototype.Parse("c: text/plain; charset=utf-8\r\n");
         //tsk_utils_log_info(hdr.tostring_full());
@@ -104,7 +117,7 @@
         //tsk_utils_log_info(hdr.tostring_full());
 
         var o_ragel_state = tsk_ragel_state_create();
-        tsk_ragel_state_init_str(o_ragel_state, __msg2);
+        tsk_ragel_state_init_str(o_ragel_state, __msg3);
         var msg = tsip_message.prototype.Parse(o_ragel_state, true);
         tsk_utils_log_info(msg.toString());
     }

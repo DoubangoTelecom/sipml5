@@ -204,6 +204,8 @@ SIPml.init = function (successCallback, errorCallback) {
         SIPml.b_webrtc_supported = tsk_utils_have_webrtc();
         SIPml.b_webrtc4all_supported = tsk_utils_have_webrtc4all();
         SIPml.s_webrtc4all_version = tsk_utils_webrtc4all_get_version();
+        SIPml.s_navigator_friendly_name = tsk_utils_get_navigator_friendly_name();
+        SIPml.s_system_friendly_name = tsk_utils_get_system_friendly_name();
 
         // print webrtc4all type and version
         if(SIPml.b_webrtc4all_supported){
@@ -219,28 +221,10 @@ SIPml.init = function (successCallback, errorCallback) {
             }
         }
 
-        // gets navigator friendly name
-        if (navigator.userAgent || navigator.appName) {
-            var ao_friendly_names = [
-                {s_id: 'chrome', s_name: 'chrome'},
-                {s_id: 'firefox', s_name: 'firefox'},
-                {s_id: 'safari', s_name: 'safari'},
-                {s_id: 'opera', s_name: 'opera'},
-                {s_id: 'microsoft internet explorer', s_name: 'ie'},
-                {s_id: 'netscape', s_name: 'netscape'}
-            ];
-            var s_userAgent = navigator.userAgent ? navigator.userAgent.toLowerCase() : 'null';
-            var s_appName = navigator.appName ? navigator.appName.toLowerCase() : 'null';
-            for (var i_index = 0; i_index < ao_friendly_names.length; ++i_index) {
-                if (s_userAgent.indexOf(ao_friendly_names[i_index].s_id) != -1 || s_appName.indexOf(ao_friendly_names[i_index].s_id) != -1) {
-                    SIPml.s_navigator_friendly_name = ao_friendly_names[i_index].s_name;
-                    break;
-                }
-            }
-        }
+        // prints navigator friendly name
         tsk_utils_log_info("Navigator friendly name = " + SIPml.s_navigator_friendly_name);
 
-        // get navigator version
+        // gets navigator version
         if(SIPml.s_navigator_friendly_name == 'ie'){
             var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
             if (re.exec(navigator.userAgent) != null) {
@@ -248,23 +232,7 @@ SIPml.init = function (successCallback, errorCallback) {
             }
         }        
 
-        // gets OS friendly name
-        if (navigator.appVersion) {
-            var ao_friendly_names = [
-                {s_id: 'mac', s_name: 'mac'},
-                {s_id: 'powerpc', s_name: 'powerpc'},
-                {s_id: 'win', s_name: 'windows'},
-                {s_id: 'sunos', s_name: 'sunos'},
-                {s_id: 'linux', s_name: 'linux'}
-            ];
-            var s_appVersion = navigator.appVersion.toLowerCase();
-            for (var i_index = 0; i_index < ao_friendly_names.length; ++i_index) {
-                if (s_appVersion.indexOf(ao_friendly_names[i_index].s_id) != -1) {
-                    SIPml.s_system_friendly_name = ao_friendly_names[i_index].s_name;
-                    break;
-                }
-            }
-        }
+        // prints OS friendly name
         tsk_utils_log_info("OS friendly name = " + SIPml.s_system_friendly_name);
 
         // checks for WebRTC support
@@ -344,6 +312,8 @@ Adds an event listener to the target object. <br /><br />
                 <li><a href="SIPml.Session.Call.html">SIPml.Session.Call</a></li>
                 <li><a href="SIPml.Session.Message.html">SIPml.Session.Message</a></li>
                 <li><a href="SIPml.Session.Message.html">SIPml.Session.Registration</a></li>
+                <li><a href="SIPml.Session.Message.html">SIPml.Session.Subscribe</a></li>
+                <li><a href="SIPml.Session.Message.html">SIPml.Session.Publish</a></li>
             <ul>
         </td>
         <td><b>*</b><br/> connecting<br/> connected<br/> terminating<br/> terminated<br/>
@@ -361,6 +331,14 @@ Adds an event listener to the target object. <br /><br />
             m_early_media<br/> m_local_hold_ok<br/> m_local_hold_nok<br/> m_local_resume_ok<br/> m_local_resume_nok<br/> m_remote_hold<br/> m_remote_resume<br/>
             m_stream_video_local_added<br/> m_stream_video_local_removed<br/> m_stream_video_remote_added<br/> m_stream_video_remote_removed 
             i_ect_new_call<br/> o_ect_trying<br/> o_ect_accepted<br/> o_ect_completed<br/> i_ect_completed<br/> o_ect_failed<br/> i_ect_failed<br/> o_ect_notify<br/> i_ect_notify<br/> i_ect_requested
+        </td>
+        <td><a href="SIPml.Session.Event.html">SIPml.Session.Event</a></td>
+        <td>borrows all events supported by <a href="SIPml.Session.html">SIPml.Session</a></td>
+    </tr>
+    <tr>
+        <td><a href="SIPml.Session.Subscribe.html" name="SIPml.EventTarget.Session.Subscribe">SIPml.Session.Subscribe</a></td>
+        <td>
+            i_notify
         </td>
         <td><a href="SIPml.Session.Event.html">SIPml.Session.Event</a></td>
         <td>borrows all events supported by <a href="SIPml.Session.html">SIPml.Session</a></td>
@@ -733,7 +711,63 @@ SIPml.Stack = function (o_conf) {
                  }
              }
          }
-     }; 
+     };
+
+      // listen for PUBLISH events
+     this.o_stack.on_event_publish = function (e) {
+         var s_type = null;
+         var i_session_id = e.o_session.i_id;
+         var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
+         if(!oSession){
+            tsk_utils_log_warn('Cannot find session with id = ' + i_session_id + ' and event = ' + e.e_invite_type);
+            return;
+         }
+
+         switch(e.e_publish_type){
+            case tsip_event_publish_type_e.I_PUBLISH: break;
+            case tsip_event_publish_type_e.I_UNPUBLISH: break;
+            case tsip_event_publish_type_e.AO_PUBLISH: 
+            case tsip_event_publish_type_e.AO_UNPUBLISH:
+                {
+                    s_type = 'i_ao_request'; 
+                    break;
+                }
+         }
+         if(s_type){
+            oSession.dispatchEvent({ s_type: s_type, o_value: new SIPml.Session.Event(oSession, s_type, e) });
+         }
+     }
+
+     // listen for SUBSCRIBE events
+     this.o_stack.on_event_subscribe = function (e) {
+         var s_type = null;
+         var i_session_id = e.o_session.i_id;
+         var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
+         if(!oSession){
+            tsk_utils_log_warn('Cannot find session with id = ' + i_session_id + ' and event = ' + e.e_invite_type);
+            return;
+         }
+
+         switch(e.e_subscribe_type){
+            case tsip_event_subscribe_type_e.I_SUBSCRIBE: break;
+            case tsip_event_subscribe_type_e.I_UNSUBSRIBE: break;
+            case tsip_event_subscribe_type_e.AO_SUBSCRIBE: 
+            case tsip_event_subscribe_type_e.AO_UNSUBSCRIBE:
+            case tsip_event_subscribe_type_e.AO_NOTIFY:
+                {
+                    s_type = 'i_ao_request';
+                    break;
+                }
+            case tsip_event_subscribe_type_e.I_NOTIFY:
+                {
+                    s_type = 'i_notify';
+                    break;
+                }
+         }
+         if(s_type){
+            oSession.dispatchEvent({ s_type: s_type, o_value: new SIPml.Session.Event(oSession, s_type, e) });
+         }
+     }
 
 
      // listen for INVITE events
@@ -926,7 +960,7 @@ SIPml.Stack.prototype.stop = function (i_timeout) {
 
 /**
 Create new SIP session.
-@param {String} type Session type. Supported values: 'register', 'call-audio', 'call-audiovideo', 'call-video' or 'message'
+@param {String} type Session type. Supported values: <b>'register'</b>, <b>'call-audio'</b>, <b>'call-audiovideo'</b>, <b>'call-video'</b>, <b>'message'</b>, <b>'subscribe'</b> or <b>'publish'</b>.
 @param {SIPml.Session.Configuration} [configuration] Anonymous object used to configure the newly created session.
 @throws {ERR_INVALID_PARAMETER_VALUE} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> <br>
 @returns {SIPml.Session} New session if successful; otherwise null.<br> The session type would be <a href="SIPml.Session.Registration.html">SIPml.Session.Registration</a>, <a href="SIPml.Session.Call.html">SIPml.Session.Call</a> or <a href="SIPml.Session.Message.html">SIPml.Session.Message</a> <br>
@@ -972,6 +1006,14 @@ SIPml.Stack.prototype.newSession = function (s_type, o_conf) {
     else if (s_type == 'message') {
         o_session = new tsip_session_message(this.o_stack);
         cls = SIPml.Session.Message;
+    }
+    else if (s_type == 'publish') {
+        o_session = new tsip_session_publish(this.o_stack);
+        cls = SIPml.Session.Publish;
+    }
+    else if (s_type == 'subscribe') {
+        o_session = new tsip_session_subscribe(this.o_stack);
+        cls = SIPml.Session.Subscribe;
     }
     else if (s_type == 'call-audio' || s_type == 'call-audiovideo' || s_type == 'call-video') {
         o_session = new tsip_session_invite(this.o_stack);
@@ -1439,11 +1481,16 @@ SIPml.Session.Call.prototype.rejectTransfer = function (o_conf) {
     return this.o_session.transfer_reject();
 }
 
-// ================================== SIPml.Message ==========================================
+// ================================== SIPml.Session.Message ==========================================
 
 /** 
-SIP MESSAGE (SMS) session class.
+SIP MESSAGE (SMS) session class. You should never create an instance of this class by yourself.
+Please use <a href="SIPml.Stack.html#newSession">stack.newSession()</a> function to create a messaging/IM session.
 @constructor
+@param {tsip_session} session Private session object.
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@example
+var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('message');
 */
 SIPml.Session.Message = function (o_session, o_conf) {
     SIPml.Session.call(this, o_session, o_conf);
@@ -1485,4 +1532,193 @@ SIPml.Session.Message.prototype.send = function (s_to, o_content, s_content_type
     this.o_session.set(tsip_session.prototype.SetToStr(s_to));
     // sends the message
     return this.o_session.send(o_content, s_content_type);
+}
+
+
+
+// ================================== SIPml.Session.Publish ==========================================
+
+
+/** 
+SIP PUBLISH (for presence status publication) session class.You should never create an instance of this class by yourself.
+Please use <a href="SIPml.Stack.html#newSession">stack.newSession()</a> function to create a new presence publication session.
+@constructor
+@extends SIPml.Session
+@since version 1.1.0
+@param {tsip_session} session Private session object.
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@example
+var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('publish', {
+                            expires: 200,
+                            events_listener: { events: '*', listener: function(e){} },
+                            sip_headers: [
+                                          { name: 'Event', value: 'presence' } // very important
+                                ],
+                            sip_caps: [
+                                        { name: '+g.oma.sip-im', value: null },
+                                        { name: '+audio', value: null },
+                                        { name: 'language', value: '\"en,fr\"' }
+                                ]
+                        });
+*/
+SIPml.Session.Publish = function (o_session, o_conf) {
+    SIPml.Session.call(this, o_session, o_conf);
+
+}
+
+SIPml.Session.Publish.prototype = Object.create(SIPml.Session.prototype);
+
+/**
+Sends a SIP PUBLISH (for presence status publication) request.
+@since version 1.1.0
+@param {Object|String} [content] The request content.
+@param {String} [contentType] The content type.
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@returns {Integer} 0 if successful; otherwise nonzero
+@example
+var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('publish');
+var contentType = 'application/pidf+xml';
+var content = '&lt;?xml version=\"1.0\" encoding=\"UTF-8\"?&gt;\n' +
+                '&lt;presence xmlns=\"urn:ietf:params:xml:ns:pidf\"\n' +
+                    ' xmlns:im=\"urn:ietf:params:xml:ns:pidf:im\"' +
+             	    ' entity=\"sip:bob@example.com\"&gt;\n' +
+                    '&lt;tuple id=\"s8794\"&gt;\n' +
+                    '&lt;status&gt;\n'+
+                    '   &lt;basic>open&lt;/basic&gt;\n' +
+                    '   &lt;im:im>away&lt;/im:im&gt;\n' +
+                    '&lt;/status&gt;\n' +
+                    '&lt;contact priority=\"0.8\"&gt;tel:+33600000000&lt;/contact&gt;\n' +
+                    '&lt;note  xml:lang=\"fr\"&gt;Bonjour de Paris :)&lt;/note&gt;\n' +
+                    '&lt;/tuple&gt;\n' +
+   	            '&lt;/presence&gt;';
+
+session.publish(content, contentType,{
+    expires: 200,
+    sip_caps: [
+                                    { name: '+g.oma.sip-im' },
+                                    { name: '+sip.ice' },
+                                    { name: 'language', value: '\"en,fr\"' }
+                            ],
+    sip_headers: [
+                            { name: 'Event', value: 'presence' },
+                            { name: 'Organization', value: 'Doubango Telecom' }
+                    ]
+});
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
+@see <a href="#unpublish">unpublish</a>
+*/
+SIPml.Session.Publish.prototype.publish = function (o_content, s_content_type, o_conf){
+    // apply configuration values
+    this.setConfiguration(o_conf);
+    // sends the PUBLISH request
+    return this.o_session.publish(o_content, s_content_type);
+}
+
+/**
+Remove/unpublish presence data from the server.
+@since version 1.1.0
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
+@see <a href="#publish">publish</a>
+*/
+SIPml.Session.Publish.prototype.unpublish = function (o_conf){
+    // apply configuration values
+    this.setConfiguration(o_conf);
+    // sends the PUBLISH request (expires = 0)
+    return this.o_session.unpublish();
+}
+
+
+
+
+
+// ================================== SIPml.Session.Subscribe ==========================================
+
+
+/** 
+SIP SUBSCRIBE (for presence status subscription) session class.You should never create an instance of this class by yourself.
+Please use <a href="SIPml.Stack.html#newSession">stack.newSession()</a> function to create a new presence subscription session.
+@constructor
+@extends SIPml.Session
+@since version 1.1.0
+@param {tsip_session} session Private session object.
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@example
+var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('subscribe', {
+                expires: 200,
+                events_listener: { events: '*', listener: function(e){} },
+                sip_headers: [
+                                { name: 'Event', value: 'presence' },
+                                { name: 'Accept', value: 'application/pidf+xml' }
+                    ],
+                sip_caps: [
+                            { name: '+g.oma.sip-im', value: null },
+                            { name: '+audio', value: null },
+                            { name: 'language', value: '\"en,fr\"' }
+                    ]
+            });
+*/
+SIPml.Session.Subscribe = function (o_session, o_conf) {
+    SIPml.Session.call(this, o_session, o_conf);
+
+}
+
+SIPml.Session.Subscribe.prototype = Object.create(SIPml.Session.prototype);
+
+/**
+Sends a SIP SUBSCRIBE (for presence status subscription) request.
+@since version 1.1.0
+@param {String} to Destination name, uri, phone number or identifier (e.g. 'sip:johndoe@example.com' or 'johndoe' or '+33600000000').
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@returns {Integer} 0 if successful; otherwise nonzero
+@example
+var onEvent = function(e){
+    if(e.type == 'i_notify'){
+        // process incoming NOTIFY request
+    }
+}
+var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('subscribe', {
+                expires: 200,
+                events_listener: { events: '*', listener: onEvent },
+                sip_headers: [
+                                { name: 'Event', value: 'presence' },
+                                { name: 'Accept', value: 'application/pidf+xml' }
+                    ],
+                sip_caps: [
+                            { name: '+g.oma.sip-im', value: null },
+                            { name: '+audio', value: null },
+                            { name: 'language', value: '\"en,fr\"' }
+                    ]
+            });
+session.subscribe('johndoe'); // watch for johndoe's presence status
+
+@throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
+@see <a href="#unsubscribe">unsubscribe</a>
+*/
+SIPml.Session.Subscribe.prototype.subscribe = function (s_to, o_conf){
+     if (tsk_string_is_null_or_empty(s_to)) {
+        throw new Error("ERR_INVALID_PARAMETER_VALUE: 'to' must not be null");
+    }
+    // set destination
+    this.o_session.set(tsip_session.prototype.SetToStr(s_to));
+    // apply configuration values
+    this.setConfiguration(o_conf);
+    // sends the PUBLISH request
+    return this.o_session.subscribe();
+}
+
+/**
+Unsubscribe.
+@since version 1.1.0
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
+@see <a href="#subscribe">subscribe</a>
+*/
+SIPml.Session.Subscribe.prototype.unsubscribe = function (o_conf){
+    // apply configuration values
+    this.setConfiguration(o_conf);
+    // sends the SUBSCRIBE request (expires = 0)
+    return this.o_session.unsubscribe();
 }

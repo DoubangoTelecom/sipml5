@@ -71,8 +71,8 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
                     __o_sessiondescription_class = window.SessionDescription;
                     __o_iceCandidate_class = window.IceCandidate;
                 }
-                else if (window.webkitRTCPeerConnection && window.RTCSessionDescription && window.RTCIceCandidate) {
-                    __o_peerconnection_class = window.webkitRTCPeerConnection;
+                else if (window.nativeRTCPeerConnection && window.RTCSessionDescription && window.RTCIceCandidate) {
+                    __o_peerconnection_class = window.nativeRTCPeerConnection;
                     __o_sessiondescription_class = window.RTCSessionDescription;
                     __o_iceCandidate_class = window.RTCIceCandidate;
                 }
@@ -96,15 +96,11 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
 }
 
 tmedia_session_mgr.prototype.is_roap = function () {
-    try {
-        return tsk_utils_have_webrtc4all() ? false : ((window.webkitRTCPeerConnection || window.webkitPeerConnection00) ? false : true);
-    }
-    catch (e) { }
-    return false;
+    return !this.is_jsep();
 }
 
 tmedia_session_mgr.prototype.is_jsep = function () {
-    return !this.is_roap();
+    return (WebRtc4all_GetType() == WebRtcType_e.NATIVE);
 }
 
 tmedia_session_mgr.prototype.get_stream_video_local = function () {
@@ -617,7 +613,7 @@ tmedia_session.prototype.Create = function (e_type, o_mgr) {
     }
 }
 
-if(__b_debug_mode){
+if(!window.__b_release_mode){
     tmedia_api_add_js_scripts('head',
         'src/tinyMEDIA/src/tmedia_session_jsep.js',
         'src/tinyMEDIA/src/tmedia_session_roap.js',
