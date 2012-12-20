@@ -1,0 +1,15 @@
+#summary Release notes
+#labels Featured,Phase-Support
+
+<wiki:toc max_depth="2" />
+
+==1.1.0==
+ * SVN: 148
+ * Date: December 20, 2012
+ * Adds support for Presence publication and subscription
+ * Fix issue 56, 57 and 59
+
+==1.0.0==
+ * SVN: 144
+ * Date: December 16, 2012
+ * First API release
