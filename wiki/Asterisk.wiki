@@ -4,7 +4,7 @@
 <wiki:toc max_depth="2" />
 
 <font color="red" size="2">
-<strong>We strongly recommend using the _RTCWeb Breaker_ (requires [htpp://webrtc2sip.org webrtc2sip.org]) on the [http://sipml5.org/expert.htm expert window] instead of patching Asterisk.</strong><br />
+<strong>We strongly recommend using the _RTCWeb Breaker_ (requires [http://webrtc2sip.org webrtc2sip.org]) on the [http://sipml5.org/expert.htm expert window] instead of patching Asterisk.</strong><br />
 </font>
 
 This is a short guide explaining how to configure any HTML5 SIP client to work with Asterisk.
