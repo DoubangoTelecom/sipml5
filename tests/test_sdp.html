@@ -12,6 +12,8 @@
 
 <script type="text/javascript">
 
+    var __s_browser = "firefox";
+
     var __msg1 = "v=0\r\n" +
 	"o=alice 2890844526 2890844526 IN IP4 host.atlanta.example.com\r\n" +
 	"s=\r\n" +
@@ -151,8 +153,145 @@
     "a=candidate:0 2 UDP 2111832318 192.168.0.11 51714 typ host\r\n" +
     "a=candidate:1 2 UDP 1692467198 88.179.39.5 51714 typ srflx raddr 192.168.0.11 rport 51714\r\n";
 
+    var __msg5 = "v=0\r\n" +
+            "o=doubango 1983 678901 IN IP4 192.168.0.37\r\n" +
+            "s=-\r\n" +
+            "c=IN IP4 192.168.0.37\r\n" +
+            "t=0 0\r\n" +
+            "a=acap:1 setup:actpass\r\n" +
+            "a=acap:2 fingerprint: SHA-1 99:2C:29:4B:FF:D1:FA:74:8C:C9:32:CD:66:A5:80:8C:12:18:D4:6C\r\n" +
+            "a=acap:3 fingerprint: SHA-256 BE:8D:5B:BC:34:D8:73:70:EF:04:9B:7B:6F:69:60:5C:37:05:2A:6A:68:C0:E1:06:8C:35:47:83:80:8B:89:C6\r\n" +
+            "a=tcap:1 UDP/TLS/RTP/SAVPF UDP/TLS/RTP/SAVP RTP/SAVPF RTP/SAVP RTP/AVPF\r\n" +
+            "m=audio 6110 RTP/AVP 0 8 101\r\n" +
+            "a=ptime:20\r\n" +
+            "a=silenceSupp:off - - - -\r\n" +
+            "a=rtpmap:0 PCMU/8000/1\r\n" +
+            "a=rtpmap:8 PCMA/8000/1\r\n" +
+            "a=rtpmap:101 telephone-event/8000/1\r\n" +
+            "a=fmtp:101 0-16\r\n" +
+            "a=acap:4 crypto:1 AES_CM_128_HMAC_SHA1_80 inline:UiNPpIsb+AsyjnBGs8kFho0COUV3NMENIGc0z3rg\r\n" +
+            "a=acap:5 crypto:2 AES_CM_128_HMAC_SHA1_32 inline:1sx0U3hGC0Pa0pGhleb4cZTRQxa6Ot7+z3P7CciZ\r\n" +
+            "a=pcfg:1 t=1 a=1,2|3\r\n" +
+            "a=pcfg:2 t=2 a=1,2|3\r\n" +
+            "a=pcfg:3 t=3 a=4,5\r\n" +
+            "a=pcfg:4 t=4 a=4,5\r\n" +
+            "a=sendrecv\r\n" +
+            "a=rtcp-mux\r\n" +
+            "a=ssrc:4121734221 cname:ldjWoB60jbyQlR6e\r\n" +
+            "a=ssrc:4121734221 mslabel:6994f7d1-6ce9-4fbd-acfd-84e5131ca2e2\r\n" +
+            "a=ssrc:4121734221 label:Doubango\r\n" +
+            "m=video 33324 RTP/AVP 104 121 103 125 34\r\n" +
+            "a=rtpmap:104 H264/90000\r\n" +
+            "a=imageattr:104 recv [x=[128:16:640],y=[96:16:480]] send [x=[128:16:640],y=[96:16:480]]\r\n" +
+            "a=fmtp:104 profile-level-id=42001e; packetization-mode=1\r\n" +
+            "a=rtpmap:121 MP4V-ES/90000\r\n" +
+            "a=imageattr:121 recv [x=[128:16:640],y=[96:16:480]] send [x=[128:16:640],y=[96:16:480]]\r\n" +
+            "a=fmtp:121 profile-level-id=3\r\n" +
+            "a=rtpmap:103 H263-1998/90000\r\n" +
+            "a=fmtp:103 CIF=2;QCIF=2;SQCIF=2\r\n" +
+            "a=rtpmap:125 theora/90000\r\n" +
+            "a=imageattr:125 recv [x=[128:16:640],y=[96:16:480]] send [x=[128:16:640],y=[96:16:480]]\r\n" +
+            "a=fmtp:125 sampling=YCbCr-4:2:0; width=640; height=480\r\n" +
+            "a=rtpmap:34 H263/90000\r\n" +
+            "a=fmtp:34 CIF=2;QCIF=2;SQCIF=2\r\n" +
+            "a=acap:4 crypto:1 AES_CM_128_HMAC_SHA1_80 inline:fvjzHTEmTaVj2hgek3gzWBo99juW+5oyjOu513HK\r\n" +
+            "a=acap:5 crypto:2 AES_CM_128_HMAC_SHA1_32 inline:kvGfYYxqHMedWyd/xkm5Jo6VVuG387KmEBOEW+80\r\n" +
+            "a=pcfg:1 t=1 a=1,2|3\r\n" +
+            "a=pcfg:2 t=2 a=1,2|3\r\n" +
+            "a=pcfg:3 t=3 a=4,5\r\n" +
+            "a=pcfg:4 t=4 a=4,5\r\n" +
+            "a=sendrecv\r\n" +
+            "a=rtcp-mux\r\n" +
+            "a=ssrc:4121731982 cname:ldjWoB60jbyQlR6e\r\n" +
+            "a=ssrc:4121731982 mslabel:6994f7d1-6ce9-4fbd-acfd-84e5131ca2e2\r\n" +
+            "a=ssrc:4121731982 label:Doubango\r\n";
+
+
+    function test_rfc5939(){
+        // i_part = 1: field, 2: value
+        var rfc5939_get_acap_part = function(o_hdr_a, i_part){
+            var ao_match = o_hdr_a.s_value.match(/^\d\s+(\w+):([\D|\d]+)/i);
+            if(ao_match && ao_match.length == 3){
+                return ao_match[i_part];
+            }
+        }
+        var rfc5939_acap_ensure = function(o_hdr_a){
+            if(o_hdr_a && o_hdr_a.s_field == "acap"){
+                o_hdr_a.s_field = rfc5939_get_acap_part(o_hdr_a, 1);
+                o_hdr_a.s_value = rfc5939_get_acap_part(o_hdr_a, 2);
+            }
+        }
+        var rfc5939_get_headerA_at = function(o_msg, s_media, s_field, i_index){
+            var i_pos = 0;
+            var get_headerA_at = function(o_sdp, s_field, i_index){
+                if(o_sdp){
+                    var ao_headersA = (o_sdp.ao_headers || o_sdp.ao_hdr_A);
+                    for (var i = 0; i < ao_headersA.length; ++i) {
+                        if(ao_headersA[i].e_type == tsdp_header_type_e.A && ao_headersA[i].s_value){
+                            var b_found = (ao_headersA[i].s_field === s_field);
+                            if(!b_found && ao_headersA[i].s_field == "acap"){
+                                b_found = (rfc5939_get_acap_part(ao_headersA[i], 1) == s_field);
+                            }
+                            if(b_found && i_pos++ >= i_index){
+                                return ao_headersA[i];
+                            }
+                        }
+                    }
+                }
+            }
+
+            var o_hdr_a = get_headerA_at(o_msg, s_field, i_index); // find at session level
+            if(!o_hdr_a){
+                return get_headerA_at(o_msg.get_header_m_by_name(s_media), s_field, i_index); // find at media level
+            }
+            return o_hdr_a;
+        }
+
+
+        var o_message = tsdp_message.prototype.Parse(__msg5);
+
+        var o_hdr_M, o_hdr_A;
+        var i_index = 0, i;
+
+        while ((o_hdr_M = o_message.get_header_at(tsdp_header_type_e.M, i_index++))) {
+            // check for "crypto:" lines (event if it's not valid to provide "crypto" lines in non-secure SDP many clients do it, so, just check)
+            if (__s_browser != "firefox" && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                for (i = 0; i < o_hdr_M.ao_hdr_A.length; ++i) {
+                    if (o_hdr_M.ao_hdr_A[i].s_field == "crypto") {
+                        o_hdr_M.s_proto = "RTP/SAVPF";
+                        break;
+                    }
+                }
+            }
+
+            // rfc5939: "acap:crypto"
+            if (__s_browser != "firefox" && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                i = 0;
+                while((o_hdr_A = rfc5939_get_headerA_at(o_message, o_hdr_M.s_media, "crypto", i++))){
+                    rfc5939_acap_ensure(o_hdr_A);
+                    o_hdr_M.s_proto = "RTP/SAVPF";
+                    // do not break => find next "acap:crypto" lines and ensure them
+                }
+            }
+            // rfc5939: "acap:fingerprint,setup,connection" => Mozilla Nightly
+            if (__s_browser == "firefox" && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                if((o_hdr_A = rfc5939_get_headerA_at(o_message, o_hdr_M.s_media, "fingerprint", 0))){
+                    rfc5939_acap_ensure(o_hdr_A);
+                    if((o_hdr_A = rfc5939_get_headerA_at(o_message, o_hdr_M.s_media, "setup", 0))){
+                        rfc5939_acap_ensure(o_hdr_A);
+                    }
+                    if((o_hdr_A = rfc5939_get_headerA_at(o_message, o_hdr_M.s_media, "connection", 0))){
+                        rfc5939_acap_ensure(o_hdr_A);
+                    }
+                    o_hdr_M.s_proto = "UDP/TLS/RTP/SAVPF";
+                }
+            }
+        }
+        
+        tsk_utils_log_info(o_message.toString());
+    }
+
     function test_msg_parse() {
-        var i_length = __msg4.length;
         var o_message = tsdp_message.prototype.Parse(__msg4);
         tsk_utils_log_info(o_message.toString());
     }
@@ -162,6 +301,7 @@
 <body>
     <form action=''>
     <input type="button" value="Parse" onclick='test_msg_parse();' />
+    <input type="button" value="rfc5939" onclick='test_rfc5939();' />
     </form>
 </body>
 </html>

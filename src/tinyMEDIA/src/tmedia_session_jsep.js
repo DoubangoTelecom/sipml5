@@ -112,8 +112,8 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
 
 tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
     if (this.o_sdp_ro) {
-        var o_hdr_M;
-        var i_index = 0;
+        var o_hdr_M, o_hdr_A;
+        var i_index = 0, i;
 
         // FIXME: Chrome fails to parse SDP with global SDP "a=" attributes
         // Chrome 21.0.1154.0+ generate "a=group:BUNDLE audio video" but cannot parse it
@@ -123,14 +123,79 @@ tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
             this.o_sdp_ro.remove_header(tsdp_header_type_e.A);
         }
 
+        // ==== START: RFC5939 utility functions ==== //
+        var rfc5939_get_acap_part = function(o_hdr_a, i_part/* i_part = 1: field, 2: value*/){
+            var ao_match = o_hdr_a.s_value.match(/^\d\s+(\w+):([\D|\d]+)/i);
+            if(ao_match && ao_match.length == 3){
+                return ao_match[i_part];
+            }
+        }
+        var rfc5939_acap_ensure = function(o_hdr_a){
+            if(o_hdr_a && o_hdr_a.s_field == "acap"){
+                o_hdr_a.s_field = rfc5939_get_acap_part(o_hdr_a, 1);
+                o_hdr_a.s_value = rfc5939_get_acap_part(o_hdr_a, 2);
+            }
+        }
+        var rfc5939_get_headerA_at = function(o_msg, s_media, s_field, i_index){
+            var i_pos = 0;
+            var get_headerA_at = function(o_sdp, s_field, i_index){
+                if(o_sdp){
+                    var ao_headersA = (o_sdp.ao_headers || o_sdp.ao_hdr_A);
+                    for (var i = 0; i < ao_headersA.length; ++i) {
+                        if(ao_headersA[i].e_type == tsdp_header_type_e.A && ao_headersA[i].s_value){
+                            var b_found = (ao_headersA[i].s_field === s_field);
+                            if(!b_found && ao_headersA[i].s_field == "acap"){
+                                b_found = (rfc5939_get_acap_part(ao_headersA[i], 1) == s_field);
+                            }
+                            if(b_found && i_pos++ >= i_index){
+                                return ao_headersA[i];
+                            }
+                        }
+                    }
+                }
+            }
+
+            var o_hdr_a = get_headerA_at(o_msg, s_field, i_index); // find at session level
+            if(!o_hdr_a){
+                return get_headerA_at(o_msg.get_header_m_by_name(s_media), s_field, i_index); // find at media level
+            }
+            return o_hdr_a;
+        }
+         // ==== END: RFC5939 utility functions ==== //
+
         // change profile if not secure
+        //!\ firefox nighly: DTLS-SRTP only, chrome: SDES-SRTP
         while ((o_hdr_M = this.o_sdp_ro.get_header_at(tsdp_header_type_e.M, i_index++))) {
-            if (o_hdr_M.s_proto.indexOf("SAVP") < 0) {
-                for (var i = 0; i < o_hdr_M.ao_hdr_A.length; ++i) {
+            // check for "crypto:" lines (event if it's not valid to provide "crypto" lines in non-secure SDP many clients do it, so, just check)
+            if (!tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                for (i = 0; i < o_hdr_M.ao_hdr_A.length; ++i) {
                     if (o_hdr_M.ao_hdr_A[i].s_field == "crypto") {
                         o_hdr_M.s_proto = "RTP/SAVPF";
                         break;
                     }
+                }
+            }
+
+            // rfc5939: "acap:crypto"
+            if (!tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                i = 0;
+                while((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "crypto", i++))){
+                    rfc5939_acap_ensure(o_hdr_A);
+                    o_hdr_M.s_proto = "RTP/SAVPF";
+                    // do not break => find next "acap:crypto" lines and ensure them
+                }
+            }
+            // rfc5939: "acap:fingerprint,setup,connection" => Mozilla Nightly
+            if (tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                if((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "fingerprint", 0))){
+                    rfc5939_acap_ensure(o_hdr_A);
+                    if((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "setup", 0))){
+                        rfc5939_acap_ensure(o_hdr_A);
+                    }
+                    if((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "connection", 0))){
+                        rfc5939_acap_ensure(o_hdr_A);
+                    }
+                    o_hdr_M.s_proto = "UDP/TLS/RTP/SAVPF";
                 }
             }
         }
@@ -365,6 +430,9 @@ tmedia_session_jsep01.onCreateSdpSuccess = function (o_offer, _This) {
             tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSetLocalDescriptionSuccess : function(){ tmedia_session_jsep01.onSetLocalDescriptionSuccess(This); },
             tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSetLocalDescriptionError : function(s_error){ tmedia_session_jsep01.onSetLocalDescriptionError(s_error, This); }
         );
+        if(tmedia_session_jsep01.mozThis && !tmedia_session_jsep01.mozThis.localDescription){
+            tmedia_session_jsep01.mozThis.localDescription = o_offer; // HACK: Firefox Nightly 20.0a1 => "PeeConnection.localDescription" always undefined
+        }
     }
 }
 
@@ -382,7 +450,6 @@ tmedia_session_jsep01.onSetLocalDescriptionSuccess = function(_This){
     var This = (tmedia_session_jsep01.mozThis || _This);
     if (This && This.o_pc) {
         if(tmedia_session_jsep01.mozThis){
-            tmedia_session_jsep01.mozThis.localDescription = o_offer; // HACK: Firefox Nightly 20.0a1 => "PeeConnection.localDescription" always undefined
             tmedia_session_jsep01.onIceGatheringCompleted(This); // HACK: Firefox Nightly 20.0a1 => "PeeConnection.onicecandidate" callback never called
         }
     }
@@ -402,7 +469,7 @@ tmedia_session_jsep01.onIceGatheringCompleted = function (_This) {
     var This = (tmedia_session_jsep01.mozThis || _This);
     if(This && This.o_pc){
         This.b_sdp_lo_pending = false;
-        var localDescription = (This.o_pc.localDescription || this.localDescription);
+        var localDescription = (This.o_pc.localDescription || This.localDescription);
         if(localDescription){
             This.o_sdp_jsep_lo = localDescription;
             This.o_sdp_lo = tsdp_message.prototype.Parse(This.o_sdp_jsep_lo.sdp);
