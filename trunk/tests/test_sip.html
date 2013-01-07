@@ -105,9 +105,7 @@
     "Content-Length: 0\r\n" +
     "Allow-Events: dialog;sla, xcap-diff, presence.winfo, presence, message-summary\r\n" +
     "Server: SIP Thor on OpenSIPS XS 1.8.0\r\n" +
-    "\r\n";
-    
-
+    "\r\n";    
 
     function test_msg_parse() {
         //var hdr = tsip_header_Content_Type.prototype.Parse("c: text/plain; charset=utf-8\r\n");
@@ -117,7 +115,7 @@
         //tsk_utils_log_info(hdr.tostring_full());
 
         var o_ragel_state = tsk_ragel_state_create();
-        tsk_ragel_state_init_str(o_ragel_state, __msg3);
+        tsk_ragel_state_init_str(o_ragel_state, __msg2);
         var msg = tsip_message.prototype.Parse(o_ragel_state, true);
         tsk_utils_log_info(msg.toString());
     }
