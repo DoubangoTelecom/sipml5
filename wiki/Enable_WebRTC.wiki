@@ -1,0 +1,16 @@
+#summary Enable WebRTC
+#labels Featured,Phase-Support
+
+<wiki:toc max_depth="3" />
+
+== Google Chrome ==
+Nothing to be done. It's ON by default.
+
+== Firefox Nightly ==
+ # Browse to <a href="about:config">about:config</a>
+ # Set *media.peerconnection.enabled* value to true
+ # Set *media.navigator.enabled* value to true
+ # It's not required but to speedup your testing you can disable permission on media stream request by setting *media.navigator.permission.disabled* value to true
+
+== IE, Firefox stable, Safari and Opera ==
+Just download and install [http://code.google.com/p/webrtc4all/ webrtc4all].
