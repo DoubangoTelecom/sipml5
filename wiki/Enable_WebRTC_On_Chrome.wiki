@@ -1,5 +1,5 @@
 #summary Enable WebRTC on Chrome
-#labels Featured,Phase-Support
+#labels Featured,Phase-Support,Deprecated
 
 To download chrome, please visit [https://www.google.com/intl/en/chrome/browser/ this page]. <br />
 To enable WebRTC, you need to activate both MediaStream and PeerConnection. <br />
