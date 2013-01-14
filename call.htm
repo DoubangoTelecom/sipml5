@@ -18,7 +18,7 @@
     DEBUG VERSION: 'SIPml-api.js'
     RELEASE VERSION: 'release/SIPml-api.js'
     -->
-    <script src="SIPml-api.js?svn=20" type="text/javascript"> </script>
+    <script src="SIPml-api.js?svn=165" type="text/javascript"> </script>
 
     <!-- Styles -->
     <link href="./assets/css/bootstrap.css" rel="stylesheet" />
@@ -26,6 +26,12 @@
         body{
             padding-top: 80px;
             padding-bottom: 40px;
+        }
+        .navbar-inner-red {
+          background-color: #600000;
+          background-image: none;
+          background-repeat: no-repeat;
+          filter: none;
         }
         .full-screen{
             position: absolute;
@@ -109,7 +115,7 @@
     var txtRegStatus, txtCallStatus;
     var btnRegister, btnUnRegister;
     var btnFullScreen, btnHoldResume, btnTransfer, btnKeyPad;
-    var videoRemote, videoLocal;
+    var videoRemote, videoLocal, audioRemote;
     var divVideo, divCallOptions;
     var tdVideo;
     var bFullScreen = false;
@@ -143,6 +149,8 @@
 
         videoLocal = document.getElementById("video_local");
         videoRemote = document.getElementById("video_remote");
+
+        audioRemote = document.getElementById("audio_remote");
 
         divVideo = document.getElementById("divVideo");
         divCallOptions = document.getElementById("divCallOptions");
@@ -359,7 +367,7 @@
                     enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
                     events_listener: { events: '*', listener: onSipEventStack },
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.07.01.2013' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.01.14' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -386,6 +394,7 @@
     function sipCall() {
         // call configuration
         var oConf = {
+            audio_remote: audioRemote,
             video_local: viewVideoLocal,
             video_remote: viewVideoRemote,
             events_listener: { events: '*', listener: onSipEventSession },
@@ -552,7 +561,7 @@
     }
 
     function uiVideoDisplayEvent(b_local, b_added) {
-        if (!bDisableVideo) {
+        //if (!bDisableVideo) {
             var o_elt_video = b_local ? videoLocal : videoRemote;
 
             if (b_added) {
@@ -576,7 +585,7 @@
                 }
                 fullScreen(false);
             }
-        }
+        //}
     }
 
     function uiVideoDisplayShowHide(b_show) {
@@ -589,6 +598,33 @@
             divVideo.style.height = '0px';
         }
         btnFullScreen.disabled = !b_show;
+    }
+
+    function uiCallTerminated(s_description){
+        btnCall.value = 'Call';
+        btnHangUp.value = 'HangUp';
+        btnHoldResume.value = 'hold';
+        btnCall.disabled = false;
+        btnHangUp.disabled = true;
+
+        oSipSessionCall = null;
+
+        stopRingbackTone();
+        stopRingTone();
+
+        txtCallStatus.innerHTML = "<i>" + s_description + "</i>";
+        uiVideoDisplayShowHide(false);
+        divCallOptions.style.opacity = 0;
+
+        if (oNotifICall) {
+            oNotifICall.cancel();
+            oNotifICall = null;
+        }
+
+        uiVideoDisplayEvent(true, false);
+        uiVideoDisplayEvent(false, false);
+
+        setTimeout(function () { if (!oSipSessionCall) txtCallStatus.innerHTML = ''; }, 2500);
     }
 
     // Callback function for SIP Stacks
@@ -652,10 +688,25 @@
                         btnHangUp.disabled = false;
 
                         startRingTone();
-                        
+
                         var sRemoteNumber = (oSipSessionCall.getRemoteFriendlyName() || 'unknown');
                         txtCallStatus.innerHTML = "<i>Incoming call from [<b>" + sRemoteNumber + "</b>]</i>";
                         showNotifICall(sRemoteNumber);
+                    }
+                    break;
+                }
+
+            case 'm_permission_requested':
+                {
+                    document.getElementById('divNavbarInner').setAttribute('class', 'navbar-inner-red');
+                    break;
+                }
+            case 'm_permission_accepted':
+            case 'm_permission_refused':
+                {
+                    document.getElementById('divNavbarInner').setAttribute('class', 'navbar-inner');
+                    if(e.type == 'm_permission_refused'){
+                        uiCallTerminated('Media stream permission denied');
                     }
                     break;
                 }
@@ -713,30 +764,7 @@
                         txtRegStatus.innerHTML = "<i>" + e.description + "</i>";
                     }
                     else if (e.session == oSipSessionCall) {
-                        btnCall.value = 'Call';
-                        btnHangUp.value = 'HangUp';
-                        btnHoldResume.value = 'hold';
-                        btnCall.disabled = false;
-                        btnHangUp.disabled = true;
-
-                        oSipSessionCall = null;
-
-                        stopRingbackTone();
-                        stopRingTone();
-
-                        txtCallStatus.innerHTML = "<i>" + e.description + "</i>";
-                        uiVideoDisplayShowHide(false);
-                        divCallOptions.style.opacity = 0;
-
-                        if (oNotifICall) {
-                            oNotifICall.cancel();
-                            oNotifICall = null;
-                        }
-
-                        uiVideoDisplayEvent(true, false);
-                        uiVideoDisplayEvent(false, false);
-
-                        setTimeout(function () { if (!oSipSessionCall) txtCallStatus.innerHTML = ''; }, 2500);
+                        uiCallTerminated(e.description);
                     }
                     break;
                 } // 'terminating' | 'terminated'
@@ -769,6 +797,15 @@
                     }
                     break;
                 }
+
+            case 'm_stream_audio_local_added':
+            case 'm_stream_audio_local_removed':
+            case 'm_stream_audio_remote_added':
+            case 'm_stream_audio_remote_removed':
+                {
+                    break;
+                }
+
             case 'i_ect_new_call':
                 {
                     oSipSessionTransferCall = e.session;
@@ -930,7 +967,7 @@
 </script>
 <body style="cursor:wait">
     <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
+        <div id="divNavbarInner" class="navbar-inner">
             <div class="container">
                 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"><span
                     class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
@@ -938,7 +975,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="index.html?svn=20">Home</a></li>
+                        <li class="active"><a href="index.html?svn=165">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->
@@ -1113,8 +1150,9 @@
     <script type="text/javascript" src="./assets/js/bootstrap-typeahead.js"></script>
 
     <!-- Audios -->
+    <audio id="audio_remote" autoplay="autoplay" />
     <audio id="ringtone" loop src="sounds/ringtone.wav" />
-    <audio id="ringbacktone" loop src="sounds/ringbacktone.wav" />    
+    <audio id="ringbacktone" loop src="sounds/ringbacktone.wav" />  
 
     <!-- 
         Microsoft Internet Explorer extension

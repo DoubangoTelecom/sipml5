@@ -301,7 +301,10 @@ Adds an event listener to the target object. <br /><br />
     </tr>
     <tr>
         <td><a href="SIPml.Stack.html" name="SIPml.EventTarget.Stack">SIPml.Stack</a></td>
-        <td><b>*</b><br/> starting<br/> started<br/> stopping<br/> stopped<br/> failed_to_start<br/> failed_to_stop<br/> i_new_call<br /> i_new_message </td>
+        <td>
+            <b>*</b><br/> starting<br/> started<br/> stopping<br/> stopped<br/> failed_to_start<br/> failed_to_stop<br/> i_new_call<br /> i_new_message<br />
+            m_permission_requested<br/> m_permission_accepted<br/> m_permission_refused
+        </td>
         <td><a href="SIPml.Stack.Event.html">SIPml.Stack.Event</a></td>
         <td>'*' is used to listen for all events</td>
     </tr>
@@ -329,7 +332,8 @@ Adds an event listener to the target object. <br /><br />
         <td><a href="SIPml.Session.Call.html" name="SIPml.EventTarget.Session.Call">SIPml.Session.Call</a></td>
         <td>
             m_early_media<br/> m_local_hold_ok<br/> m_local_hold_nok<br/> m_local_resume_ok<br/> m_local_resume_nok<br/> m_remote_hold<br/> m_remote_resume<br/>
-            m_stream_video_local_added<br/> m_stream_video_local_removed<br/> m_stream_video_remote_added<br/> m_stream_video_remote_removed 
+            m_stream_video_local_added<br /> m_stream_video_local_removed<br/> m_stream_video_remote_added<br/> m_stream_video_remote_removed <br />
+            m_stream_audio_local_added<br /> m_stream_audio_local_removed<br/> m_stream_audio_remote_added<br/> m_stream_audio_remote_removed <br />
             i_ect_new_call<br/> o_ect_trying<br/> o_ect_accepted<br/> o_ect_completed<br/> i_ect_completed<br/> o_ect_failed<br/> i_ect_failed<br/> o_ect_notify<br/> i_ect_notify<br/> i_ect_requested
         </td>
         <td><a href="SIPml.Session.Event.html">SIPml.Session.Event</a></td>
@@ -777,53 +781,118 @@ SIPml.Stack = function (o_conf) {
          var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
          if (!oSession) {
              switch (e.e_invite_type) {
-                case tsip_event_invite_type_e.I_NEW_CALL: break;
-                case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
-                case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
-                case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED:
-                case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED:
+                case tsip_event_invite_type_e.I_NEW_CALL:
+                case tsip_event_invite_type_e.M_STREAM_LOCAL_REQUESTED:
+                case tsip_event_invite_type_e.M_STREAM_LOCAL_ACCEPTED:
+                case tsip_event_invite_type_e.M_STREAM_LOCAL_REFUSED:
+                    break;
+
+                case tsip_event_invite_type_e.M_STREAM_LOCAL_ADDED:
+                case tsip_event_invite_type_e.M_STREAM_REMOTE_ADDED:
+                case tsip_event_invite_type_e.M_STREAM_LOCAL_REMOVED:
+                case tsip_event_invite_type_e.M_STREAM_REMOTE_REMOVED:
                 case tsip_event_invite_type_e.I_AO_REQUEST:
                     tsk_utils_log_info('Not notifying to session with id = ' + i_session_id + ' for event = ' + e.e_invite_type);
                     return;
+
                  default:
                     tsk_utils_log_warn('Cannot find session with id = ' + i_session_id + ' and event = ' + e.e_invite_type);
                     return;
              }
          }
 
-         var attachVideo = function (oView, oUrl) {
-             if (window.HTMLVideoElement && oView instanceof window.HTMLVideoElement) {
-                 oView.src = oUrl;
-             }
+         
+
+         var _setStream = function(o_view, o_stream, o_url, b_audio){
+            if(o_stream){
+                if(!b_audio && o_stream.videoTracks.length > 0){
+                    if (window.HTMLVideoElement && o_view instanceof window.HTMLVideoElement){
+                        if((o_view.src = o_url)){
+                            o_view.play();
+                        }
+                    }
+                    return true;
+                }
+                if(b_audio && o_stream.audioTracks.length > 0){
+                    if (window.HTMLAudioElement && o_view instanceof window.HTMLAudioElement){
+                        if((o_view.src = o_url)){
+                            o_view.play();
+                        }
+                    }
+                    return true;
+                }
+            }
          }
+
+         var attachStream = function(bLocal){
+            var o_stream = bLocal ? e.o_session.get_stream_local() : e.o_session.get_stream_remote();
+            var o_url = bLocal ? e.o_session.get_url_local() : e.o_session.get_url_remote();
+            if(_setStream((bLocal ? oSession.videoLocal : oSession.videoRemote), o_stream, o_url, false)){
+                dispatchEvent(bLocal ? 'm_stream_video_local_added' : 'm_stream_video_remote_added');
+            }
+            if(_setStream((bLocal ? oSession.audioLocal : oSession.audioRemote), o_stream, o_url, true)){
+                dispatchEvent(bLocal ? 'm_stream_audio_local_added' : 'm_stream_audio_remote_added');
+            }
+         }
+         var deattachStream = function(bLocal){
+            var o_stream = bLocal ? e.o_session.get_stream_local() : e.o_session.get_stream_remote();
+            if(_setStream((bLocal ? oSession.videoLocal : oSession.videoRemote), o_stream, null, false)){
+                dispatchEvent(bLocal ? 'm_stream_video_local_removed' : 'm_stream_video_remote_removed');
+            }
+            if(_setStream((bLocal ? oSession.audioLocal : oSession.audioRemote), o_stream, null, true)){
+                dispatchEvent(bLocal ? 'm_stream_audio_local_removed' : 'm_stream_audio_remote_removed');
+            }
+         }
+
+        var dispatchEvent = function (s_event_type) {
+            if (s_event_type) {
+                // 'i_new_call', 'm_permission_requested', 'm_permission_accepted' and 'm_permission_refused' are stack-level event
+                switch (s_event_type) {
+                    case 'i_new_call':
+                    case 'm_permission_requested':
+                    case 'm_permission_accepted':
+                    case 'm_permission_refused':
+                        {
+                            var oNewEvent = new SIPml.Stack.Event(s_event_type, e);
+                            if(s_event_type == 'i_new_call'){
+                                oNewEvent.newSession = new SIPml.Session.Call(e.o_session);
+                                e.o_session.o_stack.oStack.ao_sessions[i_session_id] = oNewEvent.newSession; // save session
+                            }
+                            e.o_session.o_stack.oStack.dispatchEvent({ s_type: s_event_type, o_value: oNewEvent });
+                            break;
+                        }
+                    default:
+                        {
+                            oSession.dispatchEvent({ s_type: s_event_type, o_value: new SIPml.Session.Event(oSession, s_event_type, e) });
+                            break;
+                        }
+                }
+            }
+        }
 
          switch (e.e_invite_type) {
              case tsip_event_invite_type_e.I_NEW_CALL: s_type = 'i_new_call'; break;
              case tsip_event_invite_type_e.I_ECT_NEW_CALL: s_type = 'i_ect_new_call'; break;
              case tsip_event_invite_type_e.I_AO_REQUEST: s_type = 'i_ao_request'; break;
              case tsip_event_invite_type_e.M_EARLY_MEDIA: s_type = 'm_early_media'; break;
-             case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
+             case tsip_event_invite_type_e.M_STREAM_LOCAL_REQUESTED: s_type = 'm_permission_requested'; break;
+             case tsip_event_invite_type_e.M_STREAM_LOCAL_ACCEPTED: s_type = 'm_permission_accepted'; break;
+             case tsip_event_invite_type_e.M_STREAM_LOCAL_REFUSED: s_type = 'm_permission_refused'; break;
+             case tsip_event_invite_type_e.M_STREAM_LOCAL_ADDED:
                  {
-                    s_type = 'm_stream_video_local_added';
-                    attachVideo(oSession.videoLocal, e.o_session.get_url_video_local());
-                    break;
+                   return attachStream(true);
                  }
-             case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED:
+             case tsip_event_invite_type_e.M_STREAM_LOCAL_REMOVED:
                  { 
-                    s_type = 'm_stream_video_local_removed';
-                    attachVideo(oSession.videoLocal, undefined);
-                    break;
+                    return deattachStream(true);
                  }
-             case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
+             case tsip_event_invite_type_e.M_STREAM_REMOTE_ADDED:
                  { 
-                    s_type = 'm_stream_video_remote_added'; 
-                    attachVideo(oSession.videoRemote, e.o_session.get_url_video_remote());
-                    break;
+                    return attachStream(false);
                  }
-             case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED:
+             case tsip_event_invite_type_e.M_STREAM_REMOTE_REMOVED:
                 {
-                    s_type = 'm_stream_video_remote_removed'; 
-                    break;
+                    return deattachStream(false);
                 }
              case tsip_event_invite_type_e.M_LOCAL_HOLD_OK: s_type = 'm_local_hold_ok'; break;
              case tsip_event_invite_type_e.M_LOCAL_HOLD_NOK: s_type = 'm_local_hold_nok'; break;
@@ -843,18 +912,8 @@ SIPml.Stack = function (o_conf) {
              default: break;
          }
 
-         if (s_type) {
-             // 'i_new_call' is stack-level event
-             if (s_type == 'i_new_call') {
-                var oNewEvent = new SIPml.Stack.Event(s_type, e);
-                oNewEvent.newSession = new SIPml.Session.Call(e.o_session);
-                e.o_session.o_stack.oStack.ao_sessions[i_session_id] = oNewEvent.newSession; // save session
-                e.o_session.o_stack.oStack.dispatchEvent({ s_type: s_type, o_value:  oNewEvent});
-             }
-             else {
-                 oSession.dispatchEvent({ s_type: s_type, o_value: new SIPml.Session.Event(oSession, s_type, e) });
-             }
-         }
+         // dispatch event
+         dispatchEvent(s_type);
      }
 }
 
@@ -984,6 +1043,7 @@ o_registration.<a href="SIPml.Session.Registration.html#register">register</a>()
 var <a href="SIPml.Session.Call.html">o_audiovideo</a> = this.<a href="#newSession">newSession</a>('call-audiovideo', {
             video_local: document.getElementById('video_local'),
             video_remote: document.getElementById('video_remote'),
+            audio_remote: document.getElementById('audio_remote'),
             sip_caps: [
                     {name: '+g.oma.sip-im'},
                     {name: '+sip.ice'},
@@ -1058,12 +1118,14 @@ Anonymous SIP Session configuration object.
 @property {Integer} [expires] Session timeout in seconds. 
 @property {HTMLVideoElement} [video_local] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLVideoElement">HTMLVideoElement<a> where to display the local video preview. This propety should be only used for <a href="SIPml.Session.Call.html">video sessions</a>.
 @property {HTMLVideoElement} [video_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLVideoElement">HTMLVideoElement<a> where to display the remote video stream. This propety should be only used for <a href="SIPml.Session.Call.html">video sessions</a>.
+@property {HTMLAudioElement} [audio_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLAudioElement">HTMLAudioElement<a> used to playback the remote audio stream. This propety should be only used for <a href="SIPml.Session.Call.html">audio sessions</a>.
 @property {Array} [sip_caps] <i>{name,value}</i> pairs defining the SIP capabilities associated to this session. The capabilities are added to the Contact header. Please refer to <a href="http://tools.ietf.org/html/rfc3840">rfc3840</a> and <a href="http://tools.ietf.org/html/rfc3841">rfc3841</a> for more information.
 @property {Array} [sip_headers] <i>{name,value,session}</i> trios defining the SIP headers associated to this session. <i>session</i> is a boolean defining whether the header have to be added to all outgoing request or not (initial only).
 @example
 var configuration = 
 {
     expires: 200,
+    audio_remote: document.getElementById('audio_remote'),
     video_local: document.getElementById('video_local'),
     video_remote: document.getElementById('video_remote'),
     sip_caps: [
@@ -1133,19 +1195,39 @@ SIPml.Session.prototype.setConfiguration = function(o_conf){
     if(this instanceof SIPml.Session.Call){
         this.videoLocal = o_conf.video_local;
         this.videoRemote = o_conf.video_remote;
-        if (window.HTMLVideoElement && this.videoLocal instanceof window.HTMLVideoElement) {
-            var oldSrc = this.videoLocal.src;
-            this.videoLocal.src = o_session.get_url_video_local();
-            if(oldSrc != this.videoLocal.src){
-                this.dispatchEvent({ s_type: 'm_stream_video_local_added', o_value: new SIPml.Session.Event(this, 'm_stream_video_local_added') });
+        this.audioRemote = o_conf.audio_remote;
+        this.audioLocal = o_conf.audio_local;
+        
+         var _addStream = function(o_view, o_stream, o_url, b_audio){
+            if(o_stream){
+                if(!b_audio && o_stream.videoTracks.length > 0){
+                    if (window.HTMLVideoElement && o_view instanceof window.HTMLVideoElement){
+                        if(o_view.src == o_url) return false; // unchanged
+                        else if(o_view.src = o_url) o_view.play();
+                    }
+                    return true;
+                }
+                if(b_audio && o_stream.audioTracks.length > 0){
+                    if (window.HTMLAudioElement && o_view instanceof window.HTMLAudioElement){
+                        if(o_view.src == o_url) return false; // unchanged
+                        else if(o_view.src = o_url) o_view.play();
+                    }
+                    return true;
+                }
             }
+         }
+
+        if(_addStream(this.videoLocal, o_session.get_stream_local(), o_session.get_url_local(), false)){
+            this.dispatchEvent({ s_type: 'm_stream_video_local_added', o_value: new SIPml.Session.Event(this, 'm_stream_video_local_added') });
         }
-        if (window.HTMLVideoElement && this.videoRemote instanceof window.HTMLVideoElement) {
-            var oldSrc = this.videoRemote.src;
-            this.videoRemote.src = o_session.get_url_video_remote();
-            if(oldSrc != this.videoRemote.src){
-                this.dispatchEvent({ s_type: 'm_stream_video_remote_added', o_value: new SIPml.Session.Event(this, 'm_stream_video_remote_added') });
-            }
+        if(_addStream(this.videoRemote, o_session.get_stream_remote(), o_session.get_url_remote(), false)){
+            this.dispatchEvent({ s_type: 'm_stream_video_remote_added', o_value: new SIPml.Session.Event(this, 'm_stream_video_remote_added') });
+        }
+        if(_addStream(this.audioLocal, o_session.get_stream_local(), o_session.get_url_local(), false)){
+            this.dispatchEvent({ s_type: 'm_stream_audio_local_added', o_value: new SIPml.Session.Event(this, 'm_stream_audio_local_added') });
+        }
+        if(_addStream(this.audioRemote, o_session.get_stream_remote(), o_session.get_url_remote(), false)){
+            this.dispatchEvent({ s_type: 'm_stream_audio_remote_added', o_value: new SIPml.Session.Event(this, 'm_stream_audio_remote_added') });
         }
     }
     
@@ -1322,6 +1404,7 @@ var listenerFunc = function(e){
 var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('call-audiovideo', {
             video_local: document.getElementById('video-local'),
             video_remote: document.getElementById('video-remote'),
+            audio_remote: document.getElementById('audio-remote'),
             events_listener: { events: '*', listener: listenerFunc },
             sip_caps: [
                             { name: '+g.oma.sip-im' },
@@ -1358,6 +1441,7 @@ var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('call-a
 session.call('johndoe', {
             video_local: document.getElementById('video-local'),
             video_remote: document.getElementById('video-remote'),
+            audio_remote: document.getElementById('audio-remote'),
             events_listener: { events: '*', listener: listenerFunc },
             sip_caps: [
                             { name: '+g.oma.sip-im' },

@@ -76,10 +76,10 @@ tmedia_session_jsep.prototype.__stop = function () {
 
 tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
     if (this.o_sdp_lo) {
-        /* Session name for debugging */
+        /* Session name for debugging - Requires by webrtc2sip to set RTCWeb type */
         var o_hdr_S;
         if ((o_hdr_S = this.o_sdp_lo.get_header(tsdp_header_type_e.S))) {
-            o_hdr_S.s_value = "Doubango Telecom - PeerConnection";
+            o_hdr_S.s_value = "Doubango Telecom - " + tsk_utils_get_navigator_friendly_name();
         }
         /* Session version */
         var o_hdr_O;
@@ -96,15 +96,17 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
         if (/*!this.o_sdp_ro &&*/!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
             this.o_sdp_lo.remove_media("video");
         }
-        // FIXME: Nightly 20.0a1 => "m=application 51713 SCTP/DTLS 5000 \r\n"
-        // this.o_sdp_lo.remove_media("application");
-
         /* hold / resume */
         var i_index = 0;
         var o_hdr_M;
         while ((o_hdr_M = this.o_sdp_lo.get_header_at(tsdp_header_type_e.M, i_index++))) {
-            // o_hdr_M.s_proto = "RTP/SAVP";
             o_hdr_M.set_holdresume_att(this.b_lo_held, this.b_ro_held);
+            // HACK: Nightly 20.0a1 uses RTP/SAVPF for DTLS-SRTP which is not correct. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=827932.
+            if(tmedia_session_jsep01.mozThis){
+                if(o_hdr_M.s_proto == "RTP/SAVPF"){
+                    o_hdr_M.s_proto = "UDP/TLS/RTP/SAVPF";
+                }
+            }
         }
     }
     return 0;
@@ -195,8 +197,13 @@ tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
                     if((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "connection", 0))){
                         rfc5939_acap_ensure(o_hdr_A);
                     }
-                    o_hdr_M.s_proto = "UDP/TLS/RTP/SAVPF";
+                    o_hdr_M.s_proto = "UDP/TLS/RTP/SAVP";
                 }
+            }
+
+            // HACK: Nightly 20.0a1 uses RTP/SAVPF for DTLS-SRTP which is not correct. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=827932
+            if(tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("UDP/TLS/RTP/SAVP") != -1){
+                o_hdr_M.s_proto = "RTP/SAVPF";
             }
         }
     }
@@ -213,27 +220,34 @@ tmedia_session_jsep.prototype.subscribe_stream_events = function () {
         }
         this.o_pc.onaddstream = function (evt) {
             tsk_utils_log_info("__on_add_stream");
-            this.o_session.o_remote_stream = evt.stream;
-            if (this.o_session.o_mgr) {
-                this.o_session.o_mgr.set_stream_video_remote(evt.stream);
+            var This = (tmedia_session_jsep01.mozThis || this.o_session);
+            This.o_remote_stream = evt.stream;
+            if (This.o_mgr) {
+                // patch for Firefox and others
+                if(!This.o_remote_stream.videoTracks || !This.o_remote_stream.audioTracks){
+                    var b_support_audio = !!(This.e_type.i_id & tmedia_type_e.AUDIO.i_id);
+                    var b_support_video = !!(This.e_type.i_id & tmedia_type_e.VIDEO.i_id);
+                    This.o_remote_stream.audioTracks = {length: b_support_audio ? 1 : 0};
+                    This.o_remote_stream.videoTracks = {length: b_support_video ? 1 : 0};
+                }
+                This.o_mgr.set_stream_remote(evt.stream);
             }
         }
         this.o_pc.onremovestream = function (evt) {
             tsk_utils_log_info("__on_remove_stream");
-            this.o_pc.o_session.o_remote_stream = null;
-            if (this.o_session.o_mgr) {
-                this.o_session.o_mgr.set_stream_video_remote(null);
+            var This = (tmedia_session_jsep01.mozThis || this.o_session);
+            This.o_remote_stream = null;
+            if (This.o_mgr) {
+                This.o_mgr.set_stream_remote(null);
             }
         }
-
-        this.o_pc.addStream(this.o_local_stream);
     }
 }
 
 tmedia_session_jsep.prototype.close = function () {
     if (this.o_mgr) { // 'onremovestream' not always called
-        this.o_mgr.set_stream_video_remote(null);
-        this.o_mgr.set_stream_video_local(null);
+        this.o_mgr.set_stream_remote(null);
+        this.o_mgr.set_stream_local(null);
     }
     if (this.o_pc) {
         /*if (this.o_local_stream) {
@@ -295,9 +309,9 @@ function tmedia_session_jsep00(o_mgr) {
 
 tmedia_session_jsep00.prototype.__get_lo = function () {
     if (!this.o_pc && !this.b_lo_held) {
-        this.o_mgr.set_stream_video_local(__o_stream);
+        this.o_mgr.set_video_local(__o_roap_stream);
 
-        this.o_local_stream = __o_stream;
+        this.o_local_stream = __o_roap_stream;
         var This = this;
 
         // "__o_peerconnection_class" is equal to "webkitPeerConnection00 || webkitPeerConnection" on chrome and "w4aPeerConnection" on IE
@@ -422,16 +436,86 @@ function tmedia_session_jsep01(o_mgr) {
 
 tmedia_session_jsep01.mozThis = undefined;
 
-tmedia_session_jsep01.onCreateSdpSuccess = function (o_offer, _This) {
+tmedia_session_jsep01.onGetUserMediaSuccess = function (o_stream, _This) {
+    tsk_utils_log_info("onGetUserMediaSuccess");
+    var This = (tmedia_session_jsep01.mozThis || _This);
+    if (This && This.o_pc && This.o_mgr) {
+        if(!This.b_sdp_lo_pending){
+            tsk_utils_log_warn("onGetUserMediaSuccess but no local sdp request is pending");
+            return;
+        }
+
+        // HACK: patch for Firefox and others
+        if(!o_stream.videoTracks || !o_stream.audioTracks){
+            var b_support_audio = !!(This.e_type.i_id & tmedia_type_e.AUDIO.i_id);
+            var b_support_video = !!(This.e_type.i_id & tmedia_type_e.VIDEO.i_id);
+            o_stream.audioTracks = {length: b_support_audio ? 1 : 0};
+            o_stream.videoTracks = {length: b_support_video ? 1 : 0};
+        }
+
+        // save stream other next calls
+        if(o_stream.audioTracks.length > 0 && o_stream.videoTracks.length == 0){
+            if(!__o_jsep_stream_audio){
+                This.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_ACCEPTED, this.e_type);
+            }
+            __o_jsep_stream_audio = o_stream;
+        }
+        else if(o_stream.audioTracks.length > 0 && o_stream.videoTracks.length > 0){
+            if(!__o_jsep_stream_audiovideo){
+                This.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_ACCEPTED, this.e_type);
+            }
+            __o_jsep_stream_audiovideo = o_stream;
+        }
+
+        // HACK: Firefox only allows to call gum one time
+        if(tmedia_session_jsep01.mozThis){
+            __o_jsep_stream_audiovideo = __o_jsep_stream_audio = o_stream;
+        }
+
+        This.o_local_stream = o_stream;
+        This.o_pc.addStream(o_stream);
+        This.o_mgr.set_stream_local(o_stream);
+
+        var b_answer = ((This.b_sdp_ro_pending || This.b_sdp_ro_offer) && (This.o_sdp_ro != null));
+        if (b_answer) {
+            tsk_utils_log_info("createAnswer");
+            This.o_pc.createAnswer(
+                tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onCreateSdpSuccess : function(o_offer){ tmedia_session_jsep01.onCreateSdpSuccess(o_offer, This); },
+                tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onCreateSdpError : function(s_error){ tmedia_session_jsep01.onCreateSdpError(s_error, This); },
+                This.o_media_constraints,
+                false // createProvisionalAnswer
+             );
+        }
+        else {
+            tsk_utils_log_info("createOffer");
+            This.o_pc.createOffer(
+                tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onCreateSdpSuccess : function(o_offer){ tmedia_session_jsep01.onCreateSdpSuccess(o_offer, This); },
+                tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onCreateSdpError : function(s_error){ tmedia_session_jsep01.onCreateSdpError(s_error, This); },
+                This.o_media_constraints
+            );
+        }
+    }
+}
+
+tmedia_session_jsep01.onGetUserMediaError = function (s_error, _This) {
+    tsk_utils_log_info("onGetUserMediaError");
+    var This = (tmedia_session_jsep01.mozThis || _This);
+    if (This && This.o_mgr) {
+        tsk_utils_log_error(s_error);
+        This.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_REFUSED, This.e_type);
+    }
+}
+
+tmedia_session_jsep01.onCreateSdpSuccess = function (o_sdp, _This) {
     tsk_utils_log_info("onCreateSdpSuccess");
     var This = (tmedia_session_jsep01.mozThis || _This);
     if (This && This.o_pc) {
-        This.o_pc.setLocalDescription(o_offer,
+        This.o_pc.setLocalDescription(o_sdp,
             tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSetLocalDescriptionSuccess : function(){ tmedia_session_jsep01.onSetLocalDescriptionSuccess(This); },
             tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSetLocalDescriptionError : function(s_error){ tmedia_session_jsep01.onSetLocalDescriptionError(s_error, This); }
         );
         if(tmedia_session_jsep01.mozThis && !tmedia_session_jsep01.mozThis.localDescription){
-            tmedia_session_jsep01.mozThis.localDescription = o_offer; // HACK: Firefox Nightly 20.0a1 => "PeeConnection.localDescription" always undefined
+            tmedia_session_jsep01.mozThis.localDescription = o_sdp; // HACK: Firefox Nightly 20.0a1 => "PeeConnection.localDescription" always undefined or not correct. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=828235
         }
     }
 }
@@ -440,8 +524,8 @@ tmedia_session_jsep01.onCreateSdpError = function (s_error, _This) {
     tsk_utils_log_info("onCreateSdpError");
     var This = (tmedia_session_jsep01.mozThis || _This);
     if (This && This.o_mgr) {
+        tsk_utils_log_error(s_error);
         This.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, This.e_type);
-        tsk_utils_log_error(s_error.toString());
     }
 }
 
@@ -450,7 +534,7 @@ tmedia_session_jsep01.onSetLocalDescriptionSuccess = function(_This){
     var This = (tmedia_session_jsep01.mozThis || _This);
     if (This && This.o_pc) {
         if(tmedia_session_jsep01.mozThis){
-            tmedia_session_jsep01.onIceGatheringCompleted(This); // HACK: Firefox Nightly 20.0a1 => "PeeConnection.onicecandidate" callback never called
+            tmedia_session_jsep01.onIceGatheringCompleted(This); // HACK: Firefox Nightly 20.0a1(2013-01-08) => "PeeConnection.onicecandidate" callback never called. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=827932
         }
     }
 }
@@ -464,12 +548,36 @@ tmedia_session_jsep01.onSetLocalDescriptionError = function(s_error, _This){
     }
 }
 
+tmedia_session_jsep01.onSetRemoteDescriptionSuccess = function(_This){
+    tsk_utils_log_info("onSetRemoteDescriptionSuccess");
+    var This = (tmedia_session_jsep01.mozThis || _This);
+    if(This){
+        if (!This.b_sdp_ro_pending && This.b_sdp_ro_offer) {
+            This.o_sdp_lo = null; // to force new SDP when get_lo() is called
+        }
+   }
+}
+
+tmedia_session_jsep01.onSetRemoteDescriptionError = function(s_error, _This){
+    tsk_utils_log_info("onSetRemoteDescriptionError");
+    var This = (tmedia_session_jsep01.mozThis || _This);
+    if(This){
+        This.o_mgr.callback(tmedia_session_events_e.SET_RO_FAILED, This.e_type);
+        tsk_utils_log_error(s_error);
+    }
+}
+
 tmedia_session_jsep01.onIceGatheringCompleted = function (_This) {
     tsk_utils_log_info("onIceGatheringCompleted");
     var This = (tmedia_session_jsep01.mozThis || _This);
     if(This && This.o_pc){
+        if(!This.b_sdp_lo_pending){
+            tsk_utils_log_warn("onIceGatheringCompleted but no local sdp request is pending");
+            return;
+        }
         This.b_sdp_lo_pending = false;
-        var localDescription = (This.o_pc.localDescription || This.localDescription);
+        // HACK: Firefox Nightly 20.0a1(2013-01-08): PeerConnection.localDescription has a wrong value (remote sdp). More info at https://bugzilla.mozilla.org/show_bug.cgi?id=828235
+        var localDescription = (This.localDescription || This.o_pc.localDescription);
         if(localDescription){
             This.o_sdp_jsep_lo = localDescription;
             This.o_sdp_lo = tsdp_message.prototype.Parse(This.o_sdp_jsep_lo.sdp);
@@ -499,8 +607,8 @@ tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
         tmedia_session_jsep01.onIceGatheringCompleted(This);
     }
     else if (This.o_pc.iceState == "failed") {
-        This.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, This.e_type);
         tsk_utils_log_error("Ice state is 'failed'");
+        This.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, This.e_type); 
     }
 }
 
@@ -508,47 +616,38 @@ tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
 tmedia_session_jsep01.prototype.__get_lo = function () {
     var This = this;
     if (!this.o_pc && !this.b_lo_held) {
-        this.o_mgr.set_stream_video_local(__o_stream);
-
-        this.o_local_stream = __o_stream;
-
         this.o_pc = new __o_peerconnection_class(
                 { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
                 this.o_media_constraints
         );
         this.o_pc.onicecandidate = tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onIceCandidate : function(o_event){ tmedia_session_jsep01.onIceCandidate(o_event, This) };
         if(!tmedia_session_jsep01.mozThis){
-            this.o_pc.o_session = this; // FIXME: add error message on firefox
+            this.o_pc.o_session = this; // HACK: Firefox exception: "Cannot modify properties of a WrappedNative"  nsresult: "0x80570034 (NS_ERROR_XPC_CANT_MODIFY_PROP_ON_WN)"
         }
         this.subscribe_stream_events();
     }
 
     if (!this.o_sdp_lo && !this.b_sdp_lo_pending) {
-        var b_answer = ((this.b_sdp_ro_pending || this.b_sdp_ro_offer) && (this.o_sdp_ro != null));
-
         this.b_sdp_lo_pending = true;
 
+        // set penfing ro if there is one
         if (this.b_sdp_ro_pending && this.o_sdp_ro) {
             this.__set_ro(this.o_sdp_ro, true);
         }
-
-        if (b_answer) {
-            tsk_utils_log_info("createAnswer");
-            this.o_pc.createAnswer(
-                tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onCreateSdpSuccess : function(o_offer){ tmedia_session_jsep01.onCreateSdpSuccess(o_offer, This); },
-                tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onCreateSdpError : function(s_error){ tmedia_session_jsep01.onCreateSdpError(s_error, This); },
-                this.o_media_constraints,
-                false // createProvisionalAnswer
-             );
+        // get media stream
+        if(this.e_type.i_id == tmedia_type_e.AUDIO.i_id && __o_jsep_stream_audio){
+            tmedia_session_jsep01.onGetUserMediaSuccess(__o_jsep_stream_audio, This);
         }
-        else {
-            tsk_utils_log_info("createOffer");
-            this.o_pc.createOffer(
-                tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onCreateSdpSuccess : function(o_offer){ tmedia_session_jsep01.onCreateSdpSuccess(o_offer, This); },
-                tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onCreateSdpError : function(s_error){ tmedia_session_jsep01.onCreateSdpError(s_error, This); },
-                this.o_media_constraints
-            );
+        else if(this.e_type.i_id == tmedia_type_e.AUDIO_VIDEO.i_id && __o_jsep_stream_audiovideo){
+            tmedia_session_jsep01.onGetUserMediaSuccess(__o_jsep_stream_audiovideo, This);
         }
+        else{
+            this.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_REQUESTED, this.e_type);
+            navigator.nativeGetUserMedia({ audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id), data: false },
+                    tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onGetUserMediaSuccess : function(o_stream){ tmedia_session_jsep01.onGetUserMediaSuccess(o_stream, This); },
+                    tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onGetUserMediaError : function(s_error){ tmedia_session_jsep01.onGetUserMediaError(s_error, This); }
+                );
+       }
     }
 
     return this.o_sdp_lo;
@@ -568,23 +667,16 @@ tmedia_session_jsep01.prototype.__set_ro = function (o_sdp, b_is_offer) {
         try {
             var This = this;
             this.decorate_ro(false);
-            tsk_utils_log_info("setRemoteDescription(" + (b_is_offer ? "offer)" : "answer)"));
+            tsk_utils_log_info("setRemoteDescription(" + (b_is_offer ? "offer)" : "answer)") + "\n" + this.o_sdp_ro);
             this.o_pc.setRemoteDescription(
-                        new __o_sessiondescription_class({ type: b_is_offer ? "offer" : "answer", sdp : This.o_sdp_ro.toString() }),
-                        function () { // success callback
-                            if (!This.b_sdp_ro_pending && b_is_offer) {
-                                This.o_sdp_lo = null; // to force new SDP when get_lo() is called
-                            }
-                        },
-                        function (s_error) { // error callback
-                            This.o_mgr.callback(tmedia_session_events_e.SET_RO_FAILED, This.e_type);
-                            tsk_utils_log_error(s_error);
-                        }
+               new __o_sessiondescription_class({ type: b_is_offer ? "offer" : "answer", sdp : This.o_sdp_ro.toString() }),
+               tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSetRemoteDescriptionSuccess : function() { tmedia_session_jsep01.onSetRemoteDescriptionSuccess(This); },
+               tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSetRemoteDescriptionError : function(s_error) { tmedia_session_jsep01.onSetRemoteDescriptionError(s_error, This); }
             );
         }
         catch (e) {
-            this.o_mgr.callback(tmedia_session_events_e.SET_RO_FAILED, this.e_type);
             tsk_utils_log_error(e);
+            this.o_mgr.callback(tmedia_session_events_e.SET_RO_FAILED, this.e_type);
             return -2;
         }
         finally {

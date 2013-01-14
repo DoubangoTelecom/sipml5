@@ -238,7 +238,7 @@ function tsip_dialog_invite(o_session, s_call_id) {
         // Any -> (transport error) -> Terminated
         tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.TRANSPORT_ERROR, tsip_dialog_invite_states_e.TERMINATED, x9998_Any_2_Terminated_X_transportError, "x9998_Any_2_Terminated_X_transportError"),
         // Any -> (error) -> Terminated
-        tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.ERROR, tsip_dialog_invite_states_e.TERMINATED, x9999_Any_2_Any_X_Error, "x9999_Any_2_Any_X_Error")
+        tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.ERROR, tsip_dialog_invite_states_e.TERMINATED, x9999_Any_2_Terminated_X_Error, "x9999_Any_2_Terminated_X_Error")
     );
 
     // initialize "client" state machine
@@ -834,44 +834,57 @@ function __tsip_dialog_invite_media_callback(o_self, e_event_type, e_media_type)
             {
                 o_self.timer_cancel('LoSdpRequest');
                 o_self.set_last_error(tsip_event_code_e.DIALOG_WEBRTC_ERROR, "Failed to get local SDP offer");
-                o_self.fsm_act(tsip_dialog_invite_actions_e.ERROR, null, null);
-
                 o_self.e_next_offer_type = tsip_dialog_invite_next_offer_type_e.NONE;
+
+                var o_action = new tsip_action(tsip_action_type_e.HANGUP);
+                o_action.set_line_resp(603, "Failed to get local SDP");
+                o_self.hangup(o_action);
                 break;
             }
 
+        case tmedia_session_events_e.STREAM_LOCAL_REQUESTED:
+            {
+                o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_LOCAL_REQUESTED, tsip_event_code_e.DIALOG_MEDIA_LOCAL_REQUESTED, "Media Requested", null);
+                break;
+            }
+        case tmedia_session_events_e.STREAM_LOCAL_ACCEPTED:
+            {
+                o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_LOCAL_ACCEPTED, tsip_event_code_e.DIALOG_MEDIA_LOCAL_ACCEPTED, "Media Accepted", null);
+                break;
+            }
+        case tmedia_session_events_e.STREAM_LOCAL_REFUSED:
+            {
+                o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_LOCAL_REFUSED, tsip_event_code_e.DIALOG_MEDIA_LOCAL_REFUSED, "Media Refused", null);
+                var o_action = new tsip_action(tsip_action_type_e.HANGUP);
+                o_action.set_line_resp(603, "Media stream permission denied");
+                o_self.hangup(o_action);
+                break;
+            }
         case tmedia_session_events_e.STREAM_LOCAL_ADDED:
             {
-                if (e_media_type == tmedia_type_e.VIDEO) {
-                    o_self.get_session().__set_stream_video_local(o_self.o_msession_mgr.get_stream_video_local());
-                    o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED, tsip_event_code_e.DIALOG_MEDIA_ADDED, "Media Added", null);
-                }
+                o_self.get_session().__set_stream_local(o_self.o_msession_mgr.get_stream_local());
+                o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_LOCAL_ADDED, tsip_event_code_e.DIALOG_MEDIA_ADDED, "Media Added", null);
                 break;
             }
         case tmedia_session_events_e.STREAM_LOCAL_REMOVED:
             {
-                if (e_media_type == tmedia_type_e.VIDEO) {
-                    o_self.get_session().__set_stream_video_local(null);
-                    o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED, tsip_event_code_e.DIALOG_MEDIA_REMOVED, "Media Removed", null);
-                }
+                o_self.get_session().__set_stream_local(null);
+                o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_LOCAL_REMOVED, tsip_event_code_e.DIALOG_MEDIA_REMOVED, "Media Removed", null);
                 break;
             }
         case tmedia_session_events_e.STREAM_REMOTE_ADDED:
             {
-                if (e_media_type == tmedia_type_e.VIDEO) {
-                    o_self.get_session().__set_stream_video_remote(o_self.o_msession_mgr.get_stream_video_remote());
-                    o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED, tsip_event_code_e.DIALOG_MEDIA_ADDED, "Media Added", null);
-                }
+                o_self.get_session().__set_stream_remote(o_self.o_msession_mgr.get_stream_remote());
+                o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_REMOTE_ADDED, tsip_event_code_e.DIALOG_MEDIA_ADDED, "Media Added", null);
                 break;
             }
         case tmedia_session_events_e.STREAM_REMOTE_REMOVED:
             {
-                if (e_media_type == tmedia_type_e.VIDEO) {
-                    o_self.get_session().__set_stream_video_remote(null);
-                    o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED, tsip_event_code_e.DIALOG_MEDIA_REMOVED, "Media Removed", null);
-                }
+                o_self.get_session().__set_stream_remote(null);
+                o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_REMOTE_REMOVED, tsip_event_code_e.DIALOG_MEDIA_REMOVED, "Media Removed", null);
                 break;
             }
+
     }
 }
 
@@ -1321,7 +1334,7 @@ function x9998_Any_2_Terminated_X_transportError(ao_args) {
     return 0;
 }
 
-function x9999_Any_2_Any_X_Error(ao_args) {
+function x9999_Any_2_Terminated_X_Error(ao_args) {
     var o_dialog = ao_args[0];
     
     return 0;

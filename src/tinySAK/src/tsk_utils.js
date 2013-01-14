@@ -48,7 +48,7 @@ function tsk_utils_webrtc4all_get_version() {
 
 function tsk_utils_have_stream() {
     try {
-        return (tsk_utils_have_webrtc4all() || (__o_stream != null));
+        return (tsk_utils_have_webrtc4all() || !!navigator.nativeGetUserMedia);
     }
     catch (e) { }
     return false;

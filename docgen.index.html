@@ -97,7 +97,8 @@
                             events_listener: { events: 'started', listener: function(<a href="docgen/symbols/SIPml.Stack.Event.html">e</a>){
                                         var callSession = stack.<a href="docgen/symbols/SIPml.Stack.html#newSession">newSession</a>('call-audiovideo', {
                                                 video_local: document.getElementById('video-local'),
-                                                video_remote: document.getElementById('video-remote')
+                                                video_remote: document.getElementById('video-remote'),
+                                                audio_remote: document.getElementById('audio-remote')
                                             });
                                         callSession.<a href="docgen/symbols/SIPml.Session.Call.html#call">call</a>('alice');
                                     } 
@@ -226,6 +227,7 @@
                 callSession = <a href="docgen/symbols/SIPml.Stack.html#newSession">sipStack.newSession</a>('call-audiovideo', {
                     video_local: document.getElementById('video-local'),
                     video_remote: document.getElementById('video-remote'),
+                    audio_remote: document.getElementById('audio-remote'),
                     events_listener: { events: '*', listener: eventsListener } // optional: '*' means all events
                 });
                 callSession.call('johndoe');
