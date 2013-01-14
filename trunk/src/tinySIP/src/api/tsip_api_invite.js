@@ -6,8 +6,8 @@
 tsip_session_invite.prototype = Object.create(tsip_session.prototype);
 tsip_event_invite.prototype = Object.create(tsip_event.prototype);
 
-tsip_session_invite.prototype.o_stream_video_local = null;
-tsip_session_invite.prototype.o_stream_video_remote = null;
+tsip_session_invite.prototype.o_stream_local = null;
+tsip_session_invite.prototype.o_stream_remote = null;
 
 /**
 * SIP <b>INVITE</b> event types
@@ -44,10 +44,13 @@ var tsip_event_invite_type_e =
 	M_UPDATED: 302, // succeed to update
 	M_STREAM_CONNECTING: 303,
 	M_STREAM_CONNECTED: 304,
-    M_STREAM_VIDEO_LOCAL_ADDED: 305,
-    M_STREAM_VIDEO_LOCAL_REMOVED: 306,
-    M_STREAM_VIDEO_REMOTE_ADDED: 307,
-    M_STREAM_VIDEO_REMOTE_REMOVED: 308,
+    M_STREAM_LOCAL_REQUESTED: 305,
+    M_STREAM_LOCAL_ACCEPTED: 306,
+    M_STREAM_LOCAL_REFUSED: 307,
+    M_STREAM_LOCAL_ADDED: 308,
+    M_STREAM_LOCAL_REMOVED: 309,
+    M_STREAM_REMOTE_ADDED: 310,
+    M_STREAM_REMOTE_REMOVED: 311,
 	
 	/* 3GPP TS 24.610: Communication Hold */
 	M_LOCAL_HOLD_OK: 400,
@@ -77,8 +80,8 @@ function tsip_session_invite(o_stack) {
     tsip_session.call(this, o_stack);
     this.__set(Array.prototype.slice.call(arguments, 1));
     
-    this.o_url_video_local = null;
-    this.o_url_video_remote = null;
+    this.o_url_local = null;
+    this.o_url_remote = null;
 }
 
 /**
@@ -104,19 +107,23 @@ function tsip_event_invite(o_session, i_code, s_phrase, o_sip_message, e_invite_
 @code
 o_stack.on_event_invite = function (evt) {
      switch (evt.e_invite_type) {
-        case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
+        case tsip_event_invite_type_e.M_STREAM_LOCAL_ADDED:
                 {
                     // 'video_local' is a HTML <video> element 
-                    document.getElementById("video_local").src = evt.get_session().get_url_video_local();
+                    document.getElementById("video_local").src = evt.get_session().get_url_local();
                     break;
                 }
      }
 };
 * @endcode
 */
-tsip_session_invite.prototype.get_url_video_local = function () {
+tsip_session_invite.prototype.get_url_local = function () {
    
-    return this.o_url_video_local;
+    return this.o_url_local;
+}
+
+tsip_session_invite.prototype.get_stream_local = function () {
+    return this.o_stream_local;
 }
 
 /**
@@ -127,39 +134,44 @@ tsip_session_invite.prototype.get_url_video_local = function () {
 @code
 o_stack.on_event_invite = function (evt) {
     switch (evt.e_invite_type) {
-        case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
+        case tsip_event_invite_type_e.M_STREAM_REMOTE_ADDED:
             {
                 // 'video_remote' is a HTML <video> element 
-                document.getElementById("video_remote").src = evt.get_session().get_url_video_local();
+                document.getElementById("video_remote").src = evt.get_session().get_url_local();
                 break;
             }
     }
 };
 * @endcode
 */
-tsip_session_invite.prototype.get_url_video_remote = function () {
-    
-    return this.o_url_video_remote;
+tsip_session_invite.prototype.get_url_remote = function () {
+    return this.o_url_remote;
+}
+
+tsip_session_invite.prototype.get_stream_remote = function () {
+    return this.o_stream_remote;
 }
 
 /*
  Internal function
 */
-tsip_session_invite.prototype.__set_stream_video_local = function (o_stream) {
-    if (this.o_url_video_local) {
-        window.nativeURL.revokeObjectURL(this.o_url_video_local);
+tsip_session_invite.prototype.__set_stream_local = function (o_stream) {
+    if (this.o_url_local) {
+        window.nativeURL.revokeObjectURL(this.o_url_local);
     }
-    this.o_url_video_local = o_stream ? window.nativeURL.createObjectURL(o_stream) : null;
+    this.o_stream_local = o_stream;
+    this.o_url_local = o_stream ? window.nativeURL.createObjectURL(o_stream) : undefined;
 }
 
 /*
 Internal function
 */
-tsip_session_invite.prototype.__set_stream_video_remote = function (o_stream) {
-    if (this.o_url_video_remote) {
-        window.nativeURL.revokeObjectURL(this.o_url_video_remote);
+tsip_session_invite.prototype.__set_stream_remote = function (o_stream) {
+    if (this.o_url_remote) {
+        window.nativeURL.revokeObjectURL(this.o_url_remote);
     }
-    this.o_url_video_remote = o_stream ? window.nativeURL.createObjectURL(o_stream) : null;
+    this.o_stream_remote = o_stream;
+    this.o_url_remote = this.o_stream_remote ? window.nativeURL.createObjectURL(this.o_stream_remote) : undefined;
 }
 
 /**

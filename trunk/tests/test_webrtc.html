@@ -4,13 +4,21 @@
     <title>Testing WebRTC</title>
 </head>
 <script type="text/javascript">
+
+    window.nativeRTCPeerConnection = (window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
+    window.nativeRTCSessionDescription = (window.mozRTCSessionDescription || window.RTCSessionDescription); // order is very important: "RTCSessionDescription" defined in Nighly but useless
+    window.nativeRTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
+    window.nativeURL = (window.webkitURL || window.URL);
+    navigator.nativeGetUserMedia = (navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
+
     var o_stream = null;
     var o_sdp;
     var o_pc;
     var o_offer, o_answer;
     var b_remote_sdp = false;
+    var b_firefox = true;
     var o_webkitGetUserMediaHasType = { audio: true, video: true };
-    var o_MediaContraintsHasType = { audio: true, video: false };
+    var o_MediaContraintsHasType = { audio: true, video: true };
     var o_media_constraints =
     { 'mandatory':
         {
@@ -20,11 +28,13 @@
     };
 
     window.onload = function () {
-        if (navigator.webkitGetUserMedia) {
-            navigator.webkitGetUserMedia({ audio: o_webkitGetUserMediaHasType.audio, video: o_webkitGetUserMediaHasType.video },
+        window.console.info("window.onload");
+        if (navigator.nativeGetUserMedia) {
+            navigator.nativeGetUserMedia({ audio: o_webkitGetUserMediaHasType.audio, video: o_webkitGetUserMediaHasType.video },
             function (stream) {
                 o_stream = stream;
-                document.getElementById("btnTest").disabled = false;
+                document.getElementById("btnTestOffer").disabled = false;
+                document.getElementById("btnTestAnswer").disabled = false;
             },
             function (e) {
                 console.error(e.toString());
@@ -33,7 +43,7 @@
     };
 
     function test_webrtc_answer() {
-        var s_offer = "v=0\r\n" +
+        /*var s_offer = "v=0\r\n" +
         "o=root 1899020397 1899020397 IN IP4 87.106.69.240\r\n" +
         "s=Asterisk PBX SVN-trunk-r376131M\r\n" +
         "c=IN IP4 87.106.69.240\r\n" +
@@ -52,10 +62,40 @@
         "a=candidate:H576a45f0 2 udp 2130706430 87.106.69.240 16873 typ host generation 0 svn 25\r\n" +
         "a=candidate:S576a45f0 2 udp 1694498814 87.106.69.240 16872 typ srflx generation 0 svn 25\r\n" +
         "a=sendrecv\r\n" +
-        "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:DPm7A6pyoRY1ctub98B92/j/dqFO4yuSgD+Gbx9m\r\n";
+        "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:DPm7A6pyoRY1ctub98B92/j/dqFO4yuSgD+Gbx9m\r\n";*/
 
+        var s_offer = "v=0\r\n" +
+            "o=doubango 1983 678901 IN IP4 192.168.0.37\r\n" +
+            "s=-\r\n" +
+            "c=IN IP4 192.168.0.37\r\n" +
+            "t=0 0\r\n" +
+            "a=tcap:1 UDP/TLS/RTP/SAVPF UDP/TLS/RTP/SAVP\r\n" +
+            "a=fingerprint:sha-256 BE:8D:5B:BC:34:D8:73:70:EF:04:9B:7B:6F:69:60:5C:37:05:2A:6A:68:C0:E1:06:8C:35:47:83:80:8B:89:C6\r\n" +
+            "a=setup:actpass\r\n" +
+            "a=connection:new\r\n" +
+            "m=audio 50526 RTP/SAVPF 0 8 101\r\n" +
+            "c=IN IP4 192.168.0.37\r\n" +
+            "a=ptime:20\r\n" +
+            "a=silenceSupp:off - - - -\r\n" +
+            "a=rtpmap:0 PCMU/8000/1\r\n" +
+            "a=rtpmap:8 PCMA/8000/1\r\n" +
+            "a=rtpmap:101 telephone-event/8000/1\r\n" +
+            "a=fmtp:101 0-16\r\n" +
+            "a=pcfg:1 t=1\r\n" +
+            "a=pcfg:2 t=2\r\n" +
+            "a=sendrecv\r\n" +
+            "a=rtcp-mux\r\n" +
+            "a=ssrc:521252955 cname:ldjWoB60jbyQlR6e\r\n" +
+            "a=ssrc:521252955 mslabel:6994f7d1-6ce9-4fbd-acfd-84e5131ca2e2\r\n" +
+            "a=ssrc:521252955 label:Doubango\r\n" +
+            "a=ice-ufrag:a1eSNooaFTzjCr6\r\n" +
+            "a=ice-pwd:WHEaDskZo8VdF52a82tyf\r\n" +
+            "a=candidate:CuNeg0Keh 1 udp 2130706431 192.168.0.37 50526 typ host\r\n" +
+            "a=candidate:CuNeg0Keh 2 udp 2130706430 192.168.0.37 50527 typ host\r\n" +
+            "a=candidate:srflxCuNe 1 udp 1694498815 88.179.39.5 50526 typ srflx raddr 192.168.0.37 rport 61621\r\n" +
+            "a=candidate:srflxCuNe 2 udp 1694498814 88.179.39.5 50527 typ srflx raddr 192.168.0.37 rport 61621\r\n";
  
-        o_pc = new webkitRTCPeerConnection(
+        o_pc = new nativeRTCPeerConnection(
                 { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
                 o_media_constraints
         );
@@ -74,7 +114,7 @@
         }
 
         o_pc.addStream(o_stream);
-        o_offer = new RTCSessionDescription({ type: "offer", sdp: s_offer })
+        o_offer = new nativeRTCSessionDescription({ type: "offer", sdp: s_offer })
         o_pc.setRemoteDescription(
                         o_offer,
                         function () { // success callback
@@ -88,8 +128,9 @@
 
         o_pc.createAnswer(
                 function (desc) {
-                    console.info("createAnswer ok");
+                    console.info("setLocalDescription:" + desc.sdp);
                     o_pc.setLocalDescription(desc);
+                    console.info("PeerConnection.localDescription:" + (o_pc.localDescription ? o_pc.localDescription.sdp : "null"));
                 },
                 function (s_error) {
                     console.error("createAnswer nok: " + s_error);
@@ -103,7 +144,7 @@
 
 
   function test_webrtc_offer() {
-      var s_answer = "v=0\r\n" +
+      /*var s_answer = "v=0\r\n" +
         "o=root 1899020397 1899020397 IN IP4 87.106.69.240\r\n" +
         "s=Asterisk PBX SVN-trunk-r376131M\r\n" +
         "c=IN IP4 87.106.69.240\r\n" +
@@ -123,9 +164,48 @@
         "a=candidate:S576a45f0 2 udp 1694498814 87.106.69.240 16872 typ srflx generation 0 svn 25\r\n" +
         "a=sendrecv\r\n" +
         "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:DPm7A6pyoRY1ctub98B92/j/dqFO4yuSgD+Gbx9m\r\n";
+        */
 
+        var s_anwer = "v=0\r\n" +
+            "o=Mozilla-SIPUA 23731 0 IN IP4 0.0.0.0\r\n" +
+            "s=SIP Call\r\n" +
+            "t=0 0\r\n" +
+            "a=ice-ufrag:22e0d685\r\n" +
+            "a=ice-pwd:a9017109d802db5bd219d0a656ab664e\r\n" +
+            "a=fingerprint:sha-256 94:C3:0E:9A:4D:D1:19:2D:8C:DF:82:B1:93:68:73:5B:4E:D6:26:3D:71:2E:A6:E7:00:AF:3B:6E:44:7F:A8:78\r\n" +
+            "m=audio 62678 RTP/SAVPF 109 0 8 101\r\n" +
+            "c=IN IP4 88.179.39.5\r\n" +
+            "a=rtpmap:109 opus/48000/2\r\n" +
+            "a=ptime:20\r\n" +
+            "a=rtpmap:0 PCMU/8000\r\n" +
+            "a=rtpmap:8 PCMA/8000\r\n" +
+            "a=rtpmap:101 telephone-event/8000\r\n" +
+            "a=fmtp:101 0-15\r\n" +
+            "a=sendrecv\r\n" +
+            "a=candidate:0 1 UDP 2111832319 192.168.0.37 62678 typ host\r\n" +
+            "a=candidate:1 1 UDP 1692467199 88.179.39.5 62678 typ srflx raddr 192.168.0.37 rport 62678\r\n" +
+            "a=candidate:0 2 UDP 2111832318 192.168.0.37 62679 typ host\r\n" +
+            "a=candidate:1 2 UDP 1692467198 88.179.39.5 62679 typ srflx raddr 192.168.0.37 rport 62679\r\n" +
+            "m=video 62680 RTP/SAVPF 120\r\n" +
+            "c=IN IP4 88.179.39.5\r\n" +
+            "a=rtpmap:120 VP8/90000\r\n" +
+            "a=sendrecv\r\n" +
+            "a=candidate:0 1 UDP 2111832319 192.168.0.37 62680 typ host\r\n" +
+            "a=candidate:1 1 UDP 1692467199 88.179.39.5 62680 typ srflx raddr 192.168.0.37 rport 62680\r\n" +
+            "a=candidate:0 2 UDP 2111832318 192.168.0.37 62681 typ host\r\n" +
+            "a=candidate:1 2 UDP 1692467198 88.179.39.5 62681 typ srflx raddr 192.168.0.37 rport 62681\r\n" +
+            "m=application 62682 SCTP/DTLS 0 \r\n" +
+            "c=IN IP4 88.179.39.5\r\n" +
+            "a=fmtp:5000 protocol=webrtc-datachannel;streams=16\r\n" +
+            "a=sendrecv\r\n" +
+            "a=candidate:0 1 UDP 2111832319 192.168.0.37 62682 typ host\r\n" +
+            "a=candidate:1 1 UDP 1692467199 88.179.39.5 62682 typ srflx raddr 192.168.0.37 rport 62682\r\n" +
+            "a=candidate:0 2 UDP 2111832318 192.168.0.37 62683 typ host\r\n" +
+            "a=candidate:1 2 UDP 1692467198 88.179.39.5 62683 typ srflx raddr 192.168.0.37 rport 62683\r\n";
 
-      o_pc = new webkitRTCPeerConnection(
+      window.console.info("test_webrtc_offer");
+
+      o_pc = new nativeRTCPeerConnection(
                 { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
                 o_media_constraints
         );
@@ -136,7 +216,7 @@
               console.info("ICE COMPLETED: " + o_pc.localDescription.sdp);
 
               o_pc.setRemoteDescription(
-                    new RTCSessionDescription({ type: "answer", sdp: s_answer }),
+                    new nativeRTCSessionDescription({ type: "answer", sdp: s_answer }),
                     function () { // success callback
                         console.info("setRemoteDescription ok");
                     },
@@ -158,6 +238,18 @@
       o_pc.createOffer(
                 function (desc) {
                     o_pc.setLocalDescription(desc);
+                    console.info("setLocalDescription:" + desc.sdp);
+                    if(b_firefox){ // no ICE callbacks
+                        o_pc.setRemoteDescription(
+                            new nativeRTCSessionDescription({ type: "answer", sdp: s_answer }),
+                            function () { // success callback
+                                console.info("setRemoteDescription ok");
+                            },
+                            function (s_error) { // error callback
+                                console.error("setRemoteDescription nok");
+                            }
+                      );
+                    }
                 },
                 function (s_error) {
                     console.error("createAnswer nok: " + s_error);
@@ -173,7 +265,8 @@
 <!-- body -->
 <body>
     <form action=''>
-    <input type="button" id="btnTest" disabled value="Test" onclick='test_webrtc_offer();' />
+    <input type="button" id="btnTestAnswer" disabled value="Test Answer" onclick='test_webrtc_answer();' />
+    <input type="button" id="btnTestOffer" disabled value="Test Offer" onclick='test_webrtc_offer();' />
     </form>
 </body>
 </html>

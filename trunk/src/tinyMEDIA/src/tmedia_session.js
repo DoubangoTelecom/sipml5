@@ -19,10 +19,13 @@ var tmedia_session_events_e =
     SET_ACK_SUCCESS: 20,
     SET_ACK_FAILED: 21,
 
-    STREAM_LOCAL_ADDED: 30,
-    STREAM_LOCAL_REMOVED: 31,
-    STREAM_REMOTE_ADDED: 32,
-    STREAM_REMOTE_REMOVED: 33
+    STREAM_LOCAL_REQUESTED: 30,
+    STREAM_LOCAL_ACCEPTED: 31,
+    STREAM_LOCAL_REFUSED: 32,
+    STREAM_LOCAL_ADDED: 33,
+    STREAM_LOCAL_REMOVED: 34,
+    STREAM_REMOTE_ADDED: 35,
+    STREAM_REMOTE_REMOVED: 36
 };
 
 tmedia_session_mgr.prototype.__ao_supported_media = [tmedia_type_e.AUDIO, tmedia_type_e.VIDEO];
@@ -42,8 +45,8 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
     this.sdp.i_ro_ver = -1;
     this.sdp.o_ro = null;
 
-    this.o_stream_video_local = null;
-    this.o_stream_video_remote = null;
+    this.o_stream_local = null;
+    this.o_stream_remote = null;
 
     this.b_started = false;
     this.b_ro_changed = false;
@@ -71,10 +74,10 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
                     __o_sessiondescription_class = window.SessionDescription;
                     __o_iceCandidate_class = window.IceCandidate;
                 }
-                else if (window.nativeRTCPeerConnection && window.RTCSessionDescription && window.RTCIceCandidate) {
+                else if (window.nativeRTCPeerConnection && window.nativeRTCSessionDescription && window.nativeRTCIceCandidate) {
                     __o_peerconnection_class = window.nativeRTCPeerConnection;
-                    __o_sessiondescription_class = window.RTCSessionDescription;
-                    __o_iceCandidate_class = window.RTCIceCandidate;
+                    __o_sessiondescription_class = window.nativeRTCSessionDescription;
+                    __o_iceCandidate_class = window.nativeRTCIceCandidate;
                 }
             }
             else if (WebRtc4all_GetType() == WebRtcType_e.ERICSSON) {
@@ -103,21 +106,21 @@ tmedia_session_mgr.prototype.is_jsep = function () {
     return (WebRtc4all_GetType() == WebRtcType_e.NATIVE);
 }
 
-tmedia_session_mgr.prototype.get_stream_video_local = function () {
-    return this.o_stream_video_local;
+tmedia_session_mgr.prototype.get_stream_local = function () {
+    return this.o_stream_local;
 }
 
-tmedia_session_mgr.prototype.get_stream_video_remote = function () {
-    return this.o_stream_video_remote;
+tmedia_session_mgr.prototype.get_stream_remote = function () {
+    return this.o_stream_remote;
 }
 
-tmedia_session_mgr.prototype.set_stream_video_local = function (o_stream) {
-    this.o_stream_video_local = o_stream;
+tmedia_session_mgr.prototype.set_stream_local = function (o_stream) {
+    this.o_stream_local = o_stream;
     this.callback(o_stream ? tmedia_session_events_e.STREAM_LOCAL_ADDED : tmedia_session_events_e.STREAM_LOCAL_REMOVED, tmedia_type_e.VIDEO);
 }
 
-tmedia_session_mgr.prototype.set_stream_video_remote = function (o_stream) {
-    this.o_stream_video_remote = o_stream;
+tmedia_session_mgr.prototype.set_stream_remote = function (o_stream) {
+    this.o_stream_remote = o_stream;
     this.callback(o_stream ? tmedia_session_events_e.STREAM_REMOTE_ADDED : tmedia_session_events_e.STREAM_REMOTE_REMOVED, tmedia_type_e.VIDEO);
 }
 

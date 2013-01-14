@@ -65,8 +65,8 @@ tmedia_session_roap.prototype.__stop = function () {
         this.o_pc.close();
         this.o_pc = null;
     }
-    this.o_mgr.set_stream_video_remote(null);
-    this.o_mgr.set_stream_video_local(null);
+    this.o_mgr.set_stream_remote(null);
+    this.o_mgr.set_stream_local(null);
 
     return 0;
 }
@@ -77,9 +77,9 @@ tmedia_session_roap.prototype.__get_lo = function () {
         __o_session_roap = this;
 
         // alert user
-        this.o_mgr.set_stream_video_local(__o_stream);
+        this.o_mgr.set_stream_local(__o_roap_stream);
 
-        __o_session_roap.o_local_stream = __o_stream;
+        __o_session_roap.o_local_stream = __o_roap_stream;
         __o_session_roap.o_pc = new __o_peerconnection_class("STUN stun.l.google.com:19302", __o_session_roap.__on_signaling_message);
         //__o_session_roap.o_pc = new webkitDeprecatedPeerConnection("NONE", __o_session_roap.__on_signaling_message);
         __o_session_roap.o_pc.o_session = __o_session_roap;
@@ -321,7 +321,7 @@ tmedia_session_roap.prototype.__on_add_stream = function (evt) {
     if (__o_session_roap) {
         __o_session_roap.o_remote_stream = evt.stream;
         if (__o_session_roap.o_mgr) {
-            __o_session_roap.o_mgr.set_stream_video_remote(evt.stream);
+            __o_session_roap.o_mgr.set_stream_remote(evt.stream);
         }
     }
 }
@@ -333,7 +333,7 @@ tmedia_session_roap.prototype.__on_remove_stream = function (evt) {
     if (__o_session_roap) {
         __o_session_roap.o_remote_stream = null;
         if (__o_session_roap.o_mgr) {
-            __o_session_roap.o_mgr.set_stream_video_remote(null);
+            __o_session_roap.o_mgr.set_stream_remote(null);
         }
     }
 }

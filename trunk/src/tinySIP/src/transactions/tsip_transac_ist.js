@@ -199,7 +199,7 @@ function __tsip_transac_ist_Proceeding_2_Proceeding_X_INVITE(ao_args) {
         i_ret = (o_transac.send(o_transac.s_branch, o_transac.o_lastResponse) > 0 ? 0 : -1);
 	}
 
-	return ret;
+	return i_ret;
 }
 
 function __tsip_transac_ist_Proceeding_2_Proceeding_X_1xx(ao_args) {

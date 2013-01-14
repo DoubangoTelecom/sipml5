@@ -53,9 +53,9 @@
           <a class="brand" href="./index.html">Doubango Telecom</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="index.html?svn=20">Home</a></li>
+              <li class="active"><a href="index.html?svn=165">Home</a></li>
               <li><a href="http://code.google.com/p/sipml5/source/checkout" target="_blank">Source code</a></li>
-              <li><a href="docgen/index.html?svn=20">Programmer's Guide</a></li>
+              <li><a href="docgen/index.html?svn=165">Programmer's Guide</a></li>
               <li><a href="contact.htm">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -71,7 +71,7 @@
         <p>This is the world's first open source HTML5 SIP client entirely written in javascript for integration in social networks (FaceBook, Twitter, Google+), online games, e-commerce websites... No extension, plugin or gateway is needed. The media stack rely on <a href="http://en.wikipedia.org/wiki/WebRTC" target="_blank">WebRTC</a>.<br />
          The client can be used to connect to any SIP or IMS network from your preferred browser to make and receive audio/video calls and instant messages.<br />
         </p>
-        <p><a class="btn btn-primary btn-large" href="call.htm?svn=20" target="_blank">Enjoy our live demo &raquo;</a></p>
+        <p><a class="btn btn-primary btn-large" href="call.htm?svn=165" target="_blank">Enjoy our live demo &raquo;</a></p>
       </div>
 
 
@@ -81,10 +81,11 @@
                   <tr><td><h2><a name="aSipSdpStack">Javascript SIP/SDP stack</a></h2></td></tr>
                   <tr class="spaceUnder"><td>
                        <p>The SIP and SDP stacks (<b>~1 Mo</b>) are entirely written in javascript and the network transport uses WebSockets as per <a href="http://tools.ietf.org/html/draft-ibc-sipcore-sip-websocket">draft-ibc-sipcore-sip-websocket</a>.
-                       The <a href="call.htm?svn=13" target="_blank">live demo</a> doesn't require any installation and can be used to connect to any SIP server using UDP, TCP or TLS transports.
+                       The <a href="call.htm?svn=165" target="_blank">live demo</a> doesn't require any installation and can be used to connect to any SIP server using UDP, TCP or TLS transports.
                        </p>
                        <p>Short but not exhaustive list of supported features:</p>
                       <ul>
+                        <li><b>Works on Chrome, Firefox, IE, Safari, Opera and Bowser</b></li>
                         <li>Audio / Video call</li>
                         <li>Instant messaging</li>
                         <li>Presence</li>
@@ -105,7 +106,7 @@
                   <tr><td><h2><a name="aMediaStack">Media Stack</a></h2></td></tr>
                   <tr><td>
                        <p>The media stack depends on <a href="http://en.wikipedia.org/wiki/WebRTC">WebRTC (Web Real Time Communication)</a> which is natively provided by the web browser.
-                       <b>sipML5</b> should work on any web browser supporting WebRTC but we highly recommend using <a href="https://www.google.com/intl/en/chrome/browser/">Google Chrome 21.0.1180.60 m</a> or later for testing. <br />
+                       <b>sipML5</b> should work on any web browser supporting WebRTC but we highly recommend using <a target=_blank href="https://www.google.com/intl/en/chrome/browser/">Google Chrome</a> or <a target=_blank href="http://nightly.mozilla.org/">Firefox Nightly</a> for testing. <br />
                        For <b>Safari</b>, <b>Firefox</b>, <b>Opera</b> and <b>IE</b> you will need to install <a href="http://code.google.com/p/webrtc4all/downloads/list" target="_blank"> webrtc4all</a> extension. <br />
                        </p>     
                    </td></tr>
@@ -137,7 +138,8 @@
                                         events_listener: { events: 'started', listener: function(<a href="docgen/symbols/SIPml.Stack.Event.html">e</a>){
                                                     var callSession = stack.<a href="docgen/symbols/SIPml.Stack.html#newSession">newSession</a>('call-audiovideo', {
                                                             video_local: document.getElementById('video-local'),
-                                                            video_remote: document.getElementById('video-remote')
+                                                            video_remote: document.getElementById('video-remote'),
+                                                            audio_remote: document.getElementById('audio-remote')
                                                         });
                                                     callSession.<a href="docgen/symbols/SIPml.Session.Call.html#call">call</a>('alice');
                                                 } 

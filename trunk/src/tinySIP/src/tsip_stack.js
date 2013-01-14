@@ -120,10 +120,10 @@ o_stack.on_event_invite = function (evt: tsip_event_invite) {
 	    case tsip_event_invite_type_e.M_UPDATED:
 	    case tsip_event_invite_type_e.M_STREAM_CONNECTING:
 	    case tsip_event_invite_type_e.M_STREAM_CONNECTED:
-        case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_ADDED:
-        case tsip_event_invite_type_e.M_STREAM_VIDEO_LOCAL_REMOVED:
-        case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_ADDED:
-        case tsip_event_invite_type_e.M_STREAM_VIDEO_REMOTE_REMOVED:
+        case tsip_event_invite_type_e.M_STREAM_LOCAL_ADDED:
+        case tsip_event_invite_type_e.M_STREAM_LOCAL_REMOVED:
+        case tsip_event_invite_type_e.M_STREAM_REMOTE_ADDED:
+        case tsip_event_invite_type_e.M_STREAM_REMOTE_REMOVED:
 	
 	    case tsip_event_invite_type_e.M_LOCAL_HOLD_OK:
 	    case tsip_event_invite_type_e.M_LOCAL_HOLD_NOK:
