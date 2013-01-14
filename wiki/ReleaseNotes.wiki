@@ -3,6 +3,12 @@
 
 <wiki:toc max_depth="2" />
 
+==1.2.165==
+ * SVN: 165
+ * Date: January 14, 2013
+ * Adds support for Firefox Nightly
+ * Fix issue 60, issue 65 and issue 66
+
 ==1.1.0==
  * SVN: 148
  * Date: December 20, 2012
