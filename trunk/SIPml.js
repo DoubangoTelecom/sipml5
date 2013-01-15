@@ -246,7 +246,7 @@ SIPml.init = function (successCallback, errorCallback) {
             // for now the plugins (WebRTC4all only works on Windows)
             if (SIPml.s_system_friendly_name == 'win' || SIPml.s_system_friendly_name == 'windows') {
                 // Internet explorer
-                if (SIPml.s_navigator_friendly_name == 'Microsoft Internet Explorer') {
+                if (SIPml.s_navigator_friendly_name == 'ie') {
                     // Check for IE version 
                     var rv = -1;
                     var ua = navigator.userAgent;
