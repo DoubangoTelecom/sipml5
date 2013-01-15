@@ -16,22 +16,22 @@ _sipML5 solution using Asterisk_
 <hr />
 
 ==Building source code==
-The current Asterisk version (revision 376131) allows to register and make calls from Chrome but no audio or video will flow.
+The current Asterisk version (revision 379070) allows to register and make calls from Chrome but no audio or video will flow.
 The problem comes from ICE implementation in Chrome which is not fully compliant with RFC 5245. To fix this problem you'll need to apply the provided patch and rebuild Asterisk as explained in this section.
 This patch also adds experimental support for VP8 video codec.
 
- # checkout Asterisk source code *revision 376131*
+ # checkout Asterisk source code *revision 379070*
 {{{
-svn checkout -r 376131 http://svn.digium.com/svn/asterisk/trunk asterisk
+svn checkout -r 379070 http://svn.digium.com/svn/asterisk/trunk asterisk
 }}}
- # copy the [http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_376131.patch patch] into *asterisk* folder
+ # copy the [http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_379070.patch patch] into *asterisk* folder
 {{{
 cd asterisk
-wget http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_376131.patch
+wget http://sipml5.googlecode.com/svn/trunk/asterisk/asterisk_379070.patch
 }}}
  # apply the patch
  {{{
- patch -p0 -i ./asterisk_376131.patch
+ patch -p0 -i ./asterisk_379070.patch
  }}}
  # configure for build
 {{{
@@ -151,6 +151,7 @@ Starting r106 there is experimental support for VP8 video codec. To be used at y
  # *r98*: Add support for Firefox, IE9+, Safari and Opera (thanks to [http://code.google.com/p/webrtc4all webrtc4all]). Disable STUN keepAlive to avoid overrun.
  # *r104*: Fix issue 42. Use Asterisk *373330*. Re-enable STUN keepAlive.
  # *r106*: Adds support for VP8 video codec in Asterisk.
+ # *r169*: Update patch (tested with chrome *stable 24.0.1312.52 m* and *canary 26.0.1384.2*)
 
 ==Technical help==
 Please check our [http://code.google.com/p/sipml5/issues/list issue tracker] or [https://groups.google.com/group/doubango developer group] if you have any problem.
