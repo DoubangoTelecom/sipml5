@@ -445,7 +445,7 @@ tsip_dialog.prototype.request_new = function (s_method) {
     }
 
     /* Add outbound proxy */
-    // The outbound proxy is added as Route header only if the transport is WS/WSS to allow webrtc2sip to forward the request
+    // The outbound proxy is added as Route header only if the transport is WS/WSS to allow webrtc2sip to forward the request to the right destination
     // For all other protocols (e.g UDP) the request will already be sent to the outbound proxy address
     if (o_stack.network.e_proxy_cscf_type == tsip_transport_type_e.WS || o_stack.network.e_proxy_cscf_type == tsip_transport_type_e.WSS) {
         var s_proxy_outbound = o_stack.__get_proxy_outbound_uri_string();
