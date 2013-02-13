@@ -27,8 +27,8 @@ SIPml = {};
 /** @private */SIPml.b_webrtc4all_plugin_outdated = false;
 /** @private */SIPml.b_webrtc4all_supported = false;
 /** @private */SIPml.s_webrtc4all_version = 'unknown';
+/** @private */SIPml.b_have_media_stream = false;
 /** @private */SIPml.b_webrtc_supported = false;
-/** @private */SIPml.o_timer_initialized = undefined;
 
 
 /**
@@ -158,7 +158,10 @@ Checks whether the media engine have a valid stream or not. The stream is from <
 @returns {Boolean} <i>true</i> if the engine have a valid stream; otherwise <i>false</i>
 */
 SIPml.haveMediaStream = function () {
-    return tsk_utils_have_stream(); 
+    if(!SIPml.isInitialized()){
+        throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
+    }
+    return SIPml.b_have_media_stream;
 }
 
 /**
@@ -201,6 +204,7 @@ SIPml.init = function (successCallback, errorCallback) {
 
         tsk_utils_log_info('User-Agent=' + (navigator.userAgent || "unknown"));
 
+        SIPml.b_have_media_stream = tsk_utils_have_stream();
         SIPml.b_webrtc_supported = tsk_utils_have_webrtc();
         SIPml.b_webrtc4all_supported = tsk_utils_have_webrtc4all();
         SIPml.s_webrtc4all_version = tsk_utils_webrtc4all_get_version();
@@ -267,16 +271,20 @@ SIPml.init = function (successCallback, errorCallback) {
             }
         }
 
-        SIPml.o_timer_initialized = setInterval(function () {
-            if (SIPml.haveMediaStream() /* must use function */ && SIPml.b_webrtc_supported) {
-                SIPml.b_initialized = true;
-                SIPml.b_initializing = false;
-                clearInterval(SIPml.o_timer_initialized);
-                if(successCallback){
-                    successCallback({});
-                }
+        if(SIPml.b_webrtc_supported && SIPml.b_have_media_stream){
+            SIPml.b_initialized = true;
+            SIPml.b_initializing = false;
+            tsk_utils_log_info("Engine initialized");
+            if(successCallback){
+                successCallback({});
             }
-        }, 500);
+        }
+        else{
+            if(errorCallback){
+                var s_description = !SIPml.b_webrtc_supported ? "WebRTC not supported" : (!SIPml.b_have_media_stream ? "getUserMedia not supported" : "Internal error");
+                errorCallback({description: s_description});
+            }
+        }
     }
 }
 
