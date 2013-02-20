@@ -446,11 +446,12 @@ tmedia_session_jsep01.onGetUserMediaSuccess = function (o_stream, _This) {
         }
 
         // HACK: patch for Firefox and others
+        // https://groups.google.com/group/discuss-webrtc/browse_thread/thread/e30f0ffc267bce5f
         if(!o_stream.videoTracks || !o_stream.audioTracks){
             var b_support_audio = !!(This.e_type.i_id & tmedia_type_e.AUDIO.i_id);
             var b_support_video = !!(This.e_type.i_id & tmedia_type_e.VIDEO.i_id);
-            o_stream.audioTracks = {length: b_support_audio ? 1 : 0};
-            o_stream.videoTracks = {length: b_support_video ? 1 : 0};
+            o_stream.audioTracks = (o_stream.getAudioTracks() || {length: b_support_audio ? 1 : 0});
+            o_stream.videoTracks = (o_stream.getVideoTracks() || {length: b_support_video ? 1 : 0});
         }
 
         // save stream other next calls
@@ -616,8 +617,18 @@ tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
 tmedia_session_jsep01.prototype.__get_lo = function () {
     var This = this;
     if (!this.o_pc && !this.b_lo_held) {
+        // HACK Nightly 21.0a1 (2013-02-18): 
+        // - In RTCConfiguration passed to RTCPeerConnection constructor: FQDN not yet implemented (only IP-#s). Omitting "stun:stun.l.google.com:19302"
+        // - CHANGE-REQUEST not supported when using "numb.viagenie.ca"
+        // - (stun/ERR) Missing XOR-MAPPED-ADDRESS when using "stun.l.google.com"
+        // numb.viagenie.ca: 66.228.45.110:
+        // stun.l.google.com: 173.194.78.127
+        // stun.counterpath.net: 216.93.246.18
+        var o_iceServers = tmedia_session_jsep01.mozThis
+            ? [{ url: 'stun:216.93.246.18:3478'}, { url: 'stun:66.228.45.110:3478'}, { url: 'stun:173.194.78.127:19302'}]
+            : [{ url: 'stun:stun.l.google.com:19302'}, { url: 'stun:stun.counterpath.net:3478'}, { url: 'stun:numb.viagenie.ca:3478'}];
         this.o_pc = new __o_peerconnection_class(
-                { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
+                { iceServers: o_iceServers },
                 this.o_media_constraints
         );
         this.o_pc.onicecandidate = tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onIceCandidate : function(o_event){ tmedia_session_jsep01.onIceCandidate(o_event, This) };
