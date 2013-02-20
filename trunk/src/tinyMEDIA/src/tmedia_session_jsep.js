@@ -223,12 +223,13 @@ tmedia_session_jsep.prototype.subscribe_stream_events = function () {
             var This = (tmedia_session_jsep01.mozThis || this.o_session);
             This.o_remote_stream = evt.stream;
             if (This.o_mgr) {
-                // patch for Firefox and others
+                // HACK: patch for Firefox and others
+                // https://groups.google.com/group/discuss-webrtc/browse_thread/thread/e30f0ffc267bce5f
                 if(!This.o_remote_stream.videoTracks || !This.o_remote_stream.audioTracks){
                     var b_support_audio = !!(This.e_type.i_id & tmedia_type_e.AUDIO.i_id);
                     var b_support_video = !!(This.e_type.i_id & tmedia_type_e.VIDEO.i_id);
-                    This.o_remote_stream.audioTracks = {length: b_support_audio ? 1 : 0};
-                    This.o_remote_stream.videoTracks = {length: b_support_video ? 1 : 0};
+                    This.o_remote_stream.audioTracks = This.o_remote_stream.getAudioTracks ? This.o_remote_stream.getAudioTracks() : {length: b_support_audio ? 1 : 0};
+                    This.o_remote_stream.videoTracks = This.o_remote_stream.getVideoTracks ? This.o_remote_stream.getVideoTracks() : {length: b_support_video ? 1 : 0};
                 }
                 This.o_mgr.set_stream_remote(evt.stream);
             }
@@ -450,8 +451,8 @@ tmedia_session_jsep01.onGetUserMediaSuccess = function (o_stream, _This) {
         if(!o_stream.videoTracks || !o_stream.audioTracks){
             var b_support_audio = !!(This.e_type.i_id & tmedia_type_e.AUDIO.i_id);
             var b_support_video = !!(This.e_type.i_id & tmedia_type_e.VIDEO.i_id);
-            o_stream.audioTracks = (o_stream.getAudioTracks() || {length: b_support_audio ? 1 : 0});
-            o_stream.videoTracks = (o_stream.getVideoTracks() || {length: b_support_video ? 1 : 0});
+            o_stream.audioTracks = o_stream.getAudioTracks ? o_stream.getAudioTracks() : {length: b_support_audio ? 1 : 0};
+            o_stream.videoTracks = o_stream.getVideoTracks ? o_stream.getVideoTracks() : {length: b_support_video ? 1 : 0};
         }
 
         // save stream other next calls
