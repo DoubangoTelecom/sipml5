@@ -308,7 +308,11 @@ tsip_dialog.prototype.request_new = function (s_method) {
                         o_stack.network.b_rtcweb_enabled ? "yes" : "no");
 
                     if (o_request.line.request.e_type == tsip_request_type_e.INVITE && o_stack.network.b_rtcweb_enabled) {
-                        s_contact += ";impi=" + o_stack.identity.s_impi;
+                        // contact parameters must be encoded as the ABNF is:
+                        // gen_value = token | host | quoted_string;
+	                    // generic_param = token ( EQUAL gen_value )?;
+                        // for example, impi with value equal to "mamadou@example.org" whill be encoded as "mamadou%40example.org"
+                        s_contact += ";impi=" + encodeURIComponent(o_stack.identity.s_impi);
                         s_contact += ";ha1=" + tsip_auth_digest_HA1(o_stack.identity.s_impi, o_stack.network.o_uri_realm.s_host, o_stack.identity.s_password);
                     }
                     s_contact += "\r\n";

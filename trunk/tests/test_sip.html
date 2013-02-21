@@ -22,6 +22,7 @@
 	"Allow: INVITE, ACK, CANCEL, BYE, MESSAGE, OPTIONS, NOTIFY, PRACK\r\n" +
 	"Allow: REFER, UPDATE\r\n" +
 	"u: talk, hold, conference, LocalModeStatus\r\n" +
+    "m: <sip:hubert@127.0.0.1:5060;rtcweb-breaker=yes>;impi="+encodeURIComponent("78@sip2sip")+"\r\n" +
 	"m: <sip:mamadou@[::]:1988;comp=sigcomp;transport=udp>;expires=600000;+deviceID=\"3ca50bcb-7a67-44f1-afd0-994a55f930f4\";mobility=\"fixed\";+g.3gpp.cs-voice;+g.3gpp.app%5fref=\"urn%3Aurnxxx%3A3gpp-application.ims.iari.gsmais\";+g.oma.sip-im.large-message;+g.oma.sip-im\r\n" +
 	"User-Agent: IM-client/OMA1.0 doubango/v0.0.0\r\n" +
 	"Require: pref, path\r\n" +
@@ -115,7 +116,7 @@
         //tsk_utils_log_info(hdr.tostring_full());
 
         var o_ragel_state = tsk_ragel_state_create();
-        tsk_ragel_state_init_str(o_ragel_state, __msg2);
+        tsk_ragel_state_init_str(o_ragel_state, __msg1);
         var msg = tsip_message.prototype.Parse(o_ragel_state, true);
         tsk_utils_log_info(msg.toString());
     }
