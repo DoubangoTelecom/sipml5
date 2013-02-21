@@ -625,8 +625,9 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
         // numb.viagenie.ca: 66.228.45.110:
         // stun.l.google.com: 173.194.78.127
         // stun.counterpath.net: 216.93.246.18
+        // "23.21.150.121" is the default STUN server used in Nightly
         var o_iceServers = tmedia_session_jsep01.mozThis
-            ? [{ url: 'stun:216.93.246.18:3478'}, { url: 'stun:66.228.45.110:3478'}, { url: 'stun:173.194.78.127:19302'}]
+            ? [{ url: 'stun:23.21.150.121:3478'}, { url: 'stun:216.93.246.18:3478'}, { url: 'stun:66.228.45.110:3478'}, { url: 'stun:173.194.78.127:19302'}]
             : [{ url: 'stun:stun.l.google.com:19302'}, { url: 'stun:stun.counterpath.net:3478'}, { url: 'stun:numb.viagenie.ca:3478'}];
         this.o_pc = new __o_peerconnection_class(
                 { iceServers: o_iceServers },
