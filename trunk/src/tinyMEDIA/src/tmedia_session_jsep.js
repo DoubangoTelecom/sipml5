@@ -81,6 +81,7 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
         if ((o_hdr_S = this.o_sdp_lo.get_header(tsdp_header_type_e.S))) {
             o_hdr_S.s_value = "Doubango Telecom - " + tsk_utils_get_navigator_friendly_name();
         }
+
         /* Session version */
         var o_hdr_O;
         if (this.i_sdp_lo_version == -1) {
@@ -426,7 +427,8 @@ function tmedia_session_jsep01(o_mgr) {
     { 'mandatory': 
         {
             'OfferToReceiveAudio': !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id),
-            'OfferToReceiveVideo': !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)
+            'OfferToReceiveVideo': !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id),
+            'MozDontOfferDataChannel': true
         }
      };
      

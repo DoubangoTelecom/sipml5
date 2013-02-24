@@ -622,15 +622,12 @@ SIPml.Stack = function (o_conf) {
         // each port can accept up to 65K connections which means that the cloud can manage 325K active connections
         // the number of port will be increased or decreased based on the current trafic
 
-        // webrtc2sip 1.0 (Resiprocate): 4062, 5062, 6062, 7062 and 8062
-        // webrtc2sip 2.0 (Doubango): 
+        // webrtc2sip 2.2+ (Doubango): 
         //      WS: 10060, 11060, 12060, 13060, 14060
         //      WSS: 10062, 11062, 12062, 13062, 14062
         //
-        // Resiprocate version (v1.0) is deprecated but still used until Doubango version is fully tested
-        // Doubango version (v2.0) is only used if RTCWeb Breaker is enabled and always use secure transport (WSS)
 
-        i_port = (o_conf.enable_rtcweb_breaker ? 10062 : 4062) + (((new Date().getTime()) % 5) * 1000);
+        i_port = (o_conf.enable_rtcweb_breaker ? 10062 : 10060) + (((new Date().getTime()) % 5) * 1000);
         s_proxy = "sipml5.org";
     }
 
