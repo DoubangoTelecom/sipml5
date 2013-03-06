@@ -9,18 +9,18 @@ All these rich clients contain a profile named *RTCWeb* to use to enable all man
 The Windows(XP, Vista, 7) rich client is named [http://code.google.com/p/boghe/ Boghe] and can be downloaded from [http://code.google.com/p/boghe/ here]. <br />
 To enable RTCWeb features: Tools -> Options -> General -> Media Profile -> RTCWeb.
 
-[http://sipml5.googlecode.com/svn/trunk/docs/images/boghe_rtcweb.png]
+[http://sipml5.googlecode.com/svn/trunk/images/boghe_rtcweb.png]
 
 ==Android==
 The Android (2.0+) rich client is named [http://code.google.com/p/imsdroid/ IMSDroid] and can be downloaded from [http://code.google.com/p/imsdroid/ here]. <br />
 To enable RTCWeb features: Options -> General -> Media Profile -> RTCWeb.
 
-[http://sipml5.googlecode.com/svn/trunk/docs/images/imsdroid_rtcweb.png]
+[http://sipml5.googlecode.com/svn/trunk/images/imsdroid_rtcweb.png]
 
 == iOS and OS X ==
 The iOS (4.0+) rich client is named [http://code.google.com/p/idoubs/ iDoubs] and can be downloaded from [http://code.google.com/p/idoubs/ here]. <br />
 To enable RTCWeb features: Settings -> idoubs -> Media -> Profile -> RTCWeb
 
-[http://sipml5.googlecode.com/svn/trunk/docs/images/idoubs_rtcweb.png]
+[http://sipml5.googlecode.com/svn/trunk/images/idoubs_rtcweb.png]
 
 For any technical issue, please connect to our developer group: [https://groups.google.com/group/doubango https://groups.google.com/group/doubango]
