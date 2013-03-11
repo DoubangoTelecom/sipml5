@@ -108,7 +108,7 @@ function WebRtc4all_GetType() {
 
 var __looper = undefined;
 function WebRtc4all_GetLooper() {
-    if (__looper == undefined) {
+    if (__looper == undefined && tsk_utils_have_webrtc4ie()) {
         try {
             var oLooper = document.createElement('object');
             oLooper.classid = "clsid:7082C446-54A8-4280-A18D-54143846211A";

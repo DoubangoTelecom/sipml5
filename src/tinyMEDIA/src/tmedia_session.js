@@ -99,11 +99,11 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
 }
 
 tmedia_session_mgr.prototype.is_roap = function () {
-    return !this.is_jsep();
+    return (WebRtc4all_GetType() == WebRtcType_e.ERICSSON);
 }
 
 tmedia_session_mgr.prototype.is_jsep = function () {
-    return (WebRtc4all_GetType() == WebRtcType_e.NATIVE);
+    return !this.is_roap();
 }
 
 tmedia_session_mgr.prototype.get_stream_local = function () {

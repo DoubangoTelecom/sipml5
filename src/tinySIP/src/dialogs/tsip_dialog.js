@@ -281,13 +281,14 @@ tsip_dialog.prototype.request_new = function (s_method) {
 					o_request.line.request.e_type == tsip_request_type_e.PUBLISH ||
 					o_request.line.request.e_type == tsip_request_type_e.REGISTER) {
                     /**** with expires */
-                    s_contact = tsk_string_format("m: \"{1}\"<{0}:{2}@{3}:{4};rtcweb-breaker={5}>;expires={6}\r\n",
+                    s_contact = tsk_string_format("m: \"{1}\"<{0}:{2}@{3}:{4};rtcweb-breaker={5}>;click2call={6};expires={7}\r\n",
                         "sip",
                         o_stack.identity.s_display_name,
                         o_uri_from.s_user_name,
                         "127.0.0.1",
                         5060,
                         o_stack.network.b_rtcweb_enabled ? "yes" : "no",
+                        o_stack.network.b_click2call_enabled ? "yes" : "no",
                         Math.floor(this.i_expires / 1000));
                 }
                 else {
@@ -299,13 +300,14 @@ tsip_dialog.prototype.request_new = function (s_method) {
                         */
                         o_request.add_header(new tsip_header_Expires(this.i_expires / 1000));
                     }
-                    s_contact = tsk_string_format("m: \"{1}\"<{0}:{2}@{3}:{4};rtcweb-breaker={5}>",
+                    s_contact = tsk_string_format("m: \"{1}\"<{0}:{2}@{3}:{4};rtcweb-breaker={5};click2call={6}>",
                         "sip",
                         o_stack.identity.s_display_name,
                         o_uri_from.s_user_name,
                         "127.0.0.1",
                         5060,
-                        o_stack.network.b_rtcweb_enabled ? "yes" : "no");
+                        o_stack.network.b_rtcweb_enabled ? "yes" : "no",
+                        o_stack.network.b_click2call_enabled ? "yes" : "no");
 
                     if (o_request.line.request.e_type == tsip_request_type_e.INVITE && o_stack.network.b_rtcweb_enabled) {
                         // contact parameters must be encoded as the ABNF is:

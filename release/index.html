@@ -53,9 +53,9 @@
           <a class="brand" href="./index.html">Doubango Telecom</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="index.html?svn=165">Home</a></li>
+              <li class="active"><a href="index.html?svn=179">Home</a></li>
               <li><a href="http://code.google.com/p/sipml5/source/checkout" target="_blank">Source code</a></li>
-              <li><a href="docgen/index.html?svn=165">Programmer's Guide</a></li>
+              <li><a href="docgen/index.html?svn=179">Programmer's Guide</a></li>
               <li><a href="contact.htm">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -71,7 +71,7 @@
         <p>This is the world's first open source HTML5 SIP client entirely written in javascript for integration in social networks (FaceBook, Twitter, Google+), online games, e-commerce websites... No extension, plugin or gateway is needed. The media stack rely on <a href="http://en.wikipedia.org/wiki/WebRTC" target="_blank">WebRTC</a>.<br />
          The client can be used to connect to any SIP or IMS network from your preferred browser to make and receive audio/video calls and instant messages.<br />
         </p>
-        <p><a class="btn btn-primary btn-large" href="call.htm?svn=165" target="_blank">Enjoy our live demo &raquo;</a></p>
+        <p><a class="btn btn-primary btn-large" href="call.htm?svn=179" target="_blank">Enjoy our live demo &raquo;</a></p>
       </div>
 
 
@@ -81,7 +81,7 @@
                   <tr><td><h2><a name="aSipSdpStack">Javascript SIP/SDP stack</a></h2></td></tr>
                   <tr class="spaceUnder"><td>
                        <p>The SIP and SDP stacks (<b>~1 Mo</b>) are entirely written in javascript and the network transport uses WebSockets as per <a href="http://tools.ietf.org/html/draft-ibc-sipcore-sip-websocket">draft-ibc-sipcore-sip-websocket</a>.
-                       The <a href="call.htm?svn=165" target="_blank">live demo</a> doesn't require any installation and can be used to connect to any SIP server using UDP, TCP or TLS transports.
+                       The <a href="call.htm?svn=179" target="_blank">live demo</a> doesn't require any installation and can be used to connect to any SIP server using UDP, TCP or TLS transports.
                        </p>
                        <p>Short but not exhaustive list of supported features:</p>
                       <ul>
@@ -93,6 +93,7 @@
                         <li>Explicit Call transfer</li>
                         <li>Multi-line and multi-account</li>
                         <li>Dual-tone multi-frequency signaling (DTMF) using SIP INFO</li>
+                        <li><a href="http://click2dial.org" target=_blank>click-to-call</a></li>
                       </ul>
                       <p><a class="btn" href="http://code.google.com/p/sipml5/" target="_blank">View details &raquo;</a></p>       
                    </td></tr>
@@ -175,7 +176,9 @@
     </table>
          
     <hr />
-    <g:plus href="https://plus.google.com/107177632824809995368" rel="author"></g:plus>
+    <g:plus href="https://plus.google.com/107177632824809995368" rel="author"></g:plus> <br />
+    <a href="https://twitter.com/DoubangoTelecom" class="twitter-follow-button" data-show-count="false" data-size="large">Follow @DoubangoTelecom</a>  
+    <hr />     
     <footer>
         <p>
             &copy; Doubango Telecom 2011-2012</p>
@@ -200,6 +203,21 @@
     <script type="text/javascript" src="./assets/js/bootstrap-carousel.js"></script>
     <script type="text/javascript" src="./assets/js/bootstrap-typeahead.js"></script>
 
+    <!-- click-to-call widget -->
+    <script type='text/javascript' src='http://click2dial.org/c2c-api.js'></script>
+    <script type='text/javascript'>
+	    c2c.from = 'ZGlvcG1hbWFkb3VAZG91YmFuZ28ub3Jn';
+	    c2c.text = 'call us &raquo;';
+	    c2c.cls = 'btn btn-large btn-success';
+        c2c.glass = true;
+	    c2c.config = {
+    		    http_service_url: null,
+    		    websocket_proxy_url: null,
+    		    sip_outbound_proxy_url: null
+	    };
+	    c2c.init();
+    </script>
+
     <!-- GOOGLE ANALYTICS -->
     <script type="text/javascript">
         var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
@@ -213,17 +231,8 @@
         } catch (err) { }
     </script>
     
-     <!-- TWITTER -->
-    <script src='http://www.go2web20.net/twitterfollowbadge/1.0/badge.js' type='text/javascript'></script><script type='text/javascript' charset='utf-8'>
-        <!--
-        tfb.account = 'DoubangoTelecom';
-        tfb.label = 'follow-us';
-        tfb.color = '#35ccff';
-        tfb.side = 'r';
-        tfb.top = 136;
-        tfb.showbadge();
-        -->
-    </script>
+     <!-- TWITTER -->     
+     <script type='text/javascript'>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
   </body>
 </html>
