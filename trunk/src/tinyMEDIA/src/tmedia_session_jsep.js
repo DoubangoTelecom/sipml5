@@ -8,6 +8,7 @@
 // JSEP01: webkitRTCPeerConnection (http://www.w3.org/TR/webrtc/), https://webrtc-demos.appspot.com/html/pc1.html
 // Mozilla: http://mozilla.github.com/webrtc-landing/pc_test.html
 // Contraints: https://webrtc-demos.appspot.com/html/constraints-and-stats.html
+// Android: https://groups.google.com/group/discuss-webrtc/browse_thread/thread/b8538c85df801b40
 
 tmedia_session_jsep.prototype = Object.create(tmedia_session.prototype);
 tmedia_session_jsep00.prototype = Object.create(tmedia_session_jsep.prototype);
@@ -35,7 +36,7 @@ tmedia_session_jsep.prototype.b_ro_held = false;
 //
 
 tmedia_session_jsep.prototype.CreateInstance = function (o_mgr) {
-    if (__o_peerconnection_class === window.webkitPeerConnection00) {
+    if (__o_peerconnection_class === window.webkitPeerConnection00 || __o_peerconnection_class === window.w4aPeerConnection) {
         return new tmedia_session_jsep00(o_mgr);
     }
     return new tmedia_session_jsep01(o_mgr);
@@ -311,7 +312,7 @@ function tmedia_session_jsep00(o_mgr) {
 
 tmedia_session_jsep00.prototype.__get_lo = function () {
     if (!this.o_pc && !this.b_lo_held) {
-        this.o_mgr.set_video_local(__o_roap_stream);
+        this.o_mgr.set_stream_local(__o_roap_stream);
 
         this.o_local_stream = __o_roap_stream;
         var This = this;

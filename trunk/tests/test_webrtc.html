@@ -64,7 +64,7 @@
         "a=sendrecv\r\n" +
         "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:DPm7A6pyoRY1ctub98B92/j/dqFO4yuSgD+Gbx9m\r\n";*/
 
-        var s_offer = "v=0\r\n" +
+        /*var s_offer = "v=0\r\n" +
             "o=doubango 1983 678901 IN IP4 192.168.0.37\r\n" +
             "s=-\r\n" +
             "c=IN IP4 192.168.0.37\r\n" +
@@ -93,7 +93,130 @@
             "a=candidate:CuNeg0Keh 1 udp 2130706431 192.168.0.37 50526 typ host\r\n" +
             "a=candidate:CuNeg0Keh 2 udp 2130706430 192.168.0.37 50527 typ host\r\n" +
             "a=candidate:srflxCuNe 1 udp 1694498815 88.179.39.5 50526 typ srflx raddr 192.168.0.37 rport 61621\r\n" +
-            "a=candidate:srflxCuNe 2 udp 1694498814 88.179.39.5 50527 typ srflx raddr 192.168.0.37 rport 61621\r\n";
+            "a=candidate:srflxCuNe 2 udp 1694498814 88.179.39.5 50527 typ srflx raddr 192.168.0.37 rport 61621\r\n";*/
+
+            var s_offer = "v=0\r\n" +
+                "o=doubango 1983 678901 IN IP4 192.168.0.42\r\n" +
+                "s=-\r\n" +
+                "c=IN IP4 192.168.0.42\r\n" +
+                "t=0 0\r\n" +
+                "m=audio 62252 RTP/SAVPF 0 8 101\r\n" +
+                "c=IN IP4 192.168.0.42\r\n" +
+                "a=ptime:20\r\n" +
+                "a=silenceSupp:off - - - -\r\n" +
+                "a=rtpmap:0 PCMU/8000/1\r\n" +
+                "a=rtpmap:8 PCMA/8000/1\r\n" +
+                "a=rtpmap:101 telephone-event/8000/1\r\n" +
+                "a=fmtp:101 0-16\r\n" +
+                "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:rCoeOefgBsaqBgUq1VrwLywbgHMmX7K3Bxfn9FFU\r\n" +
+                "a=crypto:2 AES_CM_128_HMAC_SHA1_32 inline:OPeWJf38FKW8RXmiwnUGU2/TqBwArWjbjAkbgaHW\r\n" +
+                "a=sendrecv\r\n" +
+                "a=rtcp-mux\r\n" +
+                "a=ssrc:1020480176 cname:ldjWoB60jbyQlR6e\r\n" +
+                "a=ssrc:1020480176 mslabel:6994f7d1-6ce9-4fbd-acfd-84e5131ca2e2\r\n" +
+                "a=ssrc:1020480176 label:Doubango\r\n" +
+                "a=ice-ufrag:OMjj5h7JEnGV0Hb\r\n" +
+                "a=ice-pwd:oOJfC9ZAuWe4PlKdkJPLS\r\n" +
+                "a=candidate:OascRaf9I 1 udp 2130706431 192.168.0.42 62252 typ host\r\n" +
+                "a=candidate:OascRaf9I 2 udp 2130706430 192.168.0.42 62253 typ host\r\n" +
+                "a=candidate:srflxOasc 2 udp 1694498814 88.179.39.5 62253 typ srflx raddr 192.168.0.42 rport 62253\r\n" +
+                "m=video 61452 RTP/SAVPF 100 104 105\r\n" +
+                "c=IN IP4 192.168.0.42\r\n" +
+                "a=rtpmap:100 VP8/90000\r\n" +
+                "a=imageattr:100 recv [x=[128:16:1280],y=[96:16:720]] send [x=[128:16:1280],y=[96:16:720]]\r\n" +
+                "a=rtpmap:104 H264/90000\r\n" +
+                "a=imageattr:104 recv [x=[128:16:1280],y=[96:16:720]] send [x=[128:16:1280],y=[96:16:720]]\r\n" +
+                "a=fmtp:104 profile-level-id=42001f; packetization-mode=1\r\n" +
+                "a=rtpmap:105 H264/90000\r\n" +
+                "a=imageattr:105 recv [x=[128:16:1280],y=[96:16:720]] send [x=[128:16:1280],y=[96:16:720]]\r\n" +
+                "a=fmtp:105 profile-level-id=4d001f; packetization-mode=1\r\n" +
+                "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:ZF3pBQSUXIni+yzn+IpOctotyvFefaafAum/khj5\r\n" +
+                "a=crypto:2 AES_CM_128_HMAC_SHA1_32 inline:fSU6xGyYrddHKUU8HmYBocZFseMk3tIfx3O+o5AR\r\n" +
+                "a=sendrecv\r\n" +
+                "a=rtcp-mux\r\n" +
+                "a=ssrc:883352019 cname:ldjWoB60jbyQlR6e\r\n" +
+                "a=ssrc:883352019 mslabel:6994f7d1-6ce9-4fbd-acfd-84e5131ca2e2\r\n" +
+                "a=ssrc:883352019 label:Doubango\r\n" +
+                "a=ice-ufrag:ztA383dYCRm6vlK\r\n" +
+                "a=ice-pwd:0AfvokNb8BVNrpijBzcnG\r\n" +
+                "a=candidate:4zMlvvX35 1 udp 2130706431 192.168.0.42 61452 typ host\r\n" +
+                "a=candidate:4zMlvvX35 2 udp 2130706430 192.168.0.42 61453 typ host\r\n" +
+                "a=candidate:srflx4zMl 1 udp 1694498815 88.179.39.5 61452 typ srflx raddr 192.168.0.42 rport 61452\r\n";
+
+                /*var s_offer = "v=0\r\n" +
+                "o=doubango 1983 678901 IN IP4 192.168.0.42\r\n" +
+                "s=-\r\n" +
+                "c=IN IP4 192.168.0.42\r\n" +
+                "t=0 0\r\n" +
+                "m=audio 62252 RTP/SAVPF 0 8 101\r\n" +
+                "c=IN IP4 192.168.0.42\r\n" +
+                "a=ptime:20\r\n" +
+                "a=silenceSupp:off - - - -\r\n" +
+                "a=rtpmap:0 PCMU/8000/1\r\n" +
+                "a=rtpmap:8 PCMA/8000/1\r\n" +
+                "a=rtpmap:101 telephone-event/8000/1\r\n" +
+                "a=fmtp:101 0-16\r\n" +
+                "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:rCoeOefgBsaqBgUq1VrwLywbgHMmX7K3Bxfn9FFU\r\n" +
+                "a=crypto:2 AES_CM_128_HMAC_SHA1_32 inline:OPeWJf38FKW8RXmiwnUGU2/TqBwArWjbjAkbgaHW\r\n" +
+                "a=sendrecv\r\n" +
+                "a=rtcp-mux\r\n" +
+                "a=ice-ufrag:OMjj5h7JEnGV0Hb\r\n" +
+                "a=ice-pwd:oOJfC9ZAuWe4PlKdkJPLS\r\n" +
+                "a=candidate:OascRaf9I 1 udp 2130706431 192.168.0.42 62252 typ host\r\n" +
+                "a=candidate:OascRaf9I 2 udp 2130706430 192.168.0.42 62253 typ host\r\n" +
+                "m=video 61452 RTP/SAVPF 100\r\n" +
+                "c=IN IP4 192.168.0.42\r\n" +
+                "a=rtpmap:100 VP8/90000\r\n" +
+                "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:ZF3pBQSUXIni+yzn+IpOctotyvFefaafAum/khj5\r\n" +
+                "a=crypto:2 AES_CM_128_HMAC_SHA1_32 inline:fSU6xGyYrddHKUU8HmYBocZFseMk3tIfx3O+o5AR\r\n" +
+                "a=sendrecv\r\n" +
+                "a=rtcp-mux\r\n" +
+                "a=ice-ufrag:ztA383dYCRm6vlK\r\n" +
+                "a=ice-pwd:0AfvokNb8BVNrpijBzcnG\r\n" +
+                "a=candidate:4zMlvvX35 1 udp 2130706431 192.168.0.42 61452 typ host\r\n" +
+                "a=candidate:4zMlvvX35 2 udp 2130706430 192.168.0.42 61453 typ host\r\n";*/
+
+                /*var s_offer = "v=0\r\n" +
+                "o=- 3473189936 2 IN IP4 127.0.0.1\r\n" +
+                "s=Doubango Telecom - chrome\r\n" +
+                "t=0 0\r\n" +
+                "m=audio 60760 RTP/SAVPF 0 8 101\r\n" +
+                "c=IN IP4 88.179.39.5\r\n" +
+                "a=rtcp:60760 IN IP4 88.179.39.5\r\n" +
+                "a=candidate:OascRaf9I 1 udp 2130706431 192.168.0.42 62252 typ host\r\n" +
+                "a=candidate:OascRaf9I 2 udp 2130706430 192.168.0.42 62253 typ host\r\n" +
+                "a=ice-ufrag:if0A55QeSW+XHh0+\r\n" +
+                "a=ice-pwd:JDEWu3LApq2can+fhoq2Rnp0\r\n" +
+                "a=sendrecv\r\n" +
+                "a=rtcp-mux\r\n" +
+                "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:rCoeOefgBsaqBgUq1VrwLywbgHMmX7K3Bxfn9FFU\r\n" +
+                "a=crypto:2 AES_CM_128_HMAC_SHA1_32 inline:OPeWJf38FKW8RXmiwnUGU2/TqBwArWjbjAkbgaHW\r\n" +
+                "a=rtpmap:0 PCMU/8000\r\n" +
+                "a=rtpmap:8 PCMA/8000\r\n" +
+                "a=rtpmap:101 telephone-event/8000/1\r\n" +
+                "a=fmtp:101 0-16\r\n" +
+                "a=ssrc:3470559358 cname:X8ZueaZvHk0n34uV\r\n" +
+                "a=ssrc:3470559358 msid:wq11aFEaVfoIFpPbVJDmMk1ADqinHCKTjPzj wq11aFEaVfoIFpPbVJDmMk1ADqinHCKTjPzja0\r\n" +
+                "a=ssrc:3470559358 mslabel:wq11aFEaVfoIFpPbVJDmMk1ADqinHCKTjPzj\r\n" +
+                "a=ssrc:3470559358 label:wq11aFEaVfoIFpPbVJDmMk1ADqinHCKTjPzja0\r\n" +
+                "m=video 60760 RTP/SAVPF 100\r\n" +
+                "c=IN IP4 88.179.39.5\r\n" +
+                "a=rtcp:60760 IN IP4 88.179.39.5\r\n" +
+                "a=candidate:OascRaf9I 1 udp 2130706431 192.168.0.42 62252 typ host\r\n" +
+                "a=candidate:OascRaf9I 2 udp 2130706430 192.168.0.42 62253 typ host\r\n" +
+                "a=ice-ufrag:if0A55QeSW+XHhz+\r\n" +
+                "a=ice-pwd:JDEWu3LApq2can+fhoq2Rnp2\r\n" +
+                "a=sendrecv\r\n" +
+                "a=rtcp-mux\r\n" +
+                "a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:rCoeOefgBsaqBgUq1VrwLywbgHMmX7K3Bxfn9FFU\r\n" +
+                "a=crypto:2 AES_CM_128_HMAC_SHA1_32 inline:OPeWJf38FKW8RXmiwnUGU2/TqBwArWjbjAkbgaHW\r\n" +
+                "a=rtpmap:100 VP8/90000\r\n" +
+                "a=ssrc:519426183 cname:X8ZueaZvHk0n34uV\r\n" +
+                "a=ssrc:519426183 msid:wq11aFEaVfoIFpPbVJDmMk1ADqinHCKTjPzj wq11aFEaVfoIFpPbVJDmMk1ADqinHCKTjPzjv0\r\n" +
+                "a=ssrc:519426183 mslabel:wq11aFEaVfoIFpPbVJDmMk1ADqinHCKTjPzj\r\n" +
+                "a=ssrc:519426183 label:wq11aFEaVfoIFpPbVJDmMk1ADqinHCKTjPzjv0\r\n";*/
+
+
  
         o_pc = new nativeRTCPeerConnection(
                 { iceServers: [{ url: 'stun:stun.l.google.com:19302'}] },
@@ -121,7 +244,7 @@
                             console.info("setRemoteDescription ok");
                         },
                         function (s_error) { // error callback
-                            console.error("setRemoteDescription nok");
+                            console.error("setRemoteDescription nok:" + s_error);
                         }
             );
 

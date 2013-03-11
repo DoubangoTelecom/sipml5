@@ -186,7 +186,8 @@ var tsip_stack_param_type_e =
 	PROXY_OUTBOUND: 30,
 	WEBSOCKET_SERVER_URL: 31,
 	ENABLE_RTCWEB_BREAKER: 32,
-    ENABLE_SECURE_TRANSPORT: 33,
+    ENABLE_CLICK2CALL: 33,
+    ENABLE_SECURE_TRANSPORT: 34,
 	
 	/* === Security === */
 	EARLY_IMS : 40,
@@ -285,6 +286,7 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
     this.network.e_proxy_outbound_type = this.network.e_proxy_cscf_type;
     this.network.s_websocket_server_url = null;
     this.network.b_rtcweb_enabled = false;
+    this.network.b_click2call_enabled = false;
 
     this.network.aor = {};
     this.network.aor.s_ip = null;
@@ -589,6 +591,10 @@ tsip_stack.prototype.SetRTCWebBreakerEnabled = function (b_enabled) {
     return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.ENABLE_RTCWEB_BREAKER, b_enabled);
 }
 
+tsip_stack.prototype.SetClick2CallEnabled = function (b_enabled) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.ENABLE_CLICK2CALL, b_enabled);
+}
+
 tsip_stack.prototype.SetSecureTransportEnabled = function (b_enabled) {
     return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.ENABLE_SECURE_TRANSPORT, b_enabled);
 }
@@ -671,6 +677,11 @@ tsip_stack.prototype.__set = function (ao_params) {
             case tsip_stack_param_type_e.ENABLE_RTCWEB_BREAKER:
                 {
                     this.network.b_rtcweb_enabled = o_curr.ao_values[0];
+                    break;
+                }
+            case tsip_stack_param_type_e.ENABLE_CLICK2CALL:
+                {
+                    this.network.b_click2call_enabled = o_curr.ao_values[0];
                     break;
                 }
 

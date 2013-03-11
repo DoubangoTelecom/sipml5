@@ -211,17 +211,14 @@ SIPml.init = function (successCallback, errorCallback) {
         SIPml.s_navigator_friendly_name = tsk_utils_get_navigator_friendly_name();
         SIPml.s_system_friendly_name = tsk_utils_get_system_friendly_name();
 
-        // print webrtc4all type and version
-        if(SIPml.b_webrtc4all_supported){
-            tsk_utils_log_info("WebRTC type = " + WebRtc4all_GetType() + " version = " + tsk_utils_webrtc4all_get_version());
-        }
+        // prints whether WebSocket is supported
+        tsk_utils_log_info("WebSocket supported = " + (SIPml.isWebSocketSupported() ? "yes" : "no"));
 
         // check webrtc4all version
         if (tsk_utils_have_webrtc4all()) {
             tsk_utils_log_info("WebRTC type = " + WebRtc4all_GetType() + " version = " + tsk_utils_webrtc4all_get_version());
-            if (SIPml.s_webrtc4all_version != '1.12.756') {
-                b_webrtc4all_plugin_outdated = true;
-                return;
+            if (SIPml.s_webrtc4all_version != '1.14.834') {
+                SIPml.b_webrtc4all_plugin_outdated = true;
             }
         }
 
@@ -238,6 +235,10 @@ SIPml.init = function (successCallback, errorCallback) {
 
         // prints OS friendly name
         tsk_utils_log_info("OS friendly name = " + SIPml.s_system_friendly_name);
+        // prints support for WebRTC (native or plugin)
+        tsk_utils_log_info("Have WebRTC = " + (tsk_utils_have_webrtc() ? "yes" : "false"));
+        // prints support for getUserMedia
+        tsk_utils_log_info("Have GUM = " + (tsk_utils_have_stream() ? "yes" : "false"));
 
         // checks for WebRTC support
         if (!tsk_utils_have_webrtc()) {
@@ -519,6 +520,9 @@ This is a good option for developers using a SIP domain name without valid DNS A
 Example: <i>udp://192.168.0.12:5060</i>
 @property {Boolean} [enable_rtcweb_breaker] Whether to enable the <a href="http://webrtc2sip.org/#aRTCWebBreaker" target=_blank>RTCWeb Breaker</a> module to allow calling SIP-legacy networks.
 Example: <i>true</i>
+@property {Boolean} [enable_click2call] Whether to enable the <a href="http://click2dial.org" target=_blank>Click2Call / Click2Dial</a> service.
+<i>Available since version 1.2.181</i>.
+Example: <i>true</i>
 @property {Object} [events_listener] Object to subscribe to some events.
 Example:
 <ul>
@@ -540,6 +544,7 @@ var configuration = {
         websocket_proxy_url: 'ws://192.168.0.10:5060', // optional
         outbound_proxy_url: 'udp://192.168.0.12:5060', // optional
         enable_rtcweb_breaker: true, // optional
+        enable_click2call: false, // optional
         events_listener: { events: '*', listener: listenerFunc }, //optional
         sip_headers: [ //optional
             {name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.0.89.0'}, 
@@ -572,6 +577,7 @@ var o_stack = new SIPml.Stack({
         websocket_proxy_url: 'ws://192.168.0.10:5060', // optional
         outbound_proxy_url: 'udp://192.168.0.12:5060', // optional
         enable_rtcweb_breaker: true, // optional
+        enable_click2call: false, // optional
         events_listener: { events: '*', listener: listenerFunc }, //optional
         sip_headers: [ //optional
             {name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.0.89.0'}, 
@@ -972,15 +978,18 @@ SIPml.Stack.prototype.setConfiguration = function (o_conf) {
     }
 
     var b_rtcweb_breaker_enabled = !!o_conf.enable_rtcweb_breaker;
+    var b_click2call_enabled = !!o_conf.enable_click2call;
     var o_stack = this.o_stack;
     tsk_utils_log_info("s_websocket_server_url=" + (o_conf.websocket_proxy_url || "(null)"));
     tsk_utils_log_info("s_sip_outboundproxy_url=" + (o_conf.outbound_proxy_url || "(null)"));
     tsk_utils_log_info("b_rtcweb_breaker_enabled=" + (b_rtcweb_breaker_enabled ? "yes" : "no"));
+    tsk_utils_log_info("b_click2call_enabled=" + (b_click2call_enabled ? "yes" : "no"));
 
     o_stack.set(tsip_stack.prototype.SetPassword(o_conf.password),
                      tsip_stack.prototype.SetDisplayName(o_conf.display_name),
                      tsip_stack.prototype.SetProxyOutBoundUrl(o_conf.outbound_proxy_url),
                      tsip_stack.prototype.SetRTCWebBreakerEnabled(b_rtcweb_breaker_enabled),
+                     tsip_stack.prototype.SetClick2CallEnabled(b_click2call_enabled),
                      tsip_stack.prototype.SetSecureTransportEnabled(b_rtcweb_breaker_enabled), // always use secure transport when RTCWebBreaker
                      tsip_stack.prototype.SetWebsocketServerUrl(o_conf.websocket_proxy_url));
 
@@ -1125,6 +1134,7 @@ Anonymous SIP Session configuration object.
 @property {HTMLVideoElement} [video_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLVideoElement">HTMLVideoElement<a> where to display the remote video stream. This propety should be only used for <a href="SIPml.Session.Call.html">video sessions</a>.
 @property {HTMLAudioElement} [audio_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLAudioElement">HTMLAudioElement<a> used to playback the remote audio stream. This propety should be only used for <a href="SIPml.Session.Call.html">audio sessions</a>.
 @property {Array} [sip_caps] <i>{name,value}</i> pairs defining the SIP capabilities associated to this session. The capabilities are added to the Contact header. Please refer to <a href="http://tools.ietf.org/html/rfc3840">rfc3840</a> and <a href="http://tools.ietf.org/html/rfc3841">rfc3841</a> for more information.
+@property {String} [from] Set the source uri string to be used in the <i>From</i> header (available since API version 1.2.170).
 @property {Array} [sip_headers] <i>{name,value,session}</i> trios defining the SIP headers associated to this session. <i>session</i> is a boolean defining whether the header have to be added to all outgoing request or not (initial only).
 @example
 var configuration = 
@@ -1259,6 +1269,10 @@ SIPml.Session.prototype.setConfiguration = function(o_conf){
     // expires
     if (o_conf.expires) {
         o_session.set(tsip_session.prototype.SetExpires(o_conf.expires));
+    }
+    // from
+    if (o_conf.from) {
+        o_session.set(tsip_session.prototype.SetFromStr(o_conf.from));
     }
 }
 

@@ -6,7 +6,7 @@
 # This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 #
 
-API_VERSION=1.2.165
+API_VERSION=1.2.170
 API_FOLDER_NAME=release
 API_FILE_NAME=SIPml-api.js
 API_FILE_PATH=$API_FOLDER_NAME/$API_FILE_NAME
@@ -46,7 +46,7 @@ AppendScripts()
     AppendFile src/tinySAK/src/tsk_utils.js $1
     
 	# at this step 'tsk_utils_log_info' is defined
-	echo "tsk_utils_log_info('API version = $API_VERSION');" >> $1
+	echo "tsk_utils_log_info('SIPML5 API version = $API_VERSION');" >> $1
     
     AppendFile src/tinyMEDIA/src/tmedia_common.js $1
 		AppendFile src/tinyMEDIA/src/tmedia_webrtc4all.js $1 #include_in<tmedia_common.js>

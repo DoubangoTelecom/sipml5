@@ -149,6 +149,7 @@ tsip_session.prototype.__set = function (ao_params) {
                 }
             case tsip_session_param_type_e.FROM_STR:
                 {
+                    this.o_uri_from = tsip_uri_make_valid(o_curr.ao_values[0], this.o_stack.network.o_uri_realm.s_host);
                     break;
                 }
             case tsip_session_param_type_e.TO_URI:
@@ -272,6 +273,10 @@ o_session.set(
 */
 tsip_session.prototype.SetToStr = function (s_to) {
     return tsip_session.prototype.SetAny(tsip_session_param_type_e.TO_STR, s_to);
+}
+
+tsip_session.prototype.SetFromStr = function (s_to) {
+    return tsip_session.prototype.SetAny(tsip_session_param_type_e.FROM_STR, s_to);
 }
 
 /*
