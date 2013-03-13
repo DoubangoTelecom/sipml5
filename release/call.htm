@@ -322,12 +322,12 @@
             if ((s_value = window.localStorage.getItem('org.doubango.identity.realm'))) txtRealm.value = s_value;
         }
         else {
-            /*txtDisplayName.value = "005";
+            txtDisplayName.value = "005";
             txtPrivateIdentity.value = "005";
-            txtPublicIdentity.value = "sip:005@doubango.org";
+            txtPublicIdentity.value = "sip:005@192.168.0.42";
             txtPassword.value = "005";
-            txtRealm.value = "doubango.org";
-            txtPhoneNumber.value = "005";*/
+            txtRealm.value = "192.168.0.42";
+            txtPhoneNumber.value = "005";
         }
     };
 
@@ -378,7 +378,7 @@
                     enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
                     events_listener: { events: '*', listener: onSipEventStack },
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.03.11' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.03.13' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -519,7 +519,7 @@
         }
         else {
             if (tsk_utils_have_webrtc4npapi()) {
-                try { __o_display_remote.setFullScreen(b_fs); }
+                try { if(window.__o_display_remote) window.__o_display_remote.setFullScreen(b_fs); }
                 catch (e) { divVideo.setAttribute("class", b_fs ? "full-screen" : "normal-screen"); }
             }
             else {
@@ -577,8 +577,8 @@
 
             if (b_added) {
                 if (SIPml.isWebRtc4AllSupported()) {
-                    if (b_local) __o_display_local.style.visibility = "visible";
-                    else __o_display_remote.style.visibility = "visible";
+                    if (b_local){ if(window.__o_display_local) window.__o_display_local.style.visibility = "visible"; }
+                    else { if(window.__o_display_remote) window.__o_display_remote.style.visibility = "visible"; }
                    
                 }
                 else {
@@ -588,8 +588,8 @@
             }
             else {
                 if (SIPml.isWebRtc4AllSupported()) {
-                    if (b_local) __o_display_local.style.visibility = "hidden";
-                    else __o_display_remote.style.visibility = "hidden";
+                    if (b_local){ if(window.__o_display_local) window.__o_display_local.style.visibility = "hidden"; }
+                    else { if(window.__o_display_remote) window.__o_display_remote.style.visibility = "hidden"; }
                 }
                 else{
                     o_elt_video.style.opacity = 0;
