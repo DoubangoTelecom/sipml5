@@ -185,16 +185,14 @@ function w4aPeerConnection(s_configuration, f_IceCallback) {
     }
     var This = this;
     var b_isInternetExplorer = (__webrtc_type == WebRtcType_e.IE);
-    var h_wndLocal = (__o_display_local ? __o_display_local.hWnd : 0) + 0.0; // plus zero to convert from NPObject to double (Firfox issue)
-    var h_wndRemote = (__o_display_remote ? __o_display_remote.hWnd : 0) + 0.0; // plus zero to convert from NPObject to double (Firfox issue)
     this.s_configuration = s_configuration;
     this.f_IceCallback = f_IceCallback;
     this.o_peer = b_isInternetExplorer ? new ActiveXObject("webrtc4ie.PeerConnection") : WebRtc4npapi.createPeerConnection();
     this.o_peer.Init(s_configuration);
 
     // attach displays if defined by the user
-    try { this.o_peer.localVideo = (__o_display_local ? __o_display_local.hWnd : 0); } catch (e) { }
-    try { this.o_peer.remoteVideo = (__o_display_remote ? __o_display_remote.hWnd : 0); } catch (e) { }
+    try { this.o_peer.localVideo = (window.__o_display_local ? window.__o_display_local.hWnd : 0); } catch (e) { }
+    try { this.o_peer.remoteVideo = (window.__o_display_remote ? window.__o_display_remote.hWnd : 0); } catch (e) { }
 
     // register callback function
     if (b_isInternetExplorer) {
