@@ -3,6 +3,18 @@
 
 <wiki:toc max_depth="2" />
 
+==1.2.185==
+ * SVN: 185
+ * Date: March 14, 2013
+ * Allows setting [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#ice_servers TURN/STUN servers]
+ * Bug fix
+
+==1.2.170==
+ * SVN: 170
+ * Date: March 11, 2013
+ * Adds support for [http://click2dial.org click-to-call]
+ * Bug fix
+
 ==1.2.165==
  * SVN: 165
  * Date: January 14, 2013
