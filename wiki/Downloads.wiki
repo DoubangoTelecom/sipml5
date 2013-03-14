@@ -4,6 +4,7 @@
 For more information, please check the [ReleaseNotes].
 
 || *Version* || *API documentation* || *Quick start* || *Status* || *Download Link* ||
-|| *Latest* (1.2.170) || [http://sipml5.org/docgen/symbols/SIPml.html?v=1.2.170 1.2.170] || [http://sipml5.org/docgen/index.html 1.2.170]|| stable ||[http://sipml5.googlecode.com/svn/trunk/release/SIPml-api.js SIPml-api.js] ||
+|| *Latest* (1.2.185) || [http://sipml5.org/docgen/symbols/SIPml.html?v=1.2.185 1.2.185] || [http://sipml5.org/docgen/index.html 1.2.185]|| stable ||[http://sipml5.googlecode.com/svn/trunk/release/SIPml-api.js SIPml-api.js] ||
+|| (1.2.170) || [http://sipml5.org/docgen/symbols/SIPml.html?v=1.2.170 1.2.170] || [http://sipml5.org/docgen/index.html 1.2.170]|| deprecated ||[http://sipml5.googlecode.com/svn/tags/1.2.170/SIPml-api.js SIPml-api.js] ||
 || (1.1.0) || [http://sipml5.org/docgen/symbols/SIPml.html?v=1.1.0 1.1.0] || [http://sipml5.org/docgen/index.html 1.1.0]|| deprecated ||[http://sipml5.googlecode.com/svn/tags/1.1.0/SIPml-api.js SIPml-api.js] ||
 || 1.0.0 || [http://sipml5.org/docgen/symbols/SIPml.html?v=1.0.0 1.0.0] || [http://sipml5.org/docgen/index.html 1.0.0]|| deprecated ||[http://sipml5.googlecode.com/svn/tags/1.0.0/SIPml-api.js SIPml-api.js] ||
