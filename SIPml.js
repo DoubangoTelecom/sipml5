@@ -518,6 +518,8 @@ Example: <i>ws://sipml5.org:5060</i>
 @property {String} [outbound_proxy_url] The outbound Proxy URL is used to set the destination IP address and Port to use for all outgoing requests regardless the <i>domain name</i> (a.k.a <i>realm</i>). <br />
 This is a good option for developers using a SIP domain name without valid DNS A/NAPTR/SRV records. You should not set this value unless you know what you're doing. <br />
 Example: <i>udp://192.168.0.12:5060</i>
+@property {Array} [ice_servers] The list of the STUN/TURN servers to use. The format must be as explained at <a target=_blank href="http://www.w3.org/TR/webrtc/#rtciceserver-type">http://www.w3.org/TR/webrtc/#rtciceserver-type</a>.
+Example: <i>[{ url: 'stun:stun.l.google.com:19302'}, { url:'turn:user@numb.viagenie.ca', credential:'myPassword'}]</i>
 @property {Boolean} [enable_rtcweb_breaker] Whether to enable the <a href="http://webrtc2sip.org/#aRTCWebBreaker" target=_blank>RTCWeb Breaker</a> module to allow calling SIP-legacy networks.
 Example: <i>true</i>
 @property {Boolean} [enable_click2call] Whether to enable the <a href="http://click2dial.org" target=_blank>Click2Call / Click2Dial</a> service.
@@ -576,6 +578,7 @@ var o_stack = new SIPml.Stack({
         display_name: 'I Am Legend', // optional
         websocket_proxy_url: 'ws://192.168.0.10:5060', // optional
         outbound_proxy_url: 'udp://192.168.0.12:5060', // optional
+        ice_servers: [{ url: 'stun:stun.l.google.com:19302'}, { url:'turn:user@numb.viagenie.ca', credential:'myPassword'}], // optional
         enable_rtcweb_breaker: true, // optional
         enable_click2call: false, // optional
         events_listener: { events: '*', listener: listenerFunc }, //optional
@@ -991,7 +994,8 @@ SIPml.Stack.prototype.setConfiguration = function (o_conf) {
                      tsip_stack.prototype.SetRTCWebBreakerEnabled(b_rtcweb_breaker_enabled),
                      tsip_stack.prototype.SetClick2CallEnabled(b_click2call_enabled),
                      tsip_stack.prototype.SetSecureTransportEnabled(b_rtcweb_breaker_enabled), // always use secure transport when RTCWebBreaker
-                     tsip_stack.prototype.SetWebsocketServerUrl(o_conf.websocket_proxy_url));
+                     tsip_stack.prototype.SetWebsocketServerUrl(o_conf.websocket_proxy_url),
+                     tsip_stack.prototype.SetIceServers(o_conf.ice_servers));
 
     // add sip headers
     if (o_conf.sip_headers) {

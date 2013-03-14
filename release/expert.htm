@@ -52,7 +52,9 @@
         document.getElementById("btnSave").disabled = !window.localStorage;
         document.getElementById("btnRevert").disabled = !window.localStorage;
 
-        settingsRevert(true);
+        if(window.localStorage){
+            settingsRevert(true);
+        }
     }
 
     function settingsSave() {
@@ -62,6 +64,7 @@
             window.localStorage.setItem('org.doubango.expert.websocket_server_url', txtWebsocketServerUrl.value);
         }
         window.localStorage.setItem('org.doubango.expert.sip_outboundproxy_url', txtSIPOutboundProxyUrl.value);
+        window.localStorage.setItem('org.doubango.expert.ice_servers', txtIceServers.value);
 
         txtInfo.innerHTML = '<i>Saved</i>';
     }
@@ -71,6 +74,7 @@
         cbRTCWebBreaker.checked = (window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true");
         txtWebsocketServerUrl.value = (window.localStorage.getItem('org.doubango.expert.websocket_server_url') || "");
         txtSIPOutboundProxyUrl.value = (window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') || "");
+        txtIceServers.value = (window.localStorage.getItem('org.doubango.expert.ice_servers') || "");
 
         if (!bNotUserAction) {
             txtInfo.innerHTML = '<i>Reverted</i>';
@@ -117,6 +121,14 @@
                         <input type="text" style="width: 100%; height: 100%" id="txtSIPOutboundProxyUrl" value="" placeholder="e.g. udp://sipml5.org:5060" />
                     </td>
                 </tr>
+                <tr>
+                    <td>
+                        <label style="height: 100%">ICE Servers<sup><a href="#aIceServers">[4]</a></sup>:</label>
+                    </td>
+                    <td>
+                        <input type="text" style="width: 100%; height: 100%" id="txtIceServers" value="" placeholder="e.g. [{ url: 'stun:stun.l.google.com:19302'}, { url:'turn:user@numb.viagenie.ca', credential:'myPassword'}]" />
+                    </td>
+                </tr>
 
                 <tr>
                     <td colspan="2" align="right">
@@ -147,7 +159,10 @@
             <a name="aWebSocketServerURL"><sup><b>[2]</b></sup></a> The <b>WebSocket Server URL</b> is only required if you're a developer and using your own SIP Proxy gateway not publicly reachable. <br />
 
             <a name="aSIPOutboundProxyURL"><sup><b>[3]</b></sup></a> The <b>SIP outbound Proxy URL</b> is used to set the destination IP address and Port to use for all outgoing requests regardless the <i>domain name</i> (a.k.a <i>realm</i>).
-            This is a good option for developers using a SIP domain name without valid DNS A/NAPTR/SRV records.
+            This is a good option for developers using a SIP domain name without valid DNS A/NAPTR/SRV records. <br />
+
+            <a name="aIceServers"><sup><b>[4]</b></sup></a> This must be an array of STUN/TURN servers to use. The format is as explained at <a href="http://www.w3.org/TR/webrtc/#rtciceserver-type">http://www.w3.org/TR/webrtc/#rtciceserver-type</a> <br />
+            Example: <i>[{ url: 'stun:stun.l.google.com:19302'}, { url:'turn:user@numb.viagenie.ca', credential:'myPassword'}]</i>
         
     </footer>
 </body>

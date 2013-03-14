@@ -9,6 +9,7 @@
 // Mozilla: http://mozilla.github.com/webrtc-landing/pc_test.html
 // Contraints: https://webrtc-demos.appspot.com/html/constraints-and-stats.html
 // Android: https://groups.google.com/group/discuss-webrtc/browse_thread/thread/b8538c85df801b40
+// Canary 'muted': https://groups.google.com/group/discuss-webrtc/browse_thread/thread/8200f2049c4de29f
 
 tmedia_session_jsep.prototype = Object.create(tmedia_session.prototype);
 tmedia_session_jsep00.prototype = Object.create(tmedia_session_jsep.prototype);
@@ -26,6 +27,7 @@ tmedia_session_jsep.prototype.b_sdp_ro_pending = false;
 tmedia_session_jsep.prototype.b_sdp_ro_offer = false;
 tmedia_session_jsep.prototype.s_answererSessionId = null;
 tmedia_session_jsep.prototype.s_offererSessionId = null;
+tmedia_session_jsep.prototype.ao_ice_servers = null;
 
 tmedia_session_jsep.prototype.b_ro_changed = false;
 tmedia_session_jsep.prototype.b_lo_held = false;
@@ -47,7 +49,18 @@ function tmedia_session_jsep(o_mgr) {
 }
 
 tmedia_session_jsep.prototype.__set = function (o_param) {
-    return 0;
+    if(!o_param){
+        return -1;
+    }
+    switch(o_param.s_key){
+        case 'ice-servers':
+            {
+                this.ao_ice_servers = o_param.o_value;
+                return 0;
+            }
+    }
+
+    return -2;
 }
 
 tmedia_session_jsep.prototype.__prepare = function () {
@@ -600,8 +613,8 @@ tmedia_session_jsep01.onIceGatheringCompleted = function (_This) {
 
 tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
     var This = (tmedia_session_jsep01.mozThis || _This);
-    if(!This){
-        tsk_utils_log_error("This is null: unexpected");
+    if(!This || !This.o_pc){
+        tsk_utils_log_error("This/PeerConnection is null: unexpected");
         return;
     }
 
@@ -621,17 +634,21 @@ tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
 tmedia_session_jsep01.prototype.__get_lo = function () {
     var This = this;
     if (!this.o_pc && !this.b_lo_held) {
-        // HACK Nightly 21.0a1 (2013-02-18): 
-        // - In RTCConfiguration passed to RTCPeerConnection constructor: FQDN not yet implemented (only IP-#s). Omitting "stun:stun.l.google.com:19302"
-        // - CHANGE-REQUEST not supported when using "numb.viagenie.ca"
-        // - (stun/ERR) Missing XOR-MAPPED-ADDRESS when using "stun.l.google.com"
-        // numb.viagenie.ca: 66.228.45.110:
-        // stun.l.google.com: 173.194.78.127
-        // stun.counterpath.net: 216.93.246.18
-        // "23.21.150.121" is the default STUN server used in Nightly
-        var o_iceServers = tmedia_session_jsep01.mozThis
-            ? [{ url: 'stun:23.21.150.121:3478'}, { url: 'stun:216.93.246.18:3478'}, { url: 'stun:66.228.45.110:3478'}, { url: 'stun:173.194.78.127:19302'}]
-            : [{ url: 'stun:stun.l.google.com:19302'}, { url: 'stun:stun.counterpath.net:3478'}, { url: 'stun:numb.viagenie.ca:3478'}];
+        var o_iceServers = this.ao_ice_servers;
+        if(!o_iceServers){ // defines default ICE servers only if none exist (because WebRTC requires ICE)
+            // HACK Nightly 21.0a1 (2013-02-18): 
+            // - In RTCConfiguration passed to RTCPeerConnection constructor: FQDN not yet implemented (only IP-#s). Omitting "stun:stun.l.google.com:19302"
+            // - CHANGE-REQUEST not supported when using "numb.viagenie.ca"
+            // - (stun/ERR) Missing XOR-MAPPED-ADDRESS when using "stun.l.google.com"
+            // numb.viagenie.ca: 66.228.45.110:
+            // stun.l.google.com: 173.194.78.127
+            // stun.counterpath.net: 216.93.246.18
+            // "23.21.150.121" is the default STUN server used in Nightly
+            o_iceServers = tmedia_session_jsep01.mozThis
+                ? [{ url: 'stun:23.21.150.121:3478'}, { url: 'stun:216.93.246.18:3478'}, { url: 'stun:66.228.45.110:3478'}, { url: 'stun:173.194.78.127:19302'}]
+                : [{ url: 'stun:stun.l.google.com:19302'}, { url: 'stun:stun.counterpath.net:3478'}, { url: 'stun:numb.viagenie.ca:3478'}];
+         }
+        try{ tsk_utils_log_info("ICE servers:" + JSON.stringify(o_iceServers)); } catch(e){}
         this.o_pc = new __o_peerconnection_class(
                 { iceServers: o_iceServers },
                 this.o_media_constraints

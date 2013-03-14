@@ -375,10 +375,11 @@
                     display_name: txtDisplayName.value,
                     websocket_proxy_url: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.websocket_server_url') : null),
                     outbound_proxy_url: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.sip_outboundproxy_url') : null),
+                    ice_servers: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null),
                     enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
                     events_listener: { events: '*', listener: onSipEventStack },
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.03.13' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.03.14' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }

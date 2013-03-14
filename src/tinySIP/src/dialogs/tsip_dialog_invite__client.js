@@ -45,8 +45,7 @@ function c0000_Started_2_Outgoing_X_oINVITE(ao_args){
 	
 	/* This is the first FSM transaction when you try to make an audio/video/msrp call */
 	if(!o_dialog.o_msession_mgr){
-	    o_dialog.o_msession_mgr = new tmedia_session_mgr(o_action ? o_action.media.e_type : tmedia_type_e.AUDIO_VIDEO, o_dialog.get_stack().network.s_local_ip,
-                                        false/* ipv6 */, true, __tsip_dialog_invite_media_callback, o_dialog);
+	    o_dialog.o_msession_mgr = o_dialog.new_msession_mgr(o_action ? o_action.media.e_type : tmedia_type_e.AUDIO_VIDEO, o_dialog.get_stack().network.s_local_ip, false/* ipv6 */, true);
 	}
 
 	/* We are the client */
