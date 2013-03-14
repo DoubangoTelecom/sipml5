@@ -692,6 +692,15 @@ tsip_dialog_invite.prototype.notify_parent = function (o_response) {
     return -1;
 }
 
+tsip_dialog_invite.prototype.new_msession_mgr = function(e_type, s_addr, b_ipv6, b_offerer){
+    var o_msession_mgr = new tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, __tsip_dialog_invite_media_callback, this);
+    o_msession_mgr.set(
+            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "ice-servers", this.get_stack().network.ao_ice_servers)
+			// ... more media parameters to be added later
+        );
+    return o_msession_mgr;
+}
+
 tsip_dialog_invite.prototype.process_ro = function(o_message, b_is_offer){
 	var o_sdp_ro = null;
 	var e_old_media_type;
@@ -733,8 +742,7 @@ tsip_dialog_invite.prototype.process_ro = function(o_message, b_is_offer){
 	/* Create session Manager if not already done */
 	if(!this.o_msession_mgr){
 		this.get_session().media.e_type = e_new_media_type;
-		this.o_msession_mgr = new tmedia_session_mgr(e_new_media_type, this.get_stack().network.s_local_ip,
-                                        false/* ipv6 */, (o_sdp_ro == null), __tsip_dialog_invite_media_callback, this);
+		this.o_msession_mgr = this.new_msession_mgr(e_new_media_type, this.get_stack().network.s_local_ip, false/* ipv6 */, (o_sdp_ro == null));
 	}
 	
 	if(o_sdp_ro){
