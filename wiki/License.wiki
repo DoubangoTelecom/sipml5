@@ -3,7 +3,7 @@
 
 *Files: `*`*
  Copyright (c) 2013, Doubango Telecom. All rights reserved.<br />
- [http://opensource.org/licenses/BSD-3-Clause BSD]
+ Distributed under the [http://opensource.org/licenses/BSD-3-Clause BSD] License
 <hr />
 *Files: assets/js/`*`*
  Copyright 2012 Twitter, Inc <br />
