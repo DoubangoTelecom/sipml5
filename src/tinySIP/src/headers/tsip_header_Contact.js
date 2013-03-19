@@ -2,7 +2,7 @@
 /* line 1 "./ragel/tsip_parser_header_Contact.jrl" */
 /*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
-* License: GPLv3
+* License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
 tsip_header_Contact.prototype = Object.create(tsip_header.prototype);

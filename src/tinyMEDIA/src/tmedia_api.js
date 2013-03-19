@@ -1,6 +1,6 @@
 ﻿/*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
-* License: GPLv3
+* License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
 function tmedia_api_add_js_scripts(s_elt) {

@@ -1,6 +1,6 @@
 /*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
-* License: GPLv3
+* License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
 
@@ -545,6 +545,7 @@ var configuration = {
         display_name: 'I Am Legend', // optional
         websocket_proxy_url: 'ws://192.168.0.10:5060', // optional
         outbound_proxy_url: 'udp://192.168.0.12:5060', // optional
+        ice_servers: [{ url: 'stun:stun.l.google.com:19302'}, { url:'turn:user@numb.viagenie.ca', credential:'myPassword'}], // optional
         enable_rtcweb_breaker: true, // optional
         enable_click2call: false, // optional
         events_listener: { events: '*', listener: listenerFunc }, //optional
