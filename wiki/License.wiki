@@ -1,0 +1,23 @@
+#summary Licence
+#labels Featured,Phase-Requirements,Phase-Deploy
+
+*Files: `*`*
+ Copyright (c) 2013, Doubango Telecom. All rights reserved.<br />
+ [http://opensource.org/licenses/BSD-3-Clause BSD]
+<hr />
+*Files: assets/js/`*`*
+ Copyright 2012 Twitter, Inc <br />
+ Licensed under the Apache License v2.0 <br />
+<hr />
+*Files: assets/js/jquery.js*
+ Copyright: 2012, The Dojo Foundation <br />
+ License: GPL-2 or MIT, and BSD <br />
+<hr />
+*Files: src/tinySAK/src/tsk_md5.js*
+ Version 2.1 <br />
+ Copyright (C) Paul Johnston 1999 - 2002.
+ Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet <br />
+ Distributed under the BSD License <br />
+<hr />
+*Files: src/tinySAK/src/tsk_base64.js*
+ This code was originally written by Tyler Akins and has been placed in the public domain.
