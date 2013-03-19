@@ -2,7 +2,7 @@
 #labels Featured,Phase-Requirements,Phase-Deploy
 
 *Files: `*`*
- Copyright (c) 2013, Doubango Telecom. All rights reserved.<br />
+ Copyright (c) 2012-2013, Doubango Telecom. All rights reserved.<br />
  Distributed under the [http://opensource.org/licenses/BSD-3-Clause BSD] License
 <hr />
 *Files: assets/js/`*`*
