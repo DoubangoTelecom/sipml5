@@ -1,6 +1,6 @@
 ﻿/*
 * Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
-* License: GPLv3
+* License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
 function tsip_challenge(o_stack, b_isproxy, s_scheme, s_realm, s_nonce, s_opaque, s_algorithm, s_qop) {

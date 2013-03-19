@@ -1,0 +1,21 @@
+Files: *
+Copyright (c) 2013, Doubango Telecom. All rights reserved.
+BSD
+
+Files: assets/js/*
+Copyright 2012 Twitter, Inc
+Licensed under the Apache License v2.0
+http://www.apache.org/licenses/LICENSE-2.0
+
+Files: assets/js/jquery.js
+Copyright: 2012, The Dojo Foundation
+License: GPL-2 or MIT, and BSD
+
+Files: src/tinySAK/src/tsk_md5.js
+Version 2.1 Copyright (C) Paul Johnston 1999 - 2002.
+Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+Distributed under the BSD License
+ 
+Files: src/tinySAK/src/tsk_base64.js
+This code was originally written by Tyler Akins and has been placed in the public domain
+http://rumkin.com
