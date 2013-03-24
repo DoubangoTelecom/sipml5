@@ -642,6 +642,9 @@ tsip_stack.prototype.__set = function (ao_params) {
             case tsip_stack_param_type_e.DISPLAY_NAME:
                 {
                     this.identity.s_display_name = o_curr.ao_values[0];
+                    if(this.identity.o_uri_impu){
+                        this.identity.o_uri_impu.s_display_name = this.identity.s_display_name;
+                    }
                     break;
                 }
             case tsip_stack_param_type_e.PASSWORD:

@@ -10,6 +10,8 @@
 // Contraints: https://webrtc-demos.appspot.com/html/constraints-and-stats.html
 // Android: https://groups.google.com/group/discuss-webrtc/browse_thread/thread/b8538c85df801b40
 // Canary 'muted': https://groups.google.com/group/discuss-webrtc/browse_thread/thread/8200f2049c4de29f
+// Canary state events: https://groups.google.com/group/discuss-webrtc/browse_thread/thread/bd30afc3e2f43f6d
+// DTMF: https://groups.google.com/group/discuss-webrtc/browse_thread/thread/1354781f202adbf9
 
 tmedia_session_jsep.prototype = Object.create(tmedia_session.prototype);
 tmedia_session_jsep00.prototype = Object.create(tmedia_session_jsep.prototype);
