@@ -100,6 +100,15 @@
             opacity: 0.8;
             background-color: Gray;
         }
+        .div-keypad {
+            z-index: 100;
+            position: fixed;
+            -moz-transition-property: left top;
+            -o-transition-property: left top;
+            -webkit-transition-duration: 2s;
+            -moz-transition-duration: 2s;
+            -o-transition-duration: 2s;
+        }
         
     </style>
     <link href="./assets/css/bootstrap-responsive.css" rel="stylesheet" />
@@ -120,58 +129,26 @@
     var sTransferNumber;
     var oRingTone, oRingbackTone;
     var oSipStack, oSipSessionRegister, oSipSessionCall, oSipSessionTransferCall;
-    var txtDisplayName, txtPrivateIdentity, txtPublicIdentity, txtPassword, txtRealm;
-    var txtPhoneNumber;
-    var btnCall, btnHangUp;
-    var txtRegStatus, txtCallStatus;
-    var btnRegister, btnUnRegister;
-    var btnFullScreen, btnHoldResume, btnTransfer, btnKeyPad;
     var videoRemote, videoLocal, audioRemote;
-    var divVideo, divCallOptions;
-    var tdVideo;
     var bFullScreen = false;
     var oNotifICall;
     var oReadyStateTimer;
     var bDisableVideo = false;
     var viewVideoLocal, viewVideoRemote; // <video> (webrtc) or <div> (webrtc4all)
 
+    C = 
+    {
+        divKeyPadWidth: 220
+    };
+
     window.onload = function () {
-        txtDisplayName = document.getElementById("txtDisplayName");
-        txtPrivateIdentity = document.getElementById("txtPrivateIdentity");
-        txtPublicIdentity = document.getElementById("txtPublicIdentity");
-        txtPassword = document.getElementById("txtPassword");
-        txtRealm = document.getElementById("txtRealm");
-
-        txtPhoneNumber = document.getElementById("txtPhoneNumber");
-
-        btnCall = document.getElementById("btnCall");
-        btnHangUp = document.getElementById("btnHangUp");
-
-        txtRegStatus = document.getElementById("txtRegStatus");
-        txtCallStatus = document.getElementById("txtCallStatus");
-
-        btnRegister = document.getElementById("btnRegister");
-        btnUnRegister = document.getElementById("btnUnRegister");
-
-        btnFullScreen = document.getElementById("btnFullScreen");
-        btnHoldResume = document.getElementById("btnHoldResume");
-        btnTransfer = document.getElementById("btnTransfer");
-        btnKeyPad = document.getElementById("btnKeyPad");
-
         videoLocal = document.getElementById("video_local");
         videoRemote = document.getElementById("video_remote");
-
         audioRemote = document.getElementById("audio_remote");
-
-        divVideo = document.getElementById("divVideo");
-        divCallOptions = document.getElementById("divCallOptions");
-        //divVideo.style.height = '0px';
-
-        tdVideo = document.getElementById("tdVideo");
 
         document.onkeyup = onKeyUp;
         document.body.onkeyup = onKeyUp;
-        document.getElementById("divCallCtrl").onmousemove = onDivCallCtrlMouseMove;
+        divCallCtrl.onmousemove = onDivCallCtrlMouseMove;
 
         loadCredentials();
         loadCallOptions();
@@ -379,7 +356,7 @@
                     enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
                     events_listener: { events: '*', listener: onSipEventStack },
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.03.25' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.03.26' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -479,6 +456,14 @@
         }
     }
 
+    function sipSendDTMF(c){
+        if(oSipSessionCall && c){
+            if(oSipSessionCall.dtmf(c) == 0){
+                try { dtmfTone.play(); } catch(e){ }
+            }
+        }
+    }
+
     function startRingTone() {
         try { ringtone.play(); }
         catch (e) { }
@@ -506,6 +491,20 @@
         else {
             fullScreen(!bFullScreen);
         }
+    }
+
+    function openKeyPad(){
+        divKeyPad.style.visibility = 'visible';
+        divKeyPad.style.left = ((document.body.clientWidth - C.divKeyPadWidth) >> 1) + 'px';
+        divKeyPad.style.top = '70px';
+        divGlassPanel.style.visibility = 'visible';
+    }
+
+    function closeKeyPad(){
+        divKeyPad.style.left = '0px';
+        divKeyPad.style.top = '0px';
+        divKeyPad.style.visibility = 'hidden';
+        divGlassPanel.style.visibility = 'hidden';
     }
 
     function fullScreen(b_fs) {
@@ -1115,7 +1114,7 @@
                                 <input type="button" class="btn" style="" id="btnFullScreen" value="FullScreen" disabled onclick='toggleFullScreen();' /> &nbsp;
                                 <input type="button" class="btn" style="" id="btnHoldResume" value="Hold" onclick='sipToggleHoldResume();' /> &nbsp;
                                 <input type="button" class="btn" style="" id="btnTransfer" value="Transfer" onclick='sipTransfer();' /> &nbsp;
-                                <!--input type="button" class="btn" style="" id="btnKeyPad" value="KeyPad" onclick='toto();' /-->
+                                <input type="button" class="btn" style="" id="btnKeyPad" value="KeyPad" onclick='openKeyPad();' />
                             </div>
                         </td>
                     </tr>
@@ -1146,6 +1145,16 @@
 
     <!-- Glass Panel -->
     <div id='divGlassPanel' class='glass-panel' style='visibility:hidden'></div>
+    <!-- KeyPad Div -->
+    <div id='divKeyPad' class='span2 well div-keypad' style="left:0px; top:0px; width:250; height:240; visibility:hidden">
+        <table style="width: 100%; height: 100%">
+            <tr><td><input type="button" style="width: 33%" class="btn" value="1" onclick="sipSendDTMF('1');"/><input type="button" style="width: 33%" class="btn" value="2" onclick="sipSendDTMF('2');"/><input type="button" style="width: 33%" class="btn" value="3" onclick="sipSendDTMF('3');"/></td></tr>
+            <tr><td><input type="button" style="width: 33%" class="btn" value="4" onclick="sipSendDTMF('4');"/><input type="button" style="width: 33%" class="btn" value="5" onclick="sipSendDTMF('5');"/><input type="button" style="width: 33%" class="btn" value="6" onclick="sipSendDTMF('6');"/></td></tr>
+            <tr><td><input type="button" style="width: 33%" class="btn" value="7" onclick="sipSendDTMF('7');"/><input type="button" style="width: 33%" class="btn" value="8" onclick="sipSendDTMF('8');"/><input type="button" style="width: 33%" class="btn" value="9" onclick="sipSendDTMF('9');"/></td></tr>
+            <tr><td><input type="button" style="width: 33%" class="btn" value="*" onclick="sipSendDTMF('*');"/><input type="button" style="width: 33%" class="btn" value="0" onclick="sipSendDTMF('0');"/><input type="button" style="width: 33%" class="btn" value="#" onclick="sipSendDTMF('#');"/></td></tr>
+            <tr><td colspan=3><input type="button" style="width: 100%" class="btn btn-medium btn-danger" value="close" onclick="closeKeyPad();" /></td></tr>
+        </table>
+    </div>
 
     <!-- Le javascript
     ================================================== -->
@@ -1167,7 +1176,8 @@
     <!-- Audios -->
     <audio id="audio_remote" autoplay="autoplay" />
     <audio id="ringtone" loop src="sounds/ringtone.wav" />
-    <audio id="ringbacktone" loop src="sounds/ringbacktone.wav" />  
+    <audio id="ringbacktone" loop src="sounds/ringbacktone.wav" />
+    <audio id="dtmfTone" src="sounds/dtmf.wav" />
 
     <!-- 
         Microsoft Internet Explorer extension
