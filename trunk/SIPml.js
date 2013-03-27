@@ -1243,10 +1243,10 @@ SIPml.Session.prototype.setConfiguration = function(o_conf){
         if(_addStream(this.videoRemote, o_session.get_stream_remote(), o_session.get_url_remote(), false)){
             this.dispatchEvent({ s_type: 'm_stream_video_remote_added', o_value: new SIPml.Session.Event(this, 'm_stream_video_remote_added') });
         }
-        if(_addStream(this.audioLocal, o_session.get_stream_local(), o_session.get_url_local(), false)){
+        if(_addStream(this.audioLocal, o_session.get_stream_local(), o_session.get_url_local(), true)){
             this.dispatchEvent({ s_type: 'm_stream_audio_local_added', o_value: new SIPml.Session.Event(this, 'm_stream_audio_local_added') });
         }
-        if(_addStream(this.audioRemote, o_session.get_stream_remote(), o_session.get_url_remote(), false)){
+        if(_addStream(this.audioRemote, o_session.get_stream_remote(), o_session.get_url_remote(), true)){
             this.dispatchEvent({ s_type: 'm_stream_audio_remote_added', o_value: new SIPml.Session.Event(this, 'm_stream_audio_remote_added') });
         }
     }
