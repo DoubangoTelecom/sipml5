@@ -153,9 +153,9 @@ SIPml.isWebSocketSupported = function () {
 }
 
 /**
-Checks whether the media engine have a valid stream or not. The stream is from <a href="https://developer.mozilla.org/en-US/docs/WebRTC/navigator.getUserMedia">getUserMedia</a>.
+Checks whether <a href="https://developer.mozilla.org/en-US/docs/WebRTC/navigator.getUserMedia">getUserMedia</a> is supported or not. The engined must be initialized before calling this function.
 @static
-@returns {Boolean} <i>true</i> if the engine have a valid stream; otherwise <i>false</i>
+@returns {Boolean} <i>true</i> if <a href="https://developer.mozilla.org/en-US/docs/WebRTC/navigator.getUserMedia">getUserMedia</a> is supported; otherwise <i>false</i>
 */
 SIPml.haveMediaStream = function () {
     if(!SIPml.isInitialized()){
@@ -638,7 +638,7 @@ SIPml.Stack = function (o_conf) {
         //
 
         i_port = (o_conf.enable_rtcweb_breaker ? 10062 : 10060) + (((new Date().getTime()) % 5) * 1000);
-        s_proxy = "sipml5.org";
+        s_proxy = "ns313841.ovh.net";
     }
 
     // create the stack
