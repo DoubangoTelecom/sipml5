@@ -356,7 +356,7 @@
                     enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
                     events_listener: { events: '*', listener: onSipEventStack },
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.04.26' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.05.24' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -1100,7 +1100,7 @@
                                     </video>
                                 </div>
                                 <div id="divVideoLocal" style='border:0px solid #000'>
-                                    <video class="video" width="88px" height="72px" id="video_local" autoplay="autoplay" style="opacity: 0;
+                                    <video class="video" width="88px" height="72px" id="video_local" autoplay="autoplay" muted="true" style="opacity: 0;
                                         margin-top: -80px; margin-left: 5px; background-color: #000000; -webkit-transition-property: opacity;
                                         -webkit-transition-duration: 2s;">
                                     </video>
@@ -1124,7 +1124,7 @@
         
         <br />
         <footer>
-            <p>&copy; Doubango Telecom 2012 <br />
+            <p>&copy; Doubango Telecom 2012-2013 <br />
             <i>Inspiring the future</i>
             </p>
             <!-- Creates all ATL/COM objects right now 
