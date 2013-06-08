@@ -341,7 +341,7 @@ tsip_stack.prototype.start = function () {
         return 0;
     }
     else if (this.e_state == tsip_transport_state_e.STARTING) {
-        tsip_stack_stop(this);
+        this.stop();
     }
 
     if (!this.network.s_proxy_cscf_host) {
