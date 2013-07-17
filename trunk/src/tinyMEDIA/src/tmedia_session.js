@@ -133,6 +133,9 @@ tmedia_session_mgr.prototype.callback = function (e_event_type, e_media_type) {
     if (this.fn_callback) {
         if (e_event_type == tmedia_session_events_e.GET_LO_SUCCESS) {
             this.b_lo_changed = true;
+            if (this.ao_sessions.length > 0) {
+                this.sdp.o_lo = this.ao_sessions[0].o_sdp_lo; // ao_sessions[0].get_lo() not used because we don't want to request new SDP but just a reference
+            }
         }
         this.fn_callback(this.o_usr_data, e_event_type, e_media_type);
     }

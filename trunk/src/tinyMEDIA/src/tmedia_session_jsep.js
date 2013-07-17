@@ -70,8 +70,13 @@ tmedia_session_jsep.prototype.__prepare = function () {
 }
 
 tmedia_session_jsep.prototype.__start = function () {
-    //if (this.o_local_stream) {
-    //}
+    if (this.o_pc) {
+        if(__o_peerconnection_class === window.w4aPeerConnection) { // WebRTC4All (https://code.google.com/p/webrtc4all/) only
+            // In native WebRTC (Chrome or Firefox), media is started when ICE negotiation complete. For WebRTC4all we cannot rely on ICE as it's optional.
+            try { this.o_pc.startMedia(); }
+            catch (e) { }
+        }
+    }
     return 0;
 }
 
