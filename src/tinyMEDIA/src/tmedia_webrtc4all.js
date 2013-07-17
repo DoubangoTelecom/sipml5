@@ -167,7 +167,9 @@ w4aSessionDescription.prototype.toSdp = function () {
 w4aSessionDescription.prototype.toString = w4aSessionDescription.prototype.toSdp;
 
 w4aSessionDescription.prototype.addCandidate = function (o_candidate) {
-    this.o_sdp.addCandidate(o_candidate.media, o_candidate.label);
+    if(o_candidate && o_candidate.media && o_candidate.label) {
+        this.o_sdp.addCandidate(o_candidate.media, o_candidate.label);
+    }
 }
 
 function w4aIceCandidate(media, label) {
@@ -270,6 +272,17 @@ w4aPeerConnection.prototype.startIce = function (o_options) {
     this.o_peer.startIce(0/* all */, WebRtc4all_GetLooper());
 }
 
+// void startMedia (void);
+// Not part of the specification
+// In native WebRTC, media is started when ICE negotiation complete. For WebRTC4all we cannot rely on ICE as it's optional.
+w4aPeerConnection.prototype.startMedia = function (o_options) {
+    if(this.o_peer /*&& this.o_peer.startMedia*/) {
+        // startMedia() introduced when ICE become optional. "if(this.o_peer.startMedia)" always returns false on IE.
+        try { this.o_peer.startMedia(); }
+        catch (e) { }
+    }
+}
+
 // void processIceMessage (IceCandidate candidate);
 w4aPeerConnection.prototype.processIceMessage = function (o_candidate) {
     tsk_utils_log_error("Not implemented"); // we expect all ICE candidates in the SDP offer (SIP)
@@ -291,7 +304,7 @@ w4aPeerConnection.prototype.close = function () {
 }
 
 w4aPeerConnection.prototype.onIceCallback = function (media, label, bMoreToFollow) {
-    tsk_utils_log_info("onIceCallback(" + media + "," + label + "," + bMoreToFollow + ")");
+    tsk_utils_log_info("w4aPeerConnection::onIceCallback(" + media + "," + label + "," + bMoreToFollow + ")");
     this.iceState = this.o_peer.iceState;
     if (this.f_IceCallback) {
         this.f_IceCallback(new w4aIceCandidate(media, label), bMoreToFollow);
