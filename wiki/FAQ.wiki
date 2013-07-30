@@ -19,6 +19,12 @@ We highly recommend using <a href="https://www.google.com/intl/en/chrome/browser
 ==Is it possible to call another HTML5 SIP client==
 Yes
 
+==I get "SIP/2.0 488 Not acceptable here" response when I try to make calls from sipml5.org to a softphone or PSTN. How can I fix this?==
+This means the remote endpoint doesn't support all WebRTC features.
+ * Go to http://sipml5.org/expert.htm
+ * Check "Enable RTCWeb Breaker" then click on "save" button
+ * LogIn again and try to make calls... all should work as expected :)
+
 ==Is it possible to call any SIP client?==
 Yes... but the client must support all standards defined by the <a href="http://tools.ietf.org/wg/rtcweb/">RTCWeb</a> working group. We recommend these clients:
  * <a href="http://code.google.com/p/boghe/">Boghe</a> _2.0.100.701_ or later : Windows XP, Vista and 7
