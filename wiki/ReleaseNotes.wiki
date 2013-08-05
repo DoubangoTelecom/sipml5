@@ -3,6 +3,8 @@
 
 <wiki:toc max_depth="2" />
 
+All releases can be downloaded [Downloads here].
+
 ==1.3.203==
  * SVN: 203
  * Date: August 2, 2013
