@@ -105,20 +105,32 @@ function tsk_utils_get_system_friendly_name(){
 }
 
 
+var __i_debug_level = 4; // INFO:4, WARN:3, ERROR:2, FATAL:1
+
+function tsk_utils_log_set_level(i_level) {
+    __i_debug_level = i_level;
+}
+
 function tsk_utils_log_info(s_msg) {
-    if (window.console) {
+    if (window.console && (__i_debug_level >= 4)) {
         window.console.info(s_msg);
     }
 }
 
 function tsk_utils_log_warn(s_msg) {
-    if (window.console) {
+    if (window.console && (__i_debug_level >= 3)) {
         window.console.warn(s_msg);
     }
 }
 
 function tsk_utils_log_error(s_msg) {
-    if (window.console) {
+    if (window.console && (__i_debug_level >= 2)) {
         window.console.error(s_msg);
+    }
+}
+
+function tsk_utils_log_fatal(s_msg) {
+    if(__i_debug_level >= 1) {
+        tsk_utils_log_error(s_msg);
     }
 }

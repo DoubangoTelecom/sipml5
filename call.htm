@@ -135,6 +135,7 @@
     var oReadyStateTimer;
     var bDisableVideo = false;
     var viewVideoLocal, viewVideoRemote; // <video> (webrtc) or <div> (webrtc4all)
+    var oConfigCall;
 
     C = 
     {
@@ -142,6 +143,9 @@
     };
 
     window.onload = function () {
+        if(window.console) {
+            window.console.info("location=" + window.location);
+        }
         videoLocal = document.getElementById("video_local");
         videoRemote = document.getElementById("video_remote");
         audioRemote = document.getElementById("audio_remote");
@@ -150,8 +154,14 @@
         document.body.onkeyup = onKeyUp;
         divCallCtrl.onmousemove = onDivCallCtrlMouseMove;
 
+        // set debug level
+        SIPml.setDebugLevel((window.localStorage && window.localStorage.getItem('org.doubango.expert.disable_debug') == "true") ? "error" : "info");
+
         loadCredentials();
         loadCallOptions();
+
+        // Initialize call button
+        uiBtnCallSetText("Call");
 
         oReadyStateTimer = setInterval(function () {
             if (document.readyState === "complete") {
@@ -265,9 +275,22 @@
                 window.location = 'https://www.google.com/intl/en/chrome/browser/';
             }
         }
-
+        
         btnRegister.disabled = false;
         document.body.style.cursor = 'default';
+        oConfigCall = {
+            audio_remote: audioRemote,
+            video_local: viewVideoLocal,
+            video_remote: viewVideoRemote,
+            bandwidth: { audio:undefined, video:undefined },
+            video_size: { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined },
+            events_listener: { events: '*', listener: onSipEventSession },
+            sip_caps: [
+                            { name: '+g.oma.sip-im' },
+                            { name: '+sip.ice' },
+                            { name: 'language', value: '\"en,fr\"' }
+                        ]
+        };
     }
 
 
@@ -343,6 +366,9 @@
             // save credentials
             saveCredentials();
 
+            // update debug level to be sure new values will be used if the user haven't updated the page
+            SIPml.setDebugLevel((window.localStorage && window.localStorage.getItem('org.doubango.expert.disable_debug') == "true") ? "error" : "info");
+
             // create SIP stack
             oSipStack = new SIPml.Stack({
                     realm: txtRealm.value,
@@ -355,8 +381,12 @@
                     ice_servers: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null),
                     enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
                     events_listener: { events: '*', listener: onSipEventStack },
+                    enable_early_ims: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.disable_early_ims') == "false" : true), // Must be true unless you're using a real IMS network
+                    enable_media_stream_cache: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_media_caching') == "true" : false),
+                    bandwidth: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null), // could be redefined a session-level
+                    video_size: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null), // could be redefined a session-level
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.07.17' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.08.05' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -380,27 +410,30 @@
     }
 
     // makes a call (SIP INVITE)
-    function sipCall() {
-        // call configuration
-        var oConf = {
-            audio_remote: audioRemote,
-            video_local: viewVideoLocal,
-            video_remote: viewVideoRemote,
-            events_listener: { events: '*', listener: onSipEventSession },
-            sip_caps: [
-                            { name: '+g.oma.sip-im' },
-                            { name: '+sip.ice' },
-                            { name: 'language', value: '\"en,fr\"' }
-                        ]
-        };
+    function sipCall(s_type) {
         if (oSipStack && !oSipSessionCall && !tsk_string_is_null_or_empty(txtPhoneNumber.value)) {
+            if(s_type == 'call-screenshare') {
+                if(!SIPml.isScreenShareSupported()) {
+                    alert('Screen sharing not supported. Are you using chrome 26+?');
+                    return;
+                }
+                if (!location.protocol.match('https')){
+                    if (confirm("Screen sharing requires https://. Do you want to be redirected?")) {
+                        window.location = 'https://ns313841.ovh.net/call.htm';
+                    }
+                    return;
+                }
+            }
             btnCall.disabled = true;
             btnHangUp.disabled = false;
 
-            // check whether video is disabled or not
-            bDisableVideo = (window.localStorage && window.localStorage.getItem('org.doubango.expert.disable_video') == "true");
+            if(window.localStorage) {
+                oConfigCall.bandwidth = tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')); // already defined at stack-level but redifined to use latest values
+                oConfigCall.video_size = tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')); // already defined at stack-level but redifined to use latest values
+            }
+            
             // create call session
-            oSipSessionCall = oSipStack.newSession(bDisableVideo ? 'call-audio' : 'call-audiovideo', oConf);
+            oSipSessionCall = oSipStack.newSession(s_type, oConfigCall);
             // make call
             if (oSipSessionCall.call(txtPhoneNumber.value) != 0) {
                 oSipSessionCall = null;
@@ -413,7 +446,7 @@
         }
         else if (oSipSessionCall) {
             txtCallStatus.innerHTML = '<i>Connecting...</i>';
-            oSipSessionCall.accept(oConf);
+            oSipSessionCall.accept(oConfigCall);
         }
     }
 
@@ -572,31 +605,29 @@
     }
 
     function uiVideoDisplayEvent(b_local, b_added) {
-        //if (!bDisableVideo) {
-            var o_elt_video = b_local ? videoLocal : videoRemote;
+        var o_elt_video = b_local ? videoLocal : videoRemote;
 
-            if (b_added) {
-                if (SIPml.isWebRtc4AllSupported()) {
-                    if (b_local){ if(window.__o_display_local) window.__o_display_local.style.visibility = "visible"; }
-                    else { if(window.__o_display_remote) window.__o_display_remote.style.visibility = "visible"; }
+        if (b_added) {
+            if (SIPml.isWebRtc4AllSupported()) {
+                if (b_local){ if(window.__o_display_local) window.__o_display_local.style.visibility = "visible"; }
+                else { if(window.__o_display_remote) window.__o_display_remote.style.visibility = "visible"; }
                    
-                }
-                else {
-                    o_elt_video.style.opacity = 1;
-                }
-                uiVideoDisplayShowHide(true);
             }
             else {
-                if (SIPml.isWebRtc4AllSupported()) {
-                    if (b_local){ if(window.__o_display_local) window.__o_display_local.style.visibility = "hidden"; }
-                    else { if(window.__o_display_remote) window.__o_display_remote.style.visibility = "hidden"; }
-                }
-                else{
-                    o_elt_video.style.opacity = 0;
-                }
-                fullScreen(false);
+                o_elt_video.style.opacity = 1;
             }
-        //}
+            uiVideoDisplayShowHide(true);
+        }
+        else {
+            if (SIPml.isWebRtc4AllSupported()) {
+                if (b_local){ if(window.__o_display_local) window.__o_display_local.style.visibility = "hidden"; }
+                else { if(window.__o_display_remote) window.__o_display_remote.style.visibility = "hidden"; }
+            }
+            else{
+                o_elt_video.style.opacity = 0;
+            }
+            fullScreen(false);
+        }
     }
 
     function uiVideoDisplayShowHide(b_show) {
@@ -611,8 +642,48 @@
         btnFullScreen.disabled = !b_show;
     }
 
+    function uiDisableCallOptions() {
+        if(window.localStorage) {
+            window.localStorage.setItem('org.doubango.expert.disable_callbtn_options', 'true');
+            uiBtnCallSetText('Call');
+            alert('Use expert view to enable the options again (/!\\requires re-loading the page)');
+        }
+    }
+
+    function uiBtnCallSetText(s_text) {
+        switch(s_text) {
+            case "Call":
+                {
+                    var bDisableCallBtnOptions = (window.localStorage && window.localStorage.getItem('org.doubango.expert.disable_callbtn_options') == "true");
+                    btnCall.value = btnCall.innerHTML = bDisableCallBtnOptions ? 'Call' : 'Call <span id="spanCaret" class="caret">';
+                    btnCall.setAttribute("class", bDisableCallBtnOptions ? "btn btn-primary" : "btn btn-primary dropdown-toggle");
+                    btnCall.onclick = bDisableCallBtnOptions ? function(){ sipCall(bDisableVideo ? 'call-audio' : 'call-audiovideo'); } : null;
+                    ulCallOptions.style.visibility = bDisableCallBtnOptions ? "hidden" : "visible";
+                    if(!bDisableCallBtnOptions && ulCallOptions.parentNode != divBtnCallGroup){
+                        divBtnCallGroup.appendChild(ulCallOptions);
+                    }
+                    else if(bDisableCallBtnOptions && ulCallOptions.parentNode == divBtnCallGroup) {
+                        document.body.appendChild(ulCallOptions);
+                    }
+                    
+                    break;
+                }
+            default:
+                {
+                    btnCall.value = btnCall.innerHTML = s_text;
+                    btnCall.setAttribute("class", "btn btn-primary");
+                    btnCall.onclick = function(){ sipCall(bDisableVideo ? 'call-audio' : 'call-audiovideo'); };
+                    ulCallOptions.style.visibility = "hidden";
+                    if(ulCallOptions.parentNode == divBtnCallGroup){
+                        document.body.appendChild(ulCallOptions);
+                    }
+                    break;
+                }
+        }
+    }
+
     function uiCallTerminated(s_description){
-        btnCall.value = 'Call';
+        uiBtnCallSetText("Call");
         btnHangUp.value = 'HangUp';
         btnHoldResume.value = 'hold';
         btnCall.disabled = false;
@@ -692,8 +763,10 @@
                     }
                     else {
                         oSipSessionCall = e.newSession;
+                        // start listening for events
+                        oSipSessionCall.setConfiguration(oConfigCall);
 
-                        btnCall.value = 'Answer';
+                        uiBtnCallSetText('Answer');
                         btnHangUp.value = 'Reject';
                         btnCall.disabled = false;
                         btnHangUp.disabled = false;
@@ -1050,9 +1123,9 @@
                     </tr>
                     <tr>
                         <td colspan="2" align="right">
-                            <input type="button" class="btn-success" id="btnRegister" value="LogIn" disabled onclick='sipRegister();' />
+                            <input type="button" class="btn btn-success" id="btnRegister" value="LogIn" disabled onclick='sipRegister();' />
                             &nbsp;
-                            <input type="button" class="btn-danger" id="btnUnRegister" value="LogOut" disabled onclick='sipUnRegister();' />
+                            <input type="button" class="btn btn-danger" id="btnUnRegister" value="LogOut" disabled onclick='sipUnRegister();' />
                         </td>
                     </tr>
                     <tr>
@@ -1087,8 +1160,14 @@
                     </tr>
                     <tr>
                         <td colspan="1" align="right">
-                            <input type="button" class="btn-primary" style="" id="btnCall" value="Call" onclick='sipCall();' disabled /> &nbsp;
-                            <input type="button" class="btn-primary" style="" id="btnHangUp" value="HangUp" onclick='sipHangUp();' disabled />
+                            <div class="btn-toolbar" style="margin: 0; vertical-align:middle">
+                                <div id="divBtnCallGroup" class="btn-group">
+                                    <button id="btnCall" disabled class="btn btn-primary" data-toggle="dropdown">Call</button>
+                                </div>&nbsp;&nbsp;
+                                <div class="btn-group">
+                                    <input type="button" id="btnHangUp" style="margin: 0; vertical-align:middle; height: 100%;" class="btn btn-primary" value="HangUp" onclick='sipHangUp();' disabled />
+                                </div>
+                             </div>
                         </td>
                     </tr>
                     <tr>
@@ -1155,6 +1234,14 @@
             <tr><td colspan=3><input type="button" style="width: 100%" class="btn btn-medium btn-danger" value="close" onclick="closeKeyPad();" /></td></tr>
         </table>
     </div>
+    <!-- Call button options -->
+    <ul id="ulCallOptions" class="dropdown-menu" style="visibility:hidden">
+        <li><a href="#" onclick='sipCall("call-audio");'>Audio</a></li>
+        <li><a href="#" onclick='sipCall("call-audiovideo");'>Video</a></li>
+        <li id='liScreenShare' ><a href="#" onclick='sipCall("call-screenshare");'>Screen Share</a></li>
+        <li class="divider"></li>
+        <li><a href="#" onclick='uiDisableCallOptions();'><b>Disable these options</b></a></li>
+    </ul>
 
     <!-- Le javascript
     ================================================== -->

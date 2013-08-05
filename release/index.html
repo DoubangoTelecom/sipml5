@@ -50,12 +50,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="./index.html">Doubango Telecom</a>
+          <a class="brand" target=_blank href="http://doubango.org">Doubango Telecom</a>
           <div class="nav-collapse">
             <ul class="nav">
               <li class="active"><a href="index.html?svn=179">Home</a></li>
               <li><a href="http://code.google.com/p/sipml5/source/checkout" target="_blank">Source code</a></li>
-              <li><a href="docgen/index.html?svn=179">Programmer's Guide</a></li>
+              <li><a href="docgen/index.html?svn=200">Programmer's Guide</a></li>
               <li><a href="contact.htm">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -87,6 +87,7 @@
                       <ul>
                         <li><b>Works on Chrome, Firefox, IE, Safari, Opera and Bowser</b></li>
                         <li>Audio / Video call</li>
+                        <li><a href="https://code.google.com/p/sipml5/wiki/ScreenShare" target=_blank>Screen/Desktop sharing from Chrome to <b><u>any</u></b> SIP client</a></li>
                         <li>Instant messaging</li>
                         <li>Presence</li>
                         <li>Call Hold / Resume</li>
@@ -94,6 +95,8 @@
                         <li>Multi-line and multi-account</li>
                         <li>Dual-tone multi-frequency signaling (DTMF) using SIP INFO</li>
                         <li><a href="http://click2dial.org" target=_blank>Click-to-Call</a></li>
+                        <li><a href="https://code.google.com/p/telepresence/" target=_blank>SIP TelePresence (Video Group chat)</a></li>
+                        <li>3GPP IMS standards</li>
                       </ul>
                       <p><a class="btn" href="http://code.google.com/p/sipml5/" target="_blank">View details &raquo;</a></p>       
                    </td></tr>
@@ -147,9 +150,9 @@
                                     var stack =  new <a href="docgen/symbols/SIPml.Stack.html#constructor">SIPml.Stack</a>({realm: 'example.org', impi: 'bob', impu: 'sip:bob@example.org', password: 'mysecret',
                                         events_listener: { events: 'started', listener: function(<a href="docgen/symbols/SIPml.Stack.Event.html">e</a>){
                                                     var callSession = stack.<a href="docgen/symbols/SIPml.Stack.html#newSession">newSession</a>('call-audiovideo', {
-                                                            video_local: document.getElementById('video-local'),
-                                                            video_remote: document.getElementById('video-remote'),
-                                                            audio_remote: document.getElementById('audio-remote')
+                                                            video_local: document.getElementById('video-local'), // &lt;video id="video-local" .../&gt;
+                                                            video_remote: document.getElementById('video-remote'), // &lt;video id="video-remote" .../&gt;
+                                                            audio_remote: document.getElementById('audio-remote') // &lt;audio id="audio-remote" .../&gt;
                                                         });
                                                     callSession.<a href="docgen/symbols/SIPml.Session.Call.html#call">call</a>('alice');
                                                 } 

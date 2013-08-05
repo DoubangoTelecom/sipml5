@@ -26,7 +26,10 @@ var tsip_session_param_type_e =
     SIGCOMP_ID: 9,
     PARENT_ID: 10,
 
-    INITIAL_MSG: 20,
+    BANDWIDTH: 20,
+    VIDEO_SIZE: 21,
+
+    INITIAL_MSG: 50,
 
     MEDIA: 100
 };
@@ -67,6 +70,8 @@ function tsip_session(o_stack) {
     this.media = {};
     this.media.e_type = tmedia_type_e.NONE;
     this.media.b_100rel = false;
+    this.media.o_bandwidth = o_stack.media.o_bandwidth;
+    this.media.o_video_size = o_stack.media.o_video_size;
 
     this.media.timers = {};
     this.media.timers.s_refresher = null;
@@ -77,7 +82,7 @@ function tsip_session(o_stack) {
     this.media.qos.e_strength = tmedia_qos_strength_e.NONE;
 
     this.media.msrp = {};
-    this.media.msrp.fn_callback = null;
+    this.media.msrp.fn_callback = null;    
 }
 
 /**
@@ -183,6 +188,17 @@ tsip_session.prototype.__set = function (ao_params) {
                     break;
                 }
 
+            case tsip_session_param_type_e.BANDWIDTH:
+                {
+                    this.media.o_bandwidth = o_curr.ao_values[0];
+                    break;
+                }
+            case tsip_session_param_type_e.VIDEO_SIZE:
+                {  
+                    this.media.o_video_size = o_curr.ao_values[0];
+                    break;
+                }
+
             case tsip_session_param_type_e.INITIAL_MSG:
                 {
                     var o_message;
@@ -234,8 +250,8 @@ tsip_session.prototype.SetExpires = function (i_expires) {
 /*
 * Internal function
 */
-tsip_session.prototype.SetUsrData = function (USR_DATA) {
-    return tsip_session.prototype.SetAny(tsip_session_param_type_e.EXPIRES, o_usr_data);
+tsip_session.prototype.SetUsrData = function (o_usr_data) {
+    return tsip_session.prototype.SetAny(tsip_session_param_type_e.USR_DATA, o_usr_data);
 }
 
 /**
@@ -279,12 +295,22 @@ tsip_session.prototype.SetFromStr = function (s_to) {
     return tsip_session.prototype.SetAny(tsip_session_param_type_e.FROM_STR, s_to);
 }
 
-/*
-* Internal function
-*/
 tsip_session.prototype.SetInitialMessage = function (o_sip_message) {
     return tsip_session.prototype.SetAny(tsip_session_param_type_e.INITIAL_MSG, o_sip_message);
 }
+
+tsip_session.prototype.SetBandwidth = function (o_bandwidth) {
+    return tsip_session.prototype.SetAny(tsip_session_param_type_e.BANDWIDTH, o_bandwidth);
+}
+
+tsip_session.prototype.SetVideoSize = function (o_video_size) {
+    return tsip_session.prototype.SetAny(tsip_session_param_type_e.VIDEO_SIZE, o_video_size);
+}
+
+tsip_session.prototype.SetInitialMessage = function (o_sip_message) {
+    return tsip_session.prototype.SetAny(tsip_session_param_type_e.INITIAL_MSG, o_sip_message);
+}
+
 
 /*
 * Internal function

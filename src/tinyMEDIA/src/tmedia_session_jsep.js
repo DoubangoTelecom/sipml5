@@ -12,12 +12,15 @@
 // Canary 'muted': https://groups.google.com/group/discuss-webrtc/browse_thread/thread/8200f2049c4de29f
 // Canary state events: https://groups.google.com/group/discuss-webrtc/browse_thread/thread/bd30afc3e2f43f6d
 // DTMF: https://groups.google.com/group/discuss-webrtc/browse_thread/thread/1354781f202adbf9
+// IceRestart: https://groups.google.com/group/discuss-webrtc/browse_thread/thread/c189584d380eaa97
+// Video Resolution: https://code.google.com/p/chromium/issues/detail?id=143631#c9
 
 tmedia_session_jsep.prototype = Object.create(tmedia_session.prototype);
 tmedia_session_jsep00.prototype = Object.create(tmedia_session_jsep.prototype);
 tmedia_session_jsep01.prototype = Object.create(tmedia_session_jsep.prototype);
 
 tmedia_session_jsep.prototype.o_pc = null;
+tmedia_session_jsep.prototype.b_cache_stream = false;
 tmedia_session_jsep.prototype.o_local_stream = null;
 tmedia_session_jsep.prototype.o_sdp_jsep_lo = null;
 tmedia_session_jsep.prototype.o_sdp_lo = null;
@@ -30,6 +33,8 @@ tmedia_session_jsep.prototype.b_sdp_ro_offer = false;
 tmedia_session_jsep.prototype.s_answererSessionId = null;
 tmedia_session_jsep.prototype.s_offererSessionId = null;
 tmedia_session_jsep.prototype.ao_ice_servers = null;
+tmedia_session_jsep.prototype.o_bandwidth = { audio:undefined, video:undefined };
+tmedia_session_jsep.prototype.o_video_size = { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined };
 
 tmedia_session_jsep.prototype.b_ro_changed = false;
 tmedia_session_jsep.prototype.b_lo_held = false;
@@ -60,6 +65,21 @@ tmedia_session_jsep.prototype.__set = function (o_param) {
                 this.ao_ice_servers = o_param.o_value;
                 return 0;
             }
+        case 'cache-stream':
+            {
+                this.b_cache_stream = !!o_param.o_value;
+                return 0;
+            }
+        case 'bandwidth':
+            {
+                this.o_bandwidth = o_param.o_value;
+                return 0;
+            }
+        case 'video-size':
+            {
+                this.o_video_size = o_param.o_value;
+                return 0;
+            }
     }
 
     return -2;
@@ -70,7 +90,11 @@ tmedia_session_jsep.prototype.__prepare = function () {
 }
 
 tmedia_session_jsep.prototype.__start = function () {
-    if (this.o_pc) {
+    if (this.o_local_stream && this.o_local_stream.start) {
+        // cached stream would be stopped in close()
+        this.o_local_stream.start();
+    }
+    else if (this.o_pc) {
         if(__o_peerconnection_class === window.w4aPeerConnection) { // WebRTC4All (https://code.google.com/p/webrtc4all/) only
             // In native WebRTC (Chrome or Firefox), media is started when ICE negotiation complete. For WebRTC4all we cannot rely on ICE as it's optional.
             try { this.o_pc.startMedia(); }
@@ -81,9 +105,9 @@ tmedia_session_jsep.prototype.__start = function () {
 }
 
 tmedia_session_jsep.prototype.__pause = function () {
-    //if (this.o_local_stream) {
-
-    //}
+    if (this.o_local_stream && this.o_local_stream.pause) {
+        this.o_local_stream.pause();
+    }
     return 0;
 }
 
@@ -118,15 +142,25 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
         if (/*!this.o_sdp_ro &&*/!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
             this.o_sdp_lo.remove_media("video");
         }
-        /* hold / resume */
+        /* hold / resume, bandwidth... */
         var i_index = 0;
         var o_hdr_M;
         while ((o_hdr_M = this.o_sdp_lo.get_header_at(tsdp_header_type_e.M, i_index++))) {
+            // hold/resume
             o_hdr_M.set_holdresume_att(this.b_lo_held, this.b_ro_held);
             // HACK: Nightly 20.0a1 uses RTP/SAVPF for DTLS-SRTP which is not correct. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=827932.
             if(tmedia_session_jsep01.mozThis){
                 if(o_hdr_M.s_proto == "RTP/SAVPF"){
                     o_hdr_M.s_proto = "UDP/TLS/RTP/SAVPF";
+                }
+            }
+            // bandwidth
+            if(this.o_bandwidth) {
+                if(this.o_bandwidth.audio && o_hdr_M.s_media.toLowerCase() == "audio") {
+                    o_hdr_M.add_header(new tsdp_header_B("AS:"+this.o_bandwidth.audio));
+                }
+                else if(this.o_bandwidth.video && o_hdr_M.s_media.toLowerCase() == "video") {
+                    o_hdr_M.add_header(new tsdp_header_B("AS:"+this.o_bandwidth.video));
                 }
             }
         }
@@ -273,12 +307,13 @@ tmedia_session_jsep.prototype.close = function () {
         this.o_mgr.set_stream_local(null);
     }
     if (this.o_pc) {
-        /*if (this.o_local_stream) {
+        if (this.o_local_stream) {
             this.o_pc.removeStream(this.o_local_stream);
+            if(!this.b_cache_stream || (this.e_type == tmedia_type_e.SCREEN_SHARE)) { // only stop if caching is disabled or screenshare
+                this.o_local_stream.stop();
+            }
+            this.o_local_stream = null;
         }
-        if (this.o_remote_stream) {
-            this.o_pc.removeStream(this.o_remote_stream);
-        }*/
         this.o_pc.close();
         this.o_pc = null;
         this.b_sdp_lo_pending = false;
@@ -449,8 +484,6 @@ function tmedia_session_jsep01(o_mgr) {
         {
             'OfferToReceiveAudio': !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id),
             'OfferToReceiveVideo': !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)
-            //'minHeight': '720',
-            //'minWidth': '1280'
         }
      };
 
@@ -482,17 +515,16 @@ tmedia_session_jsep01.onGetUserMediaSuccess = function (o_stream, _This) {
 
         // save stream other next calls
         if(o_stream.audioTracks.length > 0 && o_stream.videoTracks.length == 0){
-            if(!__o_jsep_stream_audio){
-                This.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_ACCEPTED, this.e_type);
-            }
             __o_jsep_stream_audio = o_stream;
         }
         else if(o_stream.audioTracks.length > 0 && o_stream.videoTracks.length > 0){
-            if(!__o_jsep_stream_audiovideo){
-                This.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_ACCEPTED, this.e_type);
-            }
             __o_jsep_stream_audiovideo = o_stream;
         }
+        
+        if(!This.o_local_stream){
+            This.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_ACCEPTED, this.e_type);
+        }
+        
 
         // HACK: Firefox only allows to call gum one time
         if(tmedia_session_jsep01.mozThis){
@@ -643,6 +675,22 @@ tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
 tmedia_session_jsep01.prototype.__get_lo = function () {
     var This = this;
     if (!this.o_pc && !this.b_lo_held) {
+        var o_video_constraints = {
+            mandatory: { },
+            optional: []
+        };
+        if((this.e_type.i_id & tmedia_type_e.SCREEN_SHARE.i_id) == tmedia_type_e.SCREEN_SHARE.i_id) {
+            o_video_constraints.mandatory.chromeMediaSource = 'screen';
+        }
+        if(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) {
+            if(this.o_video_size) {
+                if(this.o_video_size.minWidth) o_video_constraints.mandatory.minWidth = this.o_video_size.minWidth;
+                if(this.o_video_size.minWidth) o_video_constraints.mandatory.minHeight = this.o_video_size.minHeight;
+                if(this.o_video_size.minWidth) o_video_constraints.mandatory.maxWidth = this.o_video_size.maxWidth;
+                if(this.o_video_size.minWidth) o_video_constraints.mandatory.maxHeight = this.o_video_size.maxHeight;
+            }
+            try{ tsk_utils_log_info("Video Contraints:" + JSON.stringify(o_video_constraints)); } catch(e){}
+        }
         var o_iceServers = this.ao_ice_servers;
         if(!o_iceServers){ // defines default ICE servers only if none exist (because WebRTC requires ICE)
             // HACK Nightly 21.0a1 (2013-02-18): 
@@ -656,10 +704,10 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
             o_iceServers = tmedia_session_jsep01.mozThis
                 ? [{ url: 'stun:23.21.150.121:3478'}, { url: 'stun:216.93.246.18:3478'}, { url: 'stun:66.228.45.110:3478'}, { url: 'stun:173.194.78.127:19302'}]
                 : [{ url: 'stun:stun.l.google.com:19302'}, { url: 'stun:stun.counterpath.net:3478'}, { url: 'stun:numb.viagenie.ca:3478'}];
-         }
+        }
         try{ tsk_utils_log_info("ICE servers:" + JSON.stringify(o_iceServers)); } catch(e){}
         this.o_pc = new __o_peerconnection_class(
-                { iceServers: o_iceServers },
+                (o_iceServers && !o_iceServers.length) ? null : { iceServers: o_iceServers }, // empty array is used to disable STUN/TURN.
                 this.o_media_constraints
         );
         this.o_pc.onicecandidate = tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onIceCandidate : function(o_event){ tmedia_session_jsep01.onIceCandidate(o_event, This) };
@@ -677,15 +725,20 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
             this.__set_ro(this.o_sdp_ro, true);
         }
         // get media stream
-        if(this.e_type.i_id == tmedia_type_e.AUDIO.i_id && __o_jsep_stream_audio){
+        if(this.e_type == tmedia_type_e.AUDIO && (this.b_cache_stream && __o_jsep_stream_audio)){
             tmedia_session_jsep01.onGetUserMediaSuccess(__o_jsep_stream_audio, This);
         }
-        else if(this.e_type.i_id == tmedia_type_e.AUDIO_VIDEO.i_id && __o_jsep_stream_audiovideo){
+        else if(this.e_type == tmedia_type_e.AUDIO_VIDEO && (this.b_cache_stream && __o_jsep_stream_audiovideo)){
             tmedia_session_jsep01.onGetUserMediaSuccess(__o_jsep_stream_audiovideo, This);
         }
         else{
             this.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_REQUESTED, this.e_type);
-            navigator.nativeGetUserMedia({ audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id), data: false },
+            navigator.nativeGetUserMedia(
+                    { 
+                        audio: (this.e_type == tmedia_type_e.SCREEN_SHARE) ? false : !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), // IMPORTANT: Chrome '28.0.1500.95 m' doesn't support using audio with screenshare
+                        video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) ? o_video_constraints : false, // "SCREEN_SHARE" contains "VIDEO" flag -> (VIDEO & SCREEN_SHARE) = VIDEO
+                        data: false 
+                    },
                     tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onGetUserMediaSuccess : function(o_stream){ tmedia_session_jsep01.onGetUserMediaSuccess(o_stream, This); },
                     tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onGetUserMediaError : function(s_error){ tmedia_session_jsep01.onGetUserMediaError(s_error, This); }
                 );

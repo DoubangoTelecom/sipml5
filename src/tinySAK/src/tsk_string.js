@@ -90,6 +90,18 @@ function tsk_string_random_uuid() {
             tsk_string_random_from_dict(12, s_dict));
 }
 
+function tsk_string_to_int(s_str, i_default) {
+    try{ return parseInt(s_str); }
+    catch(e){ return i_default; }
+}
+
+function tsk_string_to_object(s_str) {
+     if(!tsk_string_is_null_or_empty(s_str)){
+        try{ eval("var obj = " + s_str + ";"); return obj; }
+        catch(e){}
+     }
+}
+
 // s_url: <scheme>://<host>:<port>/<dir>
 // <dir> is optional
 // s_url: udp://192.168.0.10:8545/ws

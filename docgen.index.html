@@ -57,7 +57,7 @@
             for the desktop and mobile platforms. If you are a developer and is looking for the best way to develop a plugin-free NGN (VoIP, Messaging, Video Conferencing, ...) applications for these platforms
             then, your are at the right place. <br />
             If you want to get help or have some feedbacks then please visit the <a href="http://code.google.com/p/sipml5/">developer's website</a> or subscribe to our <a href="http://groups.google.com/group/doubango/"> developer mailing list</a>. <br />
-            We highly recommend checking other SIPML5 components: <a target=_blank href="http://www.webrtc2sip.org">webrtc2sip</a>, <a target=_blank href="http://click2dial.org">click-to-call</a> and <a target=_blank href="http://code.google.com/p/webrtc4all/">webrtc4all</a>. <br />
+            We highly recommend checking other SIPML5 components: <a target=_blank href="http://www.webrtc2sip.org">webrtc2sip</a>, <a target=_blank href="http://click2dial.org">click-to-call</a>, <a target=_blank href="http://code.google.com/p/webrtc4all/">webrtc4all</a> and <a target=_blank href="http://conf-call.org/">SIP TelePresence (Video Group chat) client</a>. <br />
             <br />
             <font size="3">
                 <strong>The complete API is available <a href="docgen/symbols/SIPml.html">here</a></strong><br/>
@@ -74,6 +74,7 @@
                     <li><a href="#Initializetheengine">Initialize the engine</a></li>
                     <li><a href="#login">Register/login</a></li>
                     <li><a href="#makeCall">Making/receiving audio/video call</a></li>
+                    <li><a href="#screenShare">Sharing your screen/desktop</a></li>
                     <li><a href="#sendMessage">Send/receive SIP MESSAGE (SMS-like)</a></li>
                     <li><a href="#publishPresence">Publish presence status</a></li>
                     <li><a href="#subscribePresence">Subscribe for presence status change</a></li>
@@ -241,6 +242,14 @@
                 e.<a href="docgen/symbols/SIPml.Stack.Event.html#newSession">newSession</a>.<a href="docgen/symbols/SIPml.Session.html#accept">accept</a>(); // e.newSession.<a href="docgen/symbols/SIPml.Session.html#reject">reject()</a> to reject the call
             }
         </code></pre>
+
+        <hr />
+        <a name="screenShare"></a>
+        <h2>Sharing your screen/desktop</h2>
+        <p>
+        Sharing your screen or desktop with any SIP client is just like making a video call and the only difference is the session call type (<b>call-screenshare</b> instead of <i>call-audiovideo</i>). <br />
+        A screen/desktop sharing session doesn't contain audio stream which means you'll need to make a second audio-only call to speak to the remote party. You don't need to open another page as multi-line is supported. <br />
+        Please check <a href="https://code.google.com/p/sipml5/wiki/ScreenShare" target=_blank>here</a> for more information about screen/desktop sharing.
 
         <hr />
         <a name="sendMessage"></a>
