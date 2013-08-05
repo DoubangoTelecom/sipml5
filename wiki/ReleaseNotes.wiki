@@ -1,9 +1,9 @@
 #summary Release notes
 #labels Featured,Phase-Support
 
-<wiki:toc max_depth="2" />
-
 All releases can be downloaded [Downloads here].
+
+<wiki:toc max_depth="2" />
 
 ==1.3.203==
  * SVN: 203
