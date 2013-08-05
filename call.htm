@@ -381,12 +381,12 @@
                     ice_servers: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.ice_servers') : null),
                     enable_rtcweb_breaker: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_rtcweb_breaker') == "true" : false),
                     events_listener: { events: '*', listener: onSipEventStack },
-                    enable_early_ims: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.disable_early_ims') == "false" : true), // Must be true unless you're using a real IMS network
+                    enable_early_ims: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.disable_early_ims') != "true" : true), // Must be true unless you're using a real IMS network
                     enable_media_stream_cache: (window.localStorage ? window.localStorage.getItem('org.doubango.expert.enable_media_caching') == "true" : false),
                     bandwidth: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null), // could be redefined a session-level
                     video_size: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null), // could be redefined a session-level
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.08.05' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.08.05C' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -419,6 +419,7 @@
                 }
                 if (!location.protocol.match('https')){
                     if (confirm("Screen sharing requires https://. Do you want to be redirected?")) {
+                        sipUnRegister();
                         window.location = 'https://ns313841.ovh.net/call.htm';
                     }
                     return;
