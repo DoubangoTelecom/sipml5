@@ -206,8 +206,13 @@ var tsip_stack_param_type_e =
 	STUN_SERVER : 60,
 	STUN_CRED : 61,
 
+    /* === Media === */
+	CACHE_MEDIA_STREAM : 70,
+    BANDWIDTH: 71,
+    VIDEO_SIZE: 72,
+
 	/* === User Data === */
-	USERDATA : 70
+	USERDATA : 80
 };
 
 /* Network transport state (Internal use) */
@@ -310,6 +315,12 @@ function tsip_stack(s_realm, s_impi, s_impu_uri, s_proxy_cscf_host, i_proxy_cscf
     this.natt.stun.i_port = 0;
     this.natt.stun.s_login = null;
     this.natt.stun.s_pwd = null;
+
+    /* Media */
+    this.media = {};
+    this.media.b_cache_stream = false;
+    this.media.o_bandwidth = { audio:undefined, video:undefined };
+    this.media.o_video_size = { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined };
 
     /* Internals */
     this.o_timers = new tsip_timers();
@@ -594,6 +605,18 @@ tsip_stack.prototype.SetIceServers = function (x_ice_server_urls) {
     return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.ICE_SERVERS, x_ice_server_urls);
 }
 
+tsip_stack.prototype.SetMediaStreamCacheEnabled = function (b_cache_media_stream) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.CACHE_MEDIA_STREAM, b_cache_media_stream);
+}
+
+tsip_stack.prototype.SetBandwidth = function (o_bandwidth) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.BANDWIDTH, o_bandwidth);
+}
+
+tsip_stack.prototype.SetVideoSize = function (o_video_size) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.VIDEO_SIZE, o_video_size);
+}
+
 tsip_stack.prototype.SetRTCWebBreakerEnabled = function (b_enabled) {
     return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.ENABLE_RTCWEB_BREAKER, b_enabled);
 }
@@ -605,6 +628,14 @@ tsip_stack.prototype.SetClick2CallEnabled = function (b_enabled) {
 tsip_stack.prototype.SetSecureTransportEnabled = function (b_enabled) {
     return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.ENABLE_SECURE_TRANSPORT, b_enabled);
 }
+
+/**
+* Whether to enable EarlyIMS (3GPP TR 33.978).
+*/
+tsip_stack.prototype.SetEarlyIMSEnabled = function (b_enabled) {
+    return tsip_stack.prototype.SetAny(tsip_stack_param_type_e.EARLY_IMS, b_enabled);
+}
+
 
 
 
@@ -707,12 +738,12 @@ tsip_stack.prototype.__set = function (ao_params) {
                 }
             case tsip_stack_param_type_e.ENABLE_RTCWEB_BREAKER:
                 {
-                    this.network.b_rtcweb_enabled = o_curr.ao_values[0];
+                    this.network.b_rtcweb_enabled = !!o_curr.ao_values[0];
                     break;
                 }
             case tsip_stack_param_type_e.ENABLE_CLICK2CALL:
                 {
-                    this.network.b_click2call_enabled = o_curr.ao_values[0];
+                    this.network.b_click2call_enabled = !!o_curr.ao_values[0];
                     break;
                 }
 
@@ -724,6 +755,30 @@ tsip_stack.prototype.__set = function (ao_params) {
                     break;
                 }
 
+
+                /* === Security === */
+            case tsip_stack_param_type_e.EARLY_IMS:
+                {
+                    this.security.b_earlyIMS = !!o_curr.ao_values[0];
+                    break;
+                }
+
+                /* === Media === */
+            case tsip_stack_param_type_e.CACHE_MEDIA_STREAM:
+                {
+                    this.media.b_cache_stream = !!o_curr.ao_values[0];
+                    break;
+                }
+            case tsip_stack_param_type_e.BANDWIDTH:
+                {
+                    this.media.o_bandwidth = o_curr.ao_values[0];
+                    break;
+                }
+            case tsip_stack_param_type_e.VIDEO_SIZE:
+                {  
+                    this.media.o_video_size = o_curr.ao_values[0];
+                    break;
+                }
 
                 /* === Dummy Headers === */
             case tsip_stack_param_type_e.HEADER:

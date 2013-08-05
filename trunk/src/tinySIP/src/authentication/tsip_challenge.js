@@ -118,9 +118,10 @@ tsip_challenge.prototype.create_header_authorization = function(o_request){
 }
 
 tsip_challenge.prototype.CreateEmptyHeaderAuthorization = function(s_username, s_realm, s_uristring){
-	var o_header = new Authorization_create();
+	var o_header = new tsip_header_Authorization();
 
 	if(o_header){
+        o_header.e_type = tsip_header_type_e.Authorization;
 		o_header.s_scheme = "Digest";
 		o_header.s_username = s_username;
 		o_header.s_realm = s_realm;

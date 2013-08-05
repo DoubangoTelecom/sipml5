@@ -9,7 +9,7 @@
 
 @name sipML5 API
 @author      Doubango Telecom <http://www.doubango.org>
-@version     1.0
+@version     1.3.203
 */
 
 /** 
@@ -30,6 +30,15 @@ SIPml = {};
 /** @private */SIPml.b_have_media_stream = false;
 /** @private */SIPml.b_webrtc_supported = false;
 
+
+/**
+Sets the debug level.
+@since version 1.3.203
+@param {String} level The level. Supported values: <i>info</i>, <i>warn</i>, <i>error</i> and <i>fatal</i>.
+*/
+SIPml.setDebugLevel = function(level) {
+    tsk_utils_log_set_level(level === 'fatal' ? 1 : (level === 'error' ? 2 : (level === 'warn' ? 3 : 4)));
+}
 
 /**
 Gets the version name of the installed <a href="http://code.google.com/p/webrtc4all/">webrtc4all plugin</a>.
@@ -127,6 +136,21 @@ SIPml.isWebRtc4AllSupported = function(){
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
     return SIPml.b_webrtc4all_supported; 
+}
+
+/**
+Checks whether Screen share is supported on this browser.
+You must <a href="#.init">initialize</a> the engine before calling this function.
+@since version 1.3.203
+@static
+@returns {Boolean} <i>true</i> if supported; otherwise <i>false</i>
+@throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
+*/
+SIPml.isScreenShareSupported = function () {
+    if(!SIPml.isInitialized()){
+        throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
+    }
+    return (navigator.userAgent.match('Chrome') && parseInt(navigator.userAgent.match(/Chrome\/(.*) /)[1]) >= 26);
 }
 
 /**
@@ -518,13 +542,25 @@ Example: <i>ws://sipml5.org:5060</i>
 @property {String} [outbound_proxy_url] The outbound Proxy URL is used to set the destination IP address and Port to use for all outgoing requests regardless the <i>domain name</i> (a.k.a <i>realm</i>). <br />
 This is a good option for developers using a SIP domain name without valid DNS A/NAPTR/SRV records. You should not set this value unless you know what you're doing. <br />
 Example: <i>udp://192.168.0.12:5060</i>
-@property {Array} [ice_servers] The list of the STUN/TURN servers to use. The format must be as explained at <a target=_blank href="http://www.w3.org/TR/webrtc/#rtciceserver-type">http://www.w3.org/TR/webrtc/#rtciceserver-type</a>.
+@property {Array} [ice_servers] The list of the STUN/TURN servers to use. The format must be as explained at <a target=_blank href="http://www.w3.org/TR/webrtc/#rtciceserver-type">http://www.w3.org/TR/webrtc/#rtciceserver-type</a>. <br />
+To disable TURN/STUN to speedup ICE candidates gathering you can use an empty array. e.g. <i>[]</i>. <br />
 Example: <i>[{ url: 'stun:stun.l.google.com:19302'}, { url:'turn:user@numb.viagenie.ca', credential:'myPassword'}]</i>
+@property {Object} [bandwidth] Defines the maximum audio and video bandwidth to use. This will change the outhoing SDP to include a "b:AS=" attribute. Use <i>0</i> to let the browser negotiates the right value using RTCP-REMB and congestion control. Same property could be used at session level to override this value.<br />
+<i>Available since version 1.3.203</i>. <br />
+Example: <i>{ audio:64, video:512 }</i>
+@property {Object} [video_size] Defines the maximum and minimum video size to be used. All values are optional. The browser will try to find the best video size between <i>max</i> and <i>min</i> based on the camera capabilities. Same property could be used at session level to override this value.<br />
+<i>Available since version 1.3.203</i>. <br />
+Example: <i>{ minWidth:640, minHeight:480, maxWidth:1920, maxHeight:1080 }</i>
 @property {Boolean} [enable_rtcweb_breaker] Whether to enable the <a href="http://webrtc2sip.org/#aRTCWebBreaker" target=_blank>RTCWeb Breaker</a> module to allow calling SIP-legacy networks.
 Example: <i>true</i>
 @property {Boolean} [enable_click2call] Whether to enable the <a href="http://click2dial.org" target=_blank>Click2Call / Click2Dial</a> service.
 <i>Available since version 1.2.181</i>.
 Example: <i>true</i>
+@property {Boolean} [enable_early_ims] Whether to enable 3GGP Early IMS as per <a href="http://www.arib.or.jp/english/html/overview/doc/STD-T63v9_60/5_Appendix/Rel6/33/33978-660.pdf" target=_blank>TR 33.978</a>. Should be 'true' unless you're using a real IMS network.
+Example: <i>true</i>
+@property {Boolean} [enable_media_stream_cache] Whether to reuse the same media stream for all calls. If your website is <b>not using https</b> then, the browser will request access to the camera (or microphone) every time you try to make a call. Caching the media stream will avoid getting these notifications for each call. <br />
+Example: <i>true</i>
+
 @property {Object} [events_listener] Object to subscribe to some events.
 Example:
 <ul>
@@ -548,7 +584,8 @@ var configuration = {
         ice_servers: [{ url: 'stun:stun.l.google.com:19302'}, { url:'turn:user@numb.viagenie.ca', credential:'myPassword'}], // optional
         enable_rtcweb_breaker: true, // optional
         enable_click2call: false, // optional
-        events_listener: { events: '*', listener: listenerFunc }, //optional
+        enable_early_ims: true, // optional
+        events_listener: { events: '*', listener: listenerFunc }, // optional
         sip_headers: [ //optional
             {name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.0.89.0'}, 
             {name: 'Organization', value: 'Doubango Telecom'}
@@ -580,6 +617,8 @@ var o_stack = new SIPml.Stack({
         websocket_proxy_url: 'ws://192.168.0.10:5060', // optional
         outbound_proxy_url: 'udp://192.168.0.12:5060', // optional
         ice_servers: [{ url: 'stun:stun.l.google.com:19302'}, { url:'turn:user@numb.viagenie.ca', credential:'myPassword'}], // optional
+        bandwidth: { audio:64, video:512 }, // optional
+        video_size: { minWidth:640, minHeight:480, maxWidth:1920, maxHeight:1080 }, // optional
         enable_rtcweb_breaker: true, // optional
         enable_click2call: false, // optional
         events_listener: { events: '*', listener: listenerFunc }, //optional
@@ -983,11 +1022,19 @@ SIPml.Stack.prototype.setConfiguration = function (o_conf) {
 
     var b_rtcweb_breaker_enabled = !!o_conf.enable_rtcweb_breaker;
     var b_click2call_enabled = !!o_conf.enable_click2call;
+    var b_early_ims = (o_conf.enable_early_ims == undefined) ? true : !!o_conf.enable_early_ims; // default value is true
+    var b_enable_media_stream_cache = !!o_conf.enable_media_stream_cache;
+    var o_bandwidth = o_conf.bandwidth ? o_conf.bandwidth : { audio:undefined, video:undefined };
+    var o_video_size = o_conf.video_size ? o_conf.video_size : { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined };
     var o_stack = this.o_stack;
     tsk_utils_log_info("s_websocket_server_url=" + (o_conf.websocket_proxy_url || "(null)"));
     tsk_utils_log_info("s_sip_outboundproxy_url=" + (o_conf.outbound_proxy_url || "(null)"));
     tsk_utils_log_info("b_rtcweb_breaker_enabled=" + (b_rtcweb_breaker_enabled ? "yes" : "no"));
     tsk_utils_log_info("b_click2call_enabled=" + (b_click2call_enabled ? "yes" : "no"));
+    tsk_utils_log_info("b_early_ims=" + (b_early_ims ? "yes" : "no"));
+    tsk_utils_log_info("b_enable_media_stream_cache=" + (b_enable_media_stream_cache ? "yes" : "no"));
+    tsk_utils_log_info("o_bandwidth=" + JSON.stringify(o_bandwidth));
+    tsk_utils_log_info("o_video_size=" + JSON.stringify(o_video_size));
 
     o_stack.set(tsip_stack.prototype.SetPassword(o_conf.password),
                      tsip_stack.prototype.SetDisplayName(o_conf.display_name),
@@ -995,8 +1042,12 @@ SIPml.Stack.prototype.setConfiguration = function (o_conf) {
                      tsip_stack.prototype.SetRTCWebBreakerEnabled(b_rtcweb_breaker_enabled),
                      tsip_stack.prototype.SetClick2CallEnabled(b_click2call_enabled),
                      tsip_stack.prototype.SetSecureTransportEnabled(b_rtcweb_breaker_enabled), // always use secure transport when RTCWebBreaker
+                     tsip_stack.prototype.SetEarlyIMSEnabled(b_early_ims), // should be 'true' unless you're using a real IMS network
                      tsip_stack.prototype.SetWebsocketServerUrl(o_conf.websocket_proxy_url),
-                     tsip_stack.prototype.SetIceServers(o_conf.ice_servers));
+                     tsip_stack.prototype.SetIceServers(o_conf.ice_servers),
+                     tsip_stack.prototype.SetMediaStreamCacheEnabled(b_enable_media_stream_cache),
+                     tsip_stack.prototype.SetBandwidth(o_bandwidth),
+                     tsip_stack.prototype.SetVideoSize(o_video_size));
 
     // add sip headers
     if (o_conf.sip_headers) {
@@ -1038,7 +1089,7 @@ SIPml.Stack.prototype.stop = function (i_timeout) {
 
 /**
 Create new SIP session.
-@param {String} type Session type. Supported values: <b>'register'</b>, <b>'call-audio'</b>, <b>'call-audiovideo'</b>, <b>'call-video'</b>, <b>'message'</b>, <b>'subscribe'</b> or <b>'publish'</b>.
+@param {String} type Session type. Supported values: <b>'register'</b>, <b>'call-audio'</b>, <b>'call-audiovideo'</b>, <b>'call-video'</b>, <b>'call-screenshare'</b>, <b>'message'</b>, <b>'subscribe'</b> or <b>'publish'</b>.
 @param {SIPml.Session.Configuration} [configuration] Anonymous object used to configure the newly created session.
 @throws {ERR_INVALID_PARAMETER_VALUE} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> <br>
 @returns {SIPml.Session} New session if successful; otherwise null.<br> The session type would be <a href="SIPml.Session.Registration.html">SIPml.Session.Registration</a>, <a href="SIPml.Session.Call.html">SIPml.Session.Call</a> or <a href="SIPml.Session.Message.html">SIPml.Session.Message</a> <br>
@@ -1060,9 +1111,9 @@ o_registration.<a href="SIPml.Session.Registration.html#register">register</a>()
 
 // or
 var <a href="SIPml.Session.Call.html">o_audiovideo</a> = this.<a href="#newSession">newSession</a>('call-audiovideo', {
-            video_local: document.getElementById('video_local'),
-            video_remote: document.getElementById('video_remote'),
-            audio_remote: document.getElementById('audio_remote'),
+            video_local: document.getElementById('video_local'), // &lt;video id="video_local" .../&gt;
+            video_remote: document.getElementById('video_remote'), // &lt;video id="video_remote" .../&gt;
+            audio_remote: document.getElementById('audio_remote'), // &lt;audio id="audio_remote" .../&gt;
             sip_caps: [
                     {name: '+g.oma.sip-im'},
                     {name: '+sip.ice'},
@@ -1094,7 +1145,7 @@ SIPml.Stack.prototype.newSession = function (s_type, o_conf) {
         o_session = new tsip_session_subscribe(this.o_stack);
         cls = SIPml.Session.Subscribe;
     }
-    else if (s_type == 'call-audio' || s_type == 'call-audiovideo' || s_type == 'call-video') {
+    else if (s_type == 'call-audio' || s_type == 'call-audiovideo' || s_type == 'call-video' || s_type == 'call-screenshare') {
         o_session = new tsip_session_invite(this.o_stack);
         o_session.s_type = s_type;
         cls = SIPml.Session.Call;
@@ -1140,14 +1191,20 @@ Anonymous SIP Session configuration object.
 @property {HTMLAudioElement} [audio_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLAudioElement">HTMLAudioElement<a> used to playback the remote audio stream. This propety should be only used for <a href="SIPml.Session.Call.html">audio sessions</a>.
 @property {Array} [sip_caps] <i>{name,value}</i> pairs defining the SIP capabilities associated to this session. The capabilities are added to the Contact header. Please refer to <a href="http://tools.ietf.org/html/rfc3840">rfc3840</a> and <a href="http://tools.ietf.org/html/rfc3841">rfc3841</a> for more information.
 @property {String} [from] Set the source uri string to be used in the <i>From</i> header (available since API version 1.2.170).
+@property {Object} [bandwidth] Defines the maximum audio and video bandwidth to use. This will change the outhoing SDP to include a "b:AS=" attribute. Use <i>0</i> to let the browser negotiates the right value using RTCP-REMB and congestion control. A default value for all sessions could be defined at stack level.<br />
+<i>Available since version 1.3.203</i>. <br />
+Example: <i>{ audio:64, video:512 }</i>
+@property {Object} [video_size] Defines the maximum and minimum video size to be used. All values are optional. The browser will try to find the best video size between <i>max</i> and <i>min</i> based on the camera capabilities. A default value for all sessions could be defined at stack level.<br />
+<i>Available since version 1.3.203</i>. <br />
+Example: <i>{ minWidth:640, minHeight:480, maxWidth:1920, maxHeight:1080 }</i>
 @property {Array} [sip_headers] <i>{name,value,session}</i> trios defining the SIP headers associated to this session. <i>session</i> is a boolean defining whether the header have to be added to all outgoing request or not (initial only).
 @example
 var configuration = 
 {
     expires: 200,
-    audio_remote: document.getElementById('audio_remote'),
-    video_local: document.getElementById('video_local'),
-    video_remote: document.getElementById('video_remote'),
+    audio_remote: document.getElementById('audio_remote'), // &lt;audio id="audio_remote" .../&gt;
+    video_local: document.getElementById('video_local'),  // &lt;video id="video_local" .../&gt;
+    video_remote: document.getElementById('video_remote'),  // &lt;video id="video_remote" .../&gt;
     sip_caps: [
                     {name: '+g.oma.sip-im'},
                     {name: '+sip.ice'},
@@ -1213,6 +1270,12 @@ SIPml.Session.prototype.setConfiguration = function(o_conf){
     }
 
     if(this instanceof SIPml.Session.Call){
+        // Bandwidth and video size
+        o_session.set(
+                    tsip_session.prototype.SetBandwidth(o_conf.bandwidth ? o_conf.bandwidth : { audio:undefined, video:undefined }),
+                    tsip_session.prototype.SetVideoSize(o_conf.video_size ? o_conf.video_size : { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined })
+                );
+
         this.videoLocal = o_conf.video_local;
         this.videoRemote = o_conf.video_remote;
         this.audioRemote = o_conf.audio_remote;
@@ -1250,6 +1313,7 @@ SIPml.Session.prototype.setConfiguration = function(o_conf){
             this.dispatchEvent({ s_type: 'm_stream_audio_remote_added', o_value: new SIPml.Session.Event(this, 'm_stream_audio_remote_added') });
         }
     }
+
     
     // headers
     if (o_conf.sip_headers) {
@@ -1415,8 +1479,8 @@ SIPml.Session.Registration.prototype.unregister = function (o_conf) {
 // ================================== SIPml.Call ==========================================
 
 /** 
-SIP audio/video call session class. You should never create an instance of this class by yourself.
-Please use <a href="SIPml.Stack.html#newSession">stack.newSession()</a> function to create a new audio/video session.
+SIP audio/video/screenshare call session class. You should never create an instance of this class by yourself.
+Please use <a href="SIPml.Stack.html#newSession">stack.newSession()</a> function to create a new audio/video/screenshare session.
 @constructor
 @extends SIPml.Session
 @param {tsip_session} session Private wrapped session object
@@ -1426,9 +1490,9 @@ var listenerFunc = function(e){
     console.info('session event = ' + e.type);
 }
 var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('call-audiovideo', {
-            video_local: document.getElementById('video-local'),
-            video_remote: document.getElementById('video-remote'),
-            audio_remote: document.getElementById('audio-remote'),
+            video_local: document.getElementById('video-local'), // &lt;video id="video-local" .../&gt;
+            video_remote: document.getElementById('video-remote'), // &lt;video id="video-remote" .../&gt;
+            audio_remote: document.getElementById('audio-remote'), // &lt;audio id="audio-remote" .../&gt;
             events_listener: { events: '*', listener: listenerFunc },
             sip_caps: [
                             { name: '+g.oma.sip-im' },
@@ -1445,6 +1509,7 @@ SIPml.Session.Call = function (o_session, o_conf) {
         case 'call-audio': this.mediaType = tmedia_type_e.AUDIO; break;
         case 'call-audiovideo': this.mediaType = tmedia_type_e.AUDIO_VIDEO; break;
         case 'call-video': this.mediaType = tmedia_type_e.VIDEO; break;
+        case 'call-screenshare': this.mediaType = tmedia_type_e.SCREEN_SHARE; break;
     }
 }
 
@@ -1463,9 +1528,9 @@ var listenerFunc = function(e){
 }
 var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('call-audiovideo');
 session.call('johndoe', {
-            video_local: document.getElementById('video-local'),
-            video_remote: document.getElementById('video-remote'),
-            audio_remote: document.getElementById('audio-remote'),
+            video_local: document.getElementById('video-local'), // &lt;video id="video-local" .../&gt;
+            video_remote: document.getElementById('video-remote'), // &lt;video id="video-remote" .../&gt;
+            audio_remote: document.getElementById('audio-remote'), // &lt;audio id="audio-remote" .../&gt;
             events_listener: { events: '*', listener: listenerFunc },
             sip_caps: [
                             { name: '+g.oma.sip-im' },

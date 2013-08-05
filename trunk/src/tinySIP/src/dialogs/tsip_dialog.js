@@ -351,11 +351,10 @@ tsip_dialog.prototype.request_new = function (s_method) {
             - the "nonce" header field parameter, set to an empty value; and
             - the "response" header field parameter, set to an empty value;
             */
-            // FIXME: to be uncommented
-            //var s_realm = o_stack.network.o_uri_realm ? o_stack.network.o_uri_realm.s_host : "(null)";
-            //var s_uri_request = tsip_uri_tostring(o_request.line.request.o_uri, false, false);
-            //var hdr_auth = tsip_challenge_create_empty_header_authorization(o_stack.identity.s_impi, s_realm, s_uri_request);
-            //tsip_message_add_header(o_request, hdr_auth);
+            var s_realm = o_stack.network.o_uri_realm ? o_stack.network.o_uri_realm.s_host : "(null)";
+            var s_uri_request = tsip_uri_tostring(o_request.line.request.o_uri, false, false);
+            var hdr_auth = tsip_challenge.prototype.CreateEmptyHeaderAuthorization(o_stack.identity.s_impi, s_realm, s_uri_request);
+            o_request.add_header(hdr_auth);
         }
     }
     else if (this.ao_challenges.length > 0) {

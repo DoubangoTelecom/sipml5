@@ -13,11 +13,12 @@ var tmedia_type_e =
     CHAT: { i_id: (0x01 << 3), s_name: "message" },
     FILE: { i_id: (0x01 << 4), s_name: "message" },
     T38: { i_id: (0x01 << 5), s_name: "t38" },
+    SCREEN_SHARE: { i_id: (0x01 << 2) | (0x01 << 6) /* VIDEO + SCREENSHARE */, s_name: "sccreen share" },
 
     MSRP: { i_id: (0x01 << 3) | (0x01 << 4)/* (CHAT.i_id | FILE.i_id) */, s_name: "message" },
     AUDIO_VIDEO: { i_id: (0x01 << 1) | (0x01 << 2)/* (AUDIO.i_id | VIDEO.i_id) */, s_name: "audio/video" },
 
-    MSRP: { i_id: ((0x01 << 3) | (0x01 << 4)) | ((0x01 << 1) | (0x01 << 2)) | (0x01 << 5)/* (MSRP.i_id | AUDIO_VIDEO.i_id | T38.i_id) */, s_name: "all" }
+    ALL: { i_id: 0xFF, s_name: "all" }
 };
 
 

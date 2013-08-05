@@ -695,7 +695,10 @@ tsip_dialog_invite.prototype.notify_parent = function (o_response) {
 tsip_dialog_invite.prototype.new_msession_mgr = function(e_type, s_addr, b_ipv6, b_offerer){
     var o_msession_mgr = new tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, __tsip_dialog_invite_media_callback, this);
     o_msession_mgr.set(
-            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "ice-servers", this.get_stack().network.ao_ice_servers)
+            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "ice-servers", this.get_stack().network.ao_ice_servers),
+            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "cache-stream", this.get_stack().network.b_cache_stream),
+            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "bandwidth", this.get_session().media.o_bandwidth),
+            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "video-size", this.get_session().media.o_video_size)
 			// ... more media parameters to be added later
         );
     return o_msession_mgr;

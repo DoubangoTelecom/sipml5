@@ -357,6 +357,9 @@ tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     */
     if (this.sdp.o_lo) {
         e_new_mediatype = o_sdp.get_media_type();
+        if(e_new_mediatype == tmedia_type_e.VIDEO && this.e_type == tmedia_type_e.SCREEN_SHARE) { // "SCREEN_SHARE" will be identified in the SDP as Video when using get_media_type()
+            e_new_mediatype = this.e_type;
+        }
         if ((b_is_mediatype_changed = (e_new_mediatype != this.e_type))) {
             tsk_utils_log_error("this.set_media_type(e_new_mediatype);");
             //this.set_media_type(e_new_mediatype);
@@ -595,16 +598,19 @@ tmedia_session.prototype.resume = function () {
 tmedia_session.prototype.Create = function (e_type, o_mgr) {
     switch (e_type) {
         case tmedia_type_e.AUDIO:
-            {
-                if (o_mgr.is_jsep()) {
-                    return tmedia_session_jsep.prototype.CreateInstance(o_mgr);
-                }
-                else {
-                    return new tmedia_session_roap(o_mgr);
-                }
-            }
         case tmedia_type_e.VIDEO:
+        case tmedia_type_e.SCREEN_SHARE:
             {
+                 // for now we support a single media session per call
+                 // The code is based on Doubango ANSI-C code which uses one media type (e.g. 1audio plus 1video) per media session while SIPML5 bundle them (e.g. 1audiovideo)
+                if(o_mgr.ao_sessions.length == 0) {
+                    if (o_mgr.is_jsep()) {
+                        return tmedia_session_jsep.prototype.CreateInstance(o_mgr);
+                    }
+                    else {
+                        return new tmedia_session_roap(o_mgr);
+                    }
+                }
                 return null;
             }
         case tmedia_type_e.GHOST:
