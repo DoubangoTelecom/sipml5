@@ -3,8 +3,8 @@
 
 <wiki:toc max_depth="2" />
 
-==1.3.200==
- * SVN: 200
+==1.3.203==
+ * SVN: 203
  * Date: August 2, 2013
  * Adds support for [ScreenShare Screen/Desktop sharing]
  * Allows disabling STUN/TURN on the browser(API: [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#ice_servers ice_servers], TEST: see [http://sipml5.org/expert.htm#aIceServers here])
