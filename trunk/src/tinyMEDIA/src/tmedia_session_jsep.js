@@ -685,9 +685,9 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
         if(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) {
             if(this.o_video_size) {
                 if(this.o_video_size.minWidth) o_video_constraints.mandatory.minWidth = this.o_video_size.minWidth;
-                if(this.o_video_size.minWidth) o_video_constraints.mandatory.minHeight = this.o_video_size.minHeight;
-                if(this.o_video_size.minWidth) o_video_constraints.mandatory.maxWidth = this.o_video_size.maxWidth;
-                if(this.o_video_size.minWidth) o_video_constraints.mandatory.maxHeight = this.o_video_size.maxHeight;
+                if(this.o_video_size.minHeight) o_video_constraints.mandatory.minHeight = this.o_video_size.minHeight;
+                if(this.o_video_size.maxWidth) o_video_constraints.mandatory.maxWidth = this.o_video_size.maxWidth;
+                if(this.o_video_size.maxHeight) o_video_constraints.mandatory.maxHeight = this.o_video_size.maxHeight;
             }
             try{ tsk_utils_log_info("Video Contraints:" + JSON.stringify(o_video_constraints)); } catch(e){}
         }
