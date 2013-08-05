@@ -3,6 +3,19 @@
 
 <wiki:toc max_depth="2" />
 
+==1.3.200==
+ * SVN: 200
+ * Date: August 2, 2013
+ * Adds support for [ScreenShare Screen/Desktop sharing]
+ * Allows disabling STUN/TURN on the browser(API: [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#ice_servers ice_servers], TEST: see [http://sipml5.org/expert.htm#aIceServers here])
+ * Allows setting audio and video bandwidths (API: [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#bandwidth bandwidth], TEST: see [http://sipml5.org/expert.htm#aBandwidth here])
+ * Allows setting preferred video size (API: [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#video_size video_size], TEST: see [http://sipml5.org/expert.htm#aSizeVideo here]).
+ * Adds support for media stream caching (API: [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#enable_media_stream_cache enable_media_stream_cache], TEST: see [http://sipml5.org/expert.htm#aCacheMediaStream here]) 
+ * Allows setting the debug level (API: [http://sipml5.org/docgen/symbols/SIPml.html#.setDebugLevel setDebugLevel], TEST: see [http://sipml5.org/expert.htm#aDebugMessages here])
+ * Adds support for Full (3GPP TS 24.229 - 5.1.1.2.2) and earlyIMS ([http://www.arib.or.jp/english/html/overview/doc/STD-T63v9_60/5_Appendix/Rel6/33/33978-660.pdf TR 33.978]) registrations (API: [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#enable_early_ims enable_early_ims], TEST: see [http://sipml5.org/expert.htm#aEarlyIMS here])
+ * Adds support for TEL URI ([rfc3966 http://tools.ietf.org/html/rfc3966])
+ * Bugs closed in this release: issue 98, issue 99, issue 109, issue 114 and issue 119.
+
 ==1.2.185==
  * SVN: 185
  * Date: March 14, 2013
