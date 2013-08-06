@@ -7,6 +7,6 @@ We highly recommend using [http://webrtc2sip.org webrtc2sip] when the remote par
 To use screen sharing you must:
  * Enable it on chrome 26+:
    # Open <i>chrome://flags</i> in your browser
-   # Enable flag <i>Enable screen capture support in getUserMedia()</i>
+   # Enable flag <i>"Enable screen capture support in getUserMedia()"</i>
    # Restart your browser
  * Use <i>https://</i>. If you don't have one, try [https://ns313841.ovh.net/call.htm]
