@@ -8490,6 +8490,7 @@ tsip_header_Authorization.prototype.toString = function(){
 		return tsk_string_format("{0} {1}", this.s_scheme, this.s_response);
 	}
 	else{
+        // nonce and response could be empty for IMS auth: https://code.google.com/p/sipml5/issues/detail?id=120 
 		return tsk_string_format("{0} {1}{2}{3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}{22}{23}{24}{25}{26}{27}", 
 			this.s_scheme,
 
@@ -8501,17 +8502,17 @@ tsip_header_Authorization.prototype.toString = function(){
 			this.s_realm ? this.s_realm : "",
 			this.s_realm ? "\"" : "",
 
-			this.s_nonce ? ",nonce=\"" : "",
-			this.s_nonce ? this.s_nonce : "",
-			this.s_nonce ? "\"" : "",
+			(this.s_nonce || this.s_nonce==="") ? ",nonce=\"" : "",
+			(this.s_nonce || this.s_nonce==="") ? this.s_nonce : "",
+			(this.s_nonce || this.s_nonce==="") ? "\"" : "",
 
 			this.s_uri ? ",uri=\"" : "",
 			this.s_uri ? this.s_uri : "",
 			this.s_uri ? "\"" : "",
 					
-			this.s_response ? ",response=\"" : "",
-			this.s_response ? this.s_response : "",
-			this.s_response ? "\"" : "",
+			(this.s_response || this.s_response==="") ? ",response=\"" : "",
+			(this.s_response || this.s_response==="") ? this.s_response : "",
+			(this.s_response || this.s_response==="") ? "\"" : "",
 					
 			this.s_algorithm ? ",algorithm=" : "",
 			this.s_algorithm ? this.s_algorithm : "",
