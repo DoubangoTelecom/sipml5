@@ -159,10 +159,22 @@ tsip_session.prototype.__set = function (ao_params) {
                 }
             case tsip_session_param_type_e.TO_URI:
                 {
+                    if(!o_curr.ao_values[0] || o_curr.ao_values[0] instanceof tsip_uri) { 
+                        this.o_uri_to = o_curr.ao_values[0];
+                    }
+                    else {
+                        tsk_utils_log_error("Not a valid uri object");
+                    }
                     break;
                 }
             case tsip_session_param_type_e.FROM_URI:
                 {
+                    if(!o_curr.ao_values[0] || o_curr.ao_values[0] instanceof tsip_uri) { 
+                        this.o_uri_from = o_curr.ao_values[0];
+                    }
+                    else {
+                        tsk_utils_log_error("Not a valid uri object");
+                    }
                     break;
                 }
             case tsip_session_param_type_e.NO_CONTACT:
@@ -291,8 +303,12 @@ tsip_session.prototype.SetToStr = function (s_to) {
     return tsip_session.prototype.SetAny(tsip_session_param_type_e.TO_STR, s_to);
 }
 
-tsip_session.prototype.SetFromStr = function (s_to) {
-    return tsip_session.prototype.SetAny(tsip_session_param_type_e.FROM_STR, s_to);
+tsip_session.prototype.SetToUri = function (o_to) {
+    return tsip_session.prototype.SetAny(tsip_session_param_type_e.TO_URI, o_to);
+}
+
+tsip_session.prototype.SetFromStr = function (s_from) {
+    return tsip_session.prototype.SetAny(tsip_session_param_type_e.FROM_STR, s_from);
 }
 
 tsip_session.prototype.SetInitialMessage = function (o_sip_message) {

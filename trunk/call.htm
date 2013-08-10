@@ -176,7 +176,7 @@
     function postInit() {
         // check webrtc4all version
         if (SIPml.isWebRtc4AllSupported() && SIPml.isWebRtc4AllPluginOutdated()) {            
-            if (confirm("Your WebRtc4all extension is outdated. A new version(" +SIPml.getWebRtc4AllVersion()+") with critical bug fix is available. Do you want to install it?\nIMPORTANT: You must restart your browser after the installation.")) {
+            if (confirm("Your WebRtc4all extension is outdated ("+SIPml.getWebRtc4AllVersion()+"). A new version with critical bug fix is available. Do you want to install it?\nIMPORTANT: You must restart your browser after the installation.")) {
                 window.location = 'http://code.google.com/p/webrtc4all/downloads/list';
                 return;
             }
@@ -386,7 +386,7 @@
                     bandwidth: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null), // could be redefined a session-level
                     video_size: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null), // could be redefined a session-level
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.08.06' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2013.08.10' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }

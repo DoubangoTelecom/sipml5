@@ -241,7 +241,7 @@ SIPml.init = function (successCallback, errorCallback) {
         // check webrtc4all version
         if (tsk_utils_have_webrtc4all()) {
             tsk_utils_log_info("WebRTC type = " + WebRtc4all_GetType() + " version = " + tsk_utils_webrtc4all_get_version());
-            if (SIPml.s_webrtc4all_version != '1.14.834') {
+            if (SIPml.s_webrtc4all_version != '1.35.981') {
                 SIPml.b_webrtc4all_plugin_outdated = true;
             }
         }
@@ -551,14 +551,16 @@ Example: <i>{ audio:64, video:512 }</i>
 @property {Object} [video_size] Defines the maximum and minimum video size to be used. All values are optional. The browser will try to find the best video size between <i>max</i> and <i>min</i> based on the camera capabilities. Same property could be used at session level to override this value.<br />
 <i>Available since version 1.3.203</i>. <br />
 Example: <i>{ minWidth:640, minHeight:480, maxWidth:1920, maxHeight:1080 }</i>
-@property {Boolean} [enable_rtcweb_breaker] Whether to enable the <a href="http://webrtc2sip.org/#aRTCWebBreaker" target=_blank>RTCWeb Breaker</a> module to allow calling SIP-legacy networks.
+@property {Boolean} [enable_rtcweb_breaker] Whether to enable the <a href="http://webrtc2sip.org/#aRTCWebBreaker" target=_blank>RTCWeb Breaker</a> module to allow calling SIP-legacy networks. <br />
 Example: <i>true</i>
 @property {Boolean} [enable_click2call] Whether to enable the <a href="http://click2dial.org" target=_blank>Click2Call / Click2Dial</a> service.
-<i>Available since version 1.2.181</i>.
+<i>Available since version 1.2.181</i>. <br />
 Example: <i>true</i>
-@property {Boolean} [enable_early_ims] Whether to enable 3GGP Early IMS as per <a href="http://www.arib.or.jp/english/html/overview/doc/STD-T63v9_60/5_Appendix/Rel6/33/33978-660.pdf" target=_blank>TR 33.978</a>. Should be 'true' unless you're using a real IMS network.
+@property {Boolean} [enable_early_ims] Whether to enable 3GGP Early IMS as per <a href="http://www.arib.or.jp/english/html/overview/doc/STD-T63v9_60/5_Appendix/Rel6/33/33978-660.pdf" target=_blank>TR 33.978</a>. Should be 'true' unless you're using a real IMS network. <br />
+<i>Available since version 1.3.203</i>. <br />
 Example: <i>true</i>
 @property {Boolean} [enable_media_stream_cache] Whether to reuse the same media stream for all calls. If your website is <b>not using https</b> then, the browser will request access to the camera (or microphone) every time you try to make a call. Caching the media stream will avoid getting these notifications for each call. <br />
+<i>Available since version 1.3.203</i>. <br />
 Example: <i>true</i>
 
 @property {Object} [events_listener] Object to subscribe to some events.
@@ -1736,7 +1738,8 @@ var session = <a href="SIPml.Stack.html#newSession">stack.newSession</a>('publis
 */
 SIPml.Session.Publish = function (o_session, o_conf) {
     SIPml.Session.call(this, o_session, o_conf);
-
+    // set destination to ourself (https://groups.google.com/forum/#!topic/doubango/XKWTQ9TgjPU)
+    o_session.set(tsip_session.prototype.SetToUri(o_session.get_stack().identity.o_uri_impu));
 }
 
 SIPml.Session.Publish.prototype = Object.create(SIPml.Session.prototype);
