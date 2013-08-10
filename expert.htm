@@ -48,7 +48,7 @@
         txtSIPOutboundProxyUrl = document.getElementById("txtSIPOutboundProxyUrl");
         txtInfo = document.getElementById("txtInfo");
 
-        txtWebsocketServerUrl.disabled = !window.WebSocket;
+        txtWebsocketServerUrl.disabled = !window.WebSocket || navigator.appName == "Microsoft Internet Explorer"; // Do not use WS on IE
         document.getElementById("btnSave").disabled = !window.localStorage;
         document.getElementById("btnRevert").disabled = !window.localStorage;
 
