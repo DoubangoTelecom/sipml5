@@ -120,12 +120,33 @@
         var msg = tsip_message.prototype.Parse(o_ragel_state, true);
         tsk_utils_log_info(msg.toString());
     }
+
+    function test_connect() {
+        var i = 0;
+        var sockets = new Array(40);
+        /*var id = setInterval(function(){
+            console.info("Connecting ("+(i)+")...");
+            //sockets[i] = new WebSocket("ws://192.168.0.37:20060", 'sip');
+            sockets[i] = new WebSocket("ws://ns313841.ovh.net:50060", 'sip');
+            if (++i >= sockets.length) {
+                clearInterval(id);
+            }
+        },
+        1);*/
+        for (i = 0; i < sockets.length; ++i) {
+            console.info("Connecting ("+(i)+")...");
+            sockets[i] = new WebSocket("ws://ns313841.ovh.net:50060", 'sip');
+            //sockets[i] = new WebSocket("ws://192.168.0.37:20060", 'sip');
+        }
+    }
+
 </script>
 
 <!-- body -->
 <body>
     <form action=''>
     <input type="button" value="Parse" onclick='test_msg_parse();' />
+    <!--input type="button" value="Connect" onclick='test_connect();' /-->
     </form>
 </body>
 </html>

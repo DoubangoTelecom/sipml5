@@ -367,7 +367,8 @@ Adds an event listener to the target object. <br /><br />
             m_early_media<br/> m_local_hold_ok<br/> m_local_hold_nok<br/> m_local_resume_ok<br/> m_local_resume_nok<br/> m_remote_hold<br/> m_remote_resume<br/>
             m_stream_video_local_added<br /> m_stream_video_local_removed<br/> m_stream_video_remote_added<br/> m_stream_video_remote_removed <br />
             m_stream_audio_local_added<br /> m_stream_audio_local_removed<br/> m_stream_audio_remote_added<br/> m_stream_audio_remote_removed <br />
-            i_ect_new_call<br/> o_ect_trying<br/> o_ect_accepted<br/> o_ect_completed<br/> i_ect_completed<br/> o_ect_failed<br/> i_ect_failed<br/> o_ect_notify<br/> i_ect_notify<br/> i_ect_requested
+            i_ect_new_call<br/> o_ect_trying<br/> o_ect_accepted<br/> o_ect_completed<br/> i_ect_completed<br/> o_ect_failed<br/> i_ect_failed<br/> o_ect_notify<br/> i_ect_notify<br/> i_ect_requested <br />
+            i_info
         </td>
         <td><a href="SIPml.Session.Event.html">SIPml.Session.Event</a></td>
         <td>borrows all events supported by <a href="SIPml.Session.html">SIPml.Session</a></td>
@@ -965,6 +966,13 @@ SIPml.Stack = function (o_conf) {
              case tsip_event_invite_type_e.O_ECT_NOTIFY: s_type = 'o_ect_notify'; break;
              case tsip_event_invite_type_e.I_ECT_NOTIFY: s_type = 'i_ect_notify'; break;
              case tsip_event_invite_type_e.I_ECT_REQUESTED: s_type = 'i_ect_requested'; break;
+             case tsip_event_invite_type_e.DIALOG_REQUEST_INCOMING:
+                 {
+                    if(e.o_message) {
+                        if(e.o_message.is_info()) { s_type = 'i_info'; }
+                    }
+                    break;
+                 }  
              default: break;
          }
 

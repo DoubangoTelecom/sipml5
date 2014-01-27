@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #
-# Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+# Copyright (C) 2012-2014 Doubango Telecom <http://www.doubango.org>
 # License: BSD
 # This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 #
 
-API_VERSION=1.3.203
+API_VERSION=1.3.214
 API_FOLDER_NAME=release
 API_FILE_NAME=SIPml-api.js
 API_FILE_PATH=$API_FOLDER_NAME/$API_FILE_NAME
