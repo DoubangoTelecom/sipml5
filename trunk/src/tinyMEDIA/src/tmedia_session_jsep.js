@@ -308,7 +308,8 @@ tmedia_session_jsep.prototype.close = function () {
     }
     if (this.o_pc) {
         if (this.o_local_stream) {
-            this.o_pc.removeStream(this.o_local_stream);
+            // TODO: On Firefox 26: Error: "removeStream not implemented yet"
+            try { this.o_pc.removeStream(this.o_local_stream); } catch (e) { }
             if(!this.b_cache_stream || (this.e_type == tmedia_type_e.SCREEN_SHARE)) { // only stop if caching is disabled or screenshare
                 this.o_local_stream.stop();
             }

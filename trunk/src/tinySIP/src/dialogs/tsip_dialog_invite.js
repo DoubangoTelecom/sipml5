@@ -1217,8 +1217,12 @@ function x0000_Any_2_Any_X_oINFO(ao_args) {
 }
 
 function x0000_Any_2_Any_X_iINFO(ao_args) {
-    tsk_utils_log_error("Not implemented");
-    return 0;
+    var o_dialog = ao_args[0];
+    var o_request = ao_args[1];
+
+    var i_ret = o_dialog.send_response(o_request, 200, "OK");
+    /*i_ret =*/ o_dialog.signal_invite(tsip_event_invite_type_e.DIALOG_REQUEST_INCOMING, tsip_event_code_e.DIALOG_REQUEST_INCOMING, "Incoming Request", o_request);
+    return i_ret;
 }
 
 function x0000_Any_2_Any_X_i401_407_INVITEorUPDATE(ao_args) {
