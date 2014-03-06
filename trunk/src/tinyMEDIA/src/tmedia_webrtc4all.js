@@ -110,13 +110,24 @@ var __looper = undefined;
 function WebRtc4all_GetLooper() {
     if (__looper == undefined && tsk_utils_have_webrtc4ie()) {
         try {
-            var oLooper = document.createElement('object');
-            oLooper.classid = "clsid:7082C446-54A8-4280-A18D-54143846211A";
-            oLooper.width = oLooper.height = '1px';
-            document.body.appendChild(oLooper);
-            if (!(__looper = oLooper.hWnd)) {
-                tsk_utils_log_error("Failed to create looper");
+            if (fakeLooper && fakeLooper.hWnd) {
+                __looper = fakeLooper.hWnd;
             }
+            else if ((__o_display_local && __o_display_local.hWnd) || (__o_display_remote && __o_display_remote.hWnd)) {
+                __looper = (__o_display_local && __o_display_local.hWnd) ? __o_display_local.hWnd : __o_display_remote.hWnd;
+            }
+            else {
+                // TODO: This function fails to create looper on IE11.
+                // https://code.google.com/p/sipml5/issues/detail?id=161
+                var oLooper = document.createElement('object');
+                oLooper.classid = "clsid:7082C446-54A8-4280-A18D-54143846211A";
+                oLooper.width = oLooper.height = '1px';
+                document.body.appendChild(oLooper);
+                __looper = oLooper.hWnd;
+          }
+          if (!__looper) {
+            tsk_utils_log_error("Failed to create looper. Your app may crash on IE11");
+          }
         }
         catch (e) {
             tsk_utils_log_error(e);
