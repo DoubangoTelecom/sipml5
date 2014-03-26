@@ -118,6 +118,27 @@ tsdp_message.prototype.get_header_by_name = function (c_name) {
     return null;
 }
 
+tsdp_message.prototype.get_header_a_at = function(s_field, i_index) {
+	if(!s_field || i_index < 0){
+		tsk_utils_log_error("Invalid argument");
+		return null;
+	}
+
+	var i_pos = 0;
+	for(var i = 0; i < this.ao_headers.length; ++i){
+		if(this.ao_headers[i].e_type == tsdp_header_type_e.A && this.ao_headers[i].s_field == s_field){
+			if(i_pos++ >= i_index){
+				return this.ao_headers[i];
+			}
+		}
+	}
+	return null;
+}
+
+tsdp_message.prototype.get_header_a = function(s_field) {
+	return this.get_header_a_at(s_field, 0);
+}
+
 tsdp_message.prototype.add_media = function (s_media, i_port, s_proto) {
     this.add_headers(new tsdp_header_M(s_media, i_port, s_proto));
 }

@@ -603,6 +603,19 @@ tsip_dialog_invite.prototype.send_bye = function(){
 	return i_ret;
 }
 
+tsip_dialog_invite.prototype.send_info = function(s_content, s_content_type){
+    var i_ret = -1;
+	var o_info;
+
+    if ((o_info = this.request_new("INFO"))) {
+        if (s_content && s_content_type) {
+            o_info.add_content(new String(s_content), s_content_type);
+        }
+	    i_ret = this.request_send(o_info);
+	}
+    return i_ret;
+}
+
 tsip_dialog_invite.prototype.send_cancel = function () {
     /* RFC 3261 - 9 Canceling a Request
     If the request being cancelled contains a Route header field, the
@@ -895,7 +908,19 @@ function __tsip_dialog_invite_media_callback(o_self, e_event_type, e_media_type)
                 o_self.signal_invite(tsip_event_invite_type_e.M_STREAM_REMOTE_REMOVED, tsip_event_code_e.DIALOG_MEDIA_REMOVED, "Media Removed", null);
                 break;
             }
-
+        case tmedia_session_events_e.RFC5168_REQUEST_IDR:
+            {
+                o_self.send_info("<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +
+				" <media_control>\r\n" +
+				"   <vc_primitive>\r\n" +
+				"     <to_encoder>\r\n" +
+				"       <picture_fast_update>\r\n" +
+				"       </picture_fast_update>\r\n" +
+				"     </to_encoder>\r\n" +
+				"   </vc_primitive>\r\n" +
+				" </media_control>\r\n", "application/media_control+xml");
+                break;
+            }
     }
 }
 
@@ -1222,6 +1247,15 @@ function x0000_Any_2_Any_X_iINFO(ao_args) {
 
     var i_ret = o_dialog.send_response(o_request, 200, "OK");
     /*i_ret =*/ o_dialog.signal_invite(tsip_event_invite_type_e.DIALOG_REQUEST_INCOMING, tsip_event_code_e.DIALOG_REQUEST_INCOMING, "Incoming Request", o_request);
+
+    // Forward the content to the media stack (e.g. rfc5168("picture_fast_update") to request IDR)
+    if (o_dialog.o_msession_mgr && o_request.has_content()) {
+        var s_content_as_string = o_request.get_content_as_string();
+        if (!tsk_string_is_null_or_empty(s_content_as_string)) {
+            o_dialog.o_msession_mgr.processContent("INFO", o_request.get_content_type(), s_content_as_string, s_content_as_string.length);
+        }
+    }
+
     return i_ret;
 }
 

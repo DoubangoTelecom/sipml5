@@ -89,6 +89,12 @@ tmedia_session_jsep.prototype.__prepare = function () {
     return 0;
 }
 
+tmedia_session_jsep.prototype.__processContent = function (s_req_name, s_content_type, s_content_ptr, i_content_size) {
+    if (this.o_pc && this.o_pc.processContent) {
+        return this.o_pc.processContent(s_req_name, s_content_type, s_content_ptr, i_content_size);
+    }
+}
+
 tmedia_session_jsep.prototype.__start = function () {
     if (this.o_local_stream && this.o_local_stream.start) {
         // cached stream would be stopped in close()
@@ -142,18 +148,24 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
         if (/*!this.o_sdp_ro &&*/!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
             this.o_sdp_lo.remove_media("video");
         }
-        /* hold / resume, bandwidth... */
+        /* hold / resume, profile, bandwidth... */
         var i_index = 0;
         var o_hdr_M;
+        var b_w4a = (__o_peerconnection_class == w4aPeerConnection);
+        var b_fingerprint = !!this.o_sdp_lo.get_header_a("fingerprint"); // session-level fingerprint
         while ((o_hdr_M = this.o_sdp_lo.get_header_at(tsdp_header_type_e.M, i_index++))) {
             // hold/resume
             o_hdr_M.set_holdresume_att(this.b_lo_held, this.b_ro_held);
             // HACK: Nightly 20.0a1 uses RTP/SAVPF for DTLS-SRTP which is not correct. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=827932.
-            if(tmedia_session_jsep01.mozThis){
-                if(o_hdr_M.s_proto == "RTP/SAVPF"){
+            if (!b_w4a) {
+                if (o_hdr_M.find_a("crypto")) {
+                    o_hdr_M.s_proto = "RTP/SAVPF";
+                }
+                else if (b_fingerprint || o_hdr_M.find_a("fingerprint")) {
                     o_hdr_M.s_proto = "UDP/TLS/RTP/SAVPF";
                 }
             }
+            
             // bandwidth
             if(this.o_bandwidth) {
                 if(this.o_bandwidth.audio && o_hdr_M.s_media.toLowerCase() == "audio") {
@@ -172,6 +184,7 @@ tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
     if (this.o_sdp_ro) {
         var o_hdr_M, o_hdr_A;
         var i_index = 0, i;
+        var b_w4a = (__o_peerconnection_class == w4aPeerConnection);
 
         // FIXME: Chrome fails to parse SDP with global SDP "a=" attributes
         // Chrome 21.0.1154.0+ generate "a=group:BUNDLE audio video" but cannot parse it
@@ -223,19 +236,22 @@ tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
 
         // change profile if not secure
         //!\ firefox nighly: DTLS-SRTP only, chrome: SDES-SRTP
+        var b_fingerprint = !!this.o_sdp_ro.get_header_a("fingerprint"); // session-level fingerprint
         while ((o_hdr_M = this.o_sdp_ro.get_header_at(tsdp_header_type_e.M, i_index++))) {
-            // check for "crypto:" lines (event if it's not valid to provide "crypto" lines in non-secure SDP many clients do it, so, just check)
-            if (!tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
-                for (i = 0; i < o_hdr_M.ao_hdr_A.length; ++i) {
-                    if (o_hdr_M.ao_hdr_A[i].s_field == "crypto") {
-                        o_hdr_M.s_proto = "RTP/SAVPF";
-                        break;
-                    }
+            // check for "crypto:"/"fingerprint:" lines (event if it's not valid to provide "crypto" lines in non-secure SDP many clients do it, so, just check)
+            if (!b_w4a && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                if (o_hdr_M.find_a("crypto")) {
+                    o_hdr_M.s_proto = "RTP/SAVPF";
+                    break;
+                }
+                else if (b_fingerprint || o_hdr_M.find_a("fingerprint")) {
+                    o_hdr_M.s_proto = "UDP/TLS/RTP/SAVPF";
+                    break;
                 }
             }
 
             // rfc5939: "acap:crypto"
-            if (!tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+            if (!b_w4a && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
                 i = 0;
                 while((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "crypto", i++))){
                     rfc5939_acap_ensure(o_hdr_A);
@@ -244,7 +260,7 @@ tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
                 }
             }
             // rfc5939: "acap:fingerprint,setup,connection" => Mozilla Nightly
-            if (tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+            if (!b_w4a && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
                 if((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "fingerprint", 0))){
                     rfc5939_acap_ensure(o_hdr_A);
                     if((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "setup", 0))){
@@ -258,7 +274,7 @@ tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
             }
 
             // HACK: Nightly 20.0a1 uses RTP/SAVPF for DTLS-SRTP which is not correct. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=827932
-            if(tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("UDP/TLS/RTP/SAVP") != -1){
+            if(!b_w4a && tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("UDP/TLS/RTP/SAVP") != -1){
                 o_hdr_M.s_proto = "RTP/SAVPF";
             }
         }
@@ -393,6 +409,7 @@ tmedia_session_jsep00.prototype.__get_lo = function () {
                 }
         );
         this.o_pc.o_session = this;
+        this.o_pc.o_mgr = this.o_mgr;
         this.subscribe_stream_events();
     }
 
@@ -712,6 +729,7 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
                 this.o_media_constraints
         );
         this.o_pc.onicecandidate = tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onIceCandidate : function(o_event){ tmedia_session_jsep01.onIceCandidate(o_event, This) };
+        this.o_pc.o_mgr = this.o_mgr;
         if(!tmedia_session_jsep01.mozThis){
             this.o_pc.o_session = this; // HACK: Firefox exception: "Cannot modify properties of a WrappedNative"  nsresult: "0x80570034 (NS_ERROR_XPC_CANT_MODIFY_PROP_ON_WN)"
         }
@@ -785,3 +803,4 @@ tmedia_session_jsep01.prototype.__set_ro = function (o_sdp, b_is_offer) {
 
     return 0;
 }
+
