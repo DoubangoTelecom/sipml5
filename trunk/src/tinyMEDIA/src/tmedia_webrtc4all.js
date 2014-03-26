@@ -7,6 +7,7 @@
 
 w4aPeerConnection.prototype.s_configuration = null;
 w4aPeerConnection.prototype.f_IceCallback = null;
+w4aPeerConnection.prototype.f_Rfc5168Callback;
 w4aPeerConnection.prototype.o_peer = null;
 w4aPeerConnection.prototype.localDescription = null; // part of the standard
 w4aPeerConnection.prototype.remoteDescription = null; // part of the standard
@@ -25,9 +26,12 @@ var WebRtcType_e =
     NONE: -1,
 
     NATIVE: 0,
-    IE: 1,
-    NPAPI: 2,
-    ERICSSON: 3
+
+    IE: 1, // W4A
+    NPAPI: 2, // W4A
+    W4A: 3, // TEMP type before knowing which one to use
+
+    ERICSSON: 4
 };
 
 var __webrtc_type = WebRtcType_e.NONE;
@@ -48,20 +52,22 @@ function WebRtc4all_Init() {
 
         // WebRtc plugin type
         try {
-            window.nativeRTCPeerConnection = (window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
-            window.nativeRTCSessionDescription = (window.mozRTCSessionDescription || window.RTCSessionDescription); // order is very important: "RTCSessionDescription" defined in Nighly but useless
-            window.nativeRTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
-            window.nativeURL = (window.webkitURL || window.URL);
-            navigator.nativeGetUserMedia = (navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
-            if ((navigator.nativeGetUserMedia && window.nativeRTCPeerConnection)) {
-                __webrtc_type = WebRtcType_e.NATIVE; // Google Chrome
-            }
-            else if (navigator.nativeGetUserMedia && window.webkitPeerConnection) {
-                __webrtc_type = WebRtcType_e.ERICSSON;
-            }
+            if (__webrtc_type == WebRtcType_e.NONE) {
+                window.nativeRTCPeerConnection = (window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
+                window.nativeRTCSessionDescription = (window.mozRTCSessionDescription || window.RTCSessionDescription); // order is very important: "RTCSessionDescription" defined in Nighly but useless
+                window.nativeRTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
+                window.nativeURL = (window.webkitURL || window.URL);
+                navigator.nativeGetUserMedia = (navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
+                if ((navigator.nativeGetUserMedia && window.nativeRTCPeerConnection)) {
+                    __webrtc_type = WebRtcType_e.NATIVE; // Google Chrome
+                }
+                else if (navigator.nativeGetUserMedia && window.webkitPeerConnection) {
+                    __webrtc_type = WebRtcType_e.ERICSSON;
+                }
+           }
         }
         catch (e) { }
-        if (__webrtc_type == WebRtcType_e.NONE) {
+        if (__webrtc_type == WebRtcType_e.NONE || __webrtc_type == WebRtcType_e.W4A) {
             try {
                 if ((__b_webrtc4ie_peerconn = new ActiveXObject("webrtc4ie.PeerConnection"))) {
                     __webrtc_type = WebRtcType_e.IE; // Internet Explorer
@@ -100,6 +106,29 @@ function WebRtc4all_GetVersion() {
     }
      catch (e) { }
      return "0.0.0.0";
+}
+
+// This function must be called before "WebRtc4all_Init()"
+function WebRtc4all_SetType(s_type) {
+    if (__webrtc_type != WebRtcType_e.NONE) {
+        tsk_utils_log_error("Trying not set default webrtc type after init() is not allowed");
+        return false;
+    }
+    switch (s_type) {
+        case "w4a":
+            __webrtc_type = WebRtcType_e.W4A;
+            break;
+        case "ericsson":
+            __webrtc_type = WebRtcType_e.ERICSSON;
+            break;
+        case "native":
+            __webrtc_type = WebRtcType_e.NATIVE;
+            break;
+        default:
+            tsk_utils_log_error("[" + s_type + "] not valid as default webrtc type");
+            return false;
+    }
+    return true;
 }
 
 function WebRtc4all_GetType() {
@@ -210,10 +239,14 @@ function w4aPeerConnection(s_configuration, f_IceCallback) {
     // register callback function
     if (b_isInternetExplorer) {
         eval("function This.o_peer::IceCallback(media, label, bMoreToFollow) { return This.onIceCallback (media, label, bMoreToFollow); }");
+        eval("function This.o_peer::Rfc5168Callback(command) { return This.onRfc5168Callback(command); }");
     }
     else {
         this.o_peer.opaque = This;
         this.o_peer.setCallbackFuncName("w4aPeerConnection_NPAPI_OnEvent");
+        if (this.o_peer.setRfc5168CallbackFuncName) {
+            this.o_peer.setRfc5168CallbackFuncName("w4aPeerConnection_NPAPI_OnRfc5168Event");
+        }
     }
 };
 
@@ -307,6 +340,15 @@ w4aPeerConnection.prototype.addStream = function (o_stream, o_hints) {
 w4aPeerConnection.prototype.removeStream = function (o_stream) {
 }
 
+// void processContent(const char* req_name, const char* content_type, const void* content_ptr, int content_size)
+// Not part of the specification
+w4aPeerConnection.prototype.processContent = function (s_req_name, s_content_type, s_content_ptr, i_content_size) {
+    if (this.o_peer) {
+        try { this.o_peer.processContent(s_req_name, s_content_type, s_content_ptr, i_content_size); }
+        catch (e) { }
+    }
+}
+
 // void close()
 w4aPeerConnection.prototype.close = function () {
     if (this.o_peer) {
@@ -326,3 +368,20 @@ w4aPeerConnection.prototype.onIceCallback = function (media, label, bMoreToFollo
 function w4aPeerConnection_NPAPI_OnEvent(o_peer, sMedia, sLabel, bMoreToFollow) {
     o_peer.onIceCallback(sMedia, sLabel, bMoreToFollow);
 }
+
+w4aPeerConnection.prototype.onRfc5168Callback = function (command) {
+    tsk_utils_log_info("w4aPeerConnection::onRfc5168Callback(" + command+ ")");
+    if (this.o_mgr && this.o_mgr.callback) {
+        if (command === "picture_fast_update") {
+            this.o_mgr.callback(tmedia_session_events_e.RFC5168_REQUEST_IDR, this.o_mgr.e_type);
+        }
+    }
+    else {
+        tsk_utils_log_error("No manager associated to this peerconnection");
+    }
+}
+
+function w4aPeerConnection_NPAPI_OnRfc5168Event(o_peer, sCommand) {
+    o_peer.onRfc5168Callback(sCommand);
+}
+

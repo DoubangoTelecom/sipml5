@@ -18,7 +18,7 @@
     DEBUG VERSION: 'SIPml-api.js'
     RELEASE VERSION: 'release/SIPml-api.js'
     -->
-    <script src="SIPml-api.js?svn=179" type="text/javascript"> </script>
+    <script src="SIPml-api.js?svn=220" type="text/javascript"> </script>
 
     <!-- Styles -->
     <link href="./assets/css/bootstrap.css" rel="stylesheet" />
@@ -123,7 +123,7 @@
 
     // to avoid caching
     //if (window.location.href.indexOf("svn=") == -1) {
-    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=13" : "&svn=13");
+    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=220" : "&svn=220");
     //}
 
     var sTransferNumber;
@@ -132,10 +132,10 @@
     var videoRemote, videoLocal, audioRemote;
     var bFullScreen = false;
     var oNotifICall;
-    var oReadyStateTimer;
     var bDisableVideo = false;
     var viewVideoLocal, viewVideoRemote; // <video> (webrtc) or <div> (webrtc4all)
     var oConfigCall;
+    var oReadyStateTimer;
 
     C = 
     {
@@ -163,14 +163,51 @@
         // Initialize call button
         uiBtnCallSetText("Call");
 
+        var getPVal = function (PName) {
+            var query = window.location.search.substring(1);
+            var vars = query.split('&');
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split('=');
+                if (decodeURIComponent(pair[0]) === PName) {
+                    return decodeURIComponent(pair[1]);
+                }
+            }
+            return null;
+        }
+
+        var preInit = function() {
+            // set default webrtc type (before initialization)
+            var s_webrtc_type = getPVal("wt");
+            if (s_webrtc_type) {
+                if(window.console) {
+                    window.console.info("s_webrtc_type=" + s_webrtc_type);
+                }
+                SIPml.setWebRtcType(s_webrtc_type);
+            }
+
+            // initialize SIPML5
+            SIPml.init(postInit);
+        }
+
         oReadyStateTimer = setInterval(function () {
             if (document.readyState === "complete") {
                 clearInterval(oReadyStateTimer);
                 // initialize SIPML5
-                SIPml.init(postInit);
+                preInit();
             }
         },
         500);
+
+        /*if (document.readyState === "complete") {
+            preInit();
+        }
+        else {
+            document.onreadystatechange = function () {
+                 if (document.readyState === "complete") {
+                    preInit();
+                }
+            }
+       }*/
     };
 
     function postInit() {
@@ -386,7 +423,7 @@
                     bandwidth: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null), // could be redefined a session-level
                     video_size: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null), // could be redefined a session-level
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2014.03.10' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2014.03.26' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -1060,7 +1097,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="index.html?svn=179">Home</a></li>
+                        <li class="active"><a href="index.html?svn=220">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->

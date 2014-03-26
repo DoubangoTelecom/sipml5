@@ -25,7 +25,9 @@ var tmedia_session_events_e =
     STREAM_LOCAL_ADDED: 33,
     STREAM_LOCAL_REMOVED: 34,
     STREAM_REMOTE_ADDED: 35,
-    STREAM_REMOTE_REMOVED: 36
+    STREAM_REMOTE_REMOVED: 36,
+
+    RFC5168_REQUEST_IDR: 40
 };
 
 tmedia_session_mgr.prototype.__ao_supported_media = [tmedia_type_e.AUDIO, tmedia_type_e.VIDEO];
@@ -422,6 +424,12 @@ tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     return 0;
 }
 
+tmedia_session_mgr.prototype.processContent = function (s_req_name, s_content_type, s_content_ptr, i_content_size) {
+    for (var i = 0; i < this.ao_sessions.length; ++i) {
+        this.ao_sessions[i].processContent(s_req_name, s_content_type, s_content_ptr, i_content_size);
+    }
+}
+
 tmedia_session_mgr.prototype.start = function () {
     var i_ret = 0;
     for (var i = 0; i < this.ao_sessions.length; ++i) {
@@ -580,6 +588,12 @@ tmedia_session.prototype.get_lo = function () {
 
 tmedia_session.prototype.set_ro = function (o_sdp, b_is_offer) {
     return this.__set_ro(o_sdp, b_is_offer);
+}
+
+tmedia_session.prototype.processContent = function (s_req_name, s_content_type, s_content_ptr, i_content_size) {
+    if (this.__processContent) {
+        return this.__processContent(s_req_name, s_content_type, s_content_ptr, i_content_size);
+    }
 }
 
 tmedia_session.prototype.acked = function () {

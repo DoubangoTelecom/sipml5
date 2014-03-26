@@ -41,6 +41,19 @@ SIPml.setDebugLevel = function(level) {
 }
 
 /**
+Sets the default webrtc type. Must be called before <a href="#.init">initializing</a> the engine.
+@since version 1.4.217
+@param {String} type The type. Supported values: <i>native</i>, <i>w4a</i> and <i>erisson</i>.
+@returns {Boolean} <i>true</i> if succeed; otherwise <i>false</i>
+*/
+SIPml.setWebRtcType = function(type) {
+    if(SIPml.isInitialized()){
+        throw new Error("ERR_ALREADY_INITIALIZED: Engine already initialized.");
+    }
+    return WebRtc4all_SetType(type);
+}
+
+/**
 Gets the version name of the installed <a href="http://code.google.com/p/webrtc4all/">webrtc4all plugin</a>.
 You must <a href="#.init">initialize</a> the engine before calling this function.
 @static
