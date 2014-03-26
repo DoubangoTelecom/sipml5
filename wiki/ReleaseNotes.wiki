@@ -5,8 +5,17 @@ All releases can be downloaded [Downloads here].
 
 <wiki:toc max_depth="2" />
 
+==1.4.217==
+ * SVN: r217
+ * Date: March 26, 2014
+ * Fix issue 162 (One Way video when calling cisco TelePresence-H.264-)
+ * Fix issue 166 (Adds support for [http://tools.ietf.org/html/rfc5168 RFC5168] -requires webrtc4all plugin-)
+ * Fix issue 169 (Use the right media profile depending on the presence of "fingerprint" and "crypto" attributes)
+ * Fix issue 171 (Allow choosing the WebRTC implementation type -native, bowser or w4a-). New API function: [http://sipml5.org/docgen/symbols/SIPml.html#.setWebRtcType setWebRtcType].
+
+
 ==1.3.203==
- * SVN: 203
+ * SVN: r203
  * Date: August 2, 2013
  * Adds support for [ScreenShare Screen/Desktop sharing]
  * Allows disabling STUN/TURN on the browser(API: [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#ice_servers ice_servers], TEST: see [http://sipml5.org/expert.htm#aIceServers here])
@@ -19,30 +28,30 @@ All releases can be downloaded [Downloads here].
  * Bugs closed in this release: issue 98, issue 99, issue 109, issue 114 and issue 119.
 
 ==1.2.185==
- * SVN: 185
+ * SVN: r185
  * Date: March 14, 2013
  * Allows setting [http://sipml5.org/docgen/symbols/SIPml.Stack.Configuration.html#ice_servers TURN/STUN servers]
  * Bug fix
 
 ==1.2.170==
- * SVN: 170
+ * SVN: r170
  * Date: March 11, 2013
  * Adds support for [http://click2dial.org click-to-call]
  * Bug fix
 
 ==1.2.165==
- * SVN: 165
+ * SVN: r165
  * Date: January 14, 2013
  * Adds support for Firefox Nightly
  * Fix issue 60, issue 65 and issue 66
 
 ==1.1.0==
- * SVN: 148
+ * SVN: r148
  * Date: December 20, 2012
  * Adds support for Presence publication and subscription
  * Fix issue 56, issue 57 and issue 59
 
 ==1.0.0==
- * SVN: 144
+ * SVN: r144
  * Date: December 16, 2012
  * First API release
