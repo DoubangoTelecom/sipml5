@@ -18,7 +18,7 @@
     DEBUG VERSION: 'SIPml-api.js'
     RELEASE VERSION: 'release/SIPml-api.js'
     -->
-    <script src="SIPml-api.js?svn=220" type="text/javascript"> </script>
+    <script src="SIPml-api.js?svn=222" type="text/javascript"> </script>
 
     <!-- Styles -->
     <link href="./assets/css/bootstrap.css" rel="stylesheet" />
@@ -123,7 +123,7 @@
 
     // to avoid caching
     //if (window.location.href.indexOf("svn=") == -1) {
-    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=220" : "&svn=220");
+    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=222" : "&svn=222");
     //}
 
     var sTransferNumber;
@@ -423,7 +423,7 @@
                     bandwidth: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null), // could be redefined a session-level
                     video_size: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null), // could be redefined a session-level
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2014.03.26' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2014.04.14' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -1097,7 +1097,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="index.html?svn=220">Home</a></li>
+                        <li class="active"><a href="index.html?svn=222">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->

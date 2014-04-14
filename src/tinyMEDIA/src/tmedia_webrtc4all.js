@@ -183,11 +183,13 @@ function WebRtc4all_SetDisplays(o_local_elt, o_remote_elt) {
     else if (__webrtc_type == WebRtcType_e.NPAPI) {
         if (o_local_elt) {
             o_local_elt.innerHTML = "<embed id=\"__o_display_local\" type=\"application/w4a-display\"" +
-                                    " class=\"video\" width=\"88px\" height=\"72px\" style=\"margin-top: -80px; margin-left: 5px; background-color: #000000; visibility:hidden\"> </embed>";
+                                    " class=\"video\" width=\"88px\" height=\"72px\" style=\"margin-top: -80px; margin-left: 5px; background-color: #000000; visibility:visible\"> </embed>";
+            __o_display_local.style.visibility = "hidden";
         }
         if (o_remote_elt) {
             o_remote_elt.innerHTML = "<embed id=\"__o_display_remote\" type=\"application/w4a-display\"" +
-                                     " width=\"100%\" height=\"100%\" style=\"visibility:hidden;\"> </embed>";
+                                     " width=\"100%\" height=\"100%\" style=\"visibility:visible;\"> </embed>";
+            __o_display_remote.style.visibility = "hidden";
         }
     }
 }
