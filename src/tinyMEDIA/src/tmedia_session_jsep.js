@@ -250,16 +250,7 @@ tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
                 }
             }
 
-            // rfc5939: "acap:crypto"
-            if (!b_w4a && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
-                i = 0;
-                while((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "crypto", i++))){
-                    rfc5939_acap_ensure(o_hdr_A);
-                    o_hdr_M.s_proto = "RTP/SAVPF";
-                    // do not break => find next "acap:crypto" lines and ensure them
-                }
-            }
-            // rfc5939: "acap:fingerprint,setup,connection" => Mozilla Nightly
+            // rfc5939: "acap:fingerprint,setup,connection"
             if (!b_w4a && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
                 if((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "fingerprint", 0))){
                     rfc5939_acap_ensure(o_hdr_A);
@@ -272,9 +263,19 @@ tmedia_session_jsep.prototype.decorate_ro = function (b_remove_bundle) {
                     o_hdr_M.s_proto = "UDP/TLS/RTP/SAVP";
                 }
             }
+            // rfc5939: "acap:crypto". Only if DTLS is OFF
+            if (!b_w4a && o_hdr_M.s_proto.indexOf("SAVP") < 0) {
+                i = 0;
+                while((o_hdr_A = rfc5939_get_headerA_at(this.o_sdp_ro, o_hdr_M.s_media, "crypto", i++))){
+                    rfc5939_acap_ensure(o_hdr_A);
+                    o_hdr_M.s_proto = "RTP/SAVPF";
+                    // do not break => find next "acap:crypto" lines and ensure them
+                }
+            }
 
             // HACK: Nightly 20.0a1 uses RTP/SAVPF for DTLS-SRTP which is not correct. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=827932
-            if(!b_w4a && tmedia_session_jsep01.mozThis && o_hdr_M.s_proto.indexOf("UDP/TLS/RTP/SAVP") != -1){
+            // Same for chrome: https://code.google.com/p/sipml5/issues/detail?id=92
+            if(!b_w4a && o_hdr_M.s_proto.indexOf("UDP/TLS/RTP/SAVP") != -1){
                 o_hdr_M.s_proto = "RTP/SAVPF";
             }
         }
