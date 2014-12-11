@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -45,6 +45,7 @@ var tsip_event_code_e =
     DIALOG_CONNECTED: 901,
     DIALOG_TERMINATING: 902,
     DIALOG_TERMINATED: 903,
+    DIALOG_BFCP_INFO: 904,
     STACK_STARTING: 950,
     STACK_STARTED: 951,
     STACK_STOPPING: 952,

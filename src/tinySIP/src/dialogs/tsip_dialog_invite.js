@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -44,6 +44,7 @@ var tsip_dialog_invite_actions_e =
 	ACCEPT: tsip_action_type_e.ACCEPT,
 	REJECT: tsip_action_type_e.HANGUP,
 	DTMF_SEND: tsip_action_type_e.DTMF_SEND,
+    MUTE: tsip_action_type_e.MUTE, 
 	MSRP_SEND_MSG: tsip_action_type_e.LARGE_MESSAGE,
 	O_INVITE: tsip_action_type_e.INVITE,
 	O_CANCEL: tsip_action_type_e.CANCEL,
@@ -209,6 +210,8 @@ function tsip_dialog_invite(o_session, s_call_id) {
         /*=======================
         * === Any === 
         */
+         // Any -> (NoOps) -> Any
+        tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.MUTE, tsk_fsm.prototype.__i_state_any, x0000_Any_2_Any_X_noOps, "x0000_Any_2_Any_X_noOps"),
         // Any -> (i1xx) -> Any
         tsk_fsm_entry.prototype.CreateAlways(tsk_fsm.prototype.__i_state_any, tsip_dialog_invite_actions_e.I_1XX, tsk_fsm.prototype.__i_state_any, x0000_Any_2_Any_X_i1xx, "x0000_Any_2_Any_X_i1xx"),
         // Any -> (oINFO) -> Any
@@ -705,15 +708,22 @@ tsip_dialog_invite.prototype.notify_parent = function (o_response) {
     return -1;
 }
 
-tsip_dialog_invite.prototype.new_msession_mgr = function(e_type, s_addr, b_ipv6, b_offerer){
-    var o_msession_mgr = new tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, __tsip_dialog_invite_media_callback, this);
-    o_msession_mgr.set(
+tsip_dialog_invite.prototype.config_msession_mgr = function(o_msession_mgr) {
+    if (o_msession_mgr) {
+        o_msession_mgr.set(
             tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "ice-servers", this.get_stack().network.ao_ice_servers),
             tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "cache-stream", this.get_stack().network.b_cache_stream),
             tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "bandwidth", this.get_session().media.o_bandwidth),
-            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "video-size", this.get_session().media.o_video_size)
+            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "video-size", this.get_session().media.o_video_size),
+            tmedia_session_mgr.prototype.SetParamSession(o_msession_mgr.e_type, "screencast-windowid", this.get_session().media.screencast.d_window_id)
 			// ... more media parameters to be added later
         );
+    }
+}
+
+tsip_dialog_invite.prototype.new_msession_mgr = function(e_type, s_addr, b_ipv6, b_offerer) {
+    var o_msession_mgr = new tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, __tsip_dialog_invite_media_callback, this);
+    this.config_msession_mgr(o_msession_mgr);
     return o_msession_mgr;
 }
 
@@ -806,7 +816,7 @@ function __tsip_dialog_invite_timer_callback(o_self, o_timer) {
     return i_ret;
 }
 
-function __tsip_dialog_invite_media_callback(o_self, e_event_type, e_media_type) {
+function __tsip_dialog_invite_media_callback(o_self, e_event_type, e_media_type, s_decription/*optional*/) {
     var i_ret;
 
     switch (e_event_type) {
@@ -919,6 +929,11 @@ function __tsip_dialog_invite_media_callback(o_self, e_event_type, e_media_type)
 				"     </to_encoder>\r\n" +
 				"   </vc_primitive>\r\n" +
 				" </media_control>\r\n", "application/media_control+xml");
+                break;
+            }
+        case tmedia_session_events_e.BFCP_INFO:
+            {
+                o_self.signal_invite(tsip_event_invite_type_e.M_BFCP_INFO, tsip_event_code_e.DIALOG_BFCP_INFO, s_decription ? s_decription : "BFCP INFO", null);
                 break;
             }
     }
@@ -1061,8 +1076,13 @@ function __tsip_dialog_invite_cond_is_23456_f_notify(o_dialog, o_message){
 //--------------------------------------------------------
 
 function x0000_Connected_2_Connected_X_oDTMF(ao_args) {
-    tsk_utils_log_error("Not implemented");
-    return 0;
+    if (ao_args[0].o_msession_mgr && (WebRtc4all_GetType() == WebRtcType_e.W4A || WebRtc4all_GetType() == WebRtcType_e.IE || WebRtc4all_GetType() == WebRtcType_e.NPAPI)) {
+        var o_action = ao_args[2];
+        return ao_args[0].o_msession_mgr.send_dtmf(o_action.o_content.toString());
+    }
+    else {
+        return x0000_Any_2_Any_X_oINFO(ao_args);
+    }
 }
 
 function x0000_Connected_2_Connected_X_oLMessage(ao_args) {
@@ -1160,7 +1180,49 @@ function x0000_Connected_2_Connected_X_iINVITEorUPDATE(ao_args) {
 }
 
 function x0000_Connected_2_Connected_X_oINVITE(ao_args) {
-    tsk_utils_log_error("Not implemented");
+    var i_ret;
+	var o_dialog = ao_args[0];
+    var o_action = ao_args[2];
+
+	if (!o_dialog.o_msession_mgr) {
+		tsk_utils_log_warn("Media Session manager is Null");
+		return 0;
+	}
+
+	/* change media type */
+    i_ret = o_dialog.o_msession_mgr.set_media_type(o_action.media.e_type);
+
+	/* Update current action */
+    o_dialog.set_action_curr(o_action);
+
+    /* Update media session manager paramters */
+    o_dialog.config_msession_mgr(o_dialog.o_msession_mgr);
+
+	/* send the request */
+	if ((iret = o_dialog.send_invite(true))) {
+		// signal error without breaking the state machine
+	}
+
+	return 0;
+}
+
+function x0000_Any_2_Any_X_noOps(ao_args) {
+    var o_dialog = ao_args[0];
+    var o_action = ao_args[2];
+    switch(o_action.e_type) {
+        case tsip_action_type_e.MUTE:
+            {
+                if (o_dialog.o_msession_mgr) {
+                    o_dialog.o_msession_mgr.set(tmedia_session_mgr.prototype.SetParamSession(o_dialog.o_msession_mgr.e_type, "mute-" + o_action.mute.s_media, o_action.mute.b_muted));
+                }
+                break;
+            }
+        default:
+            {
+                tsk_utils_log_error("Not implemented");
+                return -1;
+            }
+    }
     return 0;
 }
 

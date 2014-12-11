@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -36,20 +36,8 @@ var WebRtcType_e =
 
 var __webrtc_type = WebRtcType_e.NONE;
 var __b_webrtc4all_initialized = false;
-var __b_webrtc4ie_peerconn = undefined;
 function WebRtc4all_Init() {
     if (!__b_webrtc4all_initialized) {
-        try {
-            // NPAPI plugin object
-            var oWebRtc4npapi = document.createElement('embed');
-            oWebRtc4npapi.id = "WebRtc4npapi";
-            oWebRtc4npapi.type = "application/w4a";
-            oWebRtc4npapi.width = oWebRtc4npapi.height = '1px';
-            oWebRtc4npapi.stype = 'visibility:hidden;';
-            document.body.appendChild(oWebRtc4npapi);
-        }
-        catch (e) { }        
-
         // WebRtc plugin type
         try {
             if (__webrtc_type == WebRtcType_e.NONE) {
@@ -68,16 +56,23 @@ function WebRtc4all_Init() {
         }
         catch (e) { }
         if (__webrtc_type == WebRtcType_e.NONE || __webrtc_type == WebRtcType_e.W4A) {
-            try {
-                if ((__b_webrtc4ie_peerconn = new ActiveXObject("webrtc4ie.PeerConnection"))) {
-                    __webrtc_type = WebRtcType_e.IE; // Internet Explorer
-                }
+            var div = document.createElement('div');
+            div.id = "__webrtc4ie.pluginInstance.id";
+            try { 
+                new ActiveXObject("webrtc4ie.PluginInstance");
+                
+                div.innerHTML = "<object id=\"__webrtc_plugin\" classid=\"clsid:69E4A9D1-824C-40DA-9680-C7424A27B6A0\" width=\"0px%\" height=\"0px%\" style=\"visibility:visible;\"> </object>";
+                __webrtc_type = WebRtcType_e.IE; // Internet Explorer
             }
-            catch (e) {
-                if (WebRtc4npapi.supportsPeerConnection) {
+            catch(e) {
+                try {
+                    div.innerHTML = "<embed id=\"__webrtc_plugin\" type=\"application/w4a\" width=\"0px\" height=\"0px\" style=\"visibility:visible;\"> </embed>";
                     __webrtc_type = WebRtcType_e.NPAPI; // Opera, Firefox or Safari
                 }
+                catch (e) { }
             }
+            div.style = 'visibility:visible; width:0px; height:0px';
+            document.body.appendChild(div);
         }
 
         __b_webrtc4all_initialized = true;
@@ -95,17 +90,25 @@ function WebRtc4all_Init() {
     }
 }
 
+function WebRtc4all_GetPlugin() {
+    return document.getElementById('__webrtc_plugin');
+}
+
+function WebRtc4all_GetDisplayLocal() {
+    return document.getElementById('__o_display_local');
+}
+function WebRtc4all_GetDisplayLocalScreencast() {
+    return document.getElementById('__o_display_local_screencast');
+}
+function WebRtc4all_GetDisplayRemote() {
+    return document.getElementById('__o_display_remote');
+}
+
 function WebRtc4all_GetVersion() {
     try {
-        if (__webrtc_type == WebRtcType_e.IE) {
-            return __b_webrtc4ie_peerconn.version;
-        }
-        else if (__webrtc_type == WebRtcType_e.NPAPI) {
-            return WebRtc4npapi.version;
-        }
-    }
-     catch (e) { }
-     return "0.0.0.0";
+        return WebRtc4all_GetPlugin().version;
+    } catch(e) {  }    
+    return "0.0.0.0";
 }
 
 // This function must be called before "WebRtc4all_Init()"
@@ -139,21 +142,7 @@ var __looper = undefined;
 function WebRtc4all_GetLooper() {
     if (__looper == undefined && tsk_utils_have_webrtc4ie()) {
         try {
-            if (fakeLooper && fakeLooper.hWnd) {
-                __looper = fakeLooper.hWnd;
-            }
-            else if ((__o_display_local && __o_display_local.hWnd) || (__o_display_remote && __o_display_remote.hWnd)) {
-                __looper = (__o_display_local && __o_display_local.hWnd) ? __o_display_local.hWnd : __o_display_remote.hWnd;
-            }
-            else {
-                // TODO: This function fails to create looper on IE11.
-                // https://code.google.com/p/sipml5/issues/detail?id=161
-                var oLooper = document.createElement('object');
-                oLooper.classid = "clsid:7082C446-54A8-4280-A18D-54143846211A";
-                oLooper.width = oLooper.height = '1px';
-                document.body.appendChild(oLooper);
-                __looper = oLooper.hWnd;
-          }
+            __looper = WebRtc4all_GetPlugin().windowHandle;
           if (!__looper) {
             tsk_utils_log_error("Failed to create looper. Your app may crash on IE11");
           }
@@ -166,29 +155,39 @@ function WebRtc4all_GetLooper() {
     return __looper;
 }
 
-function WebRtc4all_SetDisplays(o_local_elt, o_remote_elt) {
+function WebRtc4all_SetDisplays(o_local_elt, o_remote_elt, o_local_screencast_elt) {
     if (__webrtc_type == WebRtcType_e.IE) {
         // visiblity must be "visible"  for the first time to force handle creation
         if (o_local_elt) {
-            o_local_elt.innerHTML = "<object id=\"__o_display_local\" classid=\"clsid:5C2C407B-09D9-449B-BB83-C39B7802A684\"" +
-                                    " class=\"video\" width=\"88px\" height=\"72px\" style=\"margin-top: -80px; margin-left: 5px; background-color: #000000; visibility:visible\"> </object>";
+            o_local_elt.innerHTML = "<object id=\"__o_display_local\" classid=\"clsid:69E4A9D1-824C-40DA-9680-C7424A27B6A0\"" +
+                                    " width=\"100%\" height=\"100%\" style=\"visibility:visible;\"> </object>";
             __o_display_local.style.visibility = "hidden";
         }
+        if (o_local_screencast_elt) {
+            o_local_screencast_elt.innerHTML = "<object id=\"__o_display_local_screencast\" classid=\"clsid:69E4A9D1-824C-40DA-9680-C7424A27B6A0\"" +
+                                    " width=\"100%\" height=\"100%\" style=\"visibility:visible;\"> </object>";
+            __o_display_local_screencast.style.visibility = "hidden";
+        }
         if (o_remote_elt) {
-            o_remote_elt.innerHTML = "<object id=\"__o_display_remote\" classid=\"clsid:5C2C407B-09D9-449B-BB83-C39B7802A684\"" +
+            o_remote_elt.innerHTML = "<object id=\"__o_display_remote\" classid=\"clsid:69E4A9D1-824C-40DA-9680-C7424A27B6A0\"" +
                                      " width=\"100%\" height=\"100%\" style=\"visibility:visible;\"> </object>";
             __o_display_remote.style.visibility = "hidden";
         }
     }
     else if (__webrtc_type == WebRtcType_e.NPAPI) {
         if (o_local_elt) {
-            o_local_elt.innerHTML = "<embed id=\"__o_display_local\" type=\"application/w4a-display\"" +
-                                    " class=\"video\" width=\"88px\" height=\"72px\" style=\"margin-top: -80px; margin-left: 5px; background-color: #000000; visibility:visible\"> </embed>";
+            o_local_elt.innerHTML = "<object id=\"__o_display_local\" type=\"application/w4a\"" +
+                                    " width=\"100%\" height=\"100%\" style=\"visibility:visible; border:1px solid #000;\"> </object>";
             __o_display_local.style.visibility = "hidden";
         }
+        if (o_local_screencast_elt) {
+            o_local_screencast_elt.innerHTML = "<object id=\"__o_display_local_screencast\" type=\"application/w4a\"" +
+                                    " width=\"100%\" height=\"100%\" style=\"visibility:visible; border:1px solid #000;\"> </object>";
+            __o_display_local_screencast.style.visibility = "hidden";
+        }
         if (o_remote_elt) {
-            o_remote_elt.innerHTML = "<embed id=\"__o_display_remote\" type=\"application/w4a-display\"" +
-                                     " width=\"100%\" height=\"100%\" style=\"visibility:visible;\"> </embed>";
+            o_remote_elt.innerHTML = "<object id='__o_display_remote' type='application/w4a'" +
+                                     "  width='100%' height='100%' style='visibility:visible; border:1px solid #000;'> </object>";
             __o_display_remote.style.visibility = "hidden";
         }
     }
@@ -198,8 +197,7 @@ function w4aSessionDescription(s_sdp) {
     if (!__b_webrtc4all_initialized) {
         WebRtc4all_Init();
     }
-    var b_isInternetExplorer = (__webrtc_type == WebRtcType_e.IE);
-    this.o_sdp = b_isInternetExplorer ? new ActiveXObject("webrtc4ie.SessionDescription") : WebRtc4npapi.createSessionDescription();
+    this.o_sdp = WebRtc4all_GetPlugin().createSessionDescription();
     this.o_sdp.Init(s_sdp ? (s_sdp + "") : null);
 }
 
@@ -231,24 +229,23 @@ function w4aPeerConnection(s_configuration, f_IceCallback) {
     var b_isInternetExplorer = (__webrtc_type == WebRtcType_e.IE);
     this.s_configuration = s_configuration;
     this.f_IceCallback = f_IceCallback;
-    this.o_peer = b_isInternetExplorer ? new ActiveXObject("webrtc4ie.PeerConnection") : WebRtc4npapi.createPeerConnection();
+    this.o_peer = WebRtc4all_GetPlugin().createPeerConnection();
     this.o_peer.Init(s_configuration);
 
     // attach displays if defined by the user
-    try { this.o_peer.localVideo = (window.__o_display_local ? window.__o_display_local.hWnd : 0); } catch (e) { }
-    try { this.o_peer.remoteVideo = (window.__o_display_remote ? window.__o_display_remote.hWnd : 0); } catch (e) { }
+    This.attachDisplays();
 
     // register callback function
     if (b_isInternetExplorer) {
         eval("function This.o_peer::IceCallback(media, label, bMoreToFollow) { return This.onIceCallback (media, label, bMoreToFollow); }");
         eval("function This.o_peer::Rfc5168Callback(command) { return This.onRfc5168Callback(command); }");
+        eval("function This.o_peer::BfcpCallback(description) { return This.onBfcpCallback(description); }");
     }
     else {
         this.o_peer.opaque = This;
         this.o_peer.setCallbackFuncName("w4aPeerConnection_NPAPI_OnEvent");
-        if (this.o_peer.setRfc5168CallbackFuncName) {
-            this.o_peer.setRfc5168CallbackFuncName("w4aPeerConnection_NPAPI_OnRfc5168Event");
-        }
+        this.o_peer.setRfc5168CallbackFuncName("w4aPeerConnection_NPAPI_OnRfc5168Event");
+        this.o_peer.setBfcpCallbackFuncName("w4aPeerConnection_NPAPI_OnBfcpEvent");
     }
 };
 
@@ -275,30 +272,18 @@ w4aPeerConnection.ICE_CLOSED = 0x700;
 
 // SessionDescription createOffer (MediaHints hints)
 w4aPeerConnection.prototype.createOffer = function (o_hints) {
-    if ((__webrtc_type == WebRtcType_e.IE)) {
-        return new w4aSessionDescription(this.o_peer.createOffer(o_hints.has_audio, o_hints.has_video));
-    }
-    else {
-        var oSdp = this.o_peer.createOffer(o_hints.has_audio, o_hints.has_video);
-        if (oSdp) {
-            return new w4aSessionDescription(oSdp.toSdp());
-        }
-        return null;
-    }
+    var oSdp;
+    try { oSdp = this.o_peer.createOfferEx(o_hints.has_audio, o_hints.has_video, o_hints.has_bfcpvideo); }
+    catch (e) { oSdp = this.o_peer.createOffer(o_hints.has_audio, o_hints.has_video); }
+    return oSdp ? ((__webrtc_type == WebRtcType_e.IE) ? new w4aSessionDescription(oSdp) : new w4aSessionDescription(oSdp.toSdp())) : null;
 }
 
 // SessionDescription createAnswer (DOMString offer, MediaHints hints);
 w4aPeerConnection.prototype.createAnswer = function (s_offer, o_hints) {
-    if ((__webrtc_type == WebRtcType_e.IE)) {
-        return new w4aSessionDescription(this.o_peer.createAnswer(o_hints.has_audio, o_hints.has_video));
-    }
-    else {
-        var oSdp = this.o_peer.createAnswer(o_hints.has_audio, o_hints.has_video);
-        if (oSdp) {
-            return new w4aSessionDescription(oSdp.toSdp());
-        }
-        return null;
-    }
+    var oSdp;
+    try { oSdp = this.o_peer.createAnswerEx(o_hints.has_audio, o_hints.has_video, o_hints.has_bfcpvideo); }
+    catch (e) { oSdp = this.o_peer.createAnswer(o_hints.has_audio, o_hints.has_video); }
+    return oSdp ? ((__webrtc_type == WebRtcType_e.IE) ? new w4aSessionDescription(oSdp) : new w4aSessionDescription(oSdp.toSdp())) : null;
 }
 
 // void setLocalDescription (unsigned short action, SessionDescription desc);
@@ -351,10 +336,56 @@ w4aPeerConnection.prototype.processContent = function (s_req_name, s_content_typ
     }
 }
 
+// Not part of the specification
+w4aPeerConnection.prototype.setScreencastSrcWindowId = function(d_window_id) {
+    if (this.o_peer) {
+        this.o_peer.srcScreencast = d_window_id;
+    }
+}
+
+// Not part of the specification
+w4aPeerConnection.prototype.sendDTMF = function (s_digit) {
+    if (this.o_peer) {
+        // rfc2833 - 3.10 DTMF Events
+        var i_digit = -1, cc_digit = s_digit.charCodeAt(0);
+        if (cc_digit >= "0".charCodeAt(0) && cc_digit <= "9".charCodeAt(0)) i_digit = cc_digit - "0".charCodeAt(0);
+        else if (cc_digit == "*".charCodeAt(0)) i_digit = 10;
+        else if (cc_digit == "#".charCodeAt(0)) i_digit = 11;
+        else if (cc_digit >= "A".charCodeAt(0) && cc_digit <= "D".charCodeAt(0)) i_digit = cc_digit - "A".charCodeAt(0);
+        if (i_digit != -1) {
+            this.o_peer.sendDTMF(i_digit);
+        }
+        else {
+            tsk_utils_log_error("Invalid DTMF code:" + s_digit);
+        }
+    }
+}
+
+// Not part of the specification
+w4aPeerConnection.prototype.attachDisplays = function() {
+    if (this.o_peer) {
+        try { this.o_peer.localVideo = WebRtc4all_GetDisplayLocal().windowHandle; } catch (e) { }
+        try { this.o_peer.localScreencast = WebRtc4all_GetDisplayLocalScreencast().windowHandle; } catch (e) { }
+        try { this.o_peer.remoteVideo = WebRtc4all_GetDisplayRemote().windowHandle; } catch (e) { }        
+    }
+}
+
 // void close()
 w4aPeerConnection.prototype.close = function () {
     if (this.o_peer) {
         this.o_peer.close();
+    }
+}
+
+// Not part of the specification
+w4aPeerConnection.prototype.mute = function (media, muted) {
+    if (this.o_peer) {
+        if(media === "audio") {
+            this.o_peer.muteAudio = !!muted;
+        }
+        else if(media === "video") {
+            this.o_peer.muteVideo = !!muted;
+        }
     }
 }
 
@@ -387,3 +418,16 @@ function w4aPeerConnection_NPAPI_OnRfc5168Event(o_peer, sCommand) {
     o_peer.onRfc5168Callback(sCommand);
 }
 
+w4aPeerConnection.prototype.onBfcpCallback = function (sDescription) {
+    tsk_utils_log_info("w4aPeerConnection::onBfcpCallback(" + sDescription + ")");
+    if (this.o_mgr && this.o_mgr.callback) {
+        this.o_mgr.callback(tmedia_session_events_e.BFCP_INFO, this.o_mgr.e_type, sDescription);
+    }
+    else {
+        tsk_utils_log_error("No manager associated to this peerconnection");
+    }
+}
+
+function w4aPeerConnection_NPAPI_OnBfcpEvent(o_peer, sDescription) {
+    o_peer.onBfcpCallback(sDescription);
+}

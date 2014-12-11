@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -19,6 +19,7 @@ var tsip_action_type_e =
     
     CONFIG: 0,
     DTMF_SEND: 1,
+    MUTE: 2,
 
     /* === REGISTER == */
     REGISTER: 10, /**< Sends SIP REGISTER request */
@@ -79,6 +80,10 @@ function tsip_action(e_type) {
 
     this.ect = {};
     this.ect.s_to = null;
+
+    this.mute = {};
+    this.mute.b_muted = false;
+    this.mute.s_media = null;
 }
 
 tsip_action.prototype.set_line_resp = function (i_code, s_phrase) {

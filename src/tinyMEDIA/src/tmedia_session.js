@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -27,7 +27,9 @@ var tmedia_session_events_e =
     STREAM_REMOTE_ADDED: 35,
     STREAM_REMOTE_REMOVED: 36,
 
-    RFC5168_REQUEST_IDR: 40
+    RFC5168_REQUEST_IDR: 40,
+
+    BFCP_INFO: 50
 };
 
 tmedia_session_mgr.prototype.__ao_supported_media = [tmedia_type_e.AUDIO, tmedia_type_e.VIDEO];
@@ -131,7 +133,7 @@ tmedia_session_mgr.prototype.set_fn_callback = function (fn_callback, o_usr_data
     this.o_usr_data = o_usr_data;
 }
 
-tmedia_session_mgr.prototype.callback = function (e_event_type, e_media_type) {
+tmedia_session_mgr.prototype.callback = function (e_event_type, e_media_type, s_description/*optional*/) {
     if (this.fn_callback) {
         if (e_event_type == tmedia_session_events_e.GET_LO_SUCCESS) {
             this.b_lo_changed = true;
@@ -139,15 +141,17 @@ tmedia_session_mgr.prototype.callback = function (e_event_type, e_media_type) {
                 this.sdp.o_lo = this.ao_sessions[0].o_sdp_lo; // ao_sessions[0].get_lo() not used because we don't want to request new SDP but just a reference
             }
         }
-        this.fn_callback(this.o_usr_data, e_event_type, e_media_type);
+        this.fn_callback(this.o_usr_data, e_event_type, e_media_type, s_description/*optional*/);
     }
 }
 
 tmedia_session_mgr.prototype.set_media_type = function(e_type){
-
 	if(this.e_type != e_type){
 		this.b_media_type_changed = true;
 		this.e_type = e_type;
+        for (var i = 0; i < this.ao_sessions.length; ++i) {
+            this.ao_sessions[i].set_media_type(e_type);
+        }
 	}
 	return 0;
 }
@@ -202,6 +206,15 @@ tmedia_session_mgr.prototype.remove_media = function(e_type){
             break;
         }
     }
+}
+
+tmedia_session_mgr.prototype.send_dtmf = function(s_digit){
+    for (var i = 0; i < this.ao_sessions.length; ++i) {
+        if ((this.ao_sessions[i].e_type.i_id & tmedia_type_e.AUDIO.i_id) == tmedia_type_e.AUDIO.i_id) {
+            return this.ao_sessions[i].send_dtmf(s_digit);
+        }
+    }
+    return -1;
 }
 
 tmedia_session_mgr.prototype.apply_params = function () {
@@ -359,12 +372,27 @@ tmedia_session_mgr.prototype.set_ro = function (o_sdp, b_is_offer) {
     */
     if (this.sdp.o_lo) {
         e_new_mediatype = o_sdp.get_media_type();
-        if(e_new_mediatype == tmedia_type_e.VIDEO && this.e_type == tmedia_type_e.SCREEN_SHARE) { // "SCREEN_SHARE" will be identified in the SDP as Video when using get_media_type()
+        
+        // Remove BFCP offer if not locally enabled. Only the client can init BFCP session.
+	    if (b_is_offer) {
+            var i_new_mediatype = e_new_mediatype.i_id;
+		    if (!(this.e_type.i_id & tmedia_type_e.BFCPVIDEO.i_id)) {
+			    i_new_mediatype &= ~tmedia_type_e.BFCPVIDEO.i_id; 
+		    }
+		    if (!(this.e_type.i_id & tmedia_type_e.BFCPAUDIO.i_id)) {
+			    i_new_mediatype &= ~tmedia_type_e.BFCPAUDIO.i_id;
+		    }
+		    if (!(this.e_type.i_id & tmedia_type_e.BFCP.i_id)) {
+			    i_new_mediatype &= ~tmedia_type_e.BFCP.i_id;
+		    }
+            e_new_mediatype = tmedia_type_from_id(i_new_mediatype);
+	    }
+
+        if (e_new_mediatype == tmedia_type_e.VIDEO && this.e_type == tmedia_type_e.SCREEN_SHARE) { // "SCREEN_SHARE" will be identified in the SDP as Video when using get_media_type()
             e_new_mediatype = this.e_type;
         }
         if ((b_is_mediatype_changed = (e_new_mediatype != this.e_type))) {
-            tsk_utils_log_error("this.set_media_type(e_new_mediatype);");
-            //this.set_media_type(e_new_mediatype);
+            this.set_media_type(e_new_mediatype);
             tsk_utils_log_info("media type has changed");
         }
     }
@@ -570,6 +598,10 @@ tmedia_session.prototype.prepare = function () {
     return this.__prepare();
 }
 
+tmedia_session.prototype.set_media_type = function(e_type){
+	return this.__set_media_type ? this.__set_media_type(e_type) : -1;
+}
+
 tmedia_session.prototype.start = function () {
     return this.__start();
 }
@@ -591,9 +623,7 @@ tmedia_session.prototype.set_ro = function (o_sdp, b_is_offer) {
 }
 
 tmedia_session.prototype.processContent = function (s_req_name, s_content_type, s_content_ptr, i_content_size) {
-    if (this.__processContent) {
-        return this.__processContent(s_req_name, s_content_type, s_content_ptr, i_content_size);
-    }
+    return this.__processContent ? this.__processContent(s_req_name, s_content_type, s_content_ptr, i_content_size) : -1;
 }
 
 tmedia_session.prototype.acked = function () {
@@ -608,12 +638,20 @@ tmedia_session.prototype.resume = function () {
     return this.__resume();
 }
 
+tmedia_session.prototype.send_dtmf = function (s_digit) {
+    return this.__send_dtmf ? this.__send_dtmf(s_digit) : -1;
+}
+
 
 tmedia_session.prototype.Create = function (e_type, o_mgr) {
     switch (e_type) {
         case tmedia_type_e.AUDIO:
         case tmedia_type_e.VIDEO:
         case tmedia_type_e.SCREEN_SHARE:
+        case tmedia_type_e.BFCPVIDEO:
+        case tmedia_type_e.AUDIO_BFCPVIDEO:
+        case tmedia_type_e.VIDEO_BFCPVIDEO:
+        case tmedia_type_e.AUDIO_VIDEO_BFCPVIDEO:
             {
                  // for now we support a single media session per call
                  // The code is based on Doubango ANSI-C code which uses one media type (e.g. 1audio plus 1video) per media session while SIPML5 bundle them (e.g. 1audiovideo)
