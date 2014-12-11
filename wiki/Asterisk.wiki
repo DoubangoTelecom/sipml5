@@ -112,7 +112,7 @@ $PREFIX/sbin/safe_asterisk
 }}}
 
 ==Configure sipml5==
- * Open [http://sipml5.org/call.htm?svn=224 http://sipml5.org/call.htm] on your browser
+ * Open [http://sipml5.org/call.htmsvn=236 http://sipml5.org/call.htm] on your browser
  * Click on *Expert mode?* and set the fields as follow
 [http://sipml5.googlecode.com/svn/trunk/asterisk/screenhot_chrome_expert.png]<br />
 _Expert mode fields settings_<br />

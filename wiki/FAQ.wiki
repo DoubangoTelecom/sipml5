@@ -7,7 +7,7 @@
 For any technical issue, please connect to our developer group: [https://groups.google.com/group/doubango https://groups.google.com/group/doubango].
 
 ==How to use sipML5 API in my project==
-The API is a single file and could be downloaded at [http://code.google.com/p/sipml5/wiki/Downloads http://code.google.com/p/sipml5/wiki/Downloads]. To get started, please check the [http://sipml5.org/docgen/index.html?svn=224 programmer's guide] and [http://sipml5.org/docgen/symbols/SIPml.html API].
+The API is a single file and could be downloaded at [http://code.google.com/p/sipml5/wiki/Downloads http://code.google.com/p/sipml5/wiki/Downloads]. To get started, please check the [http://sipml5.org/docgen/index.htmlsvn=236 programmer's guide] and [http://sipml5.org/docgen/symbols/SIPml.html API].
 
 ==How to get notified for new updates?==
 To get notified, please subscribe to our mailing list at [http://doubango.org/contact.html http://doubango.org/contact.html]
