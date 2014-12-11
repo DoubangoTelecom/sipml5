@@ -5,6 +5,14 @@ All releases can be downloaded [Downloads here].
 
 <wiki:toc max_depth="2" />
 
+==1.5.222==
+ * SVN: r222
+ * Date: December 11, 2014
+ * Add support for BFCP. New API functions: [http://sipml5.org/docgen/symbols/SIPml.Session.Call.html#startBfcpShare startBfcpShare()], [http://sipml5.org/docgen/symbols/SIPml.Session.Call.html#stopBfcpShare stopBfcpShare()]
+ * [https://groups.google.com/forum/#!topic/doubango/xMd8DV-_pbs Fix 'INVALID_SESSION_DESCRIPTION' issue on FF 35.05]
+ * Fix Hold/Resume issue on Chrome (Still not working for FF 35.05 as PeerConnection.removeStream() not implemented by Mozilla)
+ * Add public function to mute/unmute audio and video streams. New API function: [http://sipml5.org/docgen/symbols/SIPml.Session.Call.html#mute mute()]
+
 ==1.4.217==
  * SVN: r217
  * Date: March 26, 2014
