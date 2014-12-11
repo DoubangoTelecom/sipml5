@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html>
 <!--
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 -->
@@ -18,11 +18,12 @@
     DEBUG VERSION: 'SIPml-api.js'
     RELEASE VERSION: 'release/SIPml-api.js'
     -->
-    <script src="SIPml-api.js?svn=224" type="text/javascript"> </script>
+    <script src="SIPml-api.js?svn=222" type="text/javascript"> </script>
 
     <!-- Styles -->
     <link href="./assets/css/bootstrap.css" rel="stylesheet" />
     <style type="text/css">
+        
         body{
             padding-top: 80px;
             padding-bottom: 40px;
@@ -110,6 +111,14 @@
             -o-transition-duration: 2s;
         }
         
+        .previewvideo
+        {
+            position: absolute;
+            width: 88px;
+            height: 72px;
+            margin-top: -42px;
+        }
+        
     </style>
     <link href="./assets/css/bootstrap-responsive.css" rel="stylesheet" />
     <!-- Le fav and touch icons -->
@@ -123,7 +132,7 @@
 
     // to avoid caching
     //if (window.location.href.indexOf("svn=") == -1) {
-    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "?svn=224" : "&svn=224");
+    //    window.location.href += (window.location.href.indexOf("?") == -1 ? "svn=236" : "&svn=229");
     //}
 
     var sTransferNumber;
@@ -133,7 +142,7 @@
     var bFullScreen = false;
     var oNotifICall;
     var bDisableVideo = false;
-    var viewVideoLocal, viewVideoRemote; // <video> (webrtc) or <div> (webrtc4all)
+    var viewVideoLocal, viewVideoRemote, viewLocalScreencast; // <video> (webrtc) or <div> (webrtc4all)
     var oConfigCall;
     var oReadyStateTimer;
 
@@ -178,15 +187,29 @@
         var preInit = function() {
             // set default webrtc type (before initialization)
             var s_webrtc_type = getPVal("wt");
-            if (s_webrtc_type) {
-                if(window.console) {
-                    window.console.info("s_webrtc_type=" + s_webrtc_type);
-                }
-                SIPml.setWebRtcType(s_webrtc_type);
-            }
+            var s_fps = getPVal("fps");
+            var s_mvs = getPVal("mvs"); // maxVideoSize
+            var s_mbwu = getPVal("mbwu"); // maxBandwidthUp (kbps)
+            var s_mbwd = getPVal("mbwd"); // maxBandwidthUp (kbps)
+            var s_za = getPVal("za"); // ZeroArtifacts
+            var s_ndb = getPVal("ndb"); // NativeDebug
+
+            if (s_webrtc_type) SIPml.setWebRtcType(s_webrtc_type);
 
             // initialize SIPML5
             SIPml.init(postInit);
+
+            // set other options after initialization
+            if (s_fps) SIPml.setFps(parseFloat(s_fps));
+            if (s_mvs) SIPml.setMaxVideoSize(s_mvs);
+            if (s_mbwu) SIPml.setMaxBandwidthUp(parseFloat(s_mbwu));
+            if (s_mbwd) SIPml.setMaxBandwidthDown(parseFloat(s_mbwd));
+            if (s_za) SIPml.setZeroArtifacts(s_za === "true");
+            if (s_ndb == "true") SIPml.startNativeDebug();
+
+            //var rinningApps = SIPml.getRunningApps();
+            //var _rinningApps = Base64.decode(rinningApps);
+            //tsk_utils_log_info(_rinningApps);
         }
 
         oReadyStateTimer = setInterval(function () {
@@ -300,7 +323,8 @@
         if (SIPml.isWebRtc4AllSupported()) {
             viewVideoLocal = document.getElementById("divVideoLocal");
             viewVideoRemote = document.getElementById("divVideoRemote");
-            WebRtc4all_SetDisplays(viewVideoLocal, viewVideoRemote); // FIXME: move to SIPml.* API
+            viewLocalScreencast = document.getElementById("divScreencastLocal");
+            WebRtc4all_SetDisplays(viewVideoLocal, viewVideoRemote, viewLocalScreencast); // FIXME: move to SIPml.* API
         }
         else{
             viewVideoLocal = videoLocal;
@@ -319,12 +343,12 @@
             audio_remote: audioRemote,
             video_local: viewVideoLocal,
             video_remote: viewVideoRemote,
+            screencast_window_id: 0x00000000, // entire desktop
             bandwidth: { audio:undefined, video:undefined },
             video_size: { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined },
             events_listener: { events: '*', listener: onSipEventSession },
             sip_caps: [
                             { name: '+g.oma.sip-im' },
-                            { name: '+sip.ice' },
                             { name: 'language', value: '\"en,fr\"' }
                         ]
         };
@@ -359,12 +383,13 @@
             if ((s_value = window.localStorage.getItem('org.doubango.identity.realm'))) txtRealm.value = s_value;
         }
         else {
-            /*txtDisplayName.value = "005";
+        // FIXME
+            txtDisplayName.value = "005";
             txtPrivateIdentity.value = "005";
-            txtPublicIdentity.value = "sip:005@192.168.0.28";
+            txtPublicIdentity.value = "sip:005@sip2sip.info";
             txtPassword.value = "005";
-            txtRealm.value = "192.168.0.28";
-            txtPhoneNumber.value = "005";*/
+            txtRealm.value = "sip2sip.info";
+            txtPhoneNumber.value = "701020";
         }
     };
 
@@ -423,7 +448,7 @@
                     bandwidth: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.bandwidth')) : null), // could be redefined a session-level
                     video_size: (window.localStorage ? tsk_string_to_object(window.localStorage.getItem('org.doubango.expert.video_size')) : null), // could be redefined a session-level
                     sip_headers: [
-                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2014.04.18' },
+                            { name: 'User-Agent', value: 'IM-client/OMA1.0 sipML5-v1.2014.08.09' },
                             { name: 'Organization', value: 'Doubango Telecom' }
                     ]
                 }
@@ -488,6 +513,37 @@
         }
     }
 
+    // Share entire desktop aor application using BFCP or WebRTC native implementation
+    function sipShareScreen() {
+        if (SIPml.getWebRtcType() === 'w4a') {
+            // Sharing using BFCP -> requires an active session
+            if (!oSipSessionCall) {
+                txtCallStatus.innerHTML = '<i>No active session</i>';
+                return;
+            }
+            if (oSipSessionCall.bfcpSharing) {
+                if (oSipSessionCall.stopBfcpShare(oConfigCall) != 0) {
+                    txtCallStatus.value = 'Failed to stop BFCP share';
+                }
+                else {
+                    oSipSessionCall.bfcpSharing = false;
+                }
+            }
+            else {
+                oConfigCall.screencast_window_id = 0x00000000;
+                if (oSipSessionCall.startBfcpShare(oConfigCall) != 0) {
+                    txtCallStatus.value = 'Failed to start BFCP share';
+                }
+                else {
+                    oSipSessionCall.bfcpSharing = true;
+                }
+            }
+        }
+        else {
+            sipCall('call-screenshare');
+        }
+    }
+
     // transfers the call
     function sipTransfer() {
         if (oSipSessionCall) {
@@ -516,6 +572,22 @@
                 btnHoldResume.disabled = false;
                 return;
             }
+        }
+    }
+
+    // Mute or Unmute the call
+    function sipToggleMute() {
+        if (oSipSessionCall) {
+            var i_ret;
+            var bMute = !oSipSessionCall.bMute;
+            txtCallStatus.innerHTML = bMute ? '<i>Mute the call...</i>' : '<i>Unmute the call...</i>';
+            i_ret = oSipSessionCall.mute('audio'/*could be 'video'*/, bMute);
+            if (i_ret != 0) {
+                txtCallStatus.innerHTML = '<i>Mute / Unmute failed</i>';
+                return;
+            }
+            oSipSessionCall.bMute = bMute;
+            btnMute.value = bMute ? "Unmute" : "Mute";
         }
     }
 
@@ -647,9 +719,19 @@
 
         if (b_added) {
             if (SIPml.isWebRtc4AllSupported()) {
-                if (b_local){ if(window.__o_display_local) window.__o_display_local.style.visibility = "visible"; }
-                else { if(window.__o_display_remote) window.__o_display_remote.style.visibility = "visible"; }
-                   
+                if (b_local) { 
+                    if (WebRtc4all_GetDisplayLocal()) WebRtc4all_GetDisplayLocal().style.visibility = "visible";
+                    if (WebRtc4all_GetDisplayLocalScreencast()) WebRtc4all_GetDisplayLocalScreencast().style.visibility = "visible";
+                    //viewVideoLocal.style.visibility = "visible";
+                    //viewLocalScreencast.style.visibility = "visible";
+                    //if (WebRtc4all_GetDisplayLocal()) WebRtc4all_GetDisplayLocal().hidden = false;
+                    //if (WebRtc4all_GetDisplayLocalScreencast()) WebRtc4all_GetDisplayLocalScreencast().hidden = false;
+                }
+                else { 
+                    if (WebRtc4all_GetDisplayRemote()) WebRtc4all_GetDisplayRemote().style.visibility = "visible"; 
+                    //viewVideoRemote.style.visibility = "visible";
+                    //if (WebRtc4all_GetDisplayRemote()) WebRtc4all_GetDisplayRemote().hidden = false;
+                }
             }
             else {
                 o_elt_video.style.opacity = 1;
@@ -658,8 +740,19 @@
         }
         else {
             if (SIPml.isWebRtc4AllSupported()) {
-                if (b_local){ if(window.__o_display_local) window.__o_display_local.style.visibility = "hidden"; }
-                else { if(window.__o_display_remote) window.__o_display_remote.style.visibility = "hidden"; }
+                if (b_local) { 
+                    if (WebRtc4all_GetDisplayLocal()) WebRtc4all_GetDisplayLocal().style.visibility = "hidden";
+                    if (WebRtc4all_GetDisplayLocalScreencast()) WebRtc4all_GetDisplayLocalScreencast().style.visibility = "hidden";
+                    //viewVideoLocal.style.visibility = "hidden";
+                    //viewLocalScreencast.style.visibility = "hidden";
+                    //if (WebRtc4all_GetDisplayLocal()) WebRtc4all_GetDisplayLocal().hidden = true;
+                    //if (WebRtc4all_GetDisplayLocalScreencast()) WebRtc4all_GetDisplayLocalScreencast().hidden = true;
+                }
+                else { 
+                    if (WebRtc4all_GetDisplayRemote()) WebRtc4all_GetDisplayRemote().style.visibility = "hidden";
+                    //viewVideoRemote.style.visibility = "hidden";
+                    //if (WebRtc4all_GetDisplayRemote()) WebRtc4all_GetDisplayRemote().hidden = true;
+               }
             }
             else{
                 o_elt_video.style.opacity = 0;
@@ -724,8 +817,10 @@
         uiBtnCallSetText("Call");
         btnHangUp.value = 'HangUp';
         btnHoldResume.value = 'hold';
+        btnMute.value = "Mute";
         btnCall.disabled = false;
         btnHangUp.disabled = true;
+        if (window.btnBFCP) window.btnBFCP.disabled = true;
 
         oSipSessionCall = null;
 
@@ -741,8 +836,8 @@
             oNotifICall = null;
         }
 
-        uiVideoDisplayEvent(true, false);
         uiVideoDisplayEvent(false, false);
+        uiVideoDisplayEvent(true, false);
 
         setTimeout(function () { if (!oSipSessionCall) txtCallStatus.innerHTML = ''; }, 2500);
     }
@@ -761,6 +856,7 @@
                             events_listener: { events: '*', listener: onSipEventSession },
                             sip_caps: [
                                         { name: '+g.oma.sip-im', value: null },
+                                        //{ name: '+sip.ice' }, // rfc5768: FIXME doesn't work with Polycom TelePresence
                                         { name: '+audio', value: null },
                                         { name: 'language', value: '\"en,fr\"' }
                                 ]
@@ -854,6 +950,7 @@
                         btnCall.disabled = true;
                         btnHangUp.disabled = false;
                         btnTransfer.disabled = false;
+                        if (window.btnBFCP) window.btnBFCP.disabled = false;
 
                         if (bConnected) {
                             stopRingbackTone();
@@ -869,8 +966,8 @@
                         divCallOptions.style.opacity = bConnected ? 1 : 0;
 
                         if (SIPml.isWebRtc4AllSupported()) { // IE don't provide stream callback
-                            uiVideoDisplayEvent(true, true);
                             uiVideoDisplayEvent(false, true);
+                            uiVideoDisplayEvent(true, true);
                         }
                     }
                     break;
@@ -990,8 +1087,8 @@
                         oSipSessionCall.bHeld = false;
 
                         if (SIPml.isWebRtc4AllSupported()) { // IE don't provide stream callback yet
-                            uiVideoDisplayEvent(true, true);
                             uiVideoDisplayEvent(false, true);
+                            uiVideoDisplayEvent(true, true);
                         }
                     }
                     break;
@@ -1016,6 +1113,13 @@
                 {
                     if(e.session == oSipSessionCall){
                         txtCallStatus.innerHTML = '<i>Taken off hold by remote party</i>';
+                    }
+                    break;
+                }
+            case 'm_bfcp_info':
+                {
+                    if(e.session == oSipSessionCall){
+                        txtCallStatus.innerHTML = 'BFCP Info: <i>'+ e.description +'</i>';
                     }
                     break;
                 }
@@ -1097,7 +1201,7 @@
                 <img alt="sipML5" class="brand" src="./images/sipml-34x39.png" />
                 <div class="nav-collapse">
                     <ul class="nav">
-                        <li class="active"><a href="index.html?svn=224">Home</a></li>
+                        <li class="active"><a href="index.htmlsvn=236">Home</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->
@@ -1107,6 +1211,7 @@
     <div class="container">
         <div class="row-fluid">
             <div class="span4 well">
+                <!--img src="data:image/x-icon;base64,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" /-->
                 <label style="width: 100%;" align="center" id="txtRegStatus">
                 </label>
                 <h2>
@@ -1193,12 +1298,15 @@
                 <table style='width: 100%;'>
                     <tr>
                         <td style="white-space:nowrap;">
-                            <input type="text" style="width: 100%; height:100%" id="txtPhoneNumber" value="" placeholder="Enter phone number to call" />                            
+                            <input type="text" style="width: 100%; height:100%;" id="txtPhoneNumber" value="" placeholder="Enter phone number to call" />
                         </td>
                     </tr>
                     <tr>
                         <td colspan="1" align="right">
                             <div class="btn-toolbar" style="margin: 0; vertical-align:middle">
+                                <!--div class="btn-group">
+                                    <input type="button" id="btnBFCP" style="margin: 0; vertical-align:middle; height: 100%;" class="btn btn-primary" value="BFCP" onclick='sipShareScreen();' disabled />
+                                </div-->
                                 <div id="divBtnCallGroup" class="btn-group">
                                     <button id="btnCall" disabled class="btn btn-primary" data-toggle="dropdown">Call</button>
                                 </div>&nbsp;&nbsp;
@@ -1211,24 +1319,41 @@
                     <tr>
                         <td id="tdVideo" class='tab-video'>
                             <div id="divVideo" class='div-video'>
-                                <div id="divVideoRemote" style='border:1px solid #000; height:100%; width:100%'>
+                                <div id="divVideoRemote" style='position:relative; border:1px solid #009; height:100%; width:100%; z-index: auto; opacity: 0'>
                                     <video class="video" width="100%" height="100%" id="video_remote" autoplay="autoplay" style="opacity: 0; 
                                         background-color: #000000; -webkit-transition-property: opacity; -webkit-transition-duration: 2s;">
                                     </video>
                                 </div>
-                                <div id="divVideoLocal" style='border:0px solid #000'>
-                                    <video class="video" width="88px" height="72px" id="video_local" autoplay="autoplay" muted="true" style="opacity: 0;
-                                        margin-top: -80px; margin-left: 5px; background-color: #000000; -webkit-transition-property: opacity;
-                                        -webkit-transition-duration: 2s;">
-                                    </video>
+
+                                <div id="divVideoLocalWrapper" style="margin-left: 0px; border:0px solid #009; z-index: 1000">
+                                    <iframe class="previewvideo" style="border:0px solid #009; z-index: 1000"> </iframe>
+                                    <div id="divVideoLocal" class="previewvideo" style=' border:0px solid #009; z-index: 1000'>
+                                        <video class="video" width="100%" height="100%" id="video_local" autoplay="autoplay" muted="true" style="opacity: 0;
+                                            background-color: #000000; -webkit-transition-property: opacity;
+                                            -webkit-transition-duration: 2s;">
+                                        </video>
+                                    </div>
                                 </div>
+                                <div id="divScreencastLocalWrapper" style="margin-left: 90px; border:0px solid #009; z-index: 1000">
+                                    <iframe class="previewvideo" style="border:0px solid #009; z-index: 1000"> </iframe>
+                                    <div id="divScreencastLocal" class="previewvideo" style=' border:0px solid #009; z-index: 1000'>
+                                    </div>
+                                </div>
+                                <!--div id="div1" style="margin-left: 300px; border:0px solid #009; z-index: 1000">
+                                    <iframe class="previewvideo" style="border:0px solid #009; z-index: 1000"> </iframe>
+                                    <div id="div2" class="previewvideo" style='border:0px solid #009; z-index: 1000'>
+                                      <input type="button" class="btn" style="" id="Button1" value="Button1" /> &nbsp;
+                                      <input type="button" class="btn" style="" id="Button2" value="Button2" /> &nbsp;
+                                    </div>
+                                </div-->
                             </div>
                         </td>
                     </tr>
                     <tr>
                        <td align='center'>
-                            <div id='divCallOptions' class='call-options' style='opacity: 0; margin-top: 3px'>
+                            <div id='divCallOptions' class='call-options' style='opacity: 0; margin-top: 0px'>
                                 <input type="button" class="btn" style="" id="btnFullScreen" value="FullScreen" disabled onclick='toggleFullScreen();' /> &nbsp;
+                                <input type="button" class="btn" style="" id="btnMute" value="Mute" onclick='sipToggleMute();' /> &nbsp;
                                 <input type="button" class="btn" style="" id="btnHoldResume" value="Hold" onclick='sipToggleHoldResume();' /> &nbsp;
                                 <input type="button" class="btn" style="" id="btnTransfer" value="Transfer" onclick='sipTransfer();' /> &nbsp;
                                 <input type="button" class="btn" style="" id="btnKeyPad" value="KeyPad" onclick='openKeyPad();' />
@@ -1241,17 +1366,20 @@
         
         <br />
         <footer>
-            <p>&copy; Doubango Telecom 2012-2013 <br />
+        
+            <p>&copy; Doubango Telecom 2012-2015 <br />
             <i>Inspiring the future</i>
             </p>
             <!-- Creates all ATL/COM objects right now 
                 Will open confirmation dialogs if not already done
             -->
-            <object id="fakeVideoDisplay" classid="clsid:5C2C407B-09D9-449B-BB83-C39B7802A684" style="visibility:hidden;"> </object>
-            <object id="fakeLooper" classid="clsid:7082C446-54A8-4280-A18D-54143846211A" style="visibility:visible; width:0px; height:0px"> </object>
-            <object id="fakeSessionDescription" classid="clsid:DBA9F8E2-F9FB-47CF-8797-986A69A1CA9C" style="visibility:hidden;"> </object>
-            <object id="fakeNetTransport" classid="clsid:5A7D84EC-382C-4844-AB3A-9825DBE30DAE" style="visibility:hidden;"> </object>
-            <object id="fakePeerConnection" classid="clsid:56D10AD3-8F52-4AA4-854B-41F4D6F9CEA3" style="visibility:hidden;"> </object>
+            <!--object id="fakeVideoDisplay" classid="clsid:5C2C407B-09D9-449B-BB83-C39B7802A684" style="visibility:hidden;"> </object-->
+            <!--object id="fakeLooper" classid="clsid:7082C446-54A8-4280-A18D-54143846211A" style="visibility:visible; width:0px; height:0px"> </object-->
+            <!--object id="fakeSessionDescription" classid="clsid:DBA9F8E2-F9FB-47CF-8797-986A69A1CA9C" style="visibility:hidden;"> </object-->
+            <!--object id="fakeNetTransport" classid="clsid:5A7D84EC-382C-4844-AB3A-9825DBE30DAE" style="visibility:hidden;"> </object-->
+            <!--object id="fakePeerConnection" classid="clsid:56D10AD3-8F52-4AA4-854B-41F4D6F9CEA3" style="visibility:hidden;"> </object-->
+            <object id="fakePluginInstance" classid="clsid:69E4A9D1-824C-40DA-9680-C7424A27B6A0" style="visibility:hidden;"> </object>
+            
             <!-- 
                 NPAPI  browsers: Safari, Opera and Firefox
             -->
@@ -1276,7 +1404,7 @@
     <ul id="ulCallOptions" class="dropdown-menu" style="visibility:hidden">
         <li><a href="#" onclick='sipCall("call-audio");'>Audio</a></li>
         <li><a href="#" onclick='sipCall("call-audiovideo");'>Video</a></li>
-        <li id='liScreenShare' ><a href="#" onclick='sipCall("call-screenshare");'>Screen Share</a></li>
+        <li id='liScreenShare' ><a href="#" onclick='sipShareScreen();'>Screen Share</a></li>
         <li class="divider"></li>
         <li><a href="#" onclick='uiDisableCallOptions();'><b>Disable these options</b></a></li>
     </ul>

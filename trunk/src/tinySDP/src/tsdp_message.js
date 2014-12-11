@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -49,24 +49,30 @@ function tsdp_message(s_addr, b_ipv6, i_version) {
 }
 
 tsdp_message.prototype.get_media_type = function () {
-    // this is a shame because we cannot use '|' to combine the medias
-    var b_audio = this.has_media("audio");
-    var b_video = this.has_media("video");
-    var b_msrp = this.has_media("message");
-    
-    if (b_audio && b_video) {
-        return tmedia_type_e.AUDIO_VIDEO;
+    var i_id = tmedia_type_e.NONE.i_id;
+    var i_index = 0;
+    var o_hdr_M, o_hdr_A;
+    while ((o_hdr_M = this.get_header_at(tsdp_header_type_e.M, i_index++))) {
+        if (o_hdr_M.i_port == 0) { // media disabled?
+            continue;
+        }
+        if (tsk_string_iequals(o_hdr_M.s_media, "audio")) {
+            i_id |= tmedia_type_e.AUDIO.i_id;
+        }
+        else if (tsk_string_iequals(o_hdr_M.s_media, "video")) {
+            o_hdr_A = o_hdr_M.find_a_at("content", 0);
+            if (o_hdr_A && !tsk_string_iequals(o_hdr_A.s_value, "main")) {
+                i_id |= tmedia_type_e.BFCPVIDEO.i_id;
+            }
+            else {
+                i_id |= tmedia_type_e.VIDEO.i_id;
+            }
+        }
+        else if (tsk_string_iequals(o_hdr_M.s_media, "message")) {
+            i_id |= tmedia_type_e.MSRP.i_id;
+        }
     }
-    else if (b_audio) {
-        return tmedia_type_e.AUDIO;
-    }
-    else if (b_video) {
-        return tmedia_type_e.VIDEO;
-    }
-    else if (b_msrp) {
-        return tmedia_type_e.MSRP;
-    }
-    return tmedia_type_e.NONE;
+    return tmedia_type_from_id(i_id);
 }
 
 // add_headers(...)

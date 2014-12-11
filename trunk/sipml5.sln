@@ -1,0 +1,180 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trunk", "trunk", "{F164D133-EAF3-458A-AA42-2B904AE90FA0}"
+	ProjectSection(SolutionItems) = preProject
+		call.htm = call.htm
+		contact.htm = contact.htm
+		error.htm = error.htm
+		expert.htm = expert.htm
+		index.html = index.html
+		SIPml-api.js = SIPml-api.js
+		SIPml.js = SIPml.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tinyMEDIA", "tinyMEDIA", "{58135C4E-D42B-41B4-B3A1-BBCED046691E}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinyMEDIA\src\tmedia_api.js = src\tinyMEDIA\src\tmedia_api.js
+		src\tinyMEDIA\src\tmedia_common.js = src\tinyMEDIA\src\tmedia_common.js
+		src\tinyMEDIA\src\tmedia_defaults.js = src\tinyMEDIA\src\tmedia_defaults.js
+		src\tinyMEDIA\src\tmedia_param.js = src\tinyMEDIA\src\tmedia_param.js
+		src\tinyMEDIA\src\tmedia_qos.js = src\tinyMEDIA\src\tmedia_qos.js
+		src\tinyMEDIA\src\tmedia_session.js = src\tinyMEDIA\src\tmedia_session.js
+		src\tinyMEDIA\src\tmedia_session_ghost.js = src\tinyMEDIA\src\tmedia_session_ghost.js
+		src\tinyMEDIA\src\tmedia_session_jsep.js = src\tinyMEDIA\src\tmedia_session_jsep.js
+		src\tinyMEDIA\src\tmedia_session_roap.js = src\tinyMEDIA\src\tmedia_session_roap.js
+		src\tinyMEDIA\src\tmedia_webrtc4all.js = src\tinyMEDIA\src\tmedia_webrtc4all.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tinySAK", "tinySAK", "{3882ADAA-AA1F-497A-9E1B-4834CA932F07}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySAK\src\tsk_api.js = src\tinySAK\src\tsk_api.js
+		src\tinySAK\src\tsk_base64.js = src\tinySAK\src\tsk_base64.js
+		src\tinySAK\src\tsk_buff.js = src\tinySAK\src\tsk_buff.js
+		src\tinySAK\src\tsk_fsm.js = src\tinySAK\src\tsk_fsm.js
+		src\tinySAK\src\tsk_md5.js = src\tinySAK\src\tsk_md5.js
+		src\tinySAK\src\tsk_param.js = src\tinySAK\src\tsk_param.js
+		src\tinySAK\src\tsk_ragel.js = src\tinySAK\src\tsk_ragel.js
+		src\tinySAK\src\tsk_string.js = src\tinySAK\src\tsk_string.js
+		src\tinySAK\src\tsk_utils.js = src\tinySAK\src\tsk_utils.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tinySDP", "tinySDP", "{4E8AF36E-7D31-4C27-867C-198011396203}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySDP\src\tsdp_api.js = src\tinySDP\src\tsdp_api.js
+		src\tinySDP\src\tsdp_message.js = src\tinySDP\src\tsdp_message.js
+		src\tinySDP\src\tsdp_parser_message.js = src\tinySDP\src\tsdp_parser_message.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tinySIP", "tinySIP", "{312B2ADA-0246-46F3-9DF2-CC0B76D564CE}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySIP\src\tsip_action.js = src\tinySIP\src\tsip_action.js
+		src\tinySIP\src\tsip_api.js = src\tinySIP\src\tsip_api.js
+		src\tinySIP\src\tsip_event.js = src\tinySIP\src\tsip_event.js
+		src\tinySIP\src\tsip_message.js = src\tinySIP\src\tsip_message.js
+		src\tinySIP\src\tsip_session.js = src\tinySIP\src\tsip_session.js
+		src\tinySIP\src\tsip_stack.js = src\tinySIP\src\tsip_stack.js
+		src\tinySIP\src\tsip_timers.js = src\tinySIP\src\tsip_timers.js
+		src\tinySIP\src\tsip_uri.js = src\tinySIP\src\tsip_uri.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "headers", "headers", "{07060C75-6E6E-41A5-B2E2-ADCBF741677F}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySDP\src\headers\tsdp_header.js = src\tinySDP\src\headers\tsdp_header.js
+		src\tinySDP\src\headers\tsdp_header_A.js = src\tinySDP\src\headers\tsdp_header_A.js
+		src\tinySDP\src\headers\tsdp_header_C.js = src\tinySDP\src\headers\tsdp_header_C.js
+		src\tinySDP\src\headers\tsdp_header_M.js = src\tinySDP\src\headers\tsdp_header_M.js
+		src\tinySDP\src\headers\tsdp_header_O.js = src\tinySDP\src\headers\tsdp_header_O.js
+		src\tinySDP\src\headers\tsdp_header_Str.js = src\tinySDP\src\headers\tsdp_header_Str.js
+		src\tinySDP\src\headers\tsdp_header_V.js = src\tinySDP\src\headers\tsdp_header_V.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{CCFB3B63-0429-4D88-810E-EAB667DA0191}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySIP\src\api\tsip_api_common.js = src\tinySIP\src\api\tsip_api_common.js
+		src\tinySIP\src\api\tsip_api_info.js = src\tinySIP\src\api\tsip_api_info.js
+		src\tinySIP\src\api\tsip_api_invite.js = src\tinySIP\src\api\tsip_api_invite.js
+		src\tinySIP\src\api\tsip_api_message.js = src\tinySIP\src\api\tsip_api_message.js
+		src\tinySIP\src\api\tsip_api_options.js = src\tinySIP\src\api\tsip_api_options.js
+		src\tinySIP\src\api\tsip_api_publish.js = src\tinySIP\src\api\tsip_api_publish.js
+		src\tinySIP\src\api\tsip_api_register.js = src\tinySIP\src\api\tsip_api_register.js
+		src\tinySIP\src\api\tsip_api_subscribe.js = src\tinySIP\src\api\tsip_api_subscribe.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "authentication", "authentication", "{17C7E837-91E9-4B7D-A334-1DA302D8590C}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySIP\src\authentication\tsip_auth.js = src\tinySIP\src\authentication\tsip_auth.js
+		src\tinySIP\src\authentication\tsip_challenge.js = src\tinySIP\src\authentication\tsip_challenge.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dialogs", "dialogs", "{90F46C5E-A2C6-4A45-BDDF-425701E9103A}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySIP\src\dialogs\tsip_dialog.js = src\tinySIP\src\dialogs\tsip_dialog.js
+		src\tinySIP\src\dialogs\tsip_dialog_generic.js = src\tinySIP\src\dialogs\tsip_dialog_generic.js
+		src\tinySIP\src\dialogs\tsip_dialog_generic__message.js = src\tinySIP\src\dialogs\tsip_dialog_generic__message.js
+		src\tinySIP\src\dialogs\tsip_dialog_generic__publish.js = src\tinySIP\src\dialogs\tsip_dialog_generic__publish.js
+		src\tinySIP\src\dialogs\tsip_dialog_generic__subscribe.js = src\tinySIP\src\dialogs\tsip_dialog_generic__subscribe.js
+		src\tinySIP\src\dialogs\tsip_dialog_invite.js = src\tinySIP\src\dialogs\tsip_dialog_invite.js
+		src\tinySIP\src\dialogs\tsip_dialog_invite__client.js = src\tinySIP\src\dialogs\tsip_dialog_invite__client.js
+		src\tinySIP\src\dialogs\tsip_dialog_invite__ect.js = src\tinySIP\src\dialogs\tsip_dialog_invite__ect.js
+		src\tinySIP\src\dialogs\tsip_dialog_invite__hold.js = src\tinySIP\src\dialogs\tsip_dialog_invite__hold.js
+		src\tinySIP\src\dialogs\tsip_dialog_invite__server.js = src\tinySIP\src\dialogs\tsip_dialog_invite__server.js
+		src\tinySIP\src\dialogs\tsip_dialog_invite__timers.js = src\tinySIP\src\dialogs\tsip_dialog_invite__timers.js
+		src\tinySIP\src\dialogs\tsip_dialog_layer.js = src\tinySIP\src\dialogs\tsip_dialog_layer.js
+		src\tinySIP\src\dialogs\tsip_dialog_register.js = src\tinySIP\src\dialogs\tsip_dialog_register.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "headers", "headers", "{4CD8C791-F03C-47A5-BCFE-2E73E8F1EB7E}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySIP\src\headers\tsip_header.js = src\tinySIP\src\headers\tsip_header.js
+		src\tinySIP\src\headers\tsip_header_Authorization.js = src\tinySIP\src\headers\tsip_header_Authorization.js
+		src\tinySIP\src\headers\tsip_header_Contact.js = src\tinySIP\src\headers\tsip_header_Contact.js
+		src\tinySIP\src\headers\tsip_header_Content_Type.js = src\tinySIP\src\headers\tsip_header_Content_Type.js
+		src\tinySIP\src\headers\tsip_header_CSeq.js = src\tinySIP\src\headers\tsip_header_CSeq.js
+		src\tinySIP\src\headers\tsip_header_Int.js = src\tinySIP\src\headers\tsip_header_Int.js
+		src\tinySIP\src\headers\tsip_header_NameAddr.js = src\tinySIP\src\headers\tsip_header_NameAddr.js
+		src\tinySIP\src\headers\tsip_header_NameAddrArray.js = src\tinySIP\src\headers\tsip_header_NameAddrArray.js
+		src\tinySIP\src\headers\tsip_header_RAck.js = src\tinySIP\src\headers\tsip_header_RAck.js
+		src\tinySIP\src\headers\tsip_header_Refer_Sub.js = src\tinySIP\src\headers\tsip_header_Refer_Sub.js
+		src\tinySIP\src\headers\tsip_header_Session_Expires.js = src\tinySIP\src\headers\tsip_header_Session_Expires.js
+		src\tinySIP\src\headers\tsip_header_Str.js = src\tinySIP\src\headers\tsip_header_Str.js
+		src\tinySIP\src\headers\tsip_header_StrArray.js = src\tinySIP\src\headers\tsip_header_StrArray.js
+		src\tinySIP\src\headers\tsip_header_Subscription_State.js = src\tinySIP\src\headers\tsip_header_Subscription_State.js
+		src\tinySIP\src\headers\tsip_header_Via.js = src\tinySIP\src\headers\tsip_header_Via.js
+		src\tinySIP\src\headers\tsip_header_WWW_Authenticate.js = src\tinySIP\src\headers\tsip_header_WWW_Authenticate.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "parsers", "parsers", "{C5C54CFD-999F-4719-B38F-10AEB21D2510}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySIP\src\parsers\tsip_parser_header.js = src\tinySIP\src\parsers\tsip_parser_header.js
+		src\tinySIP\src\parsers\tsip_parser_message.js = src\tinySIP\src\parsers\tsip_parser_message.js
+		src\tinySIP\src\parsers\tsip_parser_uri.js = src\tinySIP\src\parsers\tsip_parser_uri.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "transactions", "transactions", "{A9C84969-4014-432C-ADE1-D3DB5D87247A}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySIP\src\transactions\tsip_transac.js = src\tinySIP\src\transactions\tsip_transac.js
+		src\tinySIP\src\transactions\tsip_transac_ict.js = src\tinySIP\src\transactions\tsip_transac_ict.js
+		src\tinySIP\src\transactions\tsip_transac_ist.js = src\tinySIP\src\transactions\tsip_transac_ist.js
+		src\tinySIP\src\transactions\tsip_transac_layer.js = src\tinySIP\src\transactions\tsip_transac_layer.js
+		src\tinySIP\src\transactions\tsip_transac_nict.js = src\tinySIP\src\transactions\tsip_transac_nict.js
+		src\tinySIP\src\transactions\tsip_transac_nist.js = src\tinySIP\src\transactions\tsip_transac_nist.js
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "transports", "transports", "{CBB94259-1022-406B-9C9E-0376C83592AA}"
+	ProjectSection(SolutionItems) = preProject
+		src\tinySIP\src\transports\tsip_transport.js = src\tinySIP\src\transports\tsip_transport.js
+		src\tinySIP\src\transports\tsip_transport_layer.js = src\tinySIP\src\transports\tsip_transport_layer.js
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|ARM = Debug|ARM
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|ARM = Release|ARM
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{58135C4E-D42B-41B4-B3A1-BBCED046691E} = {F164D133-EAF3-458A-AA42-2B904AE90FA0}
+		{3882ADAA-AA1F-497A-9E1B-4834CA932F07} = {F164D133-EAF3-458A-AA42-2B904AE90FA0}
+		{4E8AF36E-7D31-4C27-867C-198011396203} = {F164D133-EAF3-458A-AA42-2B904AE90FA0}
+		{312B2ADA-0246-46F3-9DF2-CC0B76D564CE} = {F164D133-EAF3-458A-AA42-2B904AE90FA0}
+		{07060C75-6E6E-41A5-B2E2-ADCBF741677F} = {4E8AF36E-7D31-4C27-867C-198011396203}
+		{CCFB3B63-0429-4D88-810E-EAB667DA0191} = {312B2ADA-0246-46F3-9DF2-CC0B76D564CE}
+		{17C7E837-91E9-4B7D-A334-1DA302D8590C} = {312B2ADA-0246-46F3-9DF2-CC0B76D564CE}
+		{90F46C5E-A2C6-4A45-BDDF-425701E9103A} = {312B2ADA-0246-46F3-9DF2-CC0B76D564CE}
+		{4CD8C791-F03C-47A5-BCFE-2E73E8F1EB7E} = {312B2ADA-0246-46F3-9DF2-CC0B76D564CE}
+		{C5C54CFD-999F-4719-B38F-10AEB21D2510} = {312B2ADA-0246-46F3-9DF2-CC0B76D564CE}
+		{A9C84969-4014-432C-ADE1-D3DB5D87247A} = {312B2ADA-0246-46F3-9DF2-CC0B76D564CE}
+		{CBB94259-1022-406B-9C9E-0376C83592AA} = {312B2ADA-0246-46F3-9DF2-CC0B76D564CE}
+	EndGlobalSection
+EndGlobal

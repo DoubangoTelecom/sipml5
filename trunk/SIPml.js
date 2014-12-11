@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -9,7 +9,7 @@
 
 @name sipML5 API
 @author      Doubango Telecom <http://www.doubango.org>
-@version     1.3.203
+@version     1.5.222
 */
 
 /** 
@@ -41,16 +41,138 @@ SIPml.setDebugLevel = function(level) {
 }
 
 /**
-Sets the default webrtc type. Must be called before <a href="#.init">initializing</a> the engine.
+Starts debugging the native (C/C++) code. Requires webrt4all plugin.
+On Windows, the output file should be at <b>C:\Users\&lt;YOUR LOGIN&gt;\AppData\Local\Temp\Low\webrtc4all.log</b>.
+Starting the native debug isn't recommended and must be done to track issues only.
+@since version 1.5.222
+*/
+SIPml.startNativeDebug = function () {
+    WebRtc4all_GetPlugin().startDebug();
+}
+
+/**
+Stops debugging the native (C/C++) code. Requires webrt4all plugin.
+@since version 1.5.222
+*/
+SIPml.stopNativeDebug = function () {
+    WebRtc4all_GetPlugin().stopDebug();
+}
+
+/**
+Gets the current WebRTC type being  used.
 @since version 1.4.217
+@returns {String} the WebRTC type. Possible values: <i>native</i>, <i>w4a</i>, <i>erisson</i> or <i>unknown</i>.
+*/
+SIPml.getWebRtcType = function() {
+    switch (WebRtc4all_GetType()) {
+        case WebRtcType_e.W4A: case WebRtcType_e.IE: case WebRtcType_e.NPAPI: return "w4a";
+        case WebRtcType_e.ERICSSON: return "erisson";
+        case WebRtcType_e.NATIVE: return "native";
+        default: return "unknown";
+    }
+}
+
+/**
+Sets the default webrtc type. Must be called before <a href="#.init">initializing</a> the engine.
+@since version 1.5.222
 @param {String} type The type. Supported values: <i>native</i>, <i>w4a</i> and <i>erisson</i>.
 @returns {Boolean} <i>true</i> if succeed; otherwise <i>false</i>
 */
 SIPml.setWebRtcType = function(type) {
-    if(SIPml.isInitialized()){
+    if (SIPml.isInitialized()) {
         throw new Error("ERR_ALREADY_INITIALIZED: Engine already initialized.");
     }
     return WebRtc4all_SetType(type);
+}
+
+/**
+Gets the list of running apps. Requires webrt4all plugin.
+@since version 1.5.222
+@returns {String} the the list of running apps. Format: <i>(base64($$WindowID$$=str(...)$$Description$$=str(...)$$IconData$$=base64(...)$$IconType$$=str(...)))*</i>
+@throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.getRunningApps = function() {
+    if (SIPml.getWebRtcType() != 'w4a') {
+        throw new Error("ERR_NOT_SUPPORTED: requires webrtc4all plugin");
+    }
+    return WebRtc4all_GetPlugin().runningApps();
+}
+
+/**
+Sets the video fps. Requires webrt4all plugin.
+@since version 1.5.222
+@param {Integer} fps fps value. 
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.setFps = function(fps) {
+    if (SIPml.getWebRtcType() != 'w4a') {
+        throw new Error("ERR_NOT_SUPPORTED: Setting maximum video size requires webrtc4all plugin");
+    }
+    WebRtc4all_GetPlugin().fps = fps;
+    return 0;
+}
+
+
+/**
+Sets the maximum video size. Requires webrt4all plugin.
+@since version 1.5.222
+@param {String} maxVideoSize maxVideoSize value. Supported values: "sqcif", "qcif" "qvga" "cif" "hvga", "vga", "4cif", "svga", "480p", "720p", "16cif", "1080p", "2160p".
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.setMaxVideoSize = function(maxVideoSize) {
+    if (SIPml.getWebRtcType() != 'w4a') {
+        throw new Error("ERR_NOT_SUPPORTED: Setting FPS requires webrtc4all plugin");
+    }
+    WebRtc4all_GetPlugin().maxVideoSize = maxVideoSize;
+    return 0;
+}
+
+/**
+Sets the maximum bandwidth (upload). Requires webrt4all plugin.
+@since version 1.5.222
+@param {Integer} maxBandwidthUp maxBandwidthUp value (kbps). 
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.setMaxBandwidthUp = function(maxBandwidthUp) {
+    if (SIPml.getWebRtcType() != 'w4a') {
+        throw new Error("ERR_NOT_SUPPORTED: Setting maximum bandwidth requires webrtc4all plugin");
+    }
+    WebRtc4all_GetPlugin().maxBandwidthUp = maxBandwidthUp;
+    return 0;
+}
+
+/**
+Sets the maximum bandwidth (down). Requires webrt4all plugin.
+@since version 1.5.222
+@param {Integer} maxBandwidthUp maxBandwidthUp value (kbps). 
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.setMaxBandwidthDown = function(maxBandwidthDown) {
+    if (SIPml.getWebRtcType() != 'w4a') {
+        throw new Error("ERR_NOT_SUPPORTED: Setting maximum bandwidth requires webrtc4all plugin");
+    }
+    WebRtc4all_GetPlugin().maxBandwidthDown = maxBandwidthDown;
+    return 0;
+}
+
+/**
+Defines whether to enable "zero-artifacts" features. Requires webrt4all plugin. <br />
+More information about this option on Doubango's TelePresence wiki page: <a href="https://code.google.com/p/telepresence/wiki/Technical_Video_quality#Zero-artifacts">https://code.google.com/p/telepresence/wiki/Technical_Video_quality#Zero-artifacts</a>
+@since version 1.5.222
+@param {Boolean} zeroArtifacts New optional value. 
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.setZeroArtifacts = function(zeroArtifacts) {
+    if (SIPml.getWebRtcType() != 'w4a') {
+        throw new Error("ERR_NOT_SUPPORTED: Setting maximum bandwidth requires webrtc4all plugin");
+    }
+    WebRtc4all_GetPlugin().zeroArtifacts = zeroArtifacts;
+    return 0;
 }
 
 /**
@@ -160,10 +282,10 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
 SIPml.isScreenShareSupported = function () {
-    if(!SIPml.isInitialized()){
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
-    return (navigator.userAgent.match('Chrome') && parseInt(navigator.userAgent.match(/Chrome\/(.*) /)[1]) >= 26);
+    return (SIPml.getWebRtcType() === "w4a") || (navigator.userAgent.match('Chrome') && parseInt(navigator.userAgent.match(/Chrome\/(.*) /)[1]) >= 26);
 }
 
 /**
@@ -365,7 +487,7 @@ Adds an event listener to the target object. <br /><br />
                 <li><a href="SIPml.Session.Message.html">SIPml.Session.Publish</a></li>
             <ul>
         </td>
-        <td><b>*</b><br/> connecting<br/> connected<br/> terminating<br/> terminated<br/>
+        <td><b>*</b><br/> connecting<br /> connected<br />  terminating<br /> terminated<br />
                 i_ao_request<br />
                 media_added<br/> media_removed<br/>
                 i_request<br/> o_request<br/> cancelled_request<br/> sent_request<br/>
@@ -381,6 +503,7 @@ Adds an event listener to the target object. <br /><br />
             m_stream_video_local_added<br /> m_stream_video_local_removed<br/> m_stream_video_remote_added<br/> m_stream_video_remote_removed <br />
             m_stream_audio_local_added<br /> m_stream_audio_local_removed<br/> m_stream_audio_remote_added<br/> m_stream_audio_remote_removed <br />
             i_ect_new_call<br/> o_ect_trying<br/> o_ect_accepted<br/> o_ect_completed<br/> i_ect_completed<br/> o_ect_failed<br/> i_ect_failed<br/> o_ect_notify<br/> i_ect_notify<br/> i_ect_requested <br />
+            m_bfcp_info<br />
             i_info
         </td>
         <td><a href="SIPml.Session.Event.html">SIPml.Session.Event</a></td>
@@ -742,6 +865,7 @@ SIPml.Stack = function (o_conf) {
              case tsip_event_code_e.DIALOG_MEDIA_REMOVED: s_type = 'media_removed'; break;
              case tsip_event_code_e.DIALOG_CONNECTING: s_type = 'connecting'; break;
              case tsip_event_code_e.DIALOG_CONNECTED: s_type = 'connected'; break;
+             case tsip_event_code_e.DIALOG_BFCP_INFO: s_type = 'bfcp_info'; break;
              case tsip_event_code_e.DIALOG_TERMINATING: s_type = 'terminating'; break;
              case tsip_event_code_e.DIALOG_TERMINATED: 
                 {
@@ -855,6 +979,7 @@ SIPml.Stack = function (o_conf) {
                 case tsip_event_invite_type_e.M_STREAM_LOCAL_REQUESTED:
                 case tsip_event_invite_type_e.M_STREAM_LOCAL_ACCEPTED:
                 case tsip_event_invite_type_e.M_STREAM_LOCAL_REFUSED:
+                case tsip_event_invite_type_e.M_BFCP_INFO:
                     break;
 
                 case tsip_event_invite_type_e.M_STREAM_LOCAL_ADDED:
@@ -970,6 +1095,7 @@ SIPml.Stack = function (o_conf) {
              case tsip_event_invite_type_e.M_LOCAL_RESUME_NOK: s_type = 'm_local_resume_nok'; break;
              case tsip_event_invite_type_e.M_REMOTE_HOLD: s_type = 'm_remote_hold'; break;
              case tsip_event_invite_type_e.M_REMOTE_RESUME: s_type = 'm_remote_resume'; break;
+             case tsip_event_invite_type_e.M_BFCP_INFO: s_type = 'm_bfcp_info'; break;
              case tsip_event_invite_type_e.O_ECT_TRYING: s_type = 'o_ect_trying'; break;
              case tsip_event_invite_type_e.O_ECT_ACCEPTED: s_type = 'o_ect_accepted'; break;
              case tsip_event_invite_type_e.O_ECT_COMPLETED: s_type = 'o_ect_completed'; break;
@@ -1209,9 +1335,11 @@ Anonymous SIP Session configuration object.
 @namespace SIPml.Session.Configuration
 @name SIPml.Session.Configuration
 @property {Integer} [expires] Session timeout in seconds. 
-@property {HTMLVideoElement} [video_local] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLVideoElement">HTMLVideoElement<a> where to display the local video preview. This propety should be only used for <a href="SIPml.Session.Call.html">video sessions</a>.
-@property {HTMLVideoElement} [video_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLVideoElement">HTMLVideoElement<a> where to display the remote video stream. This propety should be only used for <a href="SIPml.Session.Call.html">video sessions</a>.
-@property {HTMLAudioElement} [audio_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLAudioElement">HTMLAudioElement<a> used to playback the remote audio stream. This propety should be only used for <a href="SIPml.Session.Call.html">audio sessions</a>.
+@property {HTMLVideoElement} [video_local] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLVideoElement">HTMLVideoElement<a> where to display the local video preview. This propety should only be used for <a href="SIPml.Session.Call.html">video sessions</a>.
+@property {HTMLVideoElement} [video_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLVideoElement">HTMLVideoElement<a> where to display the remote video stream. This propety should only be used for <a href="SIPml.Session.Call.html">video sessions</a>.
+@property {HTMLAudioElement} [audio_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLAudioElement">HTMLAudioElement<a> used to playback the remote audio stream. This propety should only be used for <a href="SIPml.Session.Call.html">audio sessions</a>.
+@property {Integer} [screencast_window_id] Windows identifer from which to grab frames for application or desktop share. Use #0 to share your entire desktop. This property should only be used when webrt4all with support fot BFCP is installed. <br />
+<i>Available since version 1.5.222</i>. <br />
 @property {Array} [sip_caps] <i>{name,value}</i> pairs defining the SIP capabilities associated to this session. The capabilities are added to the Contact header. Please refer to <a href="http://tools.ietf.org/html/rfc3840">rfc3840</a> and <a href="http://tools.ietf.org/html/rfc3841">rfc3841</a> for more information.
 @property {String} [from] Set the source uri string to be used in the <i>From</i> header (available since API version 1.2.170).
 @property {Object} [bandwidth] Defines the maximum audio and video bandwidth to use. This will change the outhoing SDP to include a "b:AS=" attribute. Use <i>0</i> to let the browser negotiates the right value using RTCP-REMB and congestion control. A default value for all sessions could be defined at stack level.<br />
@@ -1296,7 +1424,8 @@ SIPml.Session.prototype.setConfiguration = function(o_conf){
         // Bandwidth and video size
         o_session.set(
                     tsip_session.prototype.SetBandwidth(o_conf.bandwidth ? o_conf.bandwidth : { audio:undefined, video:undefined }),
-                    tsip_session.prototype.SetVideoSize(o_conf.video_size ? o_conf.video_size : { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined })
+                    tsip_session.prototype.SetVideoSize(o_conf.video_size ? o_conf.video_size : { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined }),
+                    tsip_session.prototype.SetScreencastWindowID(o_conf.screencast_window_id ? o_conf.screencast_window_id : 0)
                 );
 
         this.videoLocal = o_conf.video_local;
@@ -1675,6 +1804,51 @@ Rejects incoming transfer request.
 SIPml.Session.Call.prototype.rejectTransfer = function (o_conf) {
     this.setConfiguration(o_conf);
     return this.o_session.transfer_reject();
+}
+
+/**
+Starts sharing your entire desktop or an App using BFCP(<a href="https://tools.ietf.org/html/rfc4582">rfc4582</a>). Requires webrt4all plugin.
+@since version 1.5.222
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.Session.Call.prototype.startBfcpShare = function (o_conf) {
+    if (SIPml.getWebRtcType() != 'w4a') {
+        throw new Error("ERR_NOT_SUPPORTED: BFCP sharing requires webrtc4all plugin");
+    }
+    this.setConfiguration(o_conf);
+    return this.o_session.start_bfcp_share();
+}
+
+/**
+Stops sharing your entire desktop or an App using BFCP(<a href="https://tools.ietf.org/html/rfc4582">rfc4582</a>). Requires webrt4all plugin.
+@since version 1.5.222
+@param {SIPml.Session.Configuration} [configuration] Configuration value.
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.Session.Call.prototype.stopBfcpShare = function (o_conf) {
+    if (SIPml.getWebRtcType() != 'w4a') {
+        throw new Error("ERR_NOT_SUPPORTED: BFCP sharing requires webrtc4all plugin");
+    }
+    this.setConfiguration(o_conf);
+    return this.o_session.stop_bfcp_share();
+}
+
+/**
+Mutes or unmutes a media.
+@since version 1.5.222
+@param {String} media Media to mute. Must be <i>audio</i>, <i>video</i>.
+@param {Boolean} mute Whether to mute (true) or unmute (false) the media.
+@returns {Integer} 0 if successful; otherwise nonzero
+@throws {ERR_INVALID_ARGUMENT | ERR_NOT_SUPPORTED} <font color="red">ERR_INVALID_ARGUMENT</font> | <font color="red">ERR_NOT_SUPPORTED</font>
+*/
+SIPml.Session.Call.prototype.mute = function (s_media, b_mute) {
+    if ((s_media !== 'audio' && s_media !== 'video') || typeof b_mute != "boolean") {
+        throw new Error("ERR_INVALID_ARGUMENT");
+    }
+    return this.o_session.set_mute(s_media, b_mute);
 }
 
 // ================================== SIPml.Session.Message ==========================================

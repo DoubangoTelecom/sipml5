@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -12,7 +12,7 @@ var tag_hdr = document.getElementsByTagName('head')[0];
 ['SIPml.js', 'src/tinySIP/src/tsip_api.js'].forEach(function (file) {
     var tag_script = document.createElement('script');
     tag_script.setAttribute('type', 'text/javascript');
-    tag_script.setAttribute('src', file + "?svn=224");
+    tag_script.setAttribute('src', file + "?svn=222");
     tag_hdr.appendChild(tag_script);
 });
 if (window.console) {

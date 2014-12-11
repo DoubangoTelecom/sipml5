@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -34,31 +34,35 @@ var tsip_event_invite_type_e =
 	I_ECT_COMPLETED: 207,
 	I_ECT_FAILED: 208,
 	I_ECT_NOTIFY: 209,
+
+    /* BFCP (rfc4582) */
+    M_BFCP_INFO: 300,
 	
 	// ============================
 	//	Media Events
 	//
 
-	M_EARLY_MEDIA: 300,
-	M_UPDATING: 301, // Trying to update from Audio -> Video for example
-	M_UPDATED: 302, // succeed to update
-	M_STREAM_CONNECTING: 303,
-	M_STREAM_CONNECTED: 304,
-    M_STREAM_LOCAL_REQUESTED: 305,
-    M_STREAM_LOCAL_ACCEPTED: 306,
-    M_STREAM_LOCAL_REFUSED: 307,
-    M_STREAM_LOCAL_ADDED: 308,
-    M_STREAM_LOCAL_REMOVED: 309,
-    M_STREAM_REMOTE_ADDED: 310,
-    M_STREAM_REMOTE_REMOVED: 311,
+	M_EARLY_MEDIA: 400,
+	M_UPDATING: 401, // Trying to update from Audio -> Video for example
+	M_UPDATED: 402, // succeed to update
+	M_STREAM_CONNECTING: 403,
+	M_STREAM_CONNECTED: 404,
+    M_STREAM_LOCAL_REQUESTED: 405,
+    M_STREAM_LOCAL_ACCEPTED: 406,
+    M_STREAM_LOCAL_REFUSED: 407,
+    M_STREAM_LOCAL_ADDED: 408,
+    M_STREAM_LOCAL_REMOVED: 409,
+    M_STREAM_REMOTE_ADDED: 410,
+    M_STREAM_REMOTE_REMOVED: 411,
 	
 	/* 3GPP TS 24.610: Communication Hold */
-	M_LOCAL_HOLD_OK: 400,
-	M_LOCAL_HOLD_NOK: 401,
-	M_LOCAL_RESUME_OK: 402,
-	M_LOCAL_RESUME_NOK: 403,
-	M_REMOTE_HOLD: 404,
-	M_REMOTE_RESUME:405
+	M_LOCAL_HOLD_OK: 500,
+	M_LOCAL_HOLD_NOK: 501,
+	M_LOCAL_RESUME_OK: 502,
+	M_LOCAL_RESUME_NOK: 503,
+	M_REMOTE_HOLD: 504,
+	M_REMOTE_RESUME:505
+        
 };
 
 /**
@@ -316,14 +320,22 @@ o_session.dtmf('#');
 @endcode
 */
 tsip_session_invite.prototype.dtmf = function (c_digit) {
+    if (this.o_stack.e_state != tsip_transport_state_e.STARTED) {
+        tsk_utils_log_error("Stack not started");
+        return -2;
+    }
+
     if (!c_digit) {
         tsk_utils_log_error("Invalid parameter");
         return -1;
     }
-    return this.info(
-        tsk_string_format("Signal={0}\r\nDuration={1}", c_digit, 120),
-        "application/dtmf-relay"
-    );
+    var o_action = new tsip_action(tsip_action_type_e.DTMF_SEND);
+    if (o_action) {
+        o_action.add_headers(new tsip_header_Content_Type("application/dtmf-relay"));
+        o_action.set_content(c_digit.toString());
+        return this.__action_handle(o_action);
+    }
+    return -3;
 }
 
 
@@ -378,4 +390,45 @@ tsip_session_invite.prototype.transfer_accept = function () {
 */
 tsip_session_invite.prototype.transfer_reject = function () {
     return this.__action_any(tsip_action_type_e.ECT_REJECT);
+}
+
+/**
+Starts sharing your entire desktop or an App using BFCP(<a href="https://tools.ietf.org/html/rfc4582">rfc4582</a>). Requires webrt4all plugin.
+* @treturn int zero if succeed and non-zero otherwise
+*/
+tsip_session_invite.prototype.start_bfcp_share = function () {
+    var e_new_media = this.media.e_type;
+    switch (this.media.e_type) {
+        case tmedia_type_e.AUDIO: e_new_media = tmedia_type_e.AUDIO_BFCPVIDEO; break;
+        case tmedia_type_e.VIDEO: e_new_media = tmedia_type_e.VIDEO_BFCPVIDEO; break;
+        default: e_new_media = tmedia_type_e.AUDIO_VIDEO_BFCPVIDEO; break;
+    }
+    return this.call(e_new_media);
+}
+
+/**
+Stops sharing your entire desktop or an App using BFCP(<a href="https://tools.ietf.org/html/rfc4582">rfc4582</a>). Requires webrt4all plugin.
+* @treturn int zero if succeed and non-zero otherwise
+*/
+tsip_session_invite.prototype.stop_bfcp_share = function () {
+    var e_new_media = this.media.e_type;
+    switch (this.media.e_type) {
+        case tmedia_type_e.AUDIO_BFCPVIDEO: e_new_media = tmedia_type_e.AUDIO; break;
+        case tmedia_type_e.VIDEO_BFCPVIDEO: e_new_media = tmedia_type_e.VIDEO; break;
+        default: e_new_media = tmedia_type_e.AUDIO_VIDEO; break;
+    }
+    return this.call(e_new_media);
+}
+
+/** mutes/unmutes session
+* @treturn int zero if succeed and non-zero otherwise
+*/
+tsip_session_invite.prototype.set_mute = function (s_media, b_mute) {
+    var o_action = new tsip_action(tsip_action_type_e.MUTE);
+    if (o_action) {
+        o_action.mute.b_muted = b_mute;
+        o_action.mute.s_media = s_media;
+        return this.__action_handle(o_action);
+    }
+    return -3;
 }

@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -449,12 +449,11 @@ function __tsip_transport_webrtc4all_start(o_self) {
              tsk_string_format("{0}://{1}:{2}", o_self.s_protocol, o_self.o_stack.network.s_proxy_outbound_host, o_self.o_stack.network.i_proxy_outbound_port);
     
     tsk_utils_log_info("Connecting to '" + s_url+"'");
-    if(b_isInternetExplorer){
-        o_self.o_transport = new ActiveXObject("webrtc4ie.NetTransport");
+    o_self.o_transport = WebRtc4all_GetPlugin().createNetTransport();
+    if (b_isInternetExplorer) {
         eval("function o_self.o_transport::OnEvent(i_type, s_data) { return __tsip_transport_webrtc4all_onevent (o_self, i_type, s_data); }");
     }
-    else{
-        o_self.o_transport = WebRtc4npapi.createNetTransport();
+    else {
         o_self.o_transport.opaque = o_self;
         o_self.o_transport.setCallbackFuncName("__tsip_transport_webrtc4all_onevent");
     }
@@ -531,7 +530,7 @@ function __tsip_transport_webrtc4all_onevent(o_self, i_type, s_data) {
             return o_self.get_layer().handle_incoming_message(o_message);
         }
         else {
-            tsk_utils_log_error("Failed to parse message: " + evt.data);
+            tsk_utils_log_error("Failed to parse message: " + s_data);
             return -1;
         }
     }

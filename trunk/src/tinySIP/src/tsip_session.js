@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -28,6 +28,7 @@ var tsip_session_param_type_e =
 
     BANDWIDTH: 20,
     VIDEO_SIZE: 21,
+    SCREENCAST_WINDOWID:22,
 
     INITIAL_MSG: 50,
 
@@ -72,6 +73,9 @@ function tsip_session(o_stack) {
     this.media.b_100rel = false;
     this.media.o_bandwidth = o_stack.media.o_bandwidth;
     this.media.o_video_size = o_stack.media.o_video_size;
+
+    this.media.screencast = {};
+    this.media.screencast.d_window_id = 0; // Entire desktop
 
     this.media.timers = {};
     this.media.timers.s_refresher = null;
@@ -210,6 +214,11 @@ tsip_session.prototype.__set = function (ao_params) {
                     this.media.o_video_size = o_curr.ao_values[0];
                     break;
                 }
+            case tsip_session_param_type_e.SCREENCAST_WINDOWID:
+                {
+                    this.media.screencast.d_window_id = parseFloat(o_curr.ao_values[0].toString());
+                    break;
+                }
 
             case tsip_session_param_type_e.INITIAL_MSG:
                 {
@@ -321,6 +330,10 @@ tsip_session.prototype.SetBandwidth = function (o_bandwidth) {
 
 tsip_session.prototype.SetVideoSize = function (o_video_size) {
     return tsip_session.prototype.SetAny(tsip_session_param_type_e.VIDEO_SIZE, o_video_size);
+}
+
+tsip_session.prototype.SetScreencastWindowID = function (d_window_id) {
+    return tsip_session.prototype.SetAny(tsip_session_param_type_e.SCREENCAST_WINDOWID, d_window_id);
 }
 
 tsip_session.prototype.SetInitialMessage = function (o_sip_message) {

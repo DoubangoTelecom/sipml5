@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -25,7 +25,6 @@ tmedia_session_jsep.prototype.o_local_stream = null;
 tmedia_session_jsep.prototype.o_sdp_jsep_lo = null;
 tmedia_session_jsep.prototype.o_sdp_lo = null;
 tmedia_session_jsep.prototype.b_sdp_lo_pending = false;
-tmedia_session_jsep.prototype.i_sdp_lo_version = -1;
 tmedia_session_jsep.prototype.o_sdp_json_ro = null;
 tmedia_session_jsep.prototype.o_sdp_ro = null;
 tmedia_session_jsep.prototype.b_sdp_ro_pending = false;
@@ -35,6 +34,7 @@ tmedia_session_jsep.prototype.s_offererSessionId = null;
 tmedia_session_jsep.prototype.ao_ice_servers = null;
 tmedia_session_jsep.prototype.o_bandwidth = { audio:undefined, video:undefined };
 tmedia_session_jsep.prototype.o_video_size = { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined };
+tmedia_session_jsep.prototype.d_screencast_windowid = 0; // BFCP. #0 means entire desktop
 
 tmedia_session_jsep.prototype.b_ro_changed = false;
 tmedia_session_jsep.prototype.b_lo_held = false;
@@ -80,6 +80,31 @@ tmedia_session_jsep.prototype.__set = function (o_param) {
                 this.o_video_size = o_param.o_value;
                 return 0;
             }
+        case 'screencast-windowid':
+            {
+                this.d_screencast_windowid = parseFloat(o_param.o_value.toString());
+                if (this.o_pc && this.o_pc.setScreencastSrcWindowId) {
+                    this.o_pc.setScreencastSrcWindowId(this.d_screencast_windowid);
+                }
+                return 0;
+            }
+        case 'mute-audio':
+        case 'mute-video':
+            {
+                if (this.o_pc && typeof o_param.o_value == "boolean") {
+                    if (this.o_pc.mute) { 
+                        this.o_pc.mute((o_param.s_key === 'mute-audio') ? "audio" : "video", o_param.o_value);
+                    }
+                    else if (this.o_local_stream) {
+                        var tracks = (o_param.s_key === 'mute-audio') ? this.o_local_stream.audioTracks : this.o_local_stream.videoTracks;
+                        if (tracks) {
+                            for (var i = 0; i < tracks.length; ++i) {
+                                tracks[i].enabled = !o_param.o_value;
+                            }
+                        }
+                    }
+                }
+            }
     }
 
     return -2;
@@ -89,10 +114,28 @@ tmedia_session_jsep.prototype.__prepare = function () {
     return 0;
 }
 
+tmedia_session_jsep.prototype.__set_media_type = function (e_type) {
+    if (e_type != this.e_type) {
+        this.e_type = e_type;
+        this.o_sdp_lo = null;
+    }
+    return 0;
+}
+
 tmedia_session_jsep.prototype.__processContent = function (s_req_name, s_content_type, s_content_ptr, i_content_size) {
     if (this.o_pc && this.o_pc.processContent) {
-        return this.o_pc.processContent(s_req_name, s_content_type, s_content_ptr, i_content_size);
+        this.o_pc.processContent(s_req_name, s_content_type, s_content_ptr, i_content_size);
+        return 0;
     }
+    return -1;
+}
+
+tmedia_session_jsep.prototype.__send_dtmf = function (s_digit) {
+    if (this.o_pc && this.o_pc.sendDTMF) {
+        this.o_pc.sendDTMF(s_digit);
+        return 0;
+    }
+    return -1;
 }
 
 tmedia_session_jsep.prototype.__start = function () {
@@ -125,7 +168,7 @@ tmedia_session_jsep.prototype.__stop = function () {
     return 0;
 }
 
-tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
+tmedia_session_jsep.prototype.decorate_lo = function () {
     if (this.o_sdp_lo) {
         /* Session name for debugging - Requires by webrtc2sip to set RTCWeb type */
         var o_hdr_S;
@@ -133,17 +176,6 @@ tmedia_session_jsep.prototype.decorate_lo = function (b_inc_version) {
             o_hdr_S.s_value = "Doubango Telecom - " + tsk_utils_get_navigator_friendly_name();
         }
 
-        /* Session version */
-        var o_hdr_O;
-        if (this.i_sdp_lo_version == -1) {
-            this.i_sdp_lo_version = ((__o_peerconnection_class == window.webkitRTCPeerConnection) || (__o_peerconnection_class == w4aPeerConnection)) ? 2 : 1; // 1: google-ice, 2: standard-ice
-        }
-        if ((o_hdr_O = this.o_sdp_lo.get_header(tsdp_header_type_e.O))) {
-            o_hdr_O.i_sess_version = this.i_sdp_lo_version;
-            if (b_inc_version) {
-                ++this.i_sdp_lo_version;
-            }
-        }
         /* Remove 'video' media if not enabled (bug in chrome: doesn't honor 'has_video' parameter) */
         if (/*!this.o_sdp_ro &&*/!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
             this.o_sdp_lo.remove_media("video");
@@ -350,11 +382,12 @@ tmedia_session_jsep.prototype.__hold = function () {
     }
     this.b_lo_held = true;
 
-    this.close();
-
     this.o_sdp_ro = null;
+    this.o_sdp_lo = null;
 
-    this.decorate_lo(true);
+    if (this.o_pc && this.o_local_stream) {
+       this.o_pc.removeStream(this.o_local_stream);
+    }
 
     return 0;
 }
@@ -366,10 +399,12 @@ tmedia_session_jsep.prototype.__resume = function () {
     }
     this.b_lo_held = false;
 
-    this.close();
-
     this.o_sdp_lo = null;
     this.o_sdp_ro = null;
+
+    if (this.o_pc && this.o_local_stream) {
+        this.o_pc.addStream(this.o_local_stream);
+    }
 
     return 0;
 }
@@ -400,7 +435,7 @@ tmedia_session_jsep00.prototype.__get_lo = function () {
                     if (!b_moreToFollow) {
                         This.o_sdp_lo = tsdp_message.prototype.Parse(This.o_sdp_jsep_lo.toSdp());
                         if (This.o_sdp_lo) {
-                            This.decorate_lo(true);
+                            This.decorate_lo();
                         }
                         if (This.o_mgr) {
                             This.o_mgr.callback(tmedia_session_events_e.GET_LO_SUCCESS, This.e_type);
@@ -433,19 +468,20 @@ tmedia_session_jsep00.prototype.__get_lo = function () {
         }
 
         this.o_sdp_jsep_lo = b_answer ?
-            this.o_pc.createAnswer(this.o_pc.remoteDescription.toSdp(), { has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) }) :
-            this.o_pc.createOffer({ has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) });
+            this.o_pc.createAnswer(this.o_pc.remoteDescription.toSdp(), { has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id), has_bfcpvideo: !!(this.e_type.i_id & tmedia_type_e.BFCPVIDEO.i_id) }) :
+            this.o_pc.createOffer({ has_audio: !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), has_video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id), has_bfcpvideo: !!(this.e_type.i_id & tmedia_type_e.BFCPVIDEO.i_id) });
 
         if (!b_start_ice) {
             this.o_sdp_lo = tsdp_message.prototype.Parse(this.o_sdp_jsep_lo.toSdp());
             if (this.o_sdp_lo) {
-                this.decorate_lo(false);
+                this.decorate_lo();
                 this.o_sdp_jsep_lo = new __o_sessiondescription_class(this.o_sdp_lo);
             }
         }
 
         this.o_pc.setLocalDescription(b_answer ? __o_peerconnection_class.SDP_ANSWER : __o_peerconnection_class.SDP_OFFER,
                 this.o_sdp_jsep_lo);
+        this.b_sdp_ro_offer = false; // reset until next incoming RO
 
         if (b_start_ice) {
             this.b_sdp_lo_pending = true;
@@ -484,6 +520,15 @@ tmedia_session_jsep00.prototype.__set_ro = function (o_sdp, b_is_offer) {
         finally {
             this.b_sdp_ro_pending = false;
         }
+
+        // re-attach displays after media update
+        if (this.o_pc.attachDisplays) {
+            this.o_pc.attachDisplays();
+        }
+        // re-apply screencast window id
+        if (this.o_pc.setScreencastSrcWindowId) {
+            this.o_pc.setScreencastSrcWindowId(this.d_screencast_windowid);
+        }
     }
     else {
         this.b_sdp_ro_pending = true;
@@ -507,7 +552,7 @@ function tmedia_session_jsep01(o_mgr) {
      };
 
      if(tsk_utils_get_navigator_friendly_name() == 'firefox'){
-        tmedia_session_jsep01.mozThis = this;
+        tmedia_session_jsep01.mozThis = this; // FIXME: no longer needed? At least not needed on FF 34.05
         this.o_media_constraints.mandatory.MozDontOfferDataChannel = true;
      }
 }
@@ -523,36 +568,40 @@ tmedia_session_jsep01.onGetUserMediaSuccess = function (o_stream, _This) {
             return;
         }
 
-        // HACK: patch for Firefox and others
-        // https://groups.google.com/group/discuss-webrtc/browse_thread/thread/e30f0ffc267bce5f
-        if(!o_stream.videoTracks || !o_stream.audioTracks){
-            var b_support_audio = !!(This.e_type.i_id & tmedia_type_e.AUDIO.i_id);
-            var b_support_video = !!(This.e_type.i_id & tmedia_type_e.VIDEO.i_id);
-            o_stream.audioTracks = o_stream.getAudioTracks ? o_stream.getAudioTracks() : {length: b_support_audio ? 1 : 0};
-            o_stream.videoTracks = o_stream.getVideoTracks ? o_stream.getVideoTracks() : {length: b_support_video ? 1 : 0};
-        }
+        if (o_stream) {
+            // HACK: patch for Firefox and others
+            // https://groups.google.com/group/discuss-webrtc/browse_thread/thread/e30f0ffc267bce5f
+            if (!o_stream.videoTracks || !o_stream.audioTracks) {
+                var b_support_audio = !!(This.e_type.i_id & tmedia_type_e.AUDIO.i_id);
+                var b_support_video = !!(This.e_type.i_id & tmedia_type_e.VIDEO.i_id);
+                o_stream.audioTracks = o_stream.getAudioTracks ? o_stream.getAudioTracks() : { length: b_support_audio ? 1 : 0 };
+                o_stream.videoTracks = o_stream.getVideoTracks ? o_stream.getVideoTracks() : { length: b_support_video ? 1 : 0 };
+            }
 
-        // save stream other next calls
-        if(o_stream.audioTracks.length > 0 && o_stream.videoTracks.length == 0){
-            __o_jsep_stream_audio = o_stream;
-        }
-        else if(o_stream.audioTracks.length > 0 && o_stream.videoTracks.length > 0){
-            __o_jsep_stream_audiovideo = o_stream;
-        }
-        
-        if(!This.o_local_stream){
-            This.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_ACCEPTED, this.e_type);
-        }
-        
+            // save stream other next calls
+            if (o_stream.audioTracks.length > 0 && o_stream.videoTracks.length == 0) {
+                __o_jsep_stream_audio = o_stream;
+            }
+            else if (o_stream.audioTracks.length > 0 && o_stream.videoTracks.length > 0) {
+                __o_jsep_stream_audiovideo = o_stream;
+            }
 
-        // HACK: Firefox only allows to call gum one time
-        if(tmedia_session_jsep01.mozThis){
-            __o_jsep_stream_audiovideo = __o_jsep_stream_audio = o_stream;
-        }
+            if (!This.o_local_stream) {
+                This.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_ACCEPTED, this.e_type);
+            }
 
-        This.o_local_stream = o_stream;
-        This.o_pc.addStream(o_stream);
-        This.o_mgr.set_stream_local(o_stream);
+            // HACK: Firefox only allows to call gum one time
+            if (tmedia_session_jsep01.mozThis) {
+                __o_jsep_stream_audiovideo = __o_jsep_stream_audio = o_stream;
+            }
+
+            This.o_local_stream = o_stream;
+            This.o_pc.addStream(o_stream);
+        }
+        else {
+            // Probably call held
+        }
+        This.o_mgr.set_stream_local(o_stream);        
 
         var b_answer = ((This.b_sdp_ro_pending || This.b_sdp_ro_offer) && (This.o_sdp_ro != null));
         if (b_answer) {
@@ -592,9 +641,6 @@ tmedia_session_jsep01.onCreateSdpSuccess = function (o_sdp, _This) {
             tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSetLocalDescriptionSuccess : function(){ tmedia_session_jsep01.onSetLocalDescriptionSuccess(This); },
             tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSetLocalDescriptionError : function(s_error){ tmedia_session_jsep01.onSetLocalDescriptionError(s_error, This); }
         );
-        if(tmedia_session_jsep01.mozThis && !tmedia_session_jsep01.mozThis.localDescription){
-            tmedia_session_jsep01.mozThis.localDescription = o_sdp; // HACK: Firefox Nightly 20.0a1 => "PeeConnection.localDescription" always undefined or not correct. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=828235
-        }
     }
 }
 
@@ -611,9 +657,10 @@ tmedia_session_jsep01.onSetLocalDescriptionSuccess = function(_This){
     tsk_utils_log_info("onSetLocalDescriptionSuccess");
     var This = (tmedia_session_jsep01.mozThis || _This);
     if (This && This.o_pc) {
-        if(tmedia_session_jsep01.mozThis){
-            tmedia_session_jsep01.onIceGatheringCompleted(This); // HACK: Firefox Nightly 20.0a1(2013-01-08) => "PeeConnection.onicecandidate" callback never called. More info at https://bugzilla.mozilla.org/show_bug.cgi?id=827932
+        if ((This.o_pc.iceGatheringState || This.o_pc.iceState) === "complete") {
+            tmedia_session_jsep01.onIceGatheringCompleted(This);
         }
+        This.b_sdp_ro_offer = false; // reset until next incoming RO
     }
 }
 
@@ -659,7 +706,7 @@ tmedia_session_jsep01.onIceGatheringCompleted = function (_This) {
         if(localDescription){
             This.o_sdp_jsep_lo = localDescription;
             This.o_sdp_lo = tsdp_message.prototype.Parse(This.o_sdp_jsep_lo.sdp);
-            This.decorate_lo(true);
+            This.decorate_lo();
             if (This.o_mgr) {
                 This.o_mgr.callback(tmedia_session_events_e.GET_LO_SUCCESS, This.e_type);
             }
@@ -677,16 +724,41 @@ tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
         tsk_utils_log_error("This/PeerConnection is null: unexpected");
         return;
     }
+    var iceState = (This.o_pc.iceGatheringState || This.o_pc.iceState);
 
-    tsk_utils_log_info("onIceCandidate = " + This.o_pc.iceState);
+    tsk_utils_log_info("onIceCandidate = " + iceState);
     
-    if (This.o_pc.iceState == "completed" || (o_event && !o_event.candidate)) {
+    if (iceState === "complete" || (o_event && !o_event.candidate)) {
         tsk_utils_log_info("ICE GATHERING COMPLETED!");
         tmedia_session_jsep01.onIceGatheringCompleted(This);
     }
-    else if (This.o_pc.iceState == "failed") {
+    else if (This.o_pc.iceState === "failed") {
         tsk_utils_log_error("Ice state is 'failed'");
         This.o_mgr.callback(tmedia_session_events_e.GET_LO_FAILED, This.e_type); 
+    }
+}
+
+tmedia_session_jsep01.onNegotiationNeeded = function(o_event, _This) {
+    tsk_utils_log_info("onNegotiationNeeded");
+    var This = (tmedia_session_jsep01.mozThis || _This);
+    if (!This || !This.o_pc) {
+        // do not raise error: could happen after pc.close()
+        return;
+    }
+    if ((This.o_pc.iceGatheringState || This.o_pc.iceState) !== "new") {
+        tmedia_session_jsep01.onGetUserMediaSuccess(This.b_lo_held ? null : This.o_local_stream, This);
+    }
+}
+
+tmedia_session_jsep01.onSignalingstateChange = function (o_event, _This) {
+    var This = (tmedia_session_jsep01.mozThis || _This);
+    if(!This || !This.o_pc){
+        // do not raise error: could happen after pc.close()
+        return;
+    }
+    tsk_utils_log_info("onSignalingstateChange:" + This.o_pc.signalingState);
+    if (This.o_local_stream && This.o_pc.signalingState === "have-remote-offer") {
+         tmedia_session_jsep01.onGetUserMediaSuccess(This.o_local_stream, This);
     }
 }
 
@@ -729,7 +801,10 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
                 (o_iceServers && !o_iceServers.length) ? null : { iceServers: o_iceServers }, // empty array is used to disable STUN/TURN.
                 this.o_media_constraints
         );
-        this.o_pc.onicecandidate = tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onIceCandidate : function(o_event){ tmedia_session_jsep01.onIceCandidate(o_event, This) };
+        this.o_pc.onicecandidate = tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onIceCandidate : function (o_event) { tmedia_session_jsep01.onIceCandidate(o_event, This); };
+        this.o_pc.onnegotiationneeded = tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onNegotiationNeeded : function (o_event) { tmedia_session_jsep01.onNegotiationNeeded(o_event, This); };
+        this.o_pc.onsignalingstatechange = tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onSignalingstateChange : function (o_event) { tmedia_session_jsep01.onSignalingstateChange(o_event, This); };
+
         this.o_pc.o_mgr = this.o_mgr;
         if(!tmedia_session_jsep01.mozThis){
             this.o_pc.o_session = this; // HACK: Firefox exception: "Cannot modify properties of a WrappedNative"  nsresult: "0x80570034 (NS_ERROR_XPC_CANT_MODIFY_PROP_ON_WN)"
@@ -745,23 +820,25 @@ tmedia_session_jsep01.prototype.__get_lo = function () {
             this.__set_ro(this.o_sdp_ro, true);
         }
         // get media stream
-        if(this.e_type == tmedia_type_e.AUDIO && (this.b_cache_stream && __o_jsep_stream_audio)){
+        if (this.e_type == tmedia_type_e.AUDIO && (this.b_cache_stream && __o_jsep_stream_audio)) {
             tmedia_session_jsep01.onGetUserMediaSuccess(__o_jsep_stream_audio, This);
         }
-        else if(this.e_type == tmedia_type_e.AUDIO_VIDEO && (this.b_cache_stream && __o_jsep_stream_audiovideo)){
+        else if (this.e_type == tmedia_type_e.AUDIO_VIDEO && (this.b_cache_stream && __o_jsep_stream_audiovideo)) {
             tmedia_session_jsep01.onGetUserMediaSuccess(__o_jsep_stream_audiovideo, This);
         }
-        else{
-            this.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_REQUESTED, this.e_type);
-            navigator.nativeGetUserMedia(
-                    { 
-                        audio: (this.e_type == tmedia_type_e.SCREEN_SHARE) ? false : !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), // IMPORTANT: Chrome '28.0.1500.95 m' doesn't support using audio with screenshare
-                        video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) ? o_video_constraints : false, // "SCREEN_SHARE" contains "VIDEO" flag -> (VIDEO & SCREEN_SHARE) = VIDEO
-                        data: false 
-                    },
-                    tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onGetUserMediaSuccess : function(o_stream){ tmedia_session_jsep01.onGetUserMediaSuccess(o_stream, This); },
-                    tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onGetUserMediaError : function(s_error){ tmedia_session_jsep01.onGetUserMediaError(s_error, This); }
-                );
+        else {
+            if (!this.b_lo_held && !this.o_local_stream) {
+                this.o_mgr.callback(tmedia_session_events_e.STREAM_LOCAL_REQUESTED, this.e_type);
+                navigator.nativeGetUserMedia(
+                        {
+                            audio: (this.e_type == tmedia_type_e.SCREEN_SHARE) ? false : !!(this.e_type.i_id & tmedia_type_e.AUDIO.i_id), // IMPORTANT: Chrome '28.0.1500.95 m' doesn't support using audio with screenshare
+                            video: !!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id) ? o_video_constraints : false, // "SCREEN_SHARE" contains "VIDEO" flag -> (VIDEO & SCREEN_SHARE) = VIDEO
+                            data: false
+                        },
+                        tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onGetUserMediaSuccess : function (o_stream) { tmedia_session_jsep01.onGetUserMediaSuccess(o_stream, This); },
+                        tmedia_session_jsep01.mozThis ? tmedia_session_jsep01.onGetUserMediaError : function (s_error) { tmedia_session_jsep01.onGetUserMediaError(s_error, This); }
+                    );
+            }
        }
     }
 
@@ -777,6 +854,10 @@ tmedia_session_jsep01.prototype.__set_ro = function (o_sdp, b_is_offer) {
     /* update remote offer */
     this.o_sdp_ro = o_sdp;
     this.b_sdp_ro_offer = b_is_offer;
+    /* reset local sdp */
+    if (b_is_offer) {
+        this.o_sdp_lo = null;
+    }
 
     if (this.o_pc) {
         try {
