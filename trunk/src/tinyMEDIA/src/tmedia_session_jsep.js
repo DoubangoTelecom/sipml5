@@ -175,6 +175,13 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
         if ((o_hdr_S = this.o_sdp_lo.get_header(tsdp_header_type_e.S))) {
             o_hdr_S.s_value = "Doubango Telecom - " + tsk_utils_get_navigator_friendly_name();
         }
+        /* HACK: https://bugzilla.mozilla.org/show_bug.cgi?id=1072384 */
+        var o_hdr_O;
+        if ((o_hdr_O = this.o_sdp_lo.get_header(tsdp_header_type_e.O))) {
+            if (o_hdr_O.s_addr === "0.0.0.0") {
+                o_hdr_O.s_addr = "127.0.0.1";
+            }
+        }
 
         /* Remove 'video' media if not enabled (bug in chrome: doesn't honor 'has_video' parameter) */
         if (/*!this.o_sdp_ro &&*/!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
@@ -196,6 +203,10 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
                 else if (b_fingerprint || o_hdr_M.find_a("fingerprint")) {
                     o_hdr_M.s_proto = "UDP/TLS/RTP/SAVPF";
                 }
+            }
+            // HACK: https://bugzilla.mozilla.org/show_bug.cgi?id=1072384
+            if (o_hdr_M.o_hdr_C && o_hdr_M.o_hdr_C.s_addr === "0.0.0.0") {
+                o_hdr_M.o_hdr_C.s_addr = "127.0.0.1";
             }
             
             // bandwidth
