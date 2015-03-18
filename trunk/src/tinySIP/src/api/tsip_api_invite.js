@@ -332,7 +332,7 @@ tsip_session_invite.prototype.dtmf = function (c_digit) {
     var o_action = new tsip_action(tsip_action_type_e.DTMF_SEND);
     if (o_action) {
         o_action.add_headers(new tsip_header_Content_Type("application/dtmf-relay"));
-        o_action.set_content(c_digit.toString());
+        o_action.set_content(tsk_string_format("Signal={0}\r\nDuration={1}", c_digit, 120));
         return this.__action_handle(o_action);
     }
     return -3;
