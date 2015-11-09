@@ -41,16 +41,9 @@ function WebRtc4all_Init() {
         // WebRtc plugin type
         try {
             if (__webrtc_type == WebRtcType_e.NONE) {
-                window.nativeRTCPeerConnection = (window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection);
-                window.nativeRTCSessionDescription = (window.mozRTCSessionDescription || window.RTCSessionDescription); // order is very important: "RTCSessionDescription" defined in Nighly but useless
-                window.nativeRTCIceCandidate = (window.mozRTCIceCandidate || window.RTCIceCandidate);
                 window.nativeURL = (window.webkitURL || window.URL);
-                navigator.nativeGetUserMedia = (navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
-                if ((navigator.nativeGetUserMedia && window.nativeRTCPeerConnection)) {
+                if ((navigator.getUserMedia && window.RTCPeerConnection)) {
                     __webrtc_type = WebRtcType_e.NATIVE; // Google Chrome
-                }
-                else if (navigator.nativeGetUserMedia && window.webkitPeerConnection) {
-                    __webrtc_type = WebRtcType_e.ERICSSON;
                 }
            }
         }
@@ -76,17 +69,6 @@ function WebRtc4all_Init() {
         }
 
         __b_webrtc4all_initialized = true;
-
-        if (navigator.nativeGetUserMedia && WebRtc4all_GetType() == WebRtcType_e.ERICSSON) {
-            navigator.nativeGetUserMedia("audio, video",
-                    function (stream) {
-                        tsk_utils_log_info("Got stream :)");
-                        __o_roap_stream = stream;
-                    },
-                    function (error) {
-                        tsk_utils_log_error(error);
-                    });
-        }
     }
 }
 

@@ -62,41 +62,6 @@ function tmedia_session_mgr(e_type, s_addr, b_ipv6, b_offerer, fn_callback, o_us
     this.ao_sessions = new Array();
     this.ao_params = new Array();
 
-    // initialize media classes
-    // Must be done before loading sessions
-    if (__o_peerconnection_class == undefined) {
-        if (tsk_utils_have_webrtc4all()) {
-            __o_peerconnection_class = w4aPeerConnection;
-            __o_sessiondescription_class = w4aSessionDescription;
-            __o_iceCandidate_class = w4aIceCandidate;
-        }
-        else if (tsk_utils_have_webrtc()) {
-            // https://groups.google.com/group/discuss-webrtc/browse_thread/thread/ccaff9c94aa2aac1
-        if (WebRtc4all_GetType() == WebRtcType_e.NATIVE) {
-                if (window.webkitPeerConnection00 && window.SessionDescription && window.IceCandidate) {
-                    __o_peerconnection_class = window.webkitPeerConnection00;
-                    __o_sessiondescription_class = window.SessionDescription;
-                    __o_iceCandidate_class = window.IceCandidate;
-                }
-                else if (window.nativeRTCPeerConnection && window.nativeRTCSessionDescription && window.nativeRTCIceCandidate) {
-                    __o_peerconnection_class = window.nativeRTCPeerConnection;
-                    __o_sessiondescription_class = window.nativeRTCSessionDescription;
-                    __o_iceCandidate_class = window.nativeRTCIceCandidate;
-                }
-            }
-            else if (WebRtc4all_GetType() == WebRtcType_e.ERICSSON) {
-                if (window.webkitPeerConnection) {
-                    __o_peerconnection_class = window.webkitPeerConnection;
-                }
-            }
-        }
-
-        tsk_utils_log_info("PeerConnectionClass = " + (__o_peerconnection_class || "unknown") + 
-                            " SessionDescriptionClass = " + (__o_sessiondescription_class || "unknown") +
-                            " IceCandidateClass = " + (__o_iceCandidate_class || "unknown")
-                            );
-    }
-
     if (b_offerer) {
         this.load_sessions();
     }

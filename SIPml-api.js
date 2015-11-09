@@ -12,12 +12,11 @@ var tag_hdr = document.getElementsByTagName('head')[0];
 ['SIPml.js', 'src/tinySIP/src/tsip_api.js'].forEach(function (file) {
     var tag_script = document.createElement('script');
     tag_script.setAttribute('type', 'text/javascript');
-    tag_script.setAttribute('src', file + "?svn=230");
+    tag_script.setAttribute('src', file + "?svn=240");
     tag_hdr.appendChild(tag_script);
 });
-if (window.console) {
-    window.console.warn("YOUR ARE USING DEBUG CODE. PLEASE USE CODE UNDER 'release' FOLDER or check https://code.google.com/p/sipml5/wiki/FAQ#How_to_reduce_the_size_of_the_scripts_before_deploying for more information on how to amalgamate the code.");
-}
+window.console &&window.console.warn && window.console.warn("YOUR ARE USING DEBUG CODE. PLEASE USE CODE UNDER 'release' FOLDER or check https://code.google.com/p/sipml5/wiki/FAQ#How_to_reduce_the_size_of_the_scripts_before_deploying for more information on how to amalgamate the code.");
+
 
 // ================== RELEASE CODE =============== //
 // http://code.google.com/p/sipml5/wiki/FAQ#How_to_reduce_the_size_of_the_scripts_before_deploying

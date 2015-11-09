@@ -6,7 +6,7 @@
 # This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 #
 
-API_VERSION=1.5.230
+API_VERSION=2.0.0
 API_FOLDER_NAME=release
 API_FILE_NAME=SIPml-api.js
 API_FILE_PATH=$API_FOLDER_NAME/$API_FILE_NAME
@@ -18,9 +18,9 @@ CompressFile()
 	if [ ${1: -3} == ".js" ]
 	then
 		# java -jar google-closure-compiler.jar --js $1 --js_output_file $2 --charset utf-8
-		java -jar yuicompressor-2.4.7.jar $1 -o $2 --charset utf-8
+		java -cp . -jar yuicompressor-2.4.7.jar $1 -o $2 --charset utf-8
 	else
-		java -jar yuicompressor-2.4.7.jar $1 -o $2 --charset utf-8
+		java -cp . -jar yuicompressor-2.4.7.jar $1 -o $2 --charset utf-8
 	fi
 }
 
@@ -36,6 +36,7 @@ AppendScripts()
 {
 	echo "var __b_release_mode = true;" > $1
 	
+	AppendFile src/adapter.js $1
 	AppendFile src/tinySAK/src/tsk_base64.js $1
     AppendFile src/tinySAK/src/tsk_buff.js $1
     AppendFile src/tinySAK/src/tsk_fsm.js $1

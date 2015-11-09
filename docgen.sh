@@ -1,4 +1,5 @@
 java \
+-cp . \
 -Djsdoc.dir=./jsdoc-toolkit \
 -jar ./jsdoc-toolkit/jsrun.jar \
 ./jsdoc-toolkit/app/run.js \

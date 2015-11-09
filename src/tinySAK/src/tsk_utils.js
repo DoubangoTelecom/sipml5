@@ -48,7 +48,7 @@ function tsk_utils_webrtc4all_get_version() {
 
 function tsk_utils_have_stream() {
     try {
-        return (tsk_utils_have_webrtc4all() || !!navigator.nativeGetUserMedia);
+        return (tsk_utils_have_webrtc4all() || !!navigator.getUserMedia);
     }
     catch (e) { }
     return false;
@@ -112,20 +112,20 @@ function tsk_utils_log_set_level(i_level) {
 }
 
 function tsk_utils_log_info(s_msg) {
-    if (window.console && (__i_debug_level >= 4)) {
-        window.console.info(s_msg);
+    if (__i_debug_level >= 4) {
+        window.console && window.console.info && window.console.info(s_msg);
     }
 }
 
 function tsk_utils_log_warn(s_msg) {
-    if (window.console && (__i_debug_level >= 3)) {
-        window.console.warn(s_msg);
+    if (__i_debug_level >= 3) {
+        window.console && window.console.warn && window.console.warn(s_msg);
     }
 }
 
 function tsk_utils_log_error(s_msg) {
-    if (window.console && (__i_debug_level >= 2)) {
-        window.console.error(s_msg);
+    if (__i_debug_level >= 2) {
+        window.console && window.console.error && window.console.error(s_msg);
     }
 }
 

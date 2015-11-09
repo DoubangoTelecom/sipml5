@@ -9,7 +9,7 @@
 
 @name sipML5 API
 @author      Doubango Telecom <http://www.doubango.org>
-@version     1.5.222
+@version     2.0.0
 */
 
 /** 
@@ -36,7 +36,7 @@ Sets the debug level.
 @since version 1.3.203
 @param {String} level The level. Supported values: <i>info</i>, <i>warn</i>, <i>error</i> and <i>fatal</i>.
 */
-SIPml.setDebugLevel = function(level) {
+SIPml.setDebugLevel = function (level) {
     tsk_utils_log_set_level(level === 'fatal' ? 1 : (level === 'error' ? 2 : (level === 'warn' ? 3 : 4)));
 }
 
@@ -44,7 +44,7 @@ SIPml.setDebugLevel = function(level) {
 Starts debugging the native (C/C++) code. Requires webrt4all plugin.
 On Windows, the output file should be at <b>C:\Users\&lt;YOUR LOGIN&gt;\AppData\Local\Temp\Low\webrtc4all.log</b>.
 Starting the native debug isn't recommended and must be done to track issues only.
-@since version 1.5.222
+@since version 2.0.0
 */
 SIPml.startNativeDebug = function () {
     WebRtc4all_GetPlugin().startDebug();
@@ -52,7 +52,7 @@ SIPml.startNativeDebug = function () {
 
 /**
 Stops debugging the native (C/C++) code. Requires webrt4all plugin.
-@since version 1.5.222
+@since version 2.0.0
 */
 SIPml.stopNativeDebug = function () {
     WebRtc4all_GetPlugin().stopDebug();
@@ -63,7 +63,7 @@ Gets the current WebRTC type being  used.
 @since version 1.4.217
 @returns {String} the WebRTC type. Possible values: <i>native</i>, <i>w4a</i>, <i>erisson</i> or <i>unknown</i>.
 */
-SIPml.getWebRtcType = function() {
+SIPml.getWebRtcType = function () {
     switch (WebRtc4all_GetType()) {
         case WebRtcType_e.W4A: case WebRtcType_e.IE: case WebRtcType_e.NPAPI: return "w4a";
         case WebRtcType_e.ERICSSON: return "erisson";
@@ -74,11 +74,11 @@ SIPml.getWebRtcType = function() {
 
 /**
 Sets the default webrtc type. Must be called before <a href="#.init">initializing</a> the engine.
-@since version 1.5.222
+@since version 2.0.0
 @param {String} type The type. Supported values: <i>native</i>, <i>w4a</i> and <i>erisson</i>.
 @returns {Boolean} <i>true</i> if succeed; otherwise <i>false</i>
 */
-SIPml.setWebRtcType = function(type) {
+SIPml.setWebRtcType = function (type) {
     if (SIPml.isInitialized()) {
         throw new Error("ERR_ALREADY_INITIALIZED: Engine already initialized.");
     }
@@ -87,11 +87,11 @@ SIPml.setWebRtcType = function(type) {
 
 /**
 Gets the list of running apps. Requires webrt4all plugin.
-@since version 1.5.222
+@since version 2.0.0
 @returns {String} the the list of running apps. Format: <i>(base64($$WindowID$$=str(...)$$Description$$=str(...)$$IconData$$=base64(...)$$IconType$$=str(...)))*</i>
 @throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
 */
-SIPml.getRunningApps = function() {
+SIPml.getRunningApps = function () {
     if (SIPml.getWebRtcType() != 'w4a') {
         throw new Error("ERR_NOT_SUPPORTED: requires webrtc4all plugin");
     }
@@ -100,12 +100,12 @@ SIPml.getRunningApps = function() {
 
 /**
 Sets the video fps. Requires webrt4all plugin.
-@since version 1.5.222
+@since version 2.0.0
 @param {Integer} fps fps value. 
 @returns {Integer} 0 if successful; otherwise nonzero
 @throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
 */
-SIPml.setFps = function(fps) {
+SIPml.setFps = function (fps) {
     if (SIPml.getWebRtcType() != 'w4a') {
         throw new Error("ERR_NOT_SUPPORTED: Setting maximum video size requires webrtc4all plugin");
     }
@@ -116,12 +116,12 @@ SIPml.setFps = function(fps) {
 
 /**
 Sets the maximum video size. Requires webrt4all plugin.
-@since version 1.5.222
+@since version 2.0.0
 @param {String} maxVideoSize maxVideoSize value. Supported values: "sqcif", "qcif" "qvga" "cif" "hvga", "vga", "4cif", "svga", "480p", "720p", "16cif", "1080p", "2160p".
 @returns {Integer} 0 if successful; otherwise nonzero
 @throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
 */
-SIPml.setMaxVideoSize = function(maxVideoSize) {
+SIPml.setMaxVideoSize = function (maxVideoSize) {
     if (SIPml.getWebRtcType() != 'w4a') {
         throw new Error("ERR_NOT_SUPPORTED: Setting FPS requires webrtc4all plugin");
     }
@@ -131,12 +131,12 @@ SIPml.setMaxVideoSize = function(maxVideoSize) {
 
 /**
 Sets the maximum bandwidth (upload). Requires webrt4all plugin.
-@since version 1.5.222
+@since version 2.0.0
 @param {Integer} maxBandwidthUp maxBandwidthUp value (kbps). 
 @returns {Integer} 0 if successful; otherwise nonzero
 @throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
 */
-SIPml.setMaxBandwidthUp = function(maxBandwidthUp) {
+SIPml.setMaxBandwidthUp = function (maxBandwidthUp) {
     if (SIPml.getWebRtcType() != 'w4a') {
         throw new Error("ERR_NOT_SUPPORTED: Setting maximum bandwidth requires webrtc4all plugin");
     }
@@ -146,12 +146,12 @@ SIPml.setMaxBandwidthUp = function(maxBandwidthUp) {
 
 /**
 Sets the maximum bandwidth (down). Requires webrt4all plugin.
-@since version 1.5.222
+@since version 2.0.0
 @param {Integer} maxBandwidthUp maxBandwidthUp value (kbps). 
 @returns {Integer} 0 if successful; otherwise nonzero
 @throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
 */
-SIPml.setMaxBandwidthDown = function(maxBandwidthDown) {
+SIPml.setMaxBandwidthDown = function (maxBandwidthDown) {
     if (SIPml.getWebRtcType() != 'w4a') {
         throw new Error("ERR_NOT_SUPPORTED: Setting maximum bandwidth requires webrtc4all plugin");
     }
@@ -162,12 +162,12 @@ SIPml.setMaxBandwidthDown = function(maxBandwidthDown) {
 /**
 Defines whether to enable "zero-artifacts" features. Requires webrt4all plugin. <br />
 More information about this option on Doubango's TelePresence wiki page: <a href="https://code.google.com/p/telepresence/wiki/Technical_Video_quality#Zero-artifacts">https://code.google.com/p/telepresence/wiki/Technical_Video_quality#Zero-artifacts</a>
-@since version 1.5.222
+@since version 2.0.0
 @param {Boolean} zeroArtifacts New optional value. 
 @returns {Integer} 0 if successful; otherwise nonzero
 @throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
 */
-SIPml.setZeroArtifacts = function(zeroArtifacts) {
+SIPml.setZeroArtifacts = function (zeroArtifacts) {
     if (SIPml.getWebRtcType() != 'w4a') {
         throw new Error("ERR_NOT_SUPPORTED: Setting maximum bandwidth requires webrtc4all plugin");
     }
@@ -182,8 +182,8 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @returns {String} Version name (e.g. '1.12.756')
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
-SIPml.getWebRtc4AllVersion = function() {
-    if(!SIPml.isInitialized()){
+SIPml.getWebRtc4AllVersion = function () {
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
     return SIPml.s_webrtc4all_version;
@@ -196,11 +196,11 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @returns {String} The the web browser version.
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
-SIPml.getNavigatorVersion = function() {
-    if(!SIPml.isInitialized()){
+SIPml.getNavigatorVersion = function () {
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
-    return SIPml.s_navigator_version; 
+    return SIPml.s_navigator_version;
 };
 
 /**
@@ -210,11 +210,11 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @returns {String} The web browser friendly name.
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
-SIPml.getNavigatorFriendlyName = function() {
-    if(!SIPml.isInitialized()){
+SIPml.getNavigatorFriendlyName = function () {
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
-    return SIPml.s_navigator_friendly_name; 
+    return SIPml.s_navigator_friendly_name;
 };
 
 /**
@@ -224,11 +224,11 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @returns {String} The Operating System friendly name.
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
-SIPml.getSystemFriendlyName = function() {
-    if(!SIPml.isInitialized()){
+SIPml.getSystemFriendlyName = function () {
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
-    return SIPml.s_system_friendly_name; 
+    return SIPml.s_system_friendly_name;
 };
 
 /**
@@ -238,11 +238,11 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @returns {Boolean} <i>true</i> if outdated; otherwise <i>false</i>
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
-SIPml.isNavigatorOutdated= function () {
-    if(!SIPml.isInitialized()){
+SIPml.isNavigatorOutdated = function () {
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
-    return SIPml.b_navigator_outdated; 
+    return SIPml.b_navigator_outdated;
 }
 
 /**
@@ -252,11 +252,11 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @returns {Boolean} <i>true</i> if outdated; otherwise <i>false</i>
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
-SIPml.isWebRtc4AllPluginOutdated = function(){
-    if(!SIPml.isInitialized()){
+SIPml.isWebRtc4AllPluginOutdated = function () {
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
-    return SIPml.b_webrtc4all_plugin_outdated; 
+    return SIPml.b_webrtc4all_plugin_outdated;
 }
 
 /**
@@ -266,11 +266,11 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @returns {Boolean} <i>true</i> if supported; otherwise <i>false</i>
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
-SIPml.isWebRtc4AllSupported = function(){
-    if(!SIPml.isInitialized()){
+SIPml.isWebRtc4AllSupported = function () {
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
-    return SIPml.b_webrtc4all_supported; 
+    return SIPml.b_webrtc4all_supported;
 }
 
 /**
@@ -296,10 +296,10 @@ You must <a href="#.init">initialize</a> the engine before calling this function
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
 SIPml.isWebRtcSupported = function () {
-    if(!SIPml.isInitialized()){
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
-    return SIPml.b_webrtc_supported; 
+    return SIPml.b_webrtc_supported;
 }
 
 /**
@@ -308,7 +308,7 @@ Checks whether WebSocket is supported or not.
 @returns {Boolean} <i>true</i> if supported; otherwise <i>false</i>
 */
 SIPml.isWebSocketSupported = function () {
-    return tsk_utils_have_websocket(); 
+    return tsk_utils_have_websocket();
 }
 
 /**
@@ -317,7 +317,7 @@ Checks whether <a href="https://developer.mozilla.org/en-US/docs/WebRTC/navigato
 @returns {Boolean} <i>true</i> if <a href="https://developer.mozilla.org/en-US/docs/WebRTC/navigator.getUserMedia">getUserMedia</a> is supported; otherwise <i>false</i>
 */
 SIPml.haveMediaStream = function () {
-    if(!SIPml.isInitialized()){
+    if (!SIPml.isInitialized()) {
         throw new Error("ERR_NOT_INITIALIZED: Engine not initialized yet. Please call 'SIPml.init()' first");
     }
     return SIPml.b_have_media_stream;
@@ -336,7 +336,7 @@ The engine is ready when:
 @throws {ERR_NOT_INITIALIZED} <font color="red">ERR_NOT_INITIALIZED</font> if the engine is not <a href="#.init">initialized</a>.
 */
 SIPml.isReady = function () {
-    return (SIPml.isInitialized() && SIPml.isWebRtcSupported() && SIPml.haveMediaStream()); 
+    return (SIPml.isInitialized() && SIPml.isWebRtcSupported() && SIPml.haveMediaStream());
 }
 
 /**
@@ -385,12 +385,12 @@ SIPml.init = function (successCallback, errorCallback) {
         tsk_utils_log_info("Navigator friendly name = " + SIPml.s_navigator_friendly_name);
 
         // gets navigator version
-        if(SIPml.s_navigator_friendly_name == 'ie'){
+        if (SIPml.s_navigator_friendly_name == 'ie') {
             var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
             if (re.exec(navigator.userAgent) != null) {
                 SIPml.s_navigator_version = RegExp.$1;
             }
-        }        
+        }
 
         // prints OS friendly name
         tsk_utils_log_info("OS friendly name = " + SIPml.s_system_friendly_name);
@@ -431,18 +431,18 @@ SIPml.init = function (successCallback, errorCallback) {
             }
         }
 
-        if(SIPml.b_webrtc_supported && SIPml.b_have_media_stream){
+        if (SIPml.b_webrtc_supported && SIPml.b_have_media_stream) {
             SIPml.b_initialized = true;
             SIPml.b_initializing = false;
             tsk_utils_log_info("Engine initialized");
-            if(successCallback){
+            if (successCallback) {
                 successCallback({});
             }
         }
-        else{
-            if(errorCallback){
+        else {
+            if (errorCallback) {
                 var s_description = !SIPml.b_webrtc_supported ? "WebRTC not supported" : (!SIPml.b_have_media_stream ? "getUserMedia not supported" : "Internal error");
-                errorCallback({description: s_description});
+                errorCallback({ description: s_description });
             }
         }
     }
@@ -543,11 +543,11 @@ SIPml.EventTarget.prototype.addEventListener = function (o_type, o_listener) {
     if (!o_type) {
         throw new Error("ERR_INVALID_PARAMETER_VALUE: 'type' must not be null");
     }
-    if(!(o_type instanceof String || typeof o_type == "string" || o_type instanceof Array)){
+    if (!(o_type instanceof String || typeof o_type == "string" || o_type instanceof Array)) {
         throw new Error("ERR_INVALID_PARAMETER_TYPE: 'type' must be a string or array");
     }
-    
-    if(o_type instanceof Array){
+
+    if (o_type instanceof Array) {
         var This = this;
         o_type.forEach(function (s_type) {
             if (!tsk_string_is_null_or_empty(s_type) && tsk_string_is_string(s_type)) {
@@ -555,7 +555,7 @@ SIPml.EventTarget.prototype.addEventListener = function (o_type, o_listener) {
             }
         });
     }
-    else{
+    else {
         this.ao_listeners[o_type] = o_listener;
     }
 }
@@ -797,7 +797,7 @@ SIPml.Stack = function (o_conf) {
     }
 
     var i_port;
-    var s_proxy;    
+    var s_proxy;
 
     if (!SIPml.isWebSocketSupported()) {
         // port and host will be updated using the result from DNS SRV(NAPTR(realm))
@@ -826,7 +826,7 @@ SIPml.Stack = function (o_conf) {
     this.setConfiguration(o_conf);
 
     // listen for stack events
-    this.o_stack.on_event_stack = function(e) {
+    this.o_stack.on_event_stack = function (e) {
         var s_type;
         switch (e.i_code) {
             case tsip_event_code_e.STACK_STARTING: s_type = 'starting'; break;
@@ -836,120 +836,120 @@ SIPml.Stack = function (o_conf) {
             case tsip_event_code_e.STACK_FAILED_TO_START: s_type = 'failed_to_start'; break;
             case tsip_event_code_e.STACK_FAILED_TO_STOP: s_type = 'failed_to_stop'; break;
         }
-        if(s_type){
-             e.o_stack.oStack.dispatchEvent({ s_type: s_type, o_value: new SIPml.Stack.Event(s_type, e) });
+        if (s_type) {
+            e.o_stack.oStack.dispatchEvent({ s_type: s_type, o_value: new SIPml.Stack.Event(s_type, e) });
         }
     }
 
 
-     // listen for dialog events
-     this.o_stack.on_event_dialog = function (e) {
-         var s_type = null;
-         var i_session_id = e.o_session.i_id;
-         var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
-         if (!oSession) {
-             tsk_utils_log_warn('Cannot find session with id = ' + i_session_id);
-             return;
-         }
+    // listen for dialog events
+    this.o_stack.on_event_dialog = function (e) {
+        var s_type = null;
+        var i_session_id = e.o_session.i_id;
+        var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
+        if (!oSession) {
+            tsk_utils_log_warn('Cannot find session with id = ' + i_session_id);
+            return;
+        }
 
-         switch (e.i_code) {
-             case tsip_event_code_e.DIALOG_TRANSPORT_ERROR: s_type = 'transport_error'; break;
-             case tsip_event_code_e.DIALOG_GLOBAL_ERROR: s_type = 'global_error'; break;
-             case tsip_event_code_e.DIALOG_MESSAGE_ERROR: s_type = 'message_error'; break;
-             case tsip_event_code_e.DIALOG_WEBRTC_ERROR: s_type = 'webrtc_error'; break;
-             case tsip_event_code_e.DIALOG_REQUEST_INCOMING: s_type = 'i_request'; break;
-             case tsip_event_code_e.DIALOG_REQUEST_OUTGOING: s_type = 'o_request'; break;
-             case tsip_event_code_e.DIALOG_REQUEST_CANCELLED: s_type = 'cancelled_request'; break;
-             case tsip_event_code_e.DIALOG_REQUEST_SENT: s_type = 'sent_request'; break;
-             case tsip_event_code_e.DIALOG_MEDIA_ADDED: s_type = 'media_added'; break;
-             case tsip_event_code_e.DIALOG_MEDIA_REMOVED: s_type = 'media_removed'; break;
-             case tsip_event_code_e.DIALOG_CONNECTING: s_type = 'connecting'; break;
-             case tsip_event_code_e.DIALOG_CONNECTED: s_type = 'connected'; break;
-             case tsip_event_code_e.DIALOG_BFCP_INFO: s_type = 'bfcp_info'; break;
-             case tsip_event_code_e.DIALOG_TERMINATING: s_type = 'terminating'; break;
-             case tsip_event_code_e.DIALOG_TERMINATED: 
+        switch (e.i_code) {
+            case tsip_event_code_e.DIALOG_TRANSPORT_ERROR: s_type = 'transport_error'; break;
+            case tsip_event_code_e.DIALOG_GLOBAL_ERROR: s_type = 'global_error'; break;
+            case tsip_event_code_e.DIALOG_MESSAGE_ERROR: s_type = 'message_error'; break;
+            case tsip_event_code_e.DIALOG_WEBRTC_ERROR: s_type = 'webrtc_error'; break;
+            case tsip_event_code_e.DIALOG_REQUEST_INCOMING: s_type = 'i_request'; break;
+            case tsip_event_code_e.DIALOG_REQUEST_OUTGOING: s_type = 'o_request'; break;
+            case tsip_event_code_e.DIALOG_REQUEST_CANCELLED: s_type = 'cancelled_request'; break;
+            case tsip_event_code_e.DIALOG_REQUEST_SENT: s_type = 'sent_request'; break;
+            case tsip_event_code_e.DIALOG_MEDIA_ADDED: s_type = 'media_added'; break;
+            case tsip_event_code_e.DIALOG_MEDIA_REMOVED: s_type = 'media_removed'; break;
+            case tsip_event_code_e.DIALOG_CONNECTING: s_type = 'connecting'; break;
+            case tsip_event_code_e.DIALOG_CONNECTED: s_type = 'connected'; break;
+            case tsip_event_code_e.DIALOG_BFCP_INFO: s_type = 'bfcp_info'; break;
+            case tsip_event_code_e.DIALOG_TERMINATING: s_type = 'terminating'; break;
+            case tsip_event_code_e.DIALOG_TERMINATED:
                 {
-                    s_type = 'terminated'; 
-                    e.o_session.o_stack.oStack.ao_sessions[i_session_id] = undefined; 
+                    s_type = 'terminated';
+                    e.o_session.o_stack.oStack.ao_sessions[i_session_id] = undefined;
                     break;
                 }
-             default: break;
-         }
+            default: break;
+        }
 
-         if (s_type) {
-             oSession.dispatchEvent({ s_type: s_type, o_value: new SIPml.Session.Event(oSession, s_type, e) });
-         }
-     }
+        if (s_type) {
+            oSession.dispatchEvent({ s_type: s_type, o_value: new SIPml.Session.Event(oSession, s_type, e) });
+        }
+    }
 
-     // listen for MESSAGE events
-     this.o_stack.on_event_message = function (e) {
-         var s_type = null;
-         var i_session_id = e.o_session.i_id;
-         var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
+    // listen for MESSAGE events
+    this.o_stack.on_event_message = function (e) {
+        var s_type = null;
+        var i_session_id = e.o_session.i_id;
+        var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
 
-         switch (e.e_message_type) {
-             case tsip_event_message_type_e.I_MESSAGE: s_type = 'i_new_message'; break;
-             case tsip_event_message_type_e.AO_MESSAGE: s_type = 'i_ao_request'; break;
-         }
+        switch (e.e_message_type) {
+            case tsip_event_message_type_e.I_MESSAGE: s_type = 'i_new_message'; break;
+            case tsip_event_message_type_e.AO_MESSAGE: s_type = 'i_ao_request'; break;
+        }
 
-         if (s_type) {
-             // 'i_new_call' is stack-level event
-             if (s_type == 'i_new_message') {
+        if (s_type) {
+            // 'i_new_call' is stack-level event
+            if (s_type == 'i_new_message') {
                 var oNewEvent = new SIPml.Stack.Event(s_type, e);
                 oNewEvent.newSession = new SIPml.Session.Message(e.o_session);
                 e.o_session.o_stack.oStack.ao_sessions[i_session_id] = oNewEvent.newSession; // save session
-                e.o_session.o_stack.oStack.dispatchEvent({ s_type: s_type, o_value:  oNewEvent});
-             }
-             else {
-                 if(oSession){
+                e.o_session.o_stack.oStack.dispatchEvent({ s_type: s_type, o_value: oNewEvent });
+            }
+            else {
+                if (oSession) {
                     oSession.dispatchEvent({ s_type: s_type, o_value: new SIPml.Session.Event(oSession, s_type, e) });
-                 }
-                 else{
+                }
+                else {
                     tsk_utils_log_warn('Cannot find session with id = ' + i_session_id + ' and event = ' + e.e_invite_type);
-                 }
-             }
-         }
-     };
+                }
+            }
+        }
+    };
 
-      // listen for PUBLISH events
-     this.o_stack.on_event_publish = function (e) {
-         var s_type = null;
-         var i_session_id = e.o_session.i_id;
-         var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
-         if(!oSession){
+    // listen for PUBLISH events
+    this.o_stack.on_event_publish = function (e) {
+        var s_type = null;
+        var i_session_id = e.o_session.i_id;
+        var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
+        if (!oSession) {
             tsk_utils_log_warn('Cannot find session with id = ' + i_session_id + ' and event = ' + e.e_invite_type);
             return;
-         }
+        }
 
-         switch(e.e_publish_type){
+        switch (e.e_publish_type) {
             case tsip_event_publish_type_e.I_PUBLISH: break;
             case tsip_event_publish_type_e.I_UNPUBLISH: break;
-            case tsip_event_publish_type_e.AO_PUBLISH: 
+            case tsip_event_publish_type_e.AO_PUBLISH:
             case tsip_event_publish_type_e.AO_UNPUBLISH:
                 {
-                    s_type = 'i_ao_request'; 
+                    s_type = 'i_ao_request';
                     break;
                 }
-         }
-         if(s_type){
+        }
+        if (s_type) {
             oSession.dispatchEvent({ s_type: s_type, o_value: new SIPml.Session.Event(oSession, s_type, e) });
-         }
-     }
+        }
+    }
 
-     // listen for SUBSCRIBE events
-     this.o_stack.on_event_subscribe = function (e) {
-         var s_type = null;
-         var i_session_id = e.o_session.i_id;
-         var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
-         if(!oSession){
+    // listen for SUBSCRIBE events
+    this.o_stack.on_event_subscribe = function (e) {
+        var s_type = null;
+        var i_session_id = e.o_session.i_id;
+        var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
+        if (!oSession) {
             tsk_utils_log_warn('Cannot find session with id = ' + i_session_id + ' and event = ' + e.e_invite_type);
             return;
-         }
+        }
 
-         switch(e.e_subscribe_type){
+        switch (e.e_subscribe_type) {
             case tsip_event_subscribe_type_e.I_SUBSCRIBE: break;
             case tsip_event_subscribe_type_e.I_UNSUBSRIBE: break;
-            case tsip_event_subscribe_type_e.AO_SUBSCRIBE: 
+            case tsip_event_subscribe_type_e.AO_SUBSCRIBE:
             case tsip_event_subscribe_type_e.AO_UNSUBSCRIBE:
             case tsip_event_subscribe_type_e.AO_NOTIFY:
                 {
@@ -961,20 +961,20 @@ SIPml.Stack = function (o_conf) {
                     s_type = 'i_notify';
                     break;
                 }
-         }
-         if(s_type){
+        }
+        if (s_type) {
             oSession.dispatchEvent({ s_type: s_type, o_value: new SIPml.Session.Event(oSession, s_type, e) });
-         }
-     }
+        }
+    }
 
 
-     // listen for INVITE events
-     this.o_stack.on_event_invite = function (e) {
-         var s_type = null;
-         var i_session_id = e.o_session.i_id;
-         var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
-         if (!oSession) {
-             switch (e.e_invite_type) {
+    // listen for INVITE events
+    this.o_stack.on_event_invite = function (e) {
+        var s_type = null;
+        var i_session_id = e.o_session.i_id;
+        var oSession = e.o_session.o_stack.oStack.ao_sessions[i_session_id];
+        if (!oSession) {
+            switch (e.e_invite_type) {
                 case tsip_event_invite_type_e.I_NEW_CALL:
                 case tsip_event_invite_type_e.M_STREAM_LOCAL_REQUESTED:
                 case tsip_event_invite_type_e.M_STREAM_LOCAL_ACCEPTED:
@@ -990,54 +990,38 @@ SIPml.Stack = function (o_conf) {
                     tsk_utils_log_info('Not notifying to session with id = ' + i_session_id + ' for event = ' + e.e_invite_type);
                     return;
 
-                 default:
+                default:
                     tsk_utils_log_warn('Cannot find session with id = ' + i_session_id + ' and event = ' + e.e_invite_type);
                     return;
-             }
-         }
-
-         
-
-         var _setStream = function(o_view, o_stream, o_url, b_audio){
-            if(o_stream){
-                if(!b_audio && o_stream.videoTracks.length > 0){
-                    if (window.HTMLVideoElement && o_view instanceof window.HTMLVideoElement){
-                        if((o_view.src = o_url)){
-                            o_view.play();
-                        }
-                    }
-                    return true;
-                }
-                if(b_audio && o_stream.audioTracks.length > 0){
-                    if (window.HTMLAudioElement && o_view instanceof window.HTMLAudioElement){
-                        if((o_view.src = o_url)){
-                            o_view.play();
-                        }
-                    }
-                    return true;
-                }
             }
-         }
+        }
 
-         var attachStream = function(bLocal){
+
+
+        var _setStream = function (o_view, o_stream, b_audio) {
+            if (o_view) {
+                attachMediaStream(o_view, o_stream);
+                return (b_audio && o_stream && o_stream.getAudioTracks().length > 0) || (!b_audio && o_stream && o_stream.getVideoTracks().length > 0);
+            }
+        }
+
+        var attachStream = function (bLocal) {
             var o_stream = bLocal ? e.o_session.get_stream_local() : e.o_session.get_stream_remote();
-            var o_url = bLocal ? e.o_session.get_url_local() : e.o_session.get_url_remote();
-            if(_setStream((bLocal ? oSession.videoLocal : oSession.videoRemote), o_stream, o_url, false)){
+            if (_setStream((bLocal ? oSession.videoLocal : oSession.videoRemote), o_stream, false)) {
                 dispatchEvent(bLocal ? 'm_stream_video_local_added' : 'm_stream_video_remote_added');
             }
-            if(_setStream((bLocal ? oSession.audioLocal : oSession.audioRemote), o_stream, o_url, true)){
+            if (_setStream((bLocal ? oSession.audioLocal : oSession.audioRemote), o_stream, true)) {
                 dispatchEvent(bLocal ? 'm_stream_audio_local_added' : 'm_stream_audio_remote_added');
             }
-         }
-         var deattachStream = function(bLocal){
-            var o_stream = bLocal ? e.o_session.get_stream_local() : e.o_session.get_stream_remote();
-            if(_setStream((bLocal ? oSession.videoLocal : oSession.videoRemote), o_stream, null, false)){
+        }
+        var deattachStream = function (bLocal) {
+            if (_setStream((bLocal ? oSession.videoLocal : oSession.videoRemote), null, false)) {
                 dispatchEvent(bLocal ? 'm_stream_video_local_removed' : 'm_stream_video_remote_removed');
             }
-            if(_setStream((bLocal ? oSession.audioLocal : oSession.audioRemote), o_stream, null, true)){
+            if (_setStream((bLocal ? oSession.audioLocal : oSession.audioRemote), null, true)) {
                 dispatchEvent(bLocal ? 'm_stream_audio_local_removed' : 'm_stream_audio_remote_removed');
             }
-         }
+        }
 
         var dispatchEvent = function (s_event_type) {
             if (s_event_type) {
@@ -1049,7 +1033,7 @@ SIPml.Stack = function (o_conf) {
                     case 'm_permission_refused':
                         {
                             var oNewEvent = new SIPml.Stack.Event(s_event_type, e);
-                            if(s_event_type == 'i_new_call'){
+                            if (s_event_type == 'i_new_call') {
                                 oNewEvent.newSession = new SIPml.Session.Call(e.o_session);
                                 e.o_session.o_stack.oStack.ao_sessions[i_session_id] = oNewEvent.newSession; // save session
                             }
@@ -1065,59 +1049,59 @@ SIPml.Stack = function (o_conf) {
             }
         }
 
-         switch (e.e_invite_type) {
-             case tsip_event_invite_type_e.I_NEW_CALL: s_type = 'i_new_call'; break;
-             case tsip_event_invite_type_e.I_ECT_NEW_CALL: s_type = 'i_ect_new_call'; break;
-             case tsip_event_invite_type_e.I_AO_REQUEST: s_type = 'i_ao_request'; break;
-             case tsip_event_invite_type_e.M_EARLY_MEDIA: s_type = 'm_early_media'; break;
-             case tsip_event_invite_type_e.M_STREAM_LOCAL_REQUESTED: s_type = 'm_permission_requested'; break;
-             case tsip_event_invite_type_e.M_STREAM_LOCAL_ACCEPTED: s_type = 'm_permission_accepted'; break;
-             case tsip_event_invite_type_e.M_STREAM_LOCAL_REFUSED: s_type = 'm_permission_refused'; break;
-             case tsip_event_invite_type_e.M_STREAM_LOCAL_ADDED:
-                 {
-                   return attachStream(true);
-                 }
-             case tsip_event_invite_type_e.M_STREAM_LOCAL_REMOVED:
-                 { 
+        switch (e.e_invite_type) {
+            case tsip_event_invite_type_e.I_NEW_CALL: s_type = 'i_new_call'; break;
+            case tsip_event_invite_type_e.I_ECT_NEW_CALL: s_type = 'i_ect_new_call'; break;
+            case tsip_event_invite_type_e.I_AO_REQUEST: s_type = 'i_ao_request'; break;
+            case tsip_event_invite_type_e.M_EARLY_MEDIA: s_type = 'm_early_media'; break;
+            case tsip_event_invite_type_e.M_STREAM_LOCAL_REQUESTED: s_type = 'm_permission_requested'; break;
+            case tsip_event_invite_type_e.M_STREAM_LOCAL_ACCEPTED: s_type = 'm_permission_accepted'; break;
+            case tsip_event_invite_type_e.M_STREAM_LOCAL_REFUSED: s_type = 'm_permission_refused'; break;
+            case tsip_event_invite_type_e.M_STREAM_LOCAL_ADDED:
+                {
+                    return attachStream(true);
+                }
+            case tsip_event_invite_type_e.M_STREAM_LOCAL_REMOVED:
+                {
                     return deattachStream(true);
-                 }
-             case tsip_event_invite_type_e.M_STREAM_REMOTE_ADDED:
-                 { 
+                }
+            case tsip_event_invite_type_e.M_STREAM_REMOTE_ADDED:
+                {
                     return attachStream(false);
-                 }
-             case tsip_event_invite_type_e.M_STREAM_REMOTE_REMOVED:
+                }
+            case tsip_event_invite_type_e.M_STREAM_REMOTE_REMOVED:
                 {
                     return deattachStream(false);
                 }
-             case tsip_event_invite_type_e.M_LOCAL_HOLD_OK: s_type = 'm_local_hold_ok'; break;
-             case tsip_event_invite_type_e.M_LOCAL_HOLD_NOK: s_type = 'm_local_hold_nok'; break;
-             case tsip_event_invite_type_e.M_LOCAL_RESUME_OK: s_type = 'm_local_resume_ok'; break;
-             case tsip_event_invite_type_e.M_LOCAL_RESUME_NOK: s_type = 'm_local_resume_nok'; break;
-             case tsip_event_invite_type_e.M_REMOTE_HOLD: s_type = 'm_remote_hold'; break;
-             case tsip_event_invite_type_e.M_REMOTE_RESUME: s_type = 'm_remote_resume'; break;
-             case tsip_event_invite_type_e.M_BFCP_INFO: s_type = 'm_bfcp_info'; break;
-             case tsip_event_invite_type_e.O_ECT_TRYING: s_type = 'o_ect_trying'; break;
-             case tsip_event_invite_type_e.O_ECT_ACCEPTED: s_type = 'o_ect_accepted'; break;
-             case tsip_event_invite_type_e.O_ECT_COMPLETED: s_type = 'o_ect_completed'; break;
-             case tsip_event_invite_type_e.I_ECT_COMPLETED: s_type = 'i_ect_completed'; break;
-             case tsip_event_invite_type_e.O_ECT_FAILED: s_type = 'o_ect_failed'; break;
-             case tsip_event_invite_type_e.I_ECT_FAILED: s_type = 'i_ect_failed'; break;
-             case tsip_event_invite_type_e.O_ECT_NOTIFY: s_type = 'o_ect_notify'; break;
-             case tsip_event_invite_type_e.I_ECT_NOTIFY: s_type = 'i_ect_notify'; break;
-             case tsip_event_invite_type_e.I_ECT_REQUESTED: s_type = 'i_ect_requested'; break;
-             case tsip_event_invite_type_e.DIALOG_REQUEST_INCOMING:
-                 {
-                    if(e.o_message) {
-                        if(e.o_message.is_info()) { s_type = 'i_info'; }
+            case tsip_event_invite_type_e.M_LOCAL_HOLD_OK: s_type = 'm_local_hold_ok'; break;
+            case tsip_event_invite_type_e.M_LOCAL_HOLD_NOK: s_type = 'm_local_hold_nok'; break;
+            case tsip_event_invite_type_e.M_LOCAL_RESUME_OK: s_type = 'm_local_resume_ok'; break;
+            case tsip_event_invite_type_e.M_LOCAL_RESUME_NOK: s_type = 'm_local_resume_nok'; break;
+            case tsip_event_invite_type_e.M_REMOTE_HOLD: s_type = 'm_remote_hold'; break;
+            case tsip_event_invite_type_e.M_REMOTE_RESUME: s_type = 'm_remote_resume'; break;
+            case tsip_event_invite_type_e.M_BFCP_INFO: s_type = 'm_bfcp_info'; break;
+            case tsip_event_invite_type_e.O_ECT_TRYING: s_type = 'o_ect_trying'; break;
+            case tsip_event_invite_type_e.O_ECT_ACCEPTED: s_type = 'o_ect_accepted'; break;
+            case tsip_event_invite_type_e.O_ECT_COMPLETED: s_type = 'o_ect_completed'; break;
+            case tsip_event_invite_type_e.I_ECT_COMPLETED: s_type = 'i_ect_completed'; break;
+            case tsip_event_invite_type_e.O_ECT_FAILED: s_type = 'o_ect_failed'; break;
+            case tsip_event_invite_type_e.I_ECT_FAILED: s_type = 'i_ect_failed'; break;
+            case tsip_event_invite_type_e.O_ECT_NOTIFY: s_type = 'o_ect_notify'; break;
+            case tsip_event_invite_type_e.I_ECT_NOTIFY: s_type = 'i_ect_notify'; break;
+            case tsip_event_invite_type_e.I_ECT_REQUESTED: s_type = 'i_ect_requested'; break;
+            case tsip_event_invite_type_e.DIALOG_REQUEST_INCOMING:
+                {
+                    if (e.o_message) {
+                        if (e.o_message.is_info()) { s_type = 'i_info'; }
                     }
                     break;
-                 }  
-             default: break;
-         }
+                }
+            default: break;
+        }
 
-         // dispatch event
-         dispatchEvent(s_type);
-     }
+        // dispatch event
+        dispatchEvent(s_type);
+    }
 }
 
 SIPml.Stack.prototype = Object.create(SIPml.EventTarget.prototype);
@@ -1165,7 +1149,7 @@ SIPml.Stack.prototype.setConfiguration = function (o_conf) {
     }
 
     // event-listener: must be first to be defined as other configs could raise events
-    if(o_conf.events_listener){
+    if (o_conf.events_listener) {
         this.addEventListener(o_conf.events_listener.events, o_conf.events_listener.listener);
     }
 
@@ -1173,8 +1157,8 @@ SIPml.Stack.prototype.setConfiguration = function (o_conf) {
     var b_click2call_enabled = !!o_conf.enable_click2call;
     var b_early_ims = (o_conf.enable_early_ims == undefined) ? true : !!o_conf.enable_early_ims; // default value is true
     var b_enable_media_stream_cache = !!o_conf.enable_media_stream_cache;
-    var o_bandwidth = o_conf.bandwidth ? o_conf.bandwidth : { audio:undefined, video:undefined };
-    var o_video_size = o_conf.video_size ? o_conf.video_size : { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined };
+    var o_bandwidth = o_conf.bandwidth ? o_conf.bandwidth : { audio: undefined, video: undefined };
+    var o_video_size = o_conf.video_size ? o_conf.video_size : { minWidth: undefined, minHeight: undefined, maxWidth: undefined, maxHeight: undefined };
     var o_stack = this.o_stack;
     tsk_utils_log_info("s_websocket_server_url=" + (o_conf.websocket_proxy_url || "(null)"));
     tsk_utils_log_info("s_sip_outboundproxy_url=" + (o_conf.outbound_proxy_url || "(null)"));
@@ -1339,7 +1323,7 @@ Anonymous SIP Session configuration object.
 @property {HTMLVideoElement} [video_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLVideoElement">HTMLVideoElement<a> where to display the remote video stream. This propety should only be used for <a href="SIPml.Session.Call.html">video sessions</a>.
 @property {HTMLAudioElement} [audio_remote] <a href="https://developer.mozilla.org/en-US/docs/DOM/HTMLAudioElement">HTMLAudioElement<a> used to playback the remote audio stream. This propety should only be used for <a href="SIPml.Session.Call.html">audio sessions</a>.
 @property {Integer} [screencast_window_id] Windows identifer from which to grab frames for application or desktop share. Use #0 to share your entire desktop. This property should only be used when webrt4all with support fot BFCP is installed. <br />
-<i>Available since version 1.5.222</i>. <br />
+<i>Available since version 2.0.0</i>. <br />
 @property {Array} [sip_caps] <i>{name,value}</i> pairs defining the SIP capabilities associated to this session. The capabilities are added to the Contact header. Please refer to <a href="http://tools.ietf.org/html/rfc3840">rfc3840</a> and <a href="http://tools.ietf.org/html/rfc3841">rfc3841</a> for more information.
 @property {String} [from] Set the source uri string to be used in the <i>From</i> header (available since API version 1.2.170).
 @property {Object} [bandwidth] Defines the maximum audio and video bandwidth to use. This will change the outhoing SDP to include a "b:AS=" attribute. Use <i>0</i> to let the browser negotiates the right value using RTCP-REMB and congestion control. A default value for all sessions could be defined at stack level.<br />
@@ -1378,7 +1362,7 @@ This is a base class for <a href="SIPml.Session.Registration.html">SIPml.Session
 @throws {ERR_INVALID_PARAMETER_VALUE|ERR_INVALID_PARAMETER_TYPE} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_INVALID_PARAMETER_TYPE</font>
 */
 SIPml.Session = function (o_session, o_conf) {
-     SIPml.EventTarget.call(this);
+    SIPml.EventTarget.call(this);
     /*
         - o_configuration: []
         - o_session: tsip_session_xxx
@@ -1400,7 +1384,7 @@ SIPml.Session.prototype.o_configuration = null;
 Gets the session unique identifier.
 @returns {Integer} Read-only session unique identifier.
 */
-SIPml.Session.prototype.getId = function(){
+SIPml.Session.prototype.getId = function () {
     return this.o_session.get_id();
 }
 
@@ -1408,65 +1392,53 @@ SIPml.Session.prototype.getId = function(){
 Updates or sets the session configuration.
 @param {SIPml.Session.Configuration} configuration
 */
-SIPml.Session.prototype.setConfiguration = function(o_conf){
-    if(!o_conf){
+SIPml.Session.prototype.setConfiguration = function (o_conf) {
+    if (!o_conf) {
         return;
     }
 
     var o_session = this.o_session;
 
     // event-listener: must be first to be defined as other configs could raise events
-    if(o_conf.events_listener){
+    if (o_conf.events_listener) {
         this.addEventListener(o_conf.events_listener.events, o_conf.events_listener.listener);
     }
 
-    if(this instanceof SIPml.Session.Call){
+    if (this instanceof SIPml.Session.Call) {
         // Bandwidth and video size
         o_session.set(
-                    tsip_session.prototype.SetBandwidth(o_conf.bandwidth ? o_conf.bandwidth : { audio:undefined, video:undefined }),
-                    tsip_session.prototype.SetVideoSize(o_conf.video_size ? o_conf.video_size : { minWidth:undefined, minHeight:undefined, maxWidth:undefined, maxHeight:undefined }),
+                    tsip_session.prototype.SetBandwidth(o_conf.bandwidth ? o_conf.bandwidth : { audio: undefined, video: undefined }),
+                    tsip_session.prototype.SetVideoSize(o_conf.video_size ? o_conf.video_size : { minWidth: undefined, minHeight: undefined, maxWidth: undefined, maxHeight: undefined }),
                     tsip_session.prototype.SetScreencastWindowID(o_conf.screencast_window_id ? o_conf.screencast_window_id : 0)
                 );
+        // Do not change the views if not defined in new config. User must use "null" to unset the views
+        this.videoLocal = (o_conf.video_local === undefined) ? this.videoLocal : o_conf.video_local;
+        this.videoRemote = (o_conf.video_remote === undefined) ? this.videoRemote : o_conf.video_remote;
+        this.audioRemote = (o_conf.audio_remote === undefined) ? this.audioRemote : o_conf.audio_remote;
+        this.audioLocal = (o_conf.audio_local === undefined) ? this.audioLocal : o_conf.audio_local;
 
-        this.videoLocal = o_conf.video_local;
-        this.videoRemote = o_conf.video_remote;
-        this.audioRemote = o_conf.audio_remote;
-        this.audioLocal = o_conf.audio_local;
-        
-         var _addStream = function(o_view, o_stream, o_url, b_audio){
-            if(o_stream){
-                if(!b_audio && o_stream.videoTracks.length > 0){
-                    if (window.HTMLVideoElement && o_view instanceof window.HTMLVideoElement){
-                        if(o_view.src == o_url) return false; // unchanged
-                        else if(o_view.src = o_url) o_view.play();
-                    }
-                    return true;
-                }
-                if(b_audio && o_stream.audioTracks.length > 0){
-                    if (window.HTMLAudioElement && o_view instanceof window.HTMLAudioElement){
-                        if(o_view.src == o_url) return false; // unchanged
-                        else if(o_view.src = o_url) o_view.play();
-                    }
-                    return true;
-                }
+        var _addStream = function (o_view, o_stream, b_audio) {
+            if (o_view) {
+                attachMediaStream(o_view, o_stream);
+                return (b_audio && o_stream && o_stream.getAudioTracks().length > 0) || (!b_audio && o_stream && o_stream.getVideoTracks().length > 0);
             }
-         }
+        }
 
-        if(_addStream(this.videoLocal, o_session.get_stream_local(), o_session.get_url_local(), false)){
+        if (_addStream(this.videoLocal, o_session.get_stream_local(), false)) {
             this.dispatchEvent({ s_type: 'm_stream_video_local_added', o_value: new SIPml.Session.Event(this, 'm_stream_video_local_added') });
         }
-        if(_addStream(this.videoRemote, o_session.get_stream_remote(), o_session.get_url_remote(), false)){
+        if (_addStream(this.videoRemote, o_session.get_stream_remote(), false)) {
             this.dispatchEvent({ s_type: 'm_stream_video_remote_added', o_value: new SIPml.Session.Event(this, 'm_stream_video_remote_added') });
         }
-        if(_addStream(this.audioLocal, o_session.get_stream_local(), o_session.get_url_local(), true)){
+        if (_addStream(this.audioLocal, o_session.get_stream_local(), true)) {
             this.dispatchEvent({ s_type: 'm_stream_audio_local_added', o_value: new SIPml.Session.Event(this, 'm_stream_audio_local_added') });
         }
-        if(_addStream(this.audioRemote, o_session.get_stream_remote(), o_session.get_url_remote(), true)){
+        if (_addStream(this.audioRemote, o_session.get_stream_remote(), true)) {
             this.dispatchEvent({ s_type: 'm_stream_audio_remote_added', o_value: new SIPml.Session.Event(this, 'm_stream_audio_remote_added') });
         }
     }
 
-    
+
     // headers
     if (o_conf.sip_headers) {
         o_conf.sip_headers.forEach(function (o_header) {
@@ -1502,7 +1474,7 @@ Gets the remote party SIP Uri (e.g. sip:john.doe@example.com). This Uri could be
 @returns {String} The remote party SIP Uri.
 @see <a href="#getRemoteFriendlyName">getRemoteFriendlyName</a>
 */
-SIPml.Session.prototype.getRemoteUri = function(){
+SIPml.Session.prototype.getRemoteUri = function () {
     return (this.o_session.b_local ? this.o_session.o_uri_to : this.o_session.o_uri_from).toString();
 }
 
@@ -1511,7 +1483,7 @@ Gets the remote party friendly name (e.g. 'John Doe').
 @returns {String} The remote party friendly name.
 @see <a href="#getRemoteUri">getRemoteUri</a>
 */
-SIPml.Session.prototype.getRemoteFriendlyName = function(){
+SIPml.Session.prototype.getRemoteFriendlyName = function () {
     var o_uri = this.o_session.b_local ? this.o_session.o_uri_to : this.o_session.o_uri_from;
     return o_uri.s_display_name ? o_uri.s_display_name : o_uri.s_user_name;
 }
@@ -1568,7 +1540,7 @@ SIPml.Session.Event.prototype.getTransferDestinationFriendlyName = function () {
     var o_message = this.o_event ? this.o_event.get_message() : null;
     if (o_message) {
         var o_hdr_Refer_To = o_message.get_header(tsip_header_type_e.Refer_To);
-        if(o_hdr_Refer_To && o_hdr_Refer_To.o_uri){
+        if (o_hdr_Refer_To && o_hdr_Refer_To.o_uri) {
             return (o_hdr_Refer_To.s_display_name ? o_hdr_Refer_To.s_display_name : o_hdr_Refer_To.o_uri.s_user_name);
         }
     }
@@ -1808,7 +1780,7 @@ SIPml.Session.Call.prototype.rejectTransfer = function (o_conf) {
 
 /**
 Starts sharing your entire desktop or an App using BFCP(<a href="https://tools.ietf.org/html/rfc4582">rfc4582</a>). Requires webrt4all plugin.
-@since version 1.5.222
+@since version 2.0.0
 @param {SIPml.Session.Configuration} [configuration] Configuration value.
 @returns {Integer} 0 if successful; otherwise nonzero
 @throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
@@ -1823,7 +1795,7 @@ SIPml.Session.Call.prototype.startBfcpShare = function (o_conf) {
 
 /**
 Stops sharing your entire desktop or an App using BFCP(<a href="https://tools.ietf.org/html/rfc4582">rfc4582</a>). Requires webrt4all plugin.
-@since version 1.5.222
+@since version 2.0.0
 @param {SIPml.Session.Configuration} [configuration] Configuration value.
 @returns {Integer} 0 if successful; otherwise nonzero
 @throws {ERR_NOT_READY | ERR_NOT_SUPPORTED} <font color="red">ERR_NOT_READY</font> | <font color="red">ERR_NOT_SUPPORTED</font>
@@ -1838,7 +1810,7 @@ SIPml.Session.Call.prototype.stopBfcpShare = function (o_conf) {
 
 /**
 Mutes or unmutes a media.
-@since version 1.5.222
+@since version 2.0.0
 @param {String} media Media to mute. Must be <i>audio</i>, <i>video</i>.
 @param {Boolean} mute Whether to mute (true) or unmute (false) the media.
 @returns {Integer} 0 if successful; otherwise nonzero
@@ -1891,7 +1863,7 @@ session.send('johndoe', 'P&ecirc;che &agrave; la moule', 'text/plain;charset=utf
 });
 @throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
 */
-SIPml.Session.Message.prototype.send = function (s_to, o_content, s_content_type, o_conf){
+SIPml.Session.Message.prototype.send = function (s_to, o_content, s_content_type, o_conf) {
     if (tsk_string_is_null_or_empty(s_to)) {
         throw new Error("ERR_INVALID_PARAMETER_VALUE: 'to' must not be null");
     }
@@ -1979,7 +1951,7 @@ session.publish(content, contentType,{
 @throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
 @see <a href="#unpublish">unpublish</a>
 */
-SIPml.Session.Publish.prototype.publish = function (o_content, s_content_type, o_conf){
+SIPml.Session.Publish.prototype.publish = function (o_content, s_content_type, o_conf) {
     // apply configuration values
     this.setConfiguration(o_conf);
     // sends the PUBLISH request
@@ -1993,7 +1965,7 @@ Remove/unpublish presence data from the server.
 @throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
 @see <a href="#publish">publish</a>
 */
-SIPml.Session.Publish.prototype.unpublish = function (o_conf){
+SIPml.Session.Publish.prototype.unpublish = function (o_conf) {
     // apply configuration values
     this.setConfiguration(o_conf);
     // sends the PUBLISH request (expires = 0)
@@ -2067,8 +2039,8 @@ session.subscribe('johndoe'); // watch for johndoe's presence status
 @throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
 @see <a href="#unsubscribe">unsubscribe</a>
 */
-SIPml.Session.Subscribe.prototype.subscribe = function (s_to, o_conf){
-     if (tsk_string_is_null_or_empty(s_to)) {
+SIPml.Session.Subscribe.prototype.subscribe = function (s_to, o_conf) {
+    if (tsk_string_is_null_or_empty(s_to)) {
         throw new Error("ERR_INVALID_PARAMETER_VALUE: 'to' must not be null");
     }
     // set destination
@@ -2087,7 +2059,7 @@ Unsubscribe.
 @throws {ERR_INVALID_PARAMETER_VALUE | ERR_NOT_READY} <font color="red">ERR_INVALID_PARAMETER_VALUE</font> | <font color="red">ERR_NOT_READY</font>
 @see <a href="#subscribe">subscribe</a>
 */
-SIPml.Session.Subscribe.prototype.unsubscribe = function (o_conf){
+SIPml.Session.Subscribe.prototype.unsubscribe = function (o_conf) {
     // apply configuration values
     this.setConfiguration(o_conf);
     // sends the SUBSCRIBE request (expires = 0)

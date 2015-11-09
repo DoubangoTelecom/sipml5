@@ -9,12 +9,14 @@ function tsk_api_add_js_script(s_elt) {
     for (var i = 1; i < arguments.length; ++i) {
         var tag_script = document.createElement('script');
         tag_script.setAttribute('type', 'text/javascript');
-        tag_script.setAttribute('src', arguments[i] + "?svn=230");
+        tag_script.setAttribute('src', arguments[i] + "?svn=240");
         tag_hdr.appendChild(tag_script);
     }
 };
 
 tsk_api_add_js_script('head',
+    './src/adapter.js',
+
     './src/tinySAK/src/tsk_base64.js',
     './src/tinySAK/src/tsk_buff.js',
     './src/tinySAK/src/tsk_fsm.js',

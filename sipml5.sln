@@ -1,10 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "trunk", "trunk", "{F164D133-EAF3-458A-AA42-2B904AE90FA0}"
 	ProjectSection(SolutionItems) = preProject
+		src\adapter.js = src\adapter.js
 		call.htm = call.htm
 		contact.htm = contact.htm
 		error.htm = error.htm
