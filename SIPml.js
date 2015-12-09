@@ -9,7 +9,7 @@
 
 @name sipML5 API
 @author      Doubango Telecom <http://www.doubango.org>
-@version     2.0.0
+@version     2.0.2
 */
 
 /** 
@@ -815,7 +815,7 @@ SIPml.Stack = function (o_conf) {
         //      WSS: 10062, 11062, 12062, 13062, 14062
         //
 
-        i_port = (o_conf.enable_rtcweb_breaker ? 10062 : 10060) + (((new Date().getTime()) % 5) * 1000);
+        i_port = ((o_conf.enable_rtcweb_breaker || (window.location && window.location.protocol == "https:")) ? 10062 : 10060) + (((new Date().getTime()) % 5) * 1000);
         s_proxy = "ns313841.ovh.net";
     }
 
@@ -1174,7 +1174,7 @@ SIPml.Stack.prototype.setConfiguration = function (o_conf) {
                      tsip_stack.prototype.SetProxyOutBoundUrl(o_conf.outbound_proxy_url),
                      tsip_stack.prototype.SetRTCWebBreakerEnabled(b_rtcweb_breaker_enabled),
                      tsip_stack.prototype.SetClick2CallEnabled(b_click2call_enabled),
-                     tsip_stack.prototype.SetSecureTransportEnabled(b_rtcweb_breaker_enabled), // always use secure transport when RTCWebBreaker
+                     tsip_stack.prototype.SetSecureTransportEnabled((b_rtcweb_breaker_enabled || (window.location && window.location.protocol == "https:"))), // always use secure transport when RTCWebBreaker or https://
                      tsip_stack.prototype.SetEarlyIMSEnabled(b_early_ims), // should be 'true' unless you're using a real IMS network
                      tsip_stack.prototype.SetWebsocketServerUrl(o_conf.websocket_proxy_url),
                      tsip_stack.prototype.SetIceServers(o_conf.ice_servers),
