@@ -583,6 +583,14 @@ tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
 
     tsk_utils_log_info("onIceCandidate = " + iceState);
 
+    if (!tmedia_session_jsep01.hack_timer) {
+      tmedia_session_jsep01.hack_timer = setTimeout(function() {
+         //console.info('Hack timer!');
+         tmedia_session_jsep01.onIceGatheringCompleted(This);
+        tmedia_session_jsep01.hack_timer = null;
+      },2000);
+    };
+
     if (iceState === "complete" || (o_event && !o_event.candidate)) {
         tsk_utils_log_info("ICE GATHERING COMPLETED!");
         tmedia_session_jsep01.onIceGatheringCompleted(This);
