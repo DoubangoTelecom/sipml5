@@ -432,6 +432,9 @@ tmedia_session_jsep01.onGetUserMediaSuccess = function (o_stream, _This) {
             return;
         }
 
+        if(This.my_mutex){tsk_utils_log_warn("onGetUserMediaSuccess already executed!"); return;}
+        This.my_mutex=true;
+
         if (o_stream) {
             // save stream other next calls
             if (o_stream.getAudioTracks().length > 0 && o_stream.getVideoTracks().length == 0) {
