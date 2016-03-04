@@ -1,6 +1,6 @@
 /*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
- *  Copyright (c) 2014-2015 Doubango Telecom. All Rights Reserved.
+ *  Copyright (c) 2014-2016 Doubango Telecom. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
@@ -15,7 +15,8 @@ var webrtcDetectedBrowser = null;
 var webrtcDetectedVersion = null;
 
 window.performance = window.performance || {} ;
-window.performance.now = window.performance.now || (function() { var now = Date.now(); return function() { return Date.now() - now ;} } )();
+window.performance.now = window.performance.now || (function () { var now = Date.now(); return function () { return Date.now() - now; } })();
+window.URL = window.URL || window.webkitURL;
 
 function trace(text) {
   // This function is used for logging.
@@ -197,7 +198,14 @@ if (navigator.mozGetUserMedia) {
     } else if (typeof element.mozSrcObject !== 'undefined') {
       element.mozSrcObject = stream;
     } else if (typeof element.src !== 'undefined') {
-      element.src = URL.createObjectURL(stream);
+        if (stream) {
+            element.src = URL.createObjectURL(stream);
+        }
+        else if (element.src && typeof URL.revokeObjectURL !== 'undefined') {
+            // createObjectURL(null) -> Failed to execute 'createObjectURL' on 'URL': No function was found that matched the signature provided.
+            URL.revokeObjectURL(element.src);
+            element.src = null;
+        }
     } else {
       console.log('Error attaching stream to element.');
     }

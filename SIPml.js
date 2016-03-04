@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2016 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -9,7 +9,7 @@
 
 @name sipML5 API
 @author      Doubango Telecom <http://www.doubango.org>
-@version     2.0.2
+@version     2.0.3
 */
 
 /** 

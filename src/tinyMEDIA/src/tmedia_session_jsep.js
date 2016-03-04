@@ -1,5 +1,5 @@
 ﻿/*
-* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2016 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -175,7 +175,7 @@ tmedia_session_jsep.prototype.decorate_lo = function () {
         }
 
         /* Remove 'video' media if not enabled (bug in chrome: doesn't honor 'has_video' parameter) */
-        if (/*!this.o_sdp_ro &&*/!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
+        if (!(this.e_type.i_id & tmedia_type_e.VIDEO.i_id)) {
             this.o_sdp_lo.remove_media("video");
         }
         /* hold / resume, profile, bandwidth... */
@@ -351,7 +351,7 @@ tmedia_session_jsep.prototype.close = function () {
                         tracks[track].stop();
                     }
                 } catch (e) { tsk_utils_log_error(e); }
-                try { this.o_local_stream.stop(); } catch (e) { tsk_utils_log_error(e); } // Deprecated in Chrome 45: https://github.com/DoubangoTelecom/sipml5/issues/231
+                try { this.o_local_stream.stop(); } catch (e) { } // Deprecated in Chrome 45: https://github.com/DoubangoTelecom/sipml5/issues/231
             }
             this.o_local_stream = null;
         }
