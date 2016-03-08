@@ -1,7 +1,7 @@
 
 /* line 1 "./ragel/tsip_parser_header_Via.jrl" */
 /*
-* Copyright (C) 2012-2015 Doubango Telecom <http://www.doubango.org>
+* Copyright (C) 2012-2016 Doubango Telecom <http://www.doubango.org>
 * License: BSD
 * This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 */
@@ -1002,7 +1002,7 @@ function tsip_header_Via(s_proto_name, s_proto_version, s_transport, s_host, i_p
 tsip_header_Via.prototype.toString = function(){
 	var b_ipv6 = (this.s_host && tsk_string_contains(this.s_host, this.s_host.length, ":"));
 
-	// SIP/2.0/UDP [::]:1988;test=1234;comp=sigcomp;rport=254;ttl=457;received=192.0.2.101;branch=z9hG4bK1245420841406\r\n"
+	// SIP/2.0/UDP [::]:1988;test=1234;comp=sigcomp;rport=254;ttl=457;received=192.0.3.101;branch=z9hG4bK1245420841406\r\n"
 	return tsk_string_format("{0}/{1}/{2} {3}{4}{5}{6}{7}{8}{9}{10}{11}{12}{13}{14}{15}{16}{17}{18}{19}{20}{21}",
 
 			this.s_proto_name ? this.s_proto_name : "SIP",
