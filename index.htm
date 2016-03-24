@@ -14,6 +14,29 @@
     <meta name="Description" content="HTML5 SIP client using WebRTC framework" />
     <meta name="author" content="Doubango Telecom" />
     <meta name="author" content="ulfarf" />
+    <!-- AdRoll Pixel -->
+    <script type="text/javascript">
+    adroll_adv_id = "2LG2JLYIJJDYZE544VMO7D";
+    adroll_pix_id = "STPSC2UVAJCKXIGZ67F7WE";
+    /* OPTIONAL: provide email to improve user identification */
+    /* adroll_email = "username@example.com"; */
+    (function () {
+        var _onload = function(){
+            if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
+            if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
+            var scr = document.createElement("script");
+            var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+            scr.setAttribute('async', 'true');
+            scr.type = "text/javascript";
+            scr.src = host + "/j/roundtrip.js";
+            ((document.getElementsByTagName('head') || [null])[0] ||
+                document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+        };
+        if (window.addEventListener) {window.addEventListener('load', _onload, false);}
+        else {window.attachEvent('onload', _onload)}
+    }());
+    </script>
+    <!-- AdRoll Pixel -->
 
     <!-- SIPML5 API:
     DEBUG VERSION: 'SIPml-api.js'
@@ -1360,28 +1383,6 @@
    
      </script>
     <!-- GOOGLE ANALYTICS -->
-    <!-- AdRoll Pixel -->
-    <script type="text/javascript">
-    adroll_adv_id = "2LG2JLYIJJDYZE544VMO7D";
-    adroll_pix_id = "STPSC2UVAJCKXIGZ67F7WE";
-    /* OPTIONAL: provide email to improve user identification */
-    /* adroll_email = "username@example.com"; */
-    (function () {
-        var _onload = function(){
-            if (document.readyState && !/loaded|complete/.test(document.readyState)){setTimeout(_onload, 10);return}
-            if (!window.__adroll_loaded){__adroll_loaded=true;setTimeout(_onload, 50);return}
-            var scr = document.createElement("script");
-            var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
-            scr.setAttribute('async', 'true');
-            scr.type = "text/javascript";
-            scr.src = host + "/j/roundtrip.js";
-            ((document.getElementsByTagName('head') || [null])[0] ||
-                document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
-        };
-        if (window.addEventListener) {window.addEventListener('load', _onload, false);}
-        else {window.attachEvent('onload', _onload)}
-    }());
-    </script>
-    <!-- AdRoll Pixel -->
+    
 </body>
 </html>
