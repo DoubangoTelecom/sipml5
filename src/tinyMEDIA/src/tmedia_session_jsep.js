@@ -416,7 +416,7 @@ function tmedia_session_jsep01(o_mgr) {
     };
 
     if (tsk_utils_get_navigator_friendly_name() == 'firefox') {
-        tmedia_session_jsep01.mozThis = this; // FIXME: no longer needed? At least not needed on FF 34.05
+        //tmedia_session_jsep01.mozThis = this; // FIXME: no longer needed? At least not needed on FF 34.05
         this.o_media_constraints.mandatory.MozDontOfferDataChannel = true;
     }
 }
