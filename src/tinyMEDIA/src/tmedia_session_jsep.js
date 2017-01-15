@@ -371,6 +371,8 @@ tmedia_session_jsep.prototype.__hold = function () {
         // tsk_utils_log_warn('already on hold');
         return;
     }
+    this.my_mutex = false;
+
     this.b_lo_held = true;
 
     this.o_sdp_ro = null;
@@ -388,6 +390,8 @@ tmedia_session_jsep.prototype.__resume = function () {
         // tsk_utils_log_warn('not on hold');
         return;
     }
+    this.my_mutex = false;
+
     this.b_lo_held = false;
 
     this.o_sdp_lo = null;
@@ -431,6 +435,9 @@ tmedia_session_jsep01.onGetUserMediaSuccess = function (o_stream, _This) {
             tsk_utils_log_warn("onGetUserMediaSuccess but no local sdp request is pending");
             return;
         }
+
+        if(This.my_mutex){tsk_utils_log_warn("onGetUserMediaSuccess already executed!"); return;}
+        This.my_mutex=true;
 
         if (o_stream) {
             // save stream other next calls
@@ -582,6 +589,14 @@ tmedia_session_jsep01.onIceCandidate = function (o_event, _This) {
     var iceState = (This.o_pc.iceGatheringState || This.o_pc.iceState);
 
     tsk_utils_log_info("onIceCandidate = " + iceState);
+
+    if (!tmedia_session_jsep01.hack_timer) {
+      tmedia_session_jsep01.hack_timer = setTimeout(function() {
+         //console.info('Hack timer!');
+         tmedia_session_jsep01.onIceGatheringCompleted(This);
+        tmedia_session_jsep01.hack_timer = null;
+      },2000);
+    };
 
     if (iceState === "complete" || (o_event && !o_event.candidate)) {
         tsk_utils_log_info("ICE GATHERING COMPLETED!");

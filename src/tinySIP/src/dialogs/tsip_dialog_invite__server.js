@@ -418,10 +418,22 @@ function s0000_Ringing_2_Terminated_X_iCANCEL(ao_args){
 	}
 
 	/* Send Request Cancelled */
-    i_ret = o_dialog.send_error(o_dialog.o_last_iInvite, 487, "Request Cancelled", "SIP; cause=487; text=\"Request Cancelled\"");
+        i_ret = o_dialog.send_error(o_dialog.o_last_iInvite, 487, "Request Cancelled", "SIP; cause=487; text=\"Request Cancelled\"");
+
+
+        var found_completed_elsewhere = false;
+	for (var i in o_request.ao_headers) { 
+	  if (o_request.ao_headers[i].s_value && o_request.ao_headers[i].s_value.indexOf('Call completed elsewhere') != -1) {
+	    found_completed_elsewhere = true;
+	  };
+	};
 
 	/* set last error (or info) */
-	o_dialog.set_last_error(487, "Request Cancelled");
+	if (! found_completed_elsewhere) {
+  	    o_dialog.set_last_error(487, "Request Cancelled");
+	} else {
+	    o_dialog.set_last_error(487, "Call completed elsewhere");
+	};
 
 	/* alert the user */
 	o_dialog.signal_invite(tsip_event_invite_type_e.I_REQUEST, tsip_event_code_e.DIALOG_REQUEST_INCOMING, "Incoming Request", o_request);

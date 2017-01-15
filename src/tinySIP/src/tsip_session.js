@@ -226,6 +226,7 @@ tsip_session.prototype.__set = function (ao_params) {
                     if ((o_message = o_curr.ao_values[0])) {
                         if (o_message.o_hdr_From && o_message.o_hdr_From.o_uri) {
                             this.o_uri_from = o_message.o_hdr_From.o_uri.clone(false, false);
+                            this.o_uri_from.s_display_name = o_message.o_hdr_From.s_display_name;
                         }
                         if (o_message.o_hdr_To && o_message.o_hdr_To.o_uri) {
                             this.o_uri_to = o_message.o_hdr_To.o_uri.clone(false, false);
