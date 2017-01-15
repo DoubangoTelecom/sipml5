@@ -371,6 +371,8 @@ tmedia_session_jsep.prototype.__hold = function () {
         // tsk_utils_log_warn('already on hold');
         return;
     }
+    this.my_mutex = false;
+
     this.b_lo_held = true;
 
     this.o_sdp_ro = null;
@@ -388,6 +390,8 @@ tmedia_session_jsep.prototype.__resume = function () {
         // tsk_utils_log_warn('not on hold');
         return;
     }
+    this.my_mutex = false;
+
     this.b_lo_held = false;
 
     this.o_sdp_lo = null;
