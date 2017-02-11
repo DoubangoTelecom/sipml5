@@ -6,7 +6,7 @@
 # This file is part of Open Source sipML5 solution <http://www.sipml5.org>
 #
 
-API_VERSION=2.0.3
+API_VERSION=2.1.3
 API_FOLDER_NAME=release
 API_FILE_NAME=SIPml-api.js
 API_FILE_PATH=$API_FOLDER_NAME/$API_FILE_NAME
