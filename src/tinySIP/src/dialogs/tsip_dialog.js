@@ -1017,9 +1017,15 @@ tsip_dialog.prototype.get_newdelay = function (o_message) {
         if ((o_hdr_state = o_message.get_header(tsip_header_type_e.Subscription_State))) {
             if (o_hdr_state.i_expires > 0) {
                 i_expires = o_hdr_state.i_expires;
-                b_found = true;
             }
         }
+
+        /* RFC6665 :
+         *   Note well that this "expires" value is a
+         *   parameter on the "Subscription-State" header field NOT the
+         *   "Expires" header field.
+         */
+        b_found = true;
     }
 
     /* Expires header */
