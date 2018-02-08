@@ -116,14 +116,24 @@ if (navigator.mozGetUserMedia) {
   // Attach a media stream to an element.
   attachMediaStream = function(element, stream) {
     console.log("Attaching media stream");
-    element.mozSrcObject = stream;
+    if (typeof element.srcObject !== 'undefined') {
+        element.srcObject = stream;
+    }
+    else {
+        element.mozSrcObject = stream;
+    }
     element.play();
     return element;
   };
 
   reattachMediaStream = function(to, from) {
     console.log("Reattaching media stream");
-    to.mozSrcObject = from.mozSrcObject;
+    if (typeof to.srcObject !== 'undefined') {
+        to.srcObject = from.srcObject;
+    }
+    else {
+        to.mozSrcObject = from.mozSrcObject;
+    }
     to.play();
   };
 
