@@ -6299,7 +6299,7 @@ Index: res/res_rtp_asterisk.c
 -		return -1;
 -	}
 -
--	if (!(rtp->ssl_ctx = SSL_CTX_new(DTLSv1_method()))) {
+-	if (!(rtp->ssl_ctx = SSL_CTX_new(DTLS_method()))) {
 -		return -1;
 -	}
 -
